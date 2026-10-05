@@ -1,1 +1,1974 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#1d4ed8">
+<meta name="description" content="Centre de Formation Le Pédagogue - Gestion universitaire et école professionnelle">
+<link rel="manifest" href="./manifest.json">
+<title>Centre de Formation Le Pédagogue</title>
 
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+--primary:#1d4ed8;
+--primary2:#2563eb;
+--dark:#0f172a;
+--bg:#f1f5f9;
+--white:#fff;
+--border:#e2e8f0;
+--text:#1e293b;
+--muted:#64748b;
+--danger:#dc2626;
+--success:#16a34a;
+--warning:#d97706
+}
+body{font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer;border:0}
+.hidden{display:none!important}
+
+/* AUTH */
+#authPage{
+min-height:100vh;
+display:flex;
+align-items:center;
+justify-content:center;
+padding:20px;
+background:linear-gradient(135deg,#0f172a,#1d4ed8)
+}
+.auth-card{
+width:100%;
+max-width:440px;
+background:#fff;
+border-radius:20px;
+padding:30px;
+box-shadow:0 20px 50px #0005
+}
+.logo-box{text-align:center;margin-bottom:25px}
+.logo{
+width:75px;height:75px;margin:auto;border-radius:18px;
+background:var(--primary);color:#fff;
+display:flex;align-items:center;justify-content:center;
+font-size:32px;font-weight:bold
+}
+.logo-box h1{font-size:22px;margin-top:14px}
+.logo-box p{color:var(--muted);margin-top:6px}
+.form-group{margin-bottom:15px}
+.form-group label{
+display:block;font-size:14px;font-weight:bold;margin-bottom:7px
+}
+.form-group input,
+.form-group select,
+.form-group textarea{
+width:100%;border:1px solid var(--border);
+border-radius:9px;padding:12px;outline:none;background:#fff
+}
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus{border-color:var(--primary2)}
+.btn{padding:11px 16px;border-radius:9px;font-weight:bold}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-primary:hover{background:#1e40af}
+.btn-google{
+width:100%;margin-top:10px;background:#fff;color:#111827;
+border:1px solid var(--border)
+}
+.btn-danger{background:var(--danger);color:#fff}
+.btn-success{background:var(--success);color:#fff}
+.btn-warning{background:var(--warning);color:#fff}
+.auth-switch{text-align:center;margin-top:18px;color:var(--muted)}
+.auth-switch button{background:none;color:var(--primary);font-weight:bold}
+.message{padding:11px;border-radius:8px;margin-bottom:15px;font-size:14px}
+.message.error{background:#fee2e2;color:#991b1b}
+.message.success{background:#dcfce7;color:#166534}
+.message.info{background:#dbeafe;color:#1e40af}
+
+/* APP */
+#appPage{min-height:100vh}
+.topbar{
+height:65px;background:#fff;border-bottom:1px solid var(--border);
+display:flex;align-items:center;justify-content:space-between;
+padding:0 22px;position:fixed;top:0;left:0;right:0;z-index:100
+}
+.brand{display:flex;align-items:center;gap:12px;font-weight:bold}
+.brand-icon{
+width:40px;height:40px;border-radius:10px;background:var(--primary);
+color:#fff;display:flex;align-items:center;justify-content:center
+}
+.top-actions{display:flex;align-items:center;gap:10px}
+.language{
+border:1px solid var(--border);padding:8px;border-radius:8px;background:#fff
+}
+.user-menu{
+display:flex;align-items:center;gap:8px;padding:7px 10px;
+border:1px solid var(--border);border-radius:8px
+}
+.user-avatar{
+width:30px;height:30px;border-radius:50%;background:var(--primary);
+color:#fff;display:flex;align-items:center;justify-content:center;font-weight:bold
+}
+.sidebar{
+position:fixed;top:65px;left:0;bottom:0;width:255px;
+background:#0f172a;color:#fff;overflow-y:auto;padding:15px 10px;z-index:90
+}
+.nav-title{
+color:#94a3b8;font-size:11px;text-transform:uppercase;
+font-weight:bold;padding:15px 12px 7px
+}
+.nav-btn{
+width:100%;display:flex;align-items:center;gap:11px;padding:11px 12px;
+border-radius:8px;background:transparent;color:#cbd5e1;
+text-align:left;margin-bottom:3px
+}
+.nav-btn:hover,.nav-btn.active{background:#1d4ed8;color:#fff}
+.main{margin-left:255px;padding:90px 25px 30px}
+.page-title{
+display:flex;justify-content:space-between;align-items:center;
+gap:15px;margin-bottom:22px
+}
+.page-title h2{font-size:25px}
+.page-title p{color:var(--muted);margin-top:4px}
+.stats{
+display:grid;grid-template-columns:repeat(4,1fr);
+gap:16px;margin-bottom:25px
+}
+.stat-card{
+background:#fff;border:1px solid var(--border);
+border-radius:13px;padding:20px
+}
+.stat-icon{font-size:25px;margin-bottom:12px}
+.stat-card .number{font-size:28px;font-weight:bold}
+.stat-card .label{color:var(--muted);margin-top:5px}
+.panel{
+background:#fff;border:1px solid var(--border);
+border-radius:13px;padding:20px;margin-bottom:20px
+}
+.panel-header{
+display:flex;justify-content:space-between;align-items:center;
+gap:10px;margin-bottom:17px;flex-wrap:wrap
+}
+.panel-header h3{font-size:18px}
+.search{
+padding:10px 12px;border:1px solid var(--border);
+border-radius:8px;min-width:220px
+}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:650px}
+th,td{
+padding:12px;border-bottom:1px solid var(--border);
+text-align:left;font-size:14px
+}
+th{background:#f8fafc;color:#475569}
+.badge{
+display:inline-block;padding:5px 9px;border-radius:20px;
+font-size:12px;font-weight:bold
+}
+.badge-success{background:#dcfce7;color:#166534}
+.badge-warning{background:#fef3c7;color:#92400e}
+.badge-danger{background:#fee2e2;color:#991b1b}
+.actions{display:flex;gap:6px;flex-wrap:wrap}
+.actions button{padding:7px 9px;border-radius:7px;font-size:12px}
+.empty{text-align:center;color:var(--muted);padding:35px 10px}
+.grid-form{
+display:grid;grid-template-columns:repeat(2,1fr);gap:15px
+}
+.full{grid-column:1/-1}
+.modal{
+position:fixed;inset:0;background:#0008;display:flex;
+align-items:center;justify-content:center;padding:20px;z-index:300
+}
+.modal-card{
+width:100%;max-width:600px;max-height:90vh;overflow:auto;
+background:#fff;border-radius:15px;padding:22px
+}
+.modal-header{
+display:flex;justify-content:space-between;align-items:center;margin-bottom:20px
+}
+.close{width:35px;height:35px;border-radius:50%;background:#f1f5f9}
+.install-btn{
+background:#16a34a;color:#fff;padding:9px 12px;
+border-radius:8px;font-weight:bold
+}
+.toast{
+position:fixed;right:20px;bottom:20px;z-index:500;
+padding:13px 18px;border-radius:10px;color:#fff;
+background:#0f172a;box-shadow:0 10px 30px #0003
+}
+.mobile-menu{
+display:none;background:var(--primary);color:#fff;
+width:40px;height:40px;border-radius:8px
+}
+@media(max-width:900px){
+.stats{grid-template-columns:repeat(2,1fr)}
+.sidebar{transform:translateX(-100%);transition:.25s}
+.sidebar.open{transform:translateX(0)}
+.main{margin-left:0}
+.mobile-menu{display:block}
+.brand-name{display:none}
+}
+@media(max-width:600px){
+.topbar{padding:0 10px}
+.top-actions .user-menu span{display:none}
+.main{padding:82px 12px 20px}
+.stats{grid-template-columns:1fr 1fr;gap:9px}
+.stat-card{padding:14px}
+.stat-card .number{font-size:23px}
+.grid-form{grid-template-columns:1fr}
+.full{grid-column:auto}
+.page-title{align-items:flex-start;flex-direction:column}
+.search{width:100%;min-width:0}
+}
+</style>
+</head>
+
+<body>
+
+<div id="authPage">
+<div class="auth-card">
+
+<div class="logo-box">
+<div class="logo">LP</div>
+<h1>Centre de Formation Le Pédagogue</h1>
+<p>Gestion universitaire & école professionnelle</p>
+</div>
+
+<div id="authMessage"></div>
+
+<div id="loginBox">
+<h2 style="margin-bottom:18px">Connexion</h2>
+
+<div class="form-group">
+<label>Email</label>
+<input id="loginEmail" type="email" placeholder="Votre adresse email">
+</div>
+
+<div class="form-group">
+<label>Mot de passe</label>
+<input id="loginPassword" type="password" placeholder="Votre mot de passe">
+</div>
+
+<button class="btn btn-primary" style="width:100%" onclick="loginEmailPassword()">
+Se connecter
+</button>
+
+<button class="btn btn-google" onclick="loginGoogle()">
+🔵 Continuer avec Google
+</button>
+
+<div class="auth-switch">
+Pas encore de compte ?
+<button onclick="showRegister()">Créer un compte</button>
+</div>
+</div>
+
+<div id="registerBox" class="hidden">
+<h2 style="margin-bottom:18px">Créer un compte</h2>
+
+<div class="form-group">
+<label>Nom complet</label>
+<input id="registerName" type="text" placeholder="Nom et prénom">
+</div>
+
+<div class="form-group">
+<label>Email</label>
+<input id="registerEmail" type="email" placeholder="Votre adresse email">
+</div>
+
+<div class="form-group">
+<label>Mot de passe</label>
+<input id="registerPassword" type="password" placeholder="Minimum 6 caractères">
+</div>
+
+<button class="btn btn-primary" style="width:100%" onclick="registerAccount()">
+Créer mon compte
+</button>
+
+<div class="auth-switch">
+Déjà un compte ?
+<button onclick="showLogin()">Se connecter</button>
+</div>
+</div>
+
+</div>
+</div>
+
+
+<div id="appPage" class="hidden">
+
+<header class="topbar">
+
+<div class="brand">
+<button class="mobile-menu" onclick="toggleSidebar()">☰</button>
+<div class="brand-icon">LP</div>
+<div class="brand-name">Centre de Formation Le Pédagogue</div>
+</div>
+
+<div class="top-actions">
+
+<button id="installBtn" class="install-btn hidden" onclick="installApp">
+📲 Installer
+</button>
+
+<select id="language" class="language" onchange="changeLanguage(this.value)">
+<option value="fr">🇫🇷 Français</option>
+<option value="ht">🇭🇹 Kreyòl</option>
+</select>
+
+<div class="user-menu">
+<div class="user-avatar" id="userAvatar">U</div>
+<span id="userNameTop">Utilisateur</span>
+<button onclick="logout()" style="background:none">⋮</button>
+</div>
+
+</div>
+</header>
+
+
+<aside id="sidebar" class="sidebar">
+
+<div class="nav-title">Principal</div>
+
+<button class="nav-btn active" onclick="showPage('dashboard',this)">
+🏠 <span>Accueil</span>
+</button>
+
+<div class="nav-title">Administration académique</div>
+
+<button class="nav-btn" onclick="showPage('etudiants',this)">
+👨‍🎓 <span>Étudiants</span>
+</button>
+
+<button class="nav-btn" onclick="showPage('professeurs',this)">
+👨‍🏫 <span>Professeurs</span>
+</button>
+
+<button class="nav-btn" onclick="showPage('departements',this)">
+🏛️ <span>Départements</span>
+</button>
+
+<button class="nav-btn" onclick="showPage('filieres',this)">
+🎓 <span>Filières / Programmes</span>
+</button>
+
+<button class="nav-btn" onclick="showPage('classes',this)">
+🏫 <span>Classes / Groupes</span>
+</button>
+
+<button class="nav-btn" onclick="showPage('matieres',this)">
+📚 <span>Matières / Cours</span>
+</button>
+
+<button class="nav-btn" onclick="showPage('annees',this)">
+📅 <span>Années académiques</span>
+</button>
+
+<button class="nav-btn" onclick="showPage('devoirs',this)">
+📝 <span>Devoirs</span>
+</button>
+
+<button class="nav-btn" onclick="showPage('remises',this)">
+📤 <span>Remises</span>
+</button>
+
+<button class="nav-btn" onclick="showPage('resultats',this)">
+📊 <span>Résultats / Notes</span>
+</button>
+
+<div class="nav-title">Système</div>
+
+<button class="nav-btn" onclick="showPage('statistiques',this)">
+📈 <span>Statistiques</span>
+</button>
+
+<button id="usersMenu" class="nav-btn" onclick="showPage('users',this)">
+👥 <span>Utilisateurs</span>
+</button>
+
+<button class="nav-btn" onclick="showPage('configuration',this)">
+⚙️ <span>Configuration</span>
+</button>
+
+<button class="nav-btn" onclick="logout()">
+🚪 <span>Déconnexion</span>
+</button>
+
+</aside>
+
+
+<main class="main">
+
+<section id="page-dashboard" class="page">
+
+<div class="page-title">
+<div>
+<h2>Tableau de bord</h2>
+<p>Bienvenue dans votre espace de gestion académique.</p>
+</div>
+</div>
+
+<div class="stats">
+
+<div class="stat-card">
+<div class="stat-icon">👨‍🎓</div>
+<div class="number" id="countEtudiants">0</div>
+<div class="label">Étudiants</div>
+</div>
+
+<div class="stat-card">
+<div class="stat-icon">👨‍🏫</div>
+<div class="number" id="countProfesseurs">0</div>
+<div class="label">Professeurs</div>
+</div>
+
+<div class="stat-card">
+<div class="stat-icon">🏫</div>
+<div class="number" id="countClasses">0</div>
+<div class="label">Classes</div>
+</div>
+
+<div class="stat-card">
+<div class="stat-icon">📚</div>
+<div class="number" id="countMatieres">0</div>
+<div class="label">Matières</div>
+</div>
+
+<div class="stat-card">
+<div class="stat-icon">📝</div>
+<div class="number" id="countDevoirs">0</div>
+<div class="label">Devoirs</div>
+</div>
+
+<div class="stat-card">
+<div class="stat-icon">📤</div>
+<div class="number" id="countRemises">0</div>
+<div class="label">Remises</div>
+</div>
+
+<div class="stat-card">
+<div class="stat-icon">📊</div>
+<div class="number" id="countResultats">0</div>
+<div class="label">Résultats</div>
+</div>
+
+<div class="stat-card">
+<div class="stat-icon">⏳</div>
+<div class="number" id="countPending">0</div>
+<div class="label">En attente</div>
+</div>
+
+</div>
+
+<div class="panel">
+<h3>🏛️ Centre de Formation Le Pédagogue</h3>
+<p style="color:var(--muted);line-height:1.7;margin-top:12px">
+Plateforme de gestion universitaire et de formation professionnelle.
+Utilisez le menu pour gérer les étudiants, professeurs, classes,
+programmes, cours, devoirs, résultats et utilisateurs.
+</p>
+</div>
+
+</section>
+
+<section id="page-etudiants" class="page hidden"></section>
+<section id="page-professeurs" class="page hidden"></section>
+<section id="page-departements" class="page hidden"></section>
+<section id="page-filieres" class="page hidden"></section>
+<section id="page-classes" class="page hidden"></section>
+<section id="page-matieres" class="page hidden"></section>
+<section id="page-annees" class="page hidden"></section>
+<section id="page-devoirs" class="page hidden"></section>
+<section id="page-remises" class="page hidden"></section>
+<section id="page-resultats" class="page hidden"></section>
+<section id="page-users" class="page hidden"></section>
+<section id="page-statistiques" class="page hidden"></section>
+<section id="page-configuration" class="page hidden"></section>
+
+</main>
+</div>
+
+
+<div id="modal" class="modal hidden">
+<div class="modal-card">
+<div class="modal-header">
+<h3 id="modalTitle">Ajouter</h3>
+<button class="close" onclick="closeModal()">✕</button>
+</div>
+<div id="modalBody"></div>
+</div>
+</div>
+
+<div id="toast" class="toast hidden"></div>
+
+
+<script type="module">
+
+import {initializeApp}
+from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+
+import {
+getAuth,
+onAuthStateChanged,
+signInWithEmailAndPassword,
+createUserWithEmailAndPassword,
+GoogleAuthProvider,
+signInWithPopup,
+signInWithRedirect,
+signOut
+}
+from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+
+import {
+getFirestore,
+collection,
+doc,
+getDoc,
+getDocs,
+setDoc,
+addDoc,
+updateDoc,
+deleteDoc,
+serverTimestamp
+}
+from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+
+
+const firebaseConfig={
+apiKey:"AIzaSyAhrtcVaEZ7oU-p4Ihzl0APX2ccXKi4jBU",
+authDomain:"centre-de-formation-le-pe.firebaseapp.com",
+projectId:"centre-de-formation-le-pe",
+storageBucket:"centre-de-formation-le-pe.firebasestorage.app",
+messagingSenderId:"11834103838",
+appId:"1:11834103838:web:b82c994e78486cd313760f"
+};
+
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
+const googleProvider=new GoogleAuthProvider();
+
+const ADMIN_EMAIL="Centredeformationlepedagogue@gmail.com";
+
+let currentUser=null;
+let currentProfile=null;
+let deferredPrompt=null;
+
+
+const COLLECTIONS={
+
+etudiants:{
+title:"Étudiants",
+icon:"👨‍🎓",
+fields:[
+["nom","Nom complet","text"],
+["email","Email","email"],
+["telephone","Téléphone","text"],
+["filiere","Filière / Programme","text"],
+["classe","Classe / Groupe","text"],
+["matricule","Matricule","text"]
+]},
+
+professeurs:{
+title:"Professeurs",
+icon:"👨‍🏫",
+fields:[
+["nom","Nom complet","text"],
+["email","Email","email"],
+["telephone","Téléphone","text"],
+["specialite","Spécialité","text"],
+["departement","Département","text"]
+]},
+
+departements:{
+title:"Départements",
+icon:"🏛️",
+fields:[
+["nom","Nom du département","text"],
+["responsable","Responsable","text"],
+["description","Description","textarea"]
+]},
+
+filieres:{
+title:"Filières / Programmes",
+icon:"🎓",
+fields:[
+["nom","Nom de la filière","text"],
+["departement","Département","text"],
+["niveau","Niveau","text"],
+["duree","Durée","text"],
+["description","Description","textarea"]
+]},
+
+classes:{
+title:"Classes / Groupes",
+icon:"🏫",
+fields:[
+["nom","Nom de la classe","text"],
+["filiere","Filière / Programme","text"],
+["niveau","Niveau","text"],
+["annee","Année académique","text"],
+["responsable","Responsable","text"]
+]},
+
+matieres:{
+title:"Matières / Cours",
+icon:"📚",
+fields:[
+["nom","Nom de la matière","text"],
+["code","Code","text"],
+["professeur","Professeur","text"],
+["classe","Classe","text"],
+["coefficient","Coefficient","number"]
+]},
+
+annees:{
+collection:"annees_academiques",
+title:"Années académiques",
+icon:"📅",
+fields:[
+["nom","Année académique","text"],
+["debut","Date de début","date"],
+["fin","Date de fin","date"],
+["statut","Statut","text"]
+]},
+
+devoirs:{
+title:"Devoirs",
+icon:"📝",
+fields:[
+["titre","Titre","text"],
+["matiere","Matière","text"],
+["classe","Classe","text"],
+["professeur","Professeur","text"],
+["dateLimite","Date limite","date"],
+["description","Description","textarea"]
+]},
+
+remises:{
+title:"Remises",
+icon:"📤",
+fields:[
+["devoir","Devoir","text"],
+["etudiant","Étudiant","text"],
+["dateRemise","Date de remise","date"],
+["note","Note /20","number"],
+["correction","Correction / commentaire","textarea"]
+]},
+
+resultats:{
+title:"Résultats / Notes",
+icon:"📊",
+fields:[
+["etudiant","Étudiant","text"],
+["matiere","Matière","text"],
+["classe","Classe","text"],
+["note","Note /20","number"],
+["periode","Période","text"],
+["commentaire","Commentaire","textarea"]
+]}
+};
+
+
+function esc(value){
+if(value===null||value===undefined)return"";
+return String(value)
+.replaceAll("&","&amp;")
+.replaceAll("<","&lt;")
+.replaceAll(">","&gt;")
+.replaceAll('"',"&quot;")
+.replaceAll("'","&#039;");
+}
+
+function toast(message){
+const box=document.getElementById("toast");
+box.textContent=message;
+box.classList.remove("hidden");
+setTimeout(()=>box.classList.add("hidden"),3000);
+}
+
+function showAuthMessage(message,type="error"){
+document.getElementById("authMessage").innerHTML=
+`<div class="message ${type}">${esc(message)}</div>`;
+}
+
+function clearAuthMessage(){
+document.getElementById("authMessage").innerHTML="";
+}
+
+function collectionName(key){
+return COLLECTIONS[key]?.collection||key;
+}
+
+
+window.showRegister=function(){
+clearAuthMessage();
+document.getElementById("loginBox").classList.add("hidden");
+document.getElementById("registerBox").classList.remove("hidden");
+};
+
+window.showLogin=function(){
+clearAuthMessage();
+document.getElementById("registerBox").classList.add("hidden");
+document.getElementById("loginBox").classList.remove("hidden");
+};
+
+
+window.loginEmailPassword=async function(){
+
+const email=document.getElementById("loginEmail").value.trim();
+const password=document.getElementById("loginPassword").value;
+
+if(!email||!password){
+showAuthMessage("Veuillez remplir tous les champs.");
+return;
+}
+
+try{
+await signInWithEmailAndPassword(auth,email,password);
+}catch(error){
+console.error(error);
+
+let msg="Connexion impossible.";
+
+if(error.code==="auth/invalid-credential")
+msg="Email ou mot de passe incorrect.";
+
+if(error.code==="auth/too-many-requests")
+msg="Trop de tentatives. Réessayez plus tard.";
+
+showAuthMessage(msg);
+}
+};
+
+
+window.registerAccount=async function(){
+
+const name=document.getElementById("registerName").value.trim();
+const email=document.getElementById("registerEmail").value.trim();
+const password=document.getElementById("registerPassword").value;
+
+if(!name||!email||!password){
+showAuthMessage("Veuillez remplir tous les champs.");
+return;
+}
+
+if(password.length<6){
+showAuthMessage("Le mot de passe doit contenir au moins 6 caractères.");
+return;
+}
+
+try{
+
+const credential=
+await createUserWithEmailAndPassword(auth,email,password);
+
+await createProfile(credential.user,name);
+
+await signOut(auth);
+
+showAuthMessage(
+"Compte créé. Votre demande doit être acceptée par un administrateur.",
+"success"
+);
+
+showLogin();
+
+}catch(error){
+
+console.error(error);
+
+let msg="Impossible de créer le compte.";
+
+if(error.code==="auth/email-already-in-use")
+msg="Cette adresse email possède déjà un compte.";
+
+if(error.code==="auth/invalid-email")
+msg="Adresse email invalide.";
+
+if(error.code==="auth/weak-password")
+msg="Le mot de passe est trop faible.";
+
+showAuthMessage(msg);
+}
+};
+
+
+window.loginGoogle=async function(){
+
+try{
+await signInWithPopup(auth,googleProvider);
+}catch(error){
+
+console.error(error);
+
+if(
+error.code==="auth/popup-blocked"||
+error.code==="auth/popup-closed-by-user"
+){
+try{
+await signInWithRedirect(auth,googleProvider);
+}catch(e){
+console.error(e);
+showAuthMessage("La connexion Google n'a pas pu être lancée.");
+}
+}else{
+showAuthMessage("Connexion Google impossible.");
+}
+}
+};
+
+
+window.logout=async function(){
+try{
+await signOut(auth);
+}catch(error){
+console.error(error);
+}
+};
+
+
+async function createProfile(user,name=""){
+
+const ref=doc(db,"users",user.uid);
+const existing=await getDoc(ref);
+
+const email=(user.email||"").toLowerCase();
+const isAdmin=email===ADMIN_EMAIL.toLowerCase();
+
+if(existing.exists()){
+
+if(isAdmin){
+
+await updateDoc(ref,{
+email:user.email,
+role:"administrateur",
+status:"accepted",
+updatedAt:serverTimestamp()
+});
+
+}
+
+return;
+}
+
+await setDoc(ref,{
+uid:user.uid,
+email:user.email||"",
+nom:name||user.displayName||"",
+role:isAdmin?"administrateur":"attente",
+status:isAdmin?"accepted":"pending",
+createdAt:serverTimestamp(),
+updatedAt:serverTimestamp()
+});
+}
+
+
+async function getProfile(user){
+
+const ref=doc(db,"users",user.uid);
+const snap=await getDoc(ref);
+
+if(!snap.exists()){
+
+await createProfile(user);
+
+const again=await getDoc(ref);
+
+return again.exists()?again.data():null;
+}
+
+const data=snap.data();
+
+if(
+user.email &&
+user.email.toLowerCase()===
+ADMIN_EMAIL.toLowerCase()
+){
+
+if(
+data.role!=="administrateur"||
+data.status!=="accepted"
+){
+
+await updateDoc(ref,{
+role:"administrateur",
+status:"accepted",
+email:user.email,
+updatedAt:serverTimestamp()
+});
+
+data.role="administrateur";
+data.status="accepted";
+}
+}
+
+return data;
+}
+
+
+onAuthStateChanged(auth,async user=>{
+
+if(!user){
+
+currentUser=null;
+currentProfile=null;
+
+document.getElementById("authPage").classList.remove("hidden");
+document.getElementById("appPage").classList.add("hidden");
+
+return;
+}
+
+try{
+
+currentUser=user;
+currentProfile=await getProfile(user);
+
+if(!currentProfile){
+await signOut(auth);
+showAuthMessage("Votre profil n'a pas pu être créé.");
+return;
+}
+
+if(currentProfile.status!=="accepted"){
+
+await signOut(auth);
+
+showAuthMessage(
+"Votre compte est en attente de validation par l'administrateur.",
+"info"
+);
+
+return;
+}
+
+document.getElementById("authPage").classList.add("hidden");
+document.getElementById("appPage").classList.remove("hidden");
+
+updateUserUI();
+
+if(currentProfile.role!=="administrateur")
+document.getElementById("usersMenu").classList.add("hidden");
+else
+document.getElementById("usersMenu").classList.remove("hidden");
+
+showPage("dashboard");
+await refreshDashboard();
+
+}catch(error){
+
+console.error(error);
+
+await signOut(auth);
+
+showAuthMessage("Une erreur est survenue pendant la connexion.");
+}
+});
+
+
+function updateUserUI(){
+
+const name=
+currentProfile?.nom||
+currentUser?.displayName||
+currentUser?.email||
+"Utilisateur";
+
+document.getElementById("userNameTop").textContent=name;
+document.getElementById("userAvatar").textContent=
+name.charAt(0).toUpperCase();
+}
+
+
+window.toggleSidebar=function(){
+document.getElementById("sidebar").classList.toggle("open");
+};
+
+
+window.showPage=async function(page,button=null){
+
+document.querySelectorAll(".page")
+.forEach(p=>p.classList.add("hidden"));
+
+const target=document.getElementById("page-"+page);
+
+if(target)target.classList.remove("hidden");
+
+document.querySelectorAll(".nav-btn")
+.forEach(b=>b.classList.remove("active"));
+
+if(button)button.classList.add("active");
+
+if(page==="dashboard")
+await refreshDashboard();
+
+if(page==="statistiques")
+await loadStatistics();
+
+if(page==="users"){
+
+if(currentProfile?.role!=="administrateur"){
+toast("Accès réservé à l'administrateur.");
+showPage("dashboard");
+return;
+}
+
+await loadUsers();
+}
+
+if(COLLECTIONS[page])
+await loadGenericPage(page);
+
+document.getElementById("sidebar").classList.remove("open");
+};
+
+
+async function loadGenericPage(key){
+
+const config=COLLECTIONS[key];
+const page=document.getElementById("page-"+key);
+
+if(!page)return;
+
+page.innerHTML=`
+<div class="page-title">
+<div>
+<h2>${config.icon} ${config.title}</h2>
+<p>Gestion des ${config.title.toLowerCase()}.</p>
+</div>
+
+${
+currentProfile?.role==="administrateur"
+?
+`<button class="btn btn-primary"
+onclick="openAddModal('${key}')">
+➕ Ajouter
+</button>`
+:""
+}
+</div>
+
+<div class="panel">
+
+<div class="panel-header">
+<h3>Liste des ${config.title}</h3>
+
+<input
+id="search-${key}"
+class="search"
+placeholder="🔍 Rechercher..."
+oninput="filterTable('${key}')">
+</div>
+
+<div id="table-${key}" class="table-wrap">
+<div class="empty">⏳ Chargement...</div>
+</div>
+
+</div>
+`;
+
+await loadGenericTable(key);
+}
+
+
+async function loadGenericTable(key){
+
+const config=COLLECTIONS[key];
+const box=document.getElementById("table-"+key);
+
+if(!box)return;
+
+try{
+
+const snap=await getDocs(
+collection(db,collectionName(key))
+);
+
+if(snap.empty){
+
+box.innerHTML=
+`<div class="empty">Aucune donnée enregistrée.</div>`;
+
+return;
+}
+
+let html="<table><thead><tr>";
+
+config.fields.forEach(field=>{
+html+=`<th>${esc(field[1])}</th>`;
+});
+
+html+="<th>Actions</th></tr></thead><tbody>";
+
+snap.forEach(item=>{
+
+const data=item.data();
+
+html+="<tr>";
+
+config.fields.forEach(field=>{
+
+let value=data[field[0]];
+
+if(value&&typeof value==="object"&&value.seconds){
+value=new Date(value.seconds*1000).toLocaleDateString();
+}
+
+html+=`<td>${esc(value)}</td>`;
+});
+
+html+=`
+<td>
+<div class="actions">
+
+${
+currentProfile?.role==="administrateur"
+?
+`
+<button class="btn-warning"
+onclick="openEditModal('${key}','${item.id}')">
+✏️ Modifier
+</button>
+
+<button class="btn-danger"
+onclick="deleteRecord('${key}','${item.id}')">
+🗑️ Effacer
+</button>
+`
+:
+`<span style="color:var(--muted)">Lecture</span>`
+}
+
+</div>
+</td>
+`;
+
+html+="</tr>";
+});
+
+html+="</tbody></table>";
+
+box.innerHTML=html;
+
+}catch(error){
+
+console.error(error);
+
+box.innerHTML=
+`<div class="empty">
+Impossible de charger les données.
+</div>`;
+}
+}
+
+
+window.openAddModal=function(key){
+
+if(currentProfile?.role!=="administrateur"){
+toast("Seul l'administrateur peut ajouter.");
+return;
+}
+
+const config=COLLECTIONS[key];
+
+document.getElementById("modalTitle")
+.textContent="Ajouter - "+config.title;
+
+let html=
+`<form onsubmit="saveNewRecord(event,'${key}')">
+<div class="grid-form">`;
+
+config.fields.forEach(field=>{
+
+const[name,label,type]=field;
+
+html+=`
+<div class="${type==="textarea"?"full":""} form-group">
+<label>${esc(label)}</label>
+
+${
+type==="textarea"
+?
+`<textarea id="field-${name}" rows="4"></textarea>`
+:
+`<input id="field-${name}" type="${type}">`
+}
+
+</div>
+`;
+});
+
+html+=`
+</div>
+
+<button class="btn btn-primary" type="submit">
+💾 Enregistrer
+</button>
+
+</form>
+`;
+
+document.getElementById("modalBody").innerHTML=html;
+document.getElementById("modal").classList.remove("hidden");
+};
+
+
+window.saveNewRecord=async function(event,key){
+
+event.preventDefault();
+
+const config=COLLECTIONS[key];
+const data={};
+
+config.fields.forEach(field=>{
+data[field[0]]=
+document.getElementById("field-"+field[0]).value.trim();
+});
+
+data.createdAt=serverTimestamp();
+data.updatedAt=serverTimestamp();
+
+try{
+
+await addDoc(
+collection(db,collectionName(key)),
+data
+);
+
+closeModal();
+toast("Donnée ajoutée avec succès.");
+
+await loadGenericPage(key);
+await refreshDashboard();
+
+}catch(error){
+
+console.error(error);
+toast("Impossible d'enregistrer la donnée.");
+}
+};
+
+
+window.openEditModal=async function(key,id){
+
+if(currentProfile?.role!=="administrateur"){
+toast("Seul l'administrateur peut modifier.");
+return;
+}
+
+const config=COLLECTIONS[key];
+
+try{
+
+const snap=await getDoc(
+doc(db,collectionName(key),id)
+);
+
+if(!snap.exists()){
+toast("Donnée introuvable.");
+return;
+}
+
+const data=snap.data();
+
+document.getElementById("modalTitle")
+.textContent="Modifier - "+config.title;
+
+let html=
+`<form onsubmit="updateRecord(event,'${key}','${id}')">
+<div class="grid-form">`;
+
+config.fields.forEach(field=>{
+
+const[name,label,type]=field;
+
+let value=data[name]??"";
+
+if(value&&typeof value==="object"&&value.seconds){
+
+value=new Date(
+value.seconds*1000
+).toISOString().split("T")[0];
+}
+
+html+=`
+<div class="${type==="textarea"?"full":""} form-group">
+<label>${esc(label)}</label>
+
+${
+type==="textarea"
+?
+`<textarea id="edit-${name}" rows="4">${esc(value)}</textarea>`
+:
+`<input id="edit-${name}" type="${type}" value="${esc(value)}">`
+}
+
+</div>
+`;
+});
+
+html+=`
+</div>
+
+<button class="btn btn-primary" type="submit">
+💾 Enregistrer les modifications
+</button>
+
+</form>
+`;
+
+document.getElementById("modalBody").innerHTML=html;
+document.getElementById("modal").classList.remove("hidden");
+
+}catch(error){
+
+console.error(error);
+toast("Impossible de charger la donnée.");
+}
+};
+
+
+window.updateRecord=async function(event,key,id){
+
+event.preventDefault();
+
+const config=COLLECTIONS[key];
+const data={};
+
+config.fields.forEach(field=>{
+data[field[0]]=
+document.getElementById("edit-"+field[0]).value.trim();
+});
+
+data.updatedAt=serverTimestamp();
+
+try{
+
+await updateDoc(
+doc(db,collectionName(key),id),
+data
+);
+
+closeModal();
+
+toast("Modification enregistrée.");
+
+await loadGenericPage(key);
+await refreshDashboard();
+
+}catch(error){
+
+console.error(error);
+toast("Impossible de modifier.");
+}
+};
+
+
+window.deleteRecord=async function(key,id){
+
+if(currentProfile?.role!=="administrateur"){
+toast("Seul l'administrateur peut effacer.");
+return;
+}
+
+const config=COLLECTIONS[key];
+
+const ok=confirm(
+`Êtes-vous sûr de vouloir effacer cet élément de ${config.title} ?\n\nCette action est irréversible.`
+);
+
+if(!ok)return;
+
+try{
+
+await deleteDoc(
+doc(db,collectionName(key),id)
+);
+
+toast("Élément effacé avec succès.");
+
+await loadGenericPage(key);
+await refreshDashboard();
+
+}catch(error){
+
+console.error(error);
+toast("Impossible d'effacer cet élément.");
+}
+};
+
+
+window.closeModal=function(){
+
+document.getElementById("modal").classList.add("hidden");
+document.getElementById("modalBody").innerHTML="";
+};
+
+
+window.filterTable=function(key){
+
+const input=document.getElementById("search-"+key);
+const table=document.querySelector("#table-"+key+" table");
+
+if(!input||!table)return;
+
+const value=input.value.toLowerCase();
+
+table.querySelectorAll("tbody tr")
+.forEach(row=>{
+row.style.display=
+row.textContent.toLowerCase().includes(value)
+?""
+:"none";
+});
+};
+
+
+async function getCount(name){
+
+try{
+
+const snap=await getDocs(collection(db,name));
+return snap.size;
+
+}catch(error){
+
+console.error(error);
+return 0;
+}
+}
+
+
+async function refreshDashboard(){
+
+const keys=[
+["etudiants","countEtudiants"],
+["professeurs","countProfesseurs"],
+["classes","countClasses"],
+["matieres","countMatieres"],
+["devoirs","countDevoirs"],
+["remises","countRemises"],
+["resultats","countResultats"]
+];
+
+for(const[key,id]of keys){
+
+const count=await getCount(collectionName(key));
+const el=document.getElementById(id);
+
+if(el)el.textContent=count;
+}
+
+await refreshPending();
+}
+
+
+async function refreshPending(){
+
+const el=document.getElementById("countPending");
+
+if(!el)return;
+
+try{
+
+const snap=await getDocs(collection(db,"users"));
+
+let count=0;
+
+snap.forEach(item=>{
+
+const d=item.data();
+
+if(
+d.status==="pending"||
+d.status==="attente"
+)count++;
+
+});
+
+el.textContent=count;
+
+}catch(error){
+
+console.error(error);
+el.textContent="0";
+}
+}
+
+
+async function loadUsers(){
+
+const page=document.getElementById("page-users");
+
+page.innerHTML=`
+<div class="page-title">
+<div>
+<h2>👥 Utilisateurs</h2>
+<p>Gestion des comptes et des accès.</p>
+</div>
+</div>
+
+<div class="panel">
+
+<div class="panel-header">
+<h3>Comptes utilisateurs</h3>
+
+<input
+id="search-users"
+class="search"
+placeholder="🔍 Rechercher..."
+oninput="filterUsers()">
+</div>
+
+<div id="usersTable" class="table-wrap">
+<div class="empty">⏳ Chargement...</div>
+</div>
+
+</div>
+`;
+
+try{
+
+const snap=await getDocs(collection(db,"users"));
+
+if(snap.empty){
+
+document.getElementById("usersTable").innerHTML=
+`<div class="empty">Aucun utilisateur.</div>`;
+
+return;
+}
+
+let html=`
+<table id="userTable">
+<thead>
+<tr>
+<th>Nom</th>
+<th>Email</th>
+<th>Rôle</th>
+<th>Statut</th>
+<th>UID</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody>
+`;
+
+snap.forEach(item=>{
+
+const d=item.data();
+
+const role=d.role||"attente";
+const status=d.status||"pending";
+
+html+=`
+<tr>
+
+<td>${esc(d.nom)}</td>
+<td>${esc(d.email)}</td>
+
+<td>
+<span class="badge badge-success">
+${esc(role)}
+</span>
+</td>
+
+<td>
+<span class="badge ${
+status==="accepted"
+?"badge-success"
+:"badge-warning"
+}">
+${esc(status)}
+</span>
+</td>
+
+<td style="font-size:11px">${esc(item.id)}</td>
+
+<td>
+
+<div class="actions">
+
+<button class="btn-success"
+onclick="acceptUser('${item.id}')">
+✅ Accepter
+</button>
+
+<button class="btn-warning"
+onclick="changeUserRole('${item.id}')">
+✏️ Modifier rôle
+</button>
+
+<button class="btn-danger"
+onclick="deleteUser('${item.id}')">
+🗑️ Effacer
+</button>
+
+</div>
+
+</td>
+
+</tr>
+`;
+});
+
+html+="</tbody></table>";
+
+document.getElementById("usersTable").innerHTML=html;
+
+}catch(error){
+
+console.error(error);
+
+document.getElementById("usersTable").innerHTML=
+`<div class="empty">
+Impossible de charger les utilisateurs.
+</div>`;
+}
+}
+
+
+window.acceptUser=async function(uid){
+
+if(currentProfile?.role!=="administrateur")return;
+
+const role=prompt(
+"Choisissez le rôle :\n\n1 = etudiant\n2 = professeur\n3 = administrateur",
+"1"
+);
+
+if(role===null)return;
+
+let selected="etudiant";
+
+if(role==="2")selected="professeur";
+if(role==="3")selected="administrateur";
+
+try{
+
+await updateDoc(
+doc(db,"users",uid),
+{
+role:selected,
+status:"accepted",
+updatedAt:serverTimestamp()
+}
+);
+
+toast("Utilisateur accepté.");
+
+await loadUsers();
+await refreshPending();
+
+}catch(error){
+
+console.error(error);
+toast("Impossible d'accepter l'utilisateur.");
+}
+};
+
+
+window.changeUserRole=async function(uid){
+
+if(currentProfile?.role!=="administrateur")return;
+
+const role=prompt(
+"Nouveau rôle :\n\netudiant\nprofesseur\nadministrateur"
+);
+
+if(!role)return;
+
+const allowed=[
+"etudiant",
+"professeur",
+"administrateur"
+];
+
+if(!allowed.includes(role)){
+toast("Rôle invalide.");
+return;
+}
+
+try{
+
+await updateDoc(
+doc(db,"users",uid),
+{
+role:role,
+status:"accepted",
+updatedAt:serverTimestamp()
+}
+);
+
+toast("Rôle modifié.");
+await loadUsers();
+
+}catch(error){
+
+console.error(error);
+toast("Impossible de modifier le rôle.");
+}
+};
+
+
+window.deleteUser=async function(uid){
+
+if(currentProfile?.role!=="administrateur")return;
+
+if(uid===currentUser.uid){
+toast("Vous ne pouvez pas supprimer votre propre compte ici.");
+return;
+}
+
+const ok=confirm(
+"Êtes-vous sûr de vouloir effacer cet utilisateur ?"
+);
+
+if(!ok)return;
+
+try{
+
+await deleteDoc(doc(db,"users",uid));
+
+toast("Utilisateur effacé.");
+
+await loadUsers();
+await refreshPending();
+
+}catch(error){
+
+console.error(error);
+toast("Impossible d'effacer l'utilisateur.");
+}
+};
+
+
+window.filterUsers=function(){
+
+const input=document.getElementById("search-users");
+const table=document.getElementById("userTable");
+
+if(!input||!table)return;
+
+const value=input.value.toLowerCase();
+
+table.querySelectorAll("tbody tr")
+.forEach(row=>{
+row.style.display=
+row.textContent.toLowerCase().includes(value)
+?""
+:"none";
+});
+};
+
+
+async function loadStatistics(){
+
+const page=document.getElementById("page-statistiques");
+
+page.innerHTML=`
+<div class="page-title">
+<div>
+<h2>📈 Statistiques</h2>
+<p>Vue globale de l'activité académique.</p>
+</div>
+</div>
+
+<div class="stats">
+
+<div class="stat-card">
+<div class="stat-icon">👨‍🎓</div>
+<div class="number" id="s1">0</div>
+<div class="label">Étudiants</div>
+</div>
+
+<div class="stat-card">
+<div class="stat-icon">👨‍🏫</div>
+<div class="number" id="s2">0</div>
+<div class="label">Professeurs</div>
+</div>
+
+<div class="stat-card">
+<div class="stat-icon">🏫</div>
+<div class="number" id="s3">0</div>
+<div class="label">Classes</div>
+</div>
+
+<div class="stat-card">
+<div class="stat-icon">📚</div>
+<div class="number" id="s4">0</div>
+<div class="label">Matières</div>
+</div>
+
+</div>
+
+<div class="panel">
+<h3>📊 Informations</h3>
+<p style="margin-top:12px;color:var(--muted)">
+Les statistiques sont calculées directement à partir des données Firestore.
+</p>
+</div>
+`;
+
+document.getElementById("s1").textContent=
+await getCount("etudiants");
+
+document.getElementById("s2").textContent=
+await getCount("professeurs");
+
+document.getElementById("s3").textContent=
+await getCount("classes");
+
+document.getElementById("s4").textContent=
+await getCount("matieres");
+}
+
+
+function loadConfiguration(){
+
+const page=document.getElementById("page-configuration");
+
+page.innerHTML=`
+<div class="page-title">
+<div>
+<h2>⚙️ Configuration</h2>
+<p>Paramètres du Centre de Formation Le Pédagogue.</p>
+</div>
+</div>
+
+<div class="panel">
+
+<h3>🏛️ Établissement</h3>
+
+<div class="grid-form" style="margin-top:18px">
+
+<div class="form-group">
+<label>Nom de l'établissement</label>
+<input
+id="schoolName"
+value="Centre de Formation Le Pédagogue">
+</div>
+
+<div class="form-group">
+<label>Type</label>
+<input
+value="Université & École professionnelle"
+readonly>
+</div>
+
+<div class="form-group full">
+<label>Description</label>
+<textarea id="schoolDescription" rows="4">Centre de formation universitaire et professionnelle.</textarea>
+</div>
+
+</div>
+
+<button
+class="btn btn-primary"
+onclick="saveConfiguration()">
+💾 Enregistrer
+</button>
+
+</div>
+`;
+}
+
+
+window.saveConfiguration=async function(){
+
+if(currentProfile?.role!=="administrateur"){
+toast("Accès réservé à l'administrateur.");
+return;
+}
+
+const name=document.getElementById("schoolName").value;
+const description=document.getElementById("schoolDescription").value;
+
+try{
+
+await setDoc(
+doc(db,"configuration","etablissement"),
+{
+nom:name,
+description:description,
+updatedAt:serverTimestamp()
+},
+{merge:true}
+);
+
+toast("Configuration enregistrée.");
+
+}catch(error){
+
+console.error(error);
+toast("Impossible d'enregistrer la configuration.");
+}
+};
+
+
+window.changeLanguage=function(language){
+
+localStorage.setItem("lePedagogueLanguage",language);
+
+if(language==="ht")
+toast("Lang Kreyòl chwazi.");
+else
+toast("Français sélectionné.");
+};
+
+
+const savedLanguage=
+localStorage.getItem("lePedagogueLanguage");
+
+if(savedLanguage)
+document.getElementById("language").value=savedLanguage;
+
+
+window.addEventListener("beforeinstallprompt",event=>{
+
+event.preventDefault();
+deferredPrompt=event;
+
+document.getElementById("installBtn")
+.classList.remove("hidden");
+});
+
+
+window.installApp=async function(){
+
+if(!deferredPrompt)return;
+
+deferredPrompt.prompt();
+
+const result=await deferredPrompt.userChoice;
+
+if(result.outcome==="accepted")
+toast("Installation lancée.");
+
+deferredPrompt=null;
+
+document.getElementById("installBtn")
+.classList.add("hidden");
+};
+
+
+if("serviceWorker" in navigator){
+
+window.addEventListener("load",()=>{
+
+navigator.serviceWorker
+.register("./service-worker.js")
+.catch(error=>{
+console.log("Service worker non disponible",error);
+});
+
+});
+}
+
+
+loadConfiguration();
+
+</script>
+
+</body>
+</html>
