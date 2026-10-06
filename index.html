@@ -4182,35 +4182,28 @@ toast(
 };
 
 
-/* ================= SERVICE WORKER ================= */
+<script>
+/* ================= PWA SERVICE WORKER ================= */
 
-if(
-"serviceWorker" in navigator
-){
+if ("serviceWorker" in navigator) {
 
-window.addEventListener(
-"load",
-()=>{
+  window.addEventListener("load", () => {
 
-navigator.serviceWorker
-.register("./service-worker.js")
-.then(()=>{
-console.log(
-"Service Worker enregistré."
-);
-})
-.catch(error=>{
-console.error(
-"Service Worker:",
-error
-);
-});
+    navigator.serviceWorker
+      .register("./sw.js")
+      .then(() => {
+        console.log("Service Worker aktive.");
+      })
+      .catch((error) => {
+        console.error("Service Worker pa aktive:", error);
+      });
 
-}
-);
+  });
 
 }
 
+/* ================= FIN PWA ================= */
+</script>
 
 /* ================= START ================= */
 
