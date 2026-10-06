@@ -1,9 +1,11 @@
-const CACHE_NAME = "le-pedagogue-v1";
+const CACHE_NAME = "le-pedagogue-v2";
 
 const FILES_TO_CACHE = [
   "./",
   "./index.html",
-  "./manifest.json"
+  "./manifest.json",
+  "./icon-192.png",
+  "./icon-512.png"
 ];
 
 self.addEventListener("install", event => {
