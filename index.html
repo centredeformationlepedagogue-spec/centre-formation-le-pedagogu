@@ -4140,71 +4140,103 @@ prompt, it will open automatically.
 */
 
 window.addEventListener(
-"beforeinstallprompt",
-event=>{
+  "beforeinstallprompt",
+  event => {
 
-event.preventDefault();
+    event.preventDefault();
 
-deferredPrompt=event;
+    deferredPrompt = event;
 
-}
+  }
 );
 
 
-window.installApp=async function(){
+window.installApp = async function(){
 
-if(deferredPrompt){
+  if(deferredPrompt){
 
-deferredPrompt.prompt();
+    deferredPrompt.prompt();
 
-const result=
-await deferredPrompt.userChoice;
+    const result =
+      await deferredPrompt.userChoice;
 
-console.log(
-"Installation:",
-result.outcome
-);
+    console.log(
+      "Installation:",
+      result.outcome
+    );
 
-deferredPrompt=null;
+    deferredPrompt = null;
 
-return;
+    return;
 
-}
+  }
 
-
-/*
-If Chrome has not supplied the prompt,
-tell the user how to install manually.
-*/
-
-toast(
-"Si la fenêtre d'installation ne s'ouvre pas, ouvrez le menu ⋮ de Chrome puis choisissez « Installer l'application » ou « Ajouter à l'écran d'accueil »."
-);
+  toast(
+    "Si la fenêtre d'installation ne s'ouvre pas, ouvrez le menu ⋮ de Chrome puis choisissez « Installer l'application » ou « Ajouter à l'écran d'accueil »."
+  );
 
 };
 
 
-<script>
-/* ================= PWA SERVICE WORKER ================= */
+/* ================= GOOGLE REDIRECT RESULT ================= */
 
-if ("serviceWorker" in navigator) {
+getRedirectResult(auth)
+  .then(async result => {
 
-  window.addEventListener("load", () => {
+    if(!result || !result.user){
+      return;
+    }
 
-    navigator.serviceWorker
-      .register("./sw.js")
-      .then(() => {
-        console.log("Service Worker aktive.");
-      })
-      .catch((error) => {
-        console.error("Service Worker pa aktive:", error);
-      });
+    console.log(
+      "Connexion Google réussie:",
+      result.user.email
+    );
+
+  })
+  .catch(error => {
+
+    console.error(
+      "Google Redirect Error:",
+      error
+    );
+
+    showAuthMessage(
+      "La connexion Google n'a pas pu être terminée."
+    );
 
   });
 
-}
 
-/* ================= FIN PWA ================= */
+/* ================= SERVICE WORKER ================= */
+
+if("serviceWorker" in navigator){
+
+  window.addEventListener(
+    "load",
+    () => {
+
+      navigator.serviceWorker
+        .register("./sw.js")
+        .then(() => {
+
+          console.log(
+            "Service Worker activé."
+          );
+
+        })
+        .catch(error => {
+
+          console.error(
+            "Service Worker non activé:",
+            error
+          );
+
+        });
+
+    }
+  );
+
+}
 
 
 /* ================= START ================= */
