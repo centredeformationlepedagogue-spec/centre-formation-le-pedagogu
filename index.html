@@ -1846,50 +1846,51 @@ showAuthMessage(msg);
 
 /* ================= GOOGLE ================= */
 
-window.loginGoogle=async function(){
+window.loginGoogle = async function(){
 
-try{
+  try {
 
-await signInWithPopup(
-auth,
-googleProvider
-);
+    await signInWithPopup(
+      auth,
+      googleProvider
+    );
 
-}catch(error){
+  } catch(error) {
 
-console.error(error);
+    console.error("Google Login Error:", error);
 
-if(
-error.code==="auth/popup-blocked"||
-error.code==="auth/popup-closed-by-user"
-){
+    if(
+      error.code === "auth/popup-blocked" ||
+      error.code === "auth/popup-closed-by-user" ||
+      error.code === "auth/cancelled-popup-request"
+    ){
 
-try{
+      try {
 
-await signInWithRedirect(
-auth,
-googleProvider
-);
+        await signInWithRedirect(
+          auth,
+          googleProvider
+        );
 
-}catch(e){
+      } catch(e) {
 
-console.error(e);
+        console.error("Google Redirect Error:", e);
 
-showAuthMessage(
-"La connexion Google n'a pas pu être lancée."
-);
+        showAuthMessage(
+          "La connexion Google n'a pas pu être lancée."
+        );
 
-}
+      }
 
-}else{
+    } else {
 
-showAuthMessage(
-"Connexion Google impossible."
-);
+      showAuthMessage(
+        "Connexion Google impossible."
+      );
 
-}
+    }
 
-}
+  }
 
 };
 
