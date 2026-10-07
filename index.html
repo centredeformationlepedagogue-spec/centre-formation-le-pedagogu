@@ -46,7 +46,8 @@ button{
   display:none!important;
 }
 
-/* AUTH */
+/* ================= AUTHENTIFICATION ================= */
+
 #authPage{
   min-height:100vh;
   display:flex;
@@ -114,9 +115,18 @@ button{
   opacity:.9;
 }
 
-.btn-green{background:var(--green)}
-.btn-red{background:var(--red)}
-.btn-orange{background:var(--orange)}
+.btn-green{
+  background:var(--green);
+}
+
+.btn-red{
+  background:var(--red);
+}
+
+.btn-orange{
+  background:var(--orange);
+}
+
 .btn-gray{
   background:#64748b;
 }
@@ -125,13 +135,28 @@ button{
   width:100%;
 }
 
+.google-btn{
+  background:#ffffff;
+  color:#1f2937;
+  border:1px solid #d1d5db;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+}
+
+.google-btn:hover{
+  background:#f8fafc;
+}
+
 .auth-separator{
   text-align:center;
   margin:18px 0;
   color:#94a3b8;
 }
 
-/* APP */
+/* ================= APP ================= */
+
 #appPage{
   min-height:100vh;
 }
@@ -255,7 +280,8 @@ button{
   margin-top:5px;
 }
 
-/* DASHBOARD */
+/* ================= DASHBOARD ================= */
+
 .stats{
   display:grid;
   grid-template-columns:repeat(6,1fr);
@@ -322,7 +348,8 @@ button{
   margin-bottom:5px;
 }
 
-/* TABLE */
+/* ================= TABLE ================= */
+
 .table-wrap{
   overflow-x:auto;
 }
@@ -367,7 +394,8 @@ th{
   color:#991b1b;
 }
 
-/* FORMS */
+/* ================= FORMS ================= */
+
 .form-grid{
   display:grid;
   grid-template-columns:repeat(2,1fr);
@@ -406,7 +434,8 @@ th{
   flex-wrap:wrap;
 }
 
-/* TOAST */
+/* ================= TOAST ================= */
+
 #toast{
   position:fixed;
   right:20px;
@@ -420,7 +449,8 @@ th{
   max-width:350px;
 }
 
-/* INSTALL MODAL */
+/* ================= MODAL ================= */
+
 .modal{
   position:fixed;
   inset:0;
@@ -460,7 +490,8 @@ th{
   border-radius:50%;
 }
 
-/* MOBILE */
+/* ================= MOBILE ================= */
+
 .mobile-menu{
   display:none;
   border:0;
@@ -471,12 +502,15 @@ th{
 }
 
 @media(max-width:1100px){
+
   .stats{
     grid-template-columns:repeat(3,1fr);
   }
+
 }
 
 @media(max-width:800px){
+
   .sidebar{
     transform:translateX(-100%);
     transition:.25s;
@@ -519,9 +553,11 @@ th{
   .form-grid{
     grid-template-columns:1fr;
   }
+
 }
 
 @media(max-width:480px){
+
   .stats{
     grid-template-columns:1fr;
   }
@@ -537,22 +573,42 @@ th{
   .language{
     max-width:75px;
   }
+
+  .user-btn{
+    max-width:110px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+
 }
 </style>
 </head>
 
 <body>
 
-<!-- AUTHENTIFICATION -->
+<!-- ================= AUTHENTIFICATION ================= -->
+
 <section id="authPage">
 
   <div class="auth-box">
 
     <div class="logo-box">
-      <img src="./icon-192.png" alt="Logo">
-      <h1>Centre de Formation Le Pédagogue</h1>
-      <p>Gestion universitaire et école professionnelle</p>
+
+      <img
+        src="./icon-192.png"
+        alt="Logo">
+
+      <h1>
+        Centre de Formation Le Pédagogue
+      </h1>
+
+      <p>
+        Gestion universitaire et école professionnelle
+      </p>
+
     </div>
+
+    <!-- CONNEXION -->
 
     <div id="loginBox">
 
@@ -560,30 +616,59 @@ th{
         Connexion
       </h2>
 
-      <input id="loginEmail" type="email" placeholder="Adresse e-mail">
+      <input
+        id="loginEmail"
+        type="email"
+        placeholder="Adresse e-mail"
+        autocomplete="email">
 
-      <input id="loginPassword" type="password" placeholder="Mot de passe">
+      <input
+        id="loginPassword"
+        type="password"
+        placeholder="Mot de passe"
+        autocomplete="current-password">
 
-      <button class="btn full" onclick="loginEmailPassword()">
+      <button
+        class="btn full"
+        onclick="loginEmailPassword()">
+
         🔐 Se connecter
+
       </button>
 
-      <div class="auth-separator">OU</div>
+      <div class="auth-separator">
+        OU
+      </div>
 
-      <button class="btn btn-gray full" onclick="loginGoogle()">
-        🇬 Google
+      <!-- GOOGLE LOGIN -->
+
+      <button
+        id="googleLoginBtn"
+        class="btn google-btn full"
+        onclick="loginGoogle()">
+
+        🔵 Continuer avec Google
+
       </button>
 
       <p style="margin-top:18px;text-align:center">
+
         Pas encore de compte ?
+
         <button
           style="border:0;background:none;color:#1d4ed8;font-weight:bold"
           onclick="showRegister()">
+
           Créer un compte
+
         </button>
+
       </p>
 
     </div>
+
+
+    <!-- INSCRIPTION -->
 
     <div id="registerBox" class="hidden">
 
@@ -591,23 +676,42 @@ th{
         Créer un compte
       </h2>
 
-      <input id="registerName" type="text" placeholder="Nom complet">
+      <input
+        id="registerName"
+        type="text"
+        placeholder="Nom complet">
 
-      <input id="registerEmail" type="email" placeholder="Adresse e-mail">
+      <input
+        id="registerEmail"
+        type="email"
+        placeholder="Adresse e-mail">
 
-      <input id="registerPassword" type="password" placeholder="Mot de passe">
+      <input
+        id="registerPassword"
+        type="password"
+        placeholder="Mot de passe"
+        autocomplete="new-password">
 
-      <button class="btn btn-green full" onclick="registerAccount()">
+      <button
+        class="btn btn-green full"
+        onclick="registerAccount()">
+
         📝 Créer mon compte
+
       </button>
 
       <p style="margin-top:18px;text-align:center">
+
         Déjà un compte ?
+
         <button
           style="border:0;background:none;color:#1d4ed8;font-weight:bold"
           onclick="showLogin()">
+
           Se connecter
+
         </button>
+
       </p>
 
     </div>
@@ -617,15 +721,20 @@ th{
 </section>
 
 
-<!-- APPLICATION -->
+<!-- ================= APPLICATION ================= -->
+
 <section id="appPage" class="hidden">
 
   <header class="header">
 
     <div class="header-left">
 
-      <button class="mobile-menu" onclick="toggleSidebar()">
+      <button
+        class="mobile-menu"
+        onclick="toggleSidebar()">
+
         ☰
+
       </button>
 
       <img
@@ -639,26 +748,44 @@ th{
 
     </div>
 
+
     <div class="header-right">
 
       <select
         id="languageSelect"
         class="language"
         onchange="changeLanguage()">
-        <option value="fr">🇫🇷 Français</option>
-        <option value="ht">🇭🇹 Kreyòl</option>
+
+        <option value="fr">
+          🇫🇷 Français
+        </option>
+
+        <option value="ht">
+          🇭🇹 Kreyòl
+        </option>
+
       </select>
 
-      <!-- BOUTON INSTALLATION TOUJOURS VISIBLE -->
+
       <button
         id="installBtn"
         class="install-btn"
         onclick="installApplication()">
+
         📲 Installer l'application
+
       </button>
 
-      <button class="user-btn" onclick="toggleUserMenu()">
-        👤 <span id="headerUserName">Utilisateur</span>
+
+      <button
+        class="user-btn"
+        onclick="toggleUserMenu()">
+
+        👤
+        <span id="headerUserName">
+          Utilisateur
+        </span>
+
       </button>
 
     </div>
@@ -666,43 +793,86 @@ th{
   </header>
 
 
-  <!-- SIDEBAR -->
-  <aside id="sidebar" class="sidebar">
+  <!-- ================= SIDEBAR ================= -->
+
+  <aside
+    id="sidebar"
+    class="sidebar">
 
     <div class="sidebar-title">
       ACADÉMIQUE
     </div>
 
-    <button class="menu-btn active" onclick="showPage('dashboard',this)">
-      🏠 <span>Tableau de bord</span>
+    <button
+      class="menu-btn active"
+      onclick="showPage('dashboard',this)">
+
+      🏠
+      <span>Tableau de bord</span>
+
     </button>
 
-    <button class="menu-btn" onclick="showPage('etudiants',this)">
-      🎓 <span>Étudiants</span>
+    <button
+      class="menu-btn"
+      onclick="showPage('etudiants',this)">
+
+      🎓
+      <span>Étudiants</span>
+
     </button>
 
-    <button class="menu-btn" onclick="showPage('professeurs',this)">
-      👨‍🏫 <span>Professeurs</span>
+    <button
+      class="menu-btn"
+      onclick="showPage('professeurs',this)">
+
+      👨‍🏫
+      <span>Professeurs</span>
+
     </button>
 
-    <button class="menu-btn" onclick="showPage('classes',this)">
-      🏫 <span>Classes</span>
+    <button
+      class="menu-btn"
+      onclick="showPage('classes',this)">
+
+      🏫
+      <span>Classes</span>
+
     </button>
 
-    <button class="menu-btn" onclick="showPage('departements',this)">
-      🏛️ <span>Départements</span>
+    <button
+      class="menu-btn"
+      onclick="showPage('departements',this)">
+
+      🏛️
+      <span>Départements</span>
+
     </button>
 
-    <button class="menu-btn" onclick="showPage('filieres',this)">
-      📚 <span>Filières</span>
+    <button
+      class="menu-btn"
+      onclick="showPage('filieres',this)">
+
+      📚
+      <span>Filières</span>
+
     </button>
 
-    <button class="menu-btn" onclick="showPage('matieres',this)">
-      📖 <span>Matières</span>
+    <button
+      class="menu-btn"
+      onclick="showPage('matieres',this)">
+
+      📖
+      <span>Matières</span>
+
     </button>
 
-    <button class="menu-btn" onclick="showPage('cours',this)">
-      📘 <span>Cours</span>
+    <button
+      class="menu-btn"
+      onclick="showPage('cours',this)">
+
+      📘
+      <span>Cours</span>
+
     </button>
 
 
@@ -710,20 +880,40 @@ th{
       ÉVALUATION
     </div>
 
-    <button class="menu-btn" onclick="showPage('devoirs',this)">
-      📝 <span>Devoirs</span>
+    <button
+      class="menu-btn"
+      onclick="showPage('devoirs',this)">
+
+      📝
+      <span>Devoirs</span>
+
     </button>
 
-    <button class="menu-btn" onclick="showPage('remises',this)">
-      📤 <span>Remises</span>
+    <button
+      class="menu-btn"
+      onclick="showPage('remises',this)">
+
+      📤
+      <span>Remises</span>
+
     </button>
 
-    <button class="menu-btn" onclick="showPage('corrections',this)">
-      ✏️ <span>Corrections</span>
+    <button
+      class="menu-btn"
+      onclick="showPage('corrections',this)">
+
+      ✏️
+      <span>Corrections</span>
+
     </button>
 
-    <button class="menu-btn" onclick="showPage('resultats',this)">
-      📊 <span>Résultats</span>
+    <button
+      class="menu-btn"
+      onclick="showPage('resultats',this)">
+
+      📊
+      <span>Résultats</span>
+
     </button>
 
 
@@ -731,77 +921,182 @@ th{
       ADMINISTRATION
     </div>
 
-    <button class="menu-btn" onclick="showPage('statistiques',this)">
-      📈 <span>Statistiques</span>
-    </button>
-
     <button
       id="usersMenu"
       class="menu-btn"
       onclick="showPage('utilisateurs',this)">
-      👥 <span>Utilisateurs</span>
+
+      👥
+      <span>Utilisateurs</span>
+
     </button>
 
-    <button class="menu-btn" onclick="showPage('sauvegarde',this)">
-      💾 <span>Données / Sauvegarde</span>
+    <button
+      class="menu-btn"
+      onclick="showPage('statistiques',this)">
+
+      📈
+      <span>Statistiques</span>
+
     </button>
 
-    <button class="menu-btn" onclick="logout()">
-      🚪 <span>Déconnexion</span>
+    <button
+      class="menu-btn"
+      onclick="showPage('sauvegarde',this)">
+
+      💾
+      <span>Données / Sauvegarde</span>
+
+    </button>
+
+    <button
+      class="menu-btn"
+      onclick="logout()">
+
+      🚪
+      <span>Déconnexion</span>
+
     </button>
 
   </aside>
 
 
-  <!-- MAIN -->
+  <!-- ================= MAIN ================= -->
+
   <main class="main">
 
     <!-- DASHBOARD -->
-    <section id="page-dashboard" class="page">
+
+    <section
+      id="page-dashboard"
+      class="page">
 
       <div class="page-title">
-        <h2>Tableau de bord</h2>
+
+        <h2>
+          Tableau de bord
+        </h2>
+
         <p id="welcomeText">
           Bienvenue dans votre espace de gestion.
         </p>
+
       </div>
+
 
       <div class="stats">
 
         <div class="stat">
-          <div class="stat-icon">🎓</div>
-          <div class="stat-title">Étudiants</div>
-          <div id="statEtudiants" class="stat-number">0</div>
+
+          <div class="stat-icon">
+            🎓
+          </div>
+
+          <div class="stat-title">
+            Étudiants
+          </div>
+
+          <div
+            id="statEtudiants"
+            class="stat-number">
+            0
+          </div>
+
         </div>
 
-        <div class="stat">
-          <div class="stat-icon">👨‍🏫</div>
-          <div class="stat-title">Professeurs</div>
-          <div id="statProfesseurs" class="stat-number">0</div>
-        </div>
 
         <div class="stat">
-          <div class="stat-icon">🏫</div>
-          <div class="stat-title">Classes</div>
-          <div id="statClasses" class="stat-number">0</div>
+
+          <div class="stat-icon">
+            👨‍🏫
+          </div>
+
+          <div class="stat-title">
+            Professeurs
+          </div>
+
+          <div
+            id="statProfesseurs"
+            class="stat-number">
+            0
+          </div>
+
         </div>
 
-        <div class="stat">
-          <div class="stat-icon">📖</div>
-          <div class="stat-title">Matières</div>
-          <div id="statMatieres" class="stat-number">0</div>
-        </div>
 
         <div class="stat">
-          <div class="stat-icon">📝</div>
-          <div class="stat-title">Devoirs</div>
-          <div id="statDevoirs" class="stat-number">0</div>
+
+          <div class="stat-icon">
+            🏫
+          </div>
+
+          <div class="stat-title">
+            Classes
+          </div>
+
+          <div
+            id="statClasses"
+            class="stat-number">
+            0
+          </div>
+
         </div>
 
+
         <div class="stat">
-          <div class="stat-icon">⏳</div>
-          <div class="stat-title">En attente</div>
-          <div id="statPending" class="stat-number">0</div>
+
+          <div class="stat-icon">
+            📖
+          </div>
+
+          <div class="stat-title">
+            Matières
+          </div>
+
+          <div
+            id="statMatieres"
+            class="stat-number">
+            0
+          </div>
+
+        </div>
+
+
+        <div class="stat">
+
+          <div class="stat-icon">
+            📝
+          </div>
+
+          <div class="stat-title">
+            Devoirs
+          </div>
+
+          <div
+            id="statDevoirs"
+            class="stat-number">
+            0
+          </div>
+
+        </div>
+
+
+        <div class="stat">
+
+          <div class="stat-icon">
+            ⏳
+          </div>
+
+          <div class="stat-title">
+            En attente
+          </div>
+
+          <div
+            id="statPending"
+            class="stat-number">
+            0
+          </div>
+
         </div>
 
       </div>
@@ -809,51 +1104,114 @@ th{
 
       <div class="panel">
 
-        <h3>Accès rapide</h3>
+        <h3>
+          Accès rapide
+        </h3>
 
         <div class="quick-grid">
 
-          <button class="quick" onclick="quickPage('etudiants')">
-            <strong>🎓 Étudiants</strong>
+          <button
+            class="quick"
+            onclick="quickPage('etudiants')">
+
+            <strong>
+              🎓 Étudiants
+            </strong>
+
             Gérer les étudiants
+
           </button>
 
-          <button class="quick" onclick="quickPage('professeurs')">
-            <strong>👨‍🏫 Professeurs</strong>
+
+          <button
+            class="quick"
+            onclick="quickPage('professeurs')">
+
+            <strong>
+              👨‍🏫 Professeurs
+            </strong>
+
             Gérer les enseignants
+
           </button>
 
-          <button class="quick" onclick="quickPage('classes')">
-            <strong>🏫 Classes</strong>
+
+          <button
+            class="quick"
+            onclick="quickPage('classes')">
+
+            <strong>
+              🏫 Classes
+            </strong>
+
             Gérer les classes
+
           </button>
 
-          <button class="quick" onclick="quickPage('matieres')">
-            <strong>📖 Matières</strong>
+
+          <button
+            class="quick"
+            onclick="quickPage('matieres')">
+
+            <strong>
+              📖 Matières
+            </strong>
+
             Gérer les matières
+
           </button>
 
-          <button class="quick" onclick="quickPage('devoirs')">
-            <strong>📝 Devoirs</strong>
+
+          <button
+            class="quick"
+            onclick="quickPage('devoirs')">
+
+            <strong>
+              📝 Devoirs
+            </strong>
+
             Gérer les devoirs
+
           </button>
 
-          <button class="quick" onclick="quickPage('resultats')">
-            <strong>📊 Résultats</strong>
+
+          <button
+            class="quick"
+            onclick="quickPage('resultats')">
+
+            <strong>
+              📊 Résultats
+            </strong>
+
             Notes et résultats
+
           </button>
+
 
           <button
             id="quickUsers"
             class="quick"
             onclick="quickPage('utilisateurs')">
-            <strong>👥 Utilisateurs</strong>
+
+            <strong>
+              👥 Utilisateurs
+            </strong>
+
             Accepter les comptes
+
           </button>
 
-          <button class="quick" onclick="quickPage('sauvegarde')">
-            <strong>💾 Sauvegarde</strong>
+
+          <button
+            class="quick"
+            onclick="quickPage('sauvegarde')">
+
+            <strong>
+              💾 Sauvegarde
+            </strong>
+
             Exporter les données
+
           </button>
 
         </div>
@@ -863,7 +1221,9 @@ th{
 
       <div class="panel">
 
-        <h3>État du système</h3>
+        <h3>
+          État du système
+        </h3>
 
         <p>
           <strong>Utilisateur :</strong>
@@ -890,35 +1250,88 @@ th{
     </section>
 
 
-    <!-- PAGES DYNAMIQUES -->
-    <section id="page-etudiants" class="page hidden"></section>
-    <section id="page-professeurs" class="page hidden"></section>
-    <section id="page-classes" class="page hidden"></section>
-    <section id="page-departements" class="page hidden"></section>
-    <section id="page-filieres" class="page hidden"></section>
-    <section id="page-matieres" class="page hidden"></section>
-    <section id="page-cours" class="page hidden"></section>
-    <section id="page-devoirs" class="page hidden"></section>
-    <section id="page-remises" class="page hidden"></section>
-    <section id="page-corrections" class="page hidden"></section>
-    <section id="page-resultats" class="page hidden"></section>
-    <section id="page-statistiques" class="page hidden"></section>
-    <section id="page-utilisateurs" class="page hidden"></section>
-    <section id="page-sauvegarde" class="page hidden"></section>
+    <!-- PAGES -->
+
+    <section
+      id="page-etudiants"
+      class="page hidden"></section>
+
+    <section
+      id="page-professeurs"
+      class="page hidden"></section>
+
+    <section
+      id="page-classes"
+      class="page hidden"></section>
+
+    <section
+      id="page-departements"
+      class="page hidden"></section>
+
+    <section
+      id="page-filieres"
+      class="page hidden"></section>
+
+    <section
+      id="page-matieres"
+      class="page hidden"></section>
+
+    <section
+      id="page-cours"
+      class="page hidden"></section>
+
+    <section
+      id="page-devoirs"
+      class="page hidden"></section>
+
+    <section
+      id="page-remises"
+      class="page hidden"></section>
+
+    <section
+      id="page-corrections"
+      class="page hidden"></section>
+
+    <section
+      id="page-resultats"
+      class="page hidden"></section>
+
+    <section
+      id="page-statistiques"
+      class="page hidden"></section>
+
+    <section
+      id="page-utilisateurs"
+      class="page hidden"></section>
+
+    <section
+      id="page-sauvegarde"
+      class="page hidden"></section>
 
   </main>
 
 </section>
 
 
-<!-- MENU UTILISATEUR -->
-<div id="userMenu" class="modal hidden">
+<!-- ================= MENU UTILISATEUR ================= -->
+
+<div
+  id="userMenu"
+  class="modal hidden">
 
   <div class="modal-box">
 
-    <button class="modal-close" onclick="closeUserMenu()">×</button>
+    <button
+      class="modal-close"
+      onclick="closeUserMenu()">
 
-    <h3>Mon compte</h3>
+      ×
+
+    </button>
+
+    <h3>
+      Mon compte
+    </h3>
 
     <p>
       <strong>Nom :</strong>
@@ -941,9 +1354,15 @@ th{
     </p>
 
     <div style="margin-top:20px">
-      <button class="btn btn-red full" onclick="logout()">
+
+      <button
+        class="btn btn-red full"
+        onclick="logout()">
+
         🚪 Déconnexion
+
       </button>
+
     </div>
 
   </div>
@@ -951,22 +1370,29 @@ th{
 </div>
 
 
-<!-- INSTALLATION -->
-<div id="installModal" class="modal hidden">
+<!-- ================= INSTALLATION ================= -->
+
+<div
+  id="installModal"
+  class="modal hidden">
 
   <div class="modal-box">
 
     <button
       class="modal-close"
       onclick="closeInstallModal()">
+
       ×
+
     </button>
 
-    <h3>📲 Installer l'application</h3>
+    <h3>
+      📲 Installer l'application
+    </h3>
 
     <p>
-      L'installation automatique n'est pas toujours disponible
-      dans Chrome Android.
+      L'installation automatique n'est pas toujours
+      disponible dans Chrome Android.
     </p>
 
     <p>
@@ -983,7 +1409,9 @@ th{
     <button
       class="btn btn-green full"
       onclick="closeInstallModal()">
+
       Compris
+
     </button>
 
   </div>
@@ -991,10 +1419,13 @@ th{
 </div>
 
 
-<div id="toast" class="hidden"></div>
+<div
+  id="toast"
+  class="hidden"></div>
 
 
-<!-- FIREBASE -->
+<!-- ================= FIREBASE ================= -->
+
 <script type="module">
 
 import {
@@ -1023,8 +1454,6 @@ import {
   addDoc,
   updateDoc,
   deleteDoc,
-  query,
-  where,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
@@ -1048,7 +1477,12 @@ const auth = getAuth(app);
 
 const db = getFirestore(app);
 
-setPersistence(auth,browserLocalPersistence);
+setPersistence(
+  auth,
+  browserLocalPersistence
+).catch(error => {
+  console.error("Persistence:",error);
+});
 
 
 /* =====================================================
@@ -1059,7 +1493,9 @@ const ADMIN_EMAIL =
   "centredeformationlepedagogue@gmail.com";
 
 let currentUser = null;
+
 let currentUserData = null;
+
 let deferredPrompt = null;
 
 
@@ -1079,10 +1515,14 @@ window.addEventListener(
       document.getElementById("installBtn");
 
     if(btn){
+
       btn.style.display = "block";
+
       btn.textContent =
         "📲 Installer l'application";
+
     }
+
   }
 );
 
@@ -1097,24 +1537,36 @@ window.addEventListener(
       document.getElementById("installBtn");
 
     if(btn){
-      btn.textContent = "✅ Application installée";
+
+      btn.textContent =
+        "✅ Application installée";
+
     }
 
-    showToast("Application installée avec succès.");
+    showToast(
+      "Application installée avec succès."
+    );
+
   }
 );
 
 
-window.installApplication = async function(){
+window.installApplication =
+async function(){
 
   if(
     window.matchMedia(
       "(display-mode: standalone)"
     ).matches
   ){
-    showToast("L'application est déjà installée.");
+
+    showToast(
+      "L'application est déjà installée."
+    );
+
     return;
   }
+
 
   if(deferredPrompt){
 
@@ -1123,8 +1575,14 @@ window.installApplication = async function(){
     const result =
       await deferredPrompt.userChoice;
 
-    if(result.outcome === "accepted"){
-      showToast("Installation acceptée.");
+    if(
+      result.outcome === "accepted"
+    ){
+
+      showToast(
+        "Installation acceptée."
+      );
+
     }
 
     deferredPrompt = null;
@@ -1132,22 +1590,27 @@ window.installApplication = async function(){
     return;
   }
 
+
   document
     .getElementById("installModal")
     .classList.remove("hidden");
+
 };
 
 
-window.closeInstallModal = function(){
+window.closeInstallModal =
+function(){
 
   document
     .getElementById("installModal")
     .classList.add("hidden");
+
 };
 
 
 /* =====================================================
    SERVICE WORKER
+   IMPORTANT : LE FICHIER S'APPELLE sw.js
    ===================================================== */
 
 if("serviceWorker" in navigator){
@@ -1157,16 +1620,26 @@ if("serviceWorker" in navigator){
     () => {
 
       navigator.serviceWorker
-        .register("./service-worker.js")
+        .register("./sw.js")
+        .then(() => {
+
+          console.log(
+            "Service Worker enregistré."
+          );
+
+        })
         .catch(error => {
+
           console.error(
             "Service Worker:",
             error
           );
+
         });
 
     }
   );
+
 }
 
 
@@ -1174,7 +1647,8 @@ if("serviceWorker" in navigator){
    AUTHENTIFICATION
    ===================================================== */
 
-window.showRegister = function(){
+window.showRegister =
+function(){
 
   document
     .getElementById("loginBox")
@@ -1183,10 +1657,12 @@ window.showRegister = function(){
   document
     .getElementById("registerBox")
     .classList.remove("hidden");
+
 };
 
 
-window.showLogin = function(){
+window.showLogin =
+function(){
 
   document
     .getElementById("registerBox")
@@ -1195,27 +1671,40 @@ window.showLogin = function(){
   document
     .getElementById("loginBox")
     .classList.remove("hidden");
+
 };
 
 
-window.registerAccount = async function(){
+/* =====================================================
+   INSCRIPTION EMAIL
+   ===================================================== */
+
+window.registerAccount =
+async function(){
 
   const name =
     document
       .getElementById("registerName")
-      .value.trim();
+      .value
+      .trim();
 
   const email =
     document
       .getElementById("registerEmail")
-      .value.trim();
+      .value
+      .trim();
 
   const password =
     document
       .getElementById("registerPassword")
       .value;
 
-  if(!name || !email || !password){
+
+  if(
+    !name ||
+    !email ||
+    !password
+  ){
 
     showToast(
       "Veuillez remplir tous les champs."
@@ -1223,6 +1712,7 @@ window.registerAccount = async function(){
 
     return;
   }
+
 
   if(password.length < 6){
 
@@ -1233,6 +1723,7 @@ window.registerAccount = async function(){
     return;
   }
 
+
   try{
 
     const credential =
@@ -1242,23 +1733,50 @@ window.registerAccount = async function(){
         password
       );
 
+
+    const isAdmin =
+      email.toLowerCase() ===
+      ADMIN_EMAIL.toLowerCase();
+
+
     await setDoc(
-      doc(db,"users",credential.user.uid),
+      doc(
+        db,
+        "users",
+        credential.user.uid
+      ),
       {
         uid:credential.user.uid,
         name:name,
         email:email,
-        role:"eleve",
-        status:"attente",
+        role:isAdmin
+          ? "administrateur"
+          : "eleve",
+        status:isAdmin
+          ? "accepted"
+          : "attente",
         createdAt:serverTimestamp()
       }
     );
 
-    showToast(
-      "Compte créé. Attendez l'acceptation de l'administrateur."
-    );
 
     await signOut(auth);
+
+
+    if(isAdmin){
+
+      showToast(
+        "Compte administrateur créé."
+      );
+
+    }else{
+
+      showToast(
+        "Compte créé. Attendez l'acceptation de l'administrateur."
+      );
+
+    }
+
 
     showLogin();
 
@@ -1269,23 +1787,35 @@ window.registerAccount = async function(){
     showToast(
       getFriendlyError(error)
     );
+
   }
+
 };
 
 
-window.loginEmailPassword = async function(){
+/* =====================================================
+   CONNEXION EMAIL
+   ===================================================== */
+
+window.loginEmailPassword =
+async function(){
 
   const email =
     document
       .getElementById("loginEmail")
-      .value.trim();
+      .value
+      .trim();
 
   const password =
     document
       .getElementById("loginPassword")
       .value;
 
-  if(!email || !password){
+
+  if(
+    !email ||
+    !password
+  ){
 
     showToast(
       "Entrez votre e-mail et votre mot de passe."
@@ -1293,6 +1823,7 @@ window.loginEmailPassword = async function(){
 
     return;
   }
+
 
   try{
 
@@ -1309,16 +1840,51 @@ window.loginEmailPassword = async function(){
     showToast(
       getFriendlyError(error)
     );
+
   }
+
 };
 
 
-window.loginGoogle = async function(){
+/* =====================================================
+   CONNEXION GOOGLE
+   ===================================================== */
+
+window.loginGoogle =
+async function(){
+
+  const button =
+    document.getElementById(
+      "googleLoginBtn"
+    );
+
 
   try{
 
+    if(button){
+
+      button.disabled = true;
+
+      button.textContent =
+        "⏳ Ouverture de Google...";
+
+    }
+
+
     const provider =
       new GoogleAuthProvider();
+
+
+    /*
+      IMPORTANT :
+      Demande à Google d'afficher
+      l'écran "Choisir un compte".
+    */
+
+    provider.setCustomParameters({
+      prompt:"select_account"
+    });
+
 
     const result =
       await signInWithPopup(
@@ -1326,48 +1892,116 @@ window.loginGoogle = async function(){
         provider
       );
 
+
     const user =
       result.user;
 
+
     const userRef =
-      doc(db,"users",user.uid);
+      doc(
+        db,
+        "users",
+        user.uid
+      );
+
 
     const snap =
       await getDoc(userRef);
 
+
+    /*
+      PREMIÈRE CONNEXION GOOGLE
+    */
+
     if(!snap.exists()){
+
+      const isAdmin =
+        user.email?.toLowerCase() ===
+        ADMIN_EMAIL.toLowerCase();
+
 
       await setDoc(
         userRef,
         {
           uid:user.uid,
-          name:user.displayName || "Utilisateur",
-          email:user.email,
-          role:"eleve",
-          status:"attente",
+          name:
+            user.displayName ||
+            "Utilisateur",
+          email:user.email || "",
+          role:isAdmin
+            ? "administrateur"
+            : "eleve",
+          status:isAdmin
+            ? "accepted"
+            : "attente",
           createdAt:serverTimestamp()
         }
       );
 
+
       await signOut(auth);
 
-      showToast(
-        "Compte Google créé. Attendez l'acceptation de l'administrateur."
-      );
+
+      if(isAdmin){
+
+        showToast(
+          "Compte administrateur Google créé. Connectez-vous encore avec Google."
+        );
+
+      }else{
+
+        showToast(
+          "Compte Google créé. Attendez l'acceptation de l'administrateur."
+        );
+
+      }
+
+
+      return;
     }
+
+
+    /*
+      SI LE PROFIL EXISTE DÉJÀ,
+      onAuthStateChanged() vérifie
+      automatiquement le rôle et le statut.
+    */
 
   }catch(error){
 
-    console.error(error);
+    console.error(
+      "Erreur Google:",
+      error
+    );
+
 
     showToast(
       getFriendlyError(error)
     );
+
+
+  }finally{
+
+    if(button){
+
+      button.disabled = false;
+
+      button.innerHTML =
+        "🔵 Continuer avec Google";
+
+    }
+
   }
+
 };
 
 
-window.logout = async function(){
+/* =====================================================
+   DECONNEXION
+   ===================================================== */
+
+window.logout =
+async function(){
 
   try{
 
@@ -1377,11 +2011,14 @@ window.logout = async function(){
       .getElementById("userMenu")
       .classList.add("hidden");
 
+    showLogin();
+
   }catch(error){
 
     console.error(error);
 
   }
+
 };
 
 
@@ -1396,28 +2033,44 @@ onAuthStateChanged(
     if(!user){
 
       currentUser = null;
+
       currentUserData = null;
+
 
       document
         .getElementById("authPage")
         .classList.remove("hidden");
 
+
       document
         .getElementById("appPage")
         .classList.add("hidden");
 
+
       return;
     }
+
 
     try{
 
       const ref =
-        doc(db,"users",user.uid);
+        doc(
+          db,
+          "users",
+          user.uid
+        );
+
 
       const snap =
         await getDoc(ref);
 
+
       let data;
+
+
+      /*
+        SI LE PROFIL N'EXISTE PAS
+      */
 
       if(!snap.exists()){
 
@@ -1425,10 +2078,13 @@ onAuthStateChanged(
           user.email?.toLowerCase() ===
           ADMIN_EMAIL.toLowerCase();
 
+
         data = {
           uid:user.uid,
-          name:user.displayName || "Administrateur",
-          email:user.email,
+          name:
+            user.displayName ||
+            "Utilisateur",
+          email:user.email || "",
           role:isAdmin
             ? "administrateur"
             : "eleve",
@@ -1438,23 +2094,40 @@ onAuthStateChanged(
           createdAt:serverTimestamp()
         };
 
-        await setDoc(ref,data);
+
+        await setDoc(
+          ref,
+          data
+        );
 
       }else{
 
-        data = snap.data();
+        data =
+          snap.data();
 
       }
+
+
+      /*
+        VERIFICATION ADMIN
+      */
 
       const isAdmin =
         user.email?.toLowerCase() ===
           ADMIN_EMAIL.toLowerCase()
         ||
         (
-          data.role === "administrateur"
+          data.role ===
+            "administrateur"
           &&
-          data.status === "accepted"
+          data.status ===
+            "accepted"
         );
+
+
+      /*
+        COMPTE NON ACCEPTE
+      */
 
       if(
         !isAdmin &&
@@ -1463,19 +2136,24 @@ onAuthStateChanged(
 
         await signOut(auth);
 
+
         showToast(
           "Votre compte est en attente d'acceptation par l'administrateur."
         );
 
+
         return;
       }
 
+
       currentUser = user;
+
 
       currentUserData = {
         ...data,
         isAdmin:isAdmin
       };
+
 
       openApplication();
 
@@ -1483,18 +2161,22 @@ onAuthStateChanged(
 
       console.error(error);
 
+
       await signOut(auth);
+
 
       showToast(
         "Impossible de charger votre profil. Vérifiez les règles Firebase."
       );
+
     }
+
   }
 );
 
 
 /* =====================================================
-   OPEN APP
+   OPEN APPLICATION
    ===================================================== */
 
 function openApplication(){
@@ -1503,9 +2185,11 @@ function openApplication(){
     .getElementById("authPage")
     .classList.add("hidden");
 
+
   document
     .getElementById("appPage")
     .classList.remove("hidden");
+
 
   const name =
     currentUserData.name ||
@@ -1513,24 +2197,33 @@ function openApplication(){
     currentUser?.email ||
     "Utilisateur";
 
+
   document
     .getElementById("headerUserName")
-    .textContent = name;
+    .textContent =
+      name;
+
 
   document
     .getElementById("systemUser")
     .textContent =
-      currentUser?.email || "-";
+      currentUser?.email ||
+      "-";
+
 
   document
     .getElementById("systemRole")
     .textContent =
-      currentUserData.role || "-";
+      currentUserData.role ||
+      "-";
+
 
   document
     .getElementById("systemStatus")
     .textContent =
-      currentUserData.status || "-";
+      currentUserData.status ||
+      "-";
+
 
   document
     .getElementById("systemAdmin")
@@ -1539,46 +2232,71 @@ function openApplication(){
         ? "Oui"
         : "Non";
 
+
   document
     .getElementById("menuName")
     .textContent =
       name;
 
+
   document
     .getElementById("menuEmail")
     .textContent =
-      currentUser?.email || "-";
+      currentUser?.email ||
+      "-";
+
 
   document
     .getElementById("menuRole")
     .textContent =
-      currentUserData.role || "-";
+      currentUserData.role ||
+      "-";
+
 
   document
     .getElementById("menuStatus")
     .textContent =
-      currentUserData.status || "-";
+      currentUserData.status ||
+      "-";
+
 
   const usersMenu =
-    document.getElementById("usersMenu");
+    document.getElementById(
+      "usersMenu"
+    );
+
 
   const quickUsers =
-    document.getElementById("quickUsers");
+    document.getElementById(
+      "quickUsers"
+    );
+
 
   if(currentUserData.isAdmin){
 
-    usersMenu.classList.remove("hidden");
+    usersMenu.classList.remove(
+      "hidden"
+    );
 
-    quickUsers.classList.remove("hidden");
+    quickUsers.classList.remove(
+      "hidden"
+    );
 
   }else{
 
-    usersMenu.classList.add("hidden");
+    usersMenu.classList.add(
+      "hidden"
+    );
 
-    quickUsers.classList.add("hidden");
+    quickUsers.classList.add(
+      "hidden"
+    );
+
   }
 
+
   loadDashboard();
+
 }
 
 
@@ -1586,73 +2304,110 @@ function openApplication(){
    NAVIGATION
    ===================================================== */
 
-window.toggleSidebar = function(){
+window.toggleSidebar =
+function(){
 
   document
     .getElementById("sidebar")
     .classList.toggle("open");
+
 };
 
 
-window.showPage = async function(
+window.showPage =
+async function(
   page,
   button
 ){
 
   document
     .querySelectorAll(".page")
-    .forEach(p =>
-      p.classList.add("hidden")
+    .forEach(
+      p =>
+        p.classList.add("hidden")
     );
+
 
   const target =
     document.getElementById(
       "page-" + page
     );
 
-  if(!target)return;
 
-  target.classList.remove("hidden");
+  if(!target)
+    return;
+
+
+  target.classList.remove(
+    "hidden"
+  );
+
 
   document
     .querySelectorAll(".menu-btn")
-    .forEach(btn =>
-      btn.classList.remove("active")
+    .forEach(
+      btn =>
+        btn.classList.remove(
+          "active"
+        )
     );
 
+
   if(button){
-    button.classList.add("active");
+
+    button.classList.add(
+      "active"
+    );
+
   }
+
 
   document
     .getElementById("sidebar")
     .classList.remove("open");
 
-  if(page === "dashboard")
+
+  if(page === "dashboard"){
+
     loadDashboard();
 
-  else
+  }else{
+
     loadModule(page);
+
+  }
+
 };
 
 
-window.quickPage = function(page){
+window.quickPage =
+function(page){
 
   const button =
-    [...document.querySelectorAll(".menu-btn")]
-      .find(
-        b =>
-          b.getAttribute("onclick") &&
-          b.getAttribute("onclick")
-            .includes("'" + page + "'")
-      );
+    [
+      ...document.querySelectorAll(
+        ".menu-btn"
+      )
+    ].find(
+      b =>
+        b.getAttribute("onclick") &&
+        b.getAttribute("onclick")
+          .includes(
+            "'" + page + "'"
+          )
+    );
 
-  showPage(page,button);
+
+  showPage(
+    page,
+    button
+  );
+
 };
 
 
 /* =====================================================
-   MODULE GENERATOR
+   MODULES
    ===================================================== */
 
 const moduleInfo = {
@@ -1805,41 +2560,68 @@ async function loadModule(page){
     return;
   }
 
+
   if(page === "statistiques"){
+
     renderStatistics();
+
     return;
+
   }
+
 
   if(page === "sauvegarde"){
+
     renderBackup();
+
     return;
+
   }
 
+
   if(page === "utilisateurs"){
+
     await renderUsers();
+
     return;
+
   }
+
 
   const info =
     moduleInfo[page];
 
-  if(!info)return;
+
+  if(!info)
+    return;
+
 
   const container =
     document.getElementById(
       "page-" + page
     );
 
+
   container.innerHTML = `
 
     <div class="page-title">
-      <h2>${info.icon} ${info.title}</h2>
-      <p>Gestion des données du Centre de Formation Le Pédagogue.</p>
+
+      <h2>
+        ${info.icon} ${info.title}
+      </h2>
+
+      <p>
+        Gestion des données du Centre de Formation Le Pédagogue.
+      </p>
+
     </div>
+
 
     <div class="panel">
 
-      <h3>Ajouter</h3>
+      <h3>
+        Ajouter
+      </h3>
 
       <div class="form-grid">
 
@@ -1848,7 +2630,9 @@ async function loadModule(page){
 
             <div class="form-group">
 
-              <label>${f[1]}</label>
+              <label>
+                ${f[1]}
+              </label>
 
               <input
                 id="field-${page}-${f[0]}"
@@ -1863,12 +2647,15 @@ async function loadModule(page){
 
       </div>
 
+
       <div class="form-actions">
 
         <button
           class="btn btn-green"
           onclick="addRecord('${page}')">
+
           ➕ Ajouter
+
         </button>
 
       </div>
@@ -1878,7 +2665,9 @@ async function loadModule(page){
 
     <div class="panel">
 
-      <h3>Liste</h3>
+      <h3>
+        Liste
+      </h3>
 
       <div class="table-wrap">
 
@@ -1889,21 +2678,32 @@ async function loadModule(page){
             <tr>
 
               ${info.fields.map(
-                f => `<th>${f[1]}</th>`
+                f =>
+                  `<th>${f[1]}</th>`
               ).join("")}
 
-              <th>Actions</th>
+              <th>
+                Actions
+              </th>
 
             </tr>
 
           </thead>
 
-          <tbody id="table-${page}">
+          <tbody
+            id="table-${page}">
+
             <tr>
-              <td colspan="${info.fields.length + 1}">
+
+              <td
+                colspan="${info.fields.length + 1}">
+
                 Chargement...
+
               </td>
+
             </tr>
+
           </tbody>
 
         </table>
@@ -1911,9 +2711,12 @@ async function loadModule(page){
       </div>
 
     </div>
+
   `;
 
+
   await refreshTable(page);
+
 }
 
 
@@ -1921,18 +2724,23 @@ async function loadModule(page){
    ADD RECORD
    ===================================================== */
 
-window.addRecord = async function(page){
+window.addRecord =
+async function(page){
 
   const info =
     moduleInfo[page];
 
-  if(!info)return;
+
+  if(!info)
+    return;
+
 
   if(!currentUserData?.isAdmin){
 
     if(
       page === "devoirs" &&
-      currentUserData?.role !== "professeur"
+      currentUserData?.role !==
+        "professeur"
     ){
 
       showToast(
@@ -1940,7 +2748,9 @@ window.addRecord = async function(page){
       );
 
       return;
+
     }
+
 
     if(
       page !== "devoirs" &&
@@ -1952,12 +2762,16 @@ window.addRecord = async function(page){
       );
 
       return;
+
     }
+
   }
+
 
   const data = {};
 
   let valid = true;
+
 
   info.fields.forEach(
     f => {
@@ -1967,16 +2781,24 @@ window.addRecord = async function(page){
           `field-${page}-${f[0]}`
         );
 
+
       const value =
         input?.value.trim() || "";
 
+
       if(!value){
+
         valid = false;
+
       }
 
-      data[f[0]] = value;
+
+      data[f[0]] =
+        value;
+
     }
   );
+
 
   if(!valid){
 
@@ -1985,34 +2807,49 @@ window.addRecord = async function(page){
     );
 
     return;
+
   }
+
 
   data.createdAt =
     serverTimestamp();
 
+
   data.createdBy =
     currentUser.uid;
 
+
   if(page === "devoirs"){
+
     data.professeurId =
       currentUser.uid;
+
   }
 
+
   if(page === "remises"){
+
     data.etudiantId =
       currentUser.uid;
+
   }
+
 
   try{
 
     await addDoc(
-      collection(db,info.collection),
+      collection(
+        db,
+        info.collection
+      ),
       data
     );
+
 
     showToast(
       "Donnée ajoutée avec succès."
     );
+
 
     info.fields.forEach(
       f => {
@@ -2022,15 +2859,18 @@ window.addRecord = async function(page){
             `field-${page}-${f[0]}`
           );
 
+
         if(input)
           input.value = "";
 
       }
     );
 
+
     await refreshTable(page);
 
     loadDashboard();
+
 
   }catch(error){
 
@@ -2039,12 +2879,14 @@ window.addRecord = async function(page){
     showToast(
       "Impossible d'ajouter cette donnée."
     );
+
   }
+
 };
 
 
 /* =====================================================
-   REFRESH TABLE
+   TABLE
    ===================================================== */
 
 async function refreshTable(page){
@@ -2052,14 +2894,20 @@ async function refreshTable(page){
   const info =
     moduleInfo[page];
 
-  if(!info)return;
+
+  if(!info)
+    return;
+
 
   const tbody =
     document.getElementById(
       "table-" + page
     );
 
-  if(!tbody)return;
+
+  if(!tbody)
+    return;
+
 
   try{
 
@@ -2071,20 +2919,31 @@ async function refreshTable(page){
         )
       );
 
+
     if(snap.empty){
 
       tbody.innerHTML = `
+
         <tr>
-          <td colspan="${info.fields.length + 1}">
+
+          <td
+            colspan="${info.fields.length + 1}">
+
             Aucune donnée.
+
           </td>
+
         </tr>
+
       `;
 
       return;
+
     }
 
+
     tbody.innerHTML = "";
+
 
     snap.forEach(
       item => {
@@ -2092,34 +2951,51 @@ async function refreshTable(page){
         const data =
           item.data();
 
+
         const tr =
-          document.createElement("tr");
+          document.createElement(
+            "tr"
+          );
+
 
         info.fields.forEach(
           f => {
 
             const td =
-              document.createElement("td");
+              document.createElement(
+                "td"
+              );
+
 
             td.textContent =
               data[f[0]] ?? "";
+
 
             tr.appendChild(td);
 
           }
         );
 
+
         const td =
-          document.createElement("td");
+          document.createElement(
+            "td"
+          );
+
 
         const edit =
-          document.createElement("button");
+          document.createElement(
+            "button"
+          );
+
 
         edit.className =
           "btn";
 
+
         edit.textContent =
           "Modifier";
+
 
         edit.onclick =
           () =>
@@ -2129,21 +3005,31 @@ async function refreshTable(page){
               data
             );
 
+
         td.appendChild(edit);
 
-        if(currentUserData?.isAdmin){
+
+        if(
+          currentUserData?.isAdmin
+        ){
 
           const del =
-            document.createElement("button");
+            document.createElement(
+              "button"
+            );
+
 
           del.className =
             "btn btn-red";
 
+
           del.style.marginLeft =
             "5px";
 
+
           del.textContent =
             "Supprimer";
+
 
           del.onclick =
             () =>
@@ -2152,27 +3038,42 @@ async function refreshTable(page){
                 item.id
               );
 
+
           td.appendChild(del);
+
         }
+
 
         tr.appendChild(td);
 
         tbody.appendChild(tr);
+
       }
     );
+
 
   }catch(error){
 
     console.error(error);
 
+
     tbody.innerHTML = `
+
       <tr>
-        <td colspan="${info.fields.length + 1}">
+
+        <td
+          colspan="${info.fields.length + 1}">
+
           Impossible de charger les données.
+
         </td>
+
       </tr>
+
     `;
+
   }
+
 }
 
 
@@ -2194,17 +3095,24 @@ async function(
     );
 
     return;
+
   }
+
 
   const info =
     moduleInfo[page];
 
+
   const updates = {};
 
-  for(const f of info.fields){
+
+  for(
+    const f of info.fields
+  ){
 
     const oldValue =
       data[f[0]] ?? "";
+
 
     const newValue =
       prompt(
@@ -2212,12 +3120,16 @@ async function(
         oldValue
       );
 
+
     if(newValue === null)
       return;
 
+
     updates[f[0]] =
       newValue.trim();
+
   }
+
 
   try{
 
@@ -2230,20 +3142,26 @@ async function(
       updates
     );
 
+
     showToast(
       "Donnée modifiée."
     );
 
+
     await refreshTable(page);
+
 
   }catch(error){
 
     console.error(error);
 
+
     showToast(
       "Modification impossible."
     );
+
   }
+
 };
 
 
@@ -2264,17 +3182,24 @@ async function(
     );
 
     return;
+
   }
+
 
   if(
     !confirm(
       "Voulez-vous vraiment supprimer cette donnée ?"
     )
-  )
+  ){
+
     return;
+
+  }
+
 
   const info =
     moduleInfo[page];
+
 
   try{
 
@@ -2286,22 +3211,28 @@ async function(
       )
     );
 
+
     showToast(
       "Donnée supprimée."
     );
+
 
     await refreshTable(page);
 
     loadDashboard();
 
+
   }catch(error){
 
     console.error(error);
 
+
     showToast(
       "Suppression impossible."
     );
+
   }
+
 };
 
 
@@ -2316,11 +3247,14 @@ async function renderUsers(){
       "page-utilisateurs"
     );
 
+
   container.innerHTML = `
 
     <div class="page-title">
 
-      <h2>👥 Gestion des utilisateurs</h2>
+      <h2>
+        👥 Gestion des utilisateurs
+      </h2>
 
       <p>
         L'administrateur contrôle les comptes,
@@ -2329,9 +3263,12 @@ async function renderUsers(){
 
     </div>
 
+
     <div class="panel">
 
-      <h3>Utilisateurs enregistrés</h3>
+      <h3>
+        Utilisateurs enregistrés
+      </h3>
 
       <div class="table-wrap">
 
@@ -2340,22 +3277,47 @@ async function renderUsers(){
           <thead>
 
             <tr>
-              <th>Nom</th>
-              <th>E-mail</th>
-              <th>Rôle</th>
-              <th>Statut</th>
-              <th>UID</th>
-              <th>Actions</th>
+
+              <th>
+                Nom
+              </th>
+
+              <th>
+                E-mail
+              </th>
+
+              <th>
+                Rôle
+              </th>
+
+              <th>
+                Statut
+              </th>
+
+              <th>
+                UID
+              </th>
+
+              <th>
+                Actions
+              </th>
+
             </tr>
 
           </thead>
 
-          <tbody id="usersTable">
+
+          <tbody
+            id="usersTable">
+
             <tr>
+
               <td colspan="6">
                 Chargement...
               </td>
+
             </tr>
+
           </tbody>
 
         </table>
@@ -2363,21 +3325,29 @@ async function renderUsers(){
       </div>
 
     </div>
+
   `;
+
 
   try{
 
     const snap =
       await getDocs(
-        collection(db,"users")
+        collection(
+          db,
+          "users"
+        )
       );
+
 
     const tbody =
       document.getElementById(
         "usersTable"
       );
 
+
     tbody.innerHTML = "";
+
 
     snap.forEach(
       item => {
@@ -2385,41 +3355,84 @@ async function renderUsers(){
         const data =
           item.data();
 
+
         const tr =
-          document.createElement("tr");
+          document.createElement(
+            "tr"
+          );
+
 
         tr.innerHTML = `
-          <td>${escapeHtml(data.name || "")}</td>
-          <td>${escapeHtml(data.email || "")}</td>
-          <td>${escapeHtml(data.role || "")}</td>
+
           <td>
-            <span class="badge ${
-              data.status === "accepted"
-                ? "badge-green"
-                : "badge-orange"
-            }">
-              ${escapeHtml(data.status || "")}
-            </span>
+            ${escapeHtml(
+              data.name || ""
+            )}
           </td>
-          <td>${escapeHtml(data.uid || item.id)}</td>
+
+          <td>
+            ${escapeHtml(
+              data.email || ""
+            )}
+          </td>
+
+          <td>
+            ${escapeHtml(
+              data.role || ""
+            )}
+          </td>
+
+          <td>
+
+            <span
+              class="badge ${
+                data.status ===
+                  "accepted"
+                  ? "badge-green"
+                  : "badge-orange"
+              }">
+
+              ${escapeHtml(
+                data.status || ""
+              )}
+
+            </span>
+
+          </td>
+
+          <td>
+            ${escapeHtml(
+              data.uid || item.id
+            )}
+          </td>
+
           <td></td>
+
         `;
+
 
         const actions =
           tr.lastElementChild;
 
+
         if(
-          data.status !== "accepted"
+          data.status !==
+            "accepted"
         ){
 
           const accept =
-            document.createElement("button");
+            document.createElement(
+              "button"
+            );
+
 
           accept.className =
             "btn btn-green";
 
+
           accept.textContent =
             "Accepter";
+
 
           accept.onclick =
             () =>
@@ -2428,20 +3441,31 @@ async function renderUsers(){
                 "accepted"
               );
 
-          actions.appendChild(accept);
+
+          actions.appendChild(
+            accept
+          );
+
         }
 
+
         const role =
-          document.createElement("button");
+          document.createElement(
+            "button"
+          );
+
 
         role.className =
           "btn";
 
+
         role.style.marginLeft =
           "5px";
 
+
         role.textContent =
           "Rôle";
+
 
         role.onclick =
           () =>
@@ -2450,23 +3474,32 @@ async function renderUsers(){
               data.role || "eleve"
             );
 
+
         actions.appendChild(role);
 
+
         if(
-          item.id !== currentUser.uid
+          item.id !==
+            currentUser.uid
         ){
 
           const del =
-            document.createElement("button");
+            document.createElement(
+              "button"
+            );
+
 
           del.className =
             "btn btn-red";
 
+
           del.style.marginLeft =
             "5px";
 
+
           del.textContent =
             "Supprimer";
+
 
           del.onclick =
             () =>
@@ -2474,21 +3507,33 @@ async function renderUsers(){
                 item.id
               );
 
-          actions.appendChild(del);
+
+          actions.appendChild(
+            del
+          );
+
         }
 
-        tbody.appendChild(tr);
+
+        tbody.appendChild(
+          tr
+        );
+
       }
     );
+
 
   }catch(error){
 
     console.error(error);
 
+
     showToast(
       "Impossible de charger les utilisateurs."
     );
+
   }
+
 }
 
 
@@ -2500,26 +3545,38 @@ async function updateUserStatus(
   try{
 
     await updateDoc(
-      doc(db,"users",uid),
-      {status:status}
+      doc(
+        db,
+        "users",
+        uid
+      ),
+      {
+        status:status
+      }
     );
+
 
     showToast(
       "Utilisateur accepté."
     );
 
+
     await renderUsers();
 
     loadDashboard();
+
 
   }catch(error){
 
     console.error(error);
 
+
     showToast(
       "Impossible de modifier le statut."
     );
+
   }
+
 }
 
 
@@ -2534,8 +3591,10 @@ async function changeUserRole(
       oldRole
     );
 
+
   if(role === null)
     return;
+
 
   const allowed = [
     "administrateur",
@@ -2543,36 +3602,53 @@ async function changeUserRole(
     "eleve"
   ];
 
-  if(!allowed.includes(role)){
+
+  if(
+    !allowed.includes(role)
+  ){
 
     showToast(
       "Rôle invalide."
     );
 
     return;
+
   }
+
 
   try{
 
     await updateDoc(
-      doc(db,"users",uid),
-      {role:role}
+      doc(
+        db,
+        "users",
+        uid
+      ),
+      {
+        role:role
+      }
     );
+
 
     showToast(
       "Rôle modifié."
     );
 
+
     await renderUsers();
+
 
   }catch(error){
 
     console.error(error);
 
+
     showToast(
       "Impossible de modifier le rôle."
     );
+
   }
+
 }
 
 
@@ -2584,31 +3660,45 @@ async function deleteUserProfile(
     !confirm(
       "Supprimer le profil Firestore de cet utilisateur ?"
     )
-  )
+  ){
+
     return;
+
+  }
+
 
   try{
 
     await deleteDoc(
-      doc(db,"users",uid)
+      doc(
+        db,
+        "users",
+        uid
+      )
     );
+
 
     showToast(
       "Profil supprimé."
     );
 
+
     await renderUsers();
 
     loadDashboard();
+
 
   }catch(error){
 
     console.error(error);
 
+
     showToast(
       "Suppression impossible."
     );
+
   }
+
 }
 
 
@@ -2624,8 +3714,12 @@ async function countCollection(
 
     const snap =
       await getDocs(
-        collection(db,name)
+        collection(
+          db,
+          name
+        )
       );
+
 
     return snap.size;
 
@@ -2634,7 +3728,9 @@ async function countCollection(
     console.error(error);
 
     return 0;
+
   }
+
 }
 
 
@@ -2648,73 +3744,120 @@ async function loadDashboard(){
     devoirs
   ] =
     await Promise.all([
-      countCollection("etudiants"),
-      countCollection("professeurs"),
-      countCollection("classes"),
-      countCollection("matieres"),
-      countCollection("devoirs")
+
+      countCollection(
+        "etudiants"
+      ),
+
+      countCollection(
+        "professeurs"
+      ),
+
+      countCollection(
+        "classes"
+      ),
+
+      countCollection(
+        "matieres"
+      ),
+
+      countCollection(
+        "devoirs"
+      )
+
     ]);
 
+
   document
-    .getElementById("statEtudiants")
+    .getElementById(
+      "statEtudiants"
+    )
     .textContent =
       etudiants;
 
+
   document
-    .getElementById("statProfesseurs")
+    .getElementById(
+      "statProfesseurs"
+    )
     .textContent =
       professeurs;
 
+
   document
-    .getElementById("statClasses")
+    .getElementById(
+      "statClasses"
+    )
     .textContent =
       classes;
 
+
   document
-    .getElementById("statMatieres")
+    .getElementById(
+      "statMatieres"
+    )
     .textContent =
       matieres;
 
+
   document
-    .getElementById("statDevoirs")
+    .getElementById(
+      "statDevoirs"
+    )
     .textContent =
       devoirs;
 
-  if(currentUserData?.isAdmin){
+
+  if(
+    currentUserData?.isAdmin
+  ){
 
     try{
 
       const users =
         await getDocs(
-          collection(db,"users")
+          collection(
+            db,
+            "users"
+          )
         );
 
+
       let pending = 0;
+
 
       users.forEach(
         d => {
 
           if(
             d.data().status ===
-            "attente"
+              "attente"
           ){
+
             pending++;
+
           }
 
         }
       );
 
+
       document
-        .getElementById("statPending")
+        .getElementById(
+          "statPending"
+        )
         .textContent =
           pending;
+
 
     }catch(error){
 
       console.error(error);
 
     }
+
   }
+
 }
 
 
@@ -2729,11 +3872,14 @@ async function renderStatistics(){
       "page-statistiques"
     );
 
+
   container.innerHTML = `
 
     <div class="page-title">
 
-      <h2>📈 Statistiques</h2>
+      <h2>
+        📈 Statistiques
+      </h2>
 
       <p>
         Vue générale des données académiques.
@@ -2741,46 +3887,120 @@ async function renderStatistics(){
 
     </div>
 
+
     <div class="stats">
 
       <div class="stat">
-        <div class="stat-icon">🎓</div>
-        <div class="stat-title">Étudiants</div>
-        <div id="s1" class="stat-number">0</div>
+
+        <div class="stat-icon">
+          🎓
+        </div>
+
+        <div class="stat-title">
+          Étudiants
+        </div>
+
+        <div
+          id="s1"
+          class="stat-number">
+          0
+        </div>
+
       </div>
 
-      <div class="stat">
-        <div class="stat-icon">👨‍🏫</div>
-        <div class="stat-title">Professeurs</div>
-        <div id="s2" class="stat-number">0</div>
-      </div>
 
       <div class="stat">
-        <div class="stat-icon">🏫</div>
-        <div class="stat-title">Classes</div>
-        <div id="s3" class="stat-number">0</div>
+
+        <div class="stat-icon">
+          👨‍🏫
+        </div>
+
+        <div class="stat-title">
+          Professeurs
+        </div>
+
+        <div
+          id="s2"
+          class="stat-number">
+          0
+        </div>
+
       </div>
 
+
       <div class="stat">
-        <div class="stat-icon">📚</div>
-        <div class="stat-title">Matières</div>
-        <div id="s4" class="stat-number">0</div>
+
+        <div class="stat-icon">
+          🏫
+        </div>
+
+        <div class="stat-title">
+          Classes
+        </div>
+
+        <div
+          id="s3"
+          class="stat-number">
+          0
+        </div>
+
+      </div>
+
+
+      <div class="stat">
+
+        <div class="stat-icon">
+          📚
+        </div>
+
+        <div class="stat-title">
+          Matières
+        </div>
+
+        <div
+          id="s4"
+          class="stat-number">
+          0
+        </div>
+
       </div>
 
     </div>
+
   `;
 
-  document.getElementById("s1").textContent =
-    await countCollection("etudiants");
 
-  document.getElementById("s2").textContent =
-    await countCollection("professeurs");
+  document
+    .getElementById("s1")
+    .textContent =
+      await countCollection(
+        "etudiants"
+      );
 
-  document.getElementById("s3").textContent =
-    await countCollection("classes");
 
-  document.getElementById("s4").textContent =
-    await countCollection("matieres");
+  document
+    .getElementById("s2")
+    .textContent =
+      await countCollection(
+        "professeurs"
+      );
+
+
+  document
+    .getElementById("s3")
+    .textContent =
+      await countCollection(
+        "classes"
+      );
+
+
+  document
+    .getElementById("s4")
+    .textContent =
+      await countCollection(
+        "matieres"
+      );
+
 }
 
 
@@ -2795,11 +4015,14 @@ function renderBackup(){
       "page-sauvegarde"
     );
 
+
   container.innerHTML = `
 
     <div class="page-title">
 
-      <h2>💾 Données / Sauvegarde</h2>
+      <h2>
+        💾 Données / Sauvegarde
+      </h2>
 
       <p>
         Exportez les données de votre établissement.
@@ -2807,27 +4030,38 @@ function renderBackup(){
 
     </div>
 
+
     <div class="panel">
 
-      <h3>Exporter les données</h3>
+      <h3>
+        Exporter les données
+      </h3>
 
       <p style="margin-bottom:15px">
+
         L'export crée un fichier JSON contenant
         les collections accessibles.
+
       </p>
+
 
       <button
         class="btn btn-green"
         onclick="exportData()">
+
         💾 Télécharger la sauvegarde
+
       </button>
 
     </div>
+
   `;
+
 }
 
 
-window.exportData = async function(){
+window.exportData =
+async function(){
 
   if(!currentUserData?.isAdmin){
 
@@ -2836,9 +4070,12 @@ window.exportData = async function(){
     );
 
     return;
+
   }
 
+
   const collections = [
+
     "users",
     "etudiants",
     "professeurs",
@@ -2850,9 +4087,12 @@ window.exportData = async function(){
     "devoirs",
     "remises",
     "resultats"
+
   ];
 
+
   const backup = {};
+
 
   for(
     const name of collections
@@ -2862,8 +4102,12 @@ window.exportData = async function(){
 
       const snap =
         await getDocs(
-          collection(db,name)
+          collection(
+            db,
+            name
+          )
         );
+
 
       backup[name] =
         snap.docs.map(
@@ -2873,12 +4117,15 @@ window.exportData = async function(){
           })
         );
 
+
     }catch(error){
 
       backup[name] = [];
 
     }
+
   }
+
 
   const blob =
     new Blob(
@@ -2894,24 +4141,38 @@ window.exportData = async function(){
       }
     );
 
+
   const url =
-    URL.createObjectURL(blob);
+    URL.createObjectURL(
+      blob
+    );
+
 
   const a =
-    document.createElement("a");
+    document.createElement(
+      "a"
+    );
+
 
   a.href = url;
+
 
   a.download =
     "sauvegarde-centre-formation-le-pedagogue.json";
 
+
   a.click();
 
-  URL.revokeObjectURL(url);
+
+  URL.revokeObjectURL(
+    url
+  );
+
 
   showToast(
     "Sauvegarde téléchargée."
   );
+
 };
 
 
@@ -2919,45 +4180,61 @@ window.exportData = async function(){
    LANGUAGE
    ===================================================== */
 
-window.changeLanguage = function(){
+window.changeLanguage =
+function(){
 
   const value =
     document
-      .getElementById("languageSelect")
+      .getElementById(
+        "languageSelect"
+      )
       .value;
+
 
   localStorage.setItem(
     "language",
     value
   );
 
+
   if(value === "ht"){
 
     document
-      .getElementById("welcomeText")
+      .getElementById(
+        "welcomeText"
+      )
       .textContent =
         "Byenveni nan espas jesyon Centre de Formation Le Pédagogue.";
 
   }else{
 
     document
-      .getElementById("welcomeText")
+      .getElementById(
+        "welcomeText"
+      )
       .textContent =
         "Bienvenue dans votre espace de gestion.";
 
   }
+
 };
 
 
 const savedLanguage =
-  localStorage.getItem("language");
+  localStorage.getItem(
+    "language"
+  );
+
 
 if(savedLanguage){
 
   document
-    .getElementById("languageSelect")
+    .getElementById(
+      "languageSelect"
+    )
     .value =
       savedLanguage;
+
 }
 
 
@@ -2965,19 +4242,31 @@ if(savedLanguage){
    USER MENU
    ===================================================== */
 
-window.toggleUserMenu = function(){
+window.toggleUserMenu =
+function(){
 
   document
-    .getElementById("userMenu")
-    .classList.remove("hidden");
+    .getElementById(
+      "userMenu"
+    )
+    .classList.remove(
+      "hidden"
+    );
+
 };
 
 
-window.closeUserMenu = function(){
+window.closeUserMenu =
+function(){
 
   document
-    .getElementById("userMenu")
-    .classList.add("hidden");
+    .getElementById(
+      "userMenu"
+    )
+    .classList.add(
+      "hidden"
+    );
+
 };
 
 
@@ -2985,60 +4274,186 @@ window.closeUserMenu = function(){
    TOAST
    ===================================================== */
 
-function showToast(message){
+function showToast(
+  message
+){
 
   const toast =
-    document.getElementById("toast");
+    document.getElementById(
+      "toast"
+    );
+
 
   toast.textContent =
     message;
 
-  toast.classList.remove("hidden");
+
+  toast.classList.remove(
+    "hidden"
+  );
+
 
   setTimeout(
     () => {
-      toast.classList.add("hidden");
+
+      toast.classList.add(
+        "hidden"
+      );
+
     },
     3500
   );
+
 }
 
 
-function getFriendlyError(error){
+/* =====================================================
+   ERREURS FIREBASE
+   ===================================================== */
+
+function getFriendlyError(
+  error
+){
 
   const code =
-    error?.code || "";
+    error?.code ||
+    "";
 
-  if(code.includes("email-already-in-use"))
+
+  if(
+    code.includes(
+      "email-already-in-use"
+    )
+  ){
+
     return "Cette adresse e-mail est déjà utilisée.";
 
-  if(code.includes("invalid-credential"))
+  }
+
+
+  if(
+    code.includes(
+      "invalid-credential"
+    )
+  ){
+
     return "E-mail ou mot de passe incorrect.";
 
-  if(code.includes("invalid-email"))
+  }
+
+
+  if(
+    code.includes(
+      "invalid-email"
+    )
+  ){
+
     return "Adresse e-mail invalide.";
 
-  if(code.includes("weak-password"))
+  }
+
+
+  if(
+    code.includes(
+      "weak-password"
+    )
+  ){
+
     return "Le mot de passe est trop faible.";
 
-  if(code.includes("popup-closed-by-user"))
+  }
+
+
+  if(
+    code.includes(
+      "popup-closed-by-user"
+    )
+  ){
+
     return "La fenêtre Google a été fermée.";
 
-  if(code.includes("permission-denied"))
+  }
+
+
+  if(
+    code.includes(
+      "popup-blocked"
+    )
+  ){
+
+    return "Chrome a bloqué la fenêtre Google. Autorisez les fenêtres pop-up puis réessayez.";
+
+  }
+
+
+  if(
+    code.includes(
+      "operation-not-allowed"
+    )
+  ){
+
+    return "La connexion Google n'est pas activée dans Firebase Authentication.";
+
+  }
+
+
+  if(
+    code.includes(
+      "unauthorized-domain"
+    )
+  ){
+
+    return "Ce domaine n'est pas autorisé dans Firebase Authentication.";
+
+  }
+
+
+  if(
+    code.includes(
+      "permission-denied"
+    )
+  ){
+
     return "Accès refusé par les règles Firebase.";
 
+  }
+
+
   return "Une erreur est survenue. Vérifiez les informations saisies.";
+
 }
 
 
-function escapeHtml(value){
+/* =====================================================
+   ESCAPE HTML
+   ===================================================== */
+
+function escapeHtml(
+  value
+){
 
   return String(value)
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
+    .replaceAll(
+      "&",
+      "&amp;"
+    )
+    .replaceAll(
+      "<",
+      "&lt;"
+    )
+    .replaceAll(
+      ">",
+      "&gt;"
+    )
+    .replaceAll(
+      '"',
+      "&quot;"
+    )
+    .replaceAll(
+      "'",
+      "&#039;"
+    );
+
 }
 
 </script>
