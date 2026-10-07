@@ -6,209 +6,37 @@
 <meta name="theme-color" content="#1d4ed8">
 <meta name="description" content="Centre de Formation Le Pédagogue - Gestion universitaire et école professionnelle">
 <link rel="manifest" href="./manifest.json">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%231d4ed8'/%3E%3Cpath d='M18 35L50 20l32 15-32 15z' fill='white'/%3E%3Cpath d='M28 48v18c10 8 34 8 44 0V48L50 58z' fill='white'/%3E%3Cpath d='M82 37v25' stroke='white' stroke-width='5'/%3E%3C/svg%3E">
+<link rel="icon" href="./icon-192.png">
 <title>Centre de Formation Le Pédagogue</title>
-
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{
---primary:#1d4ed8;--primary2:#2563eb;--dark:#0f172a;
---bg:#f1f5f9;--white:#fff;--border:#e2e8f0;
---text:#1e293b;--muted:#64748b;--danger:#dc2626;
---success:#16a34a;--warning:#d97706
-}
+:root{--primary:#1d4ed8;--primary2:#2563eb;--dark:#0f172a;--bg:#f1f5f9;--white:#fff;--border:#e2e8f0;--text:#1e293b;--muted:#64748b;--danger:#dc2626;--success:#16a34a;--warning:#d97706}
 body{font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}
-button,input,select,textarea{font:inherit}
-button{cursor:pointer;border:0}
-.hidden{display:none!important}
-
-#authPage{
-min-height:100vh;display:flex;align-items:center;justify-content:center;
-padding:20px;background:linear-gradient(135deg,#0f172a,#1d4ed8)
-}
-.auth-card{
-width:100%;max-width:440px;background:#fff;border-radius:20px;
-padding:30px;box-shadow:0 20px 50px #0005
-}
-.logo-box{text-align:center;margin-bottom:25px}
-.app-logo{
-width:82px;height:82px;margin:auto;border-radius:20px;background:#1d4ed8;
-display:flex;align-items:center;justify-content:center;box-shadow:0 10px 25px #0003
-}
-.app-logo svg{width:58px;height:58px}
-.logo-box h1{font-size:22px;margin-top:14px}
-.logo-box p{color:var(--muted);margin-top:6px}
-.form-group{margin-bottom:15px}
-.form-group label{display:block;font-size:14px;font-weight:bold;margin-bottom:7px}
-.form-group input,.form-group select,.form-group textarea{
-width:100%;border:1px solid var(--border);border-radius:9px;
-padding:12px;outline:none;background:#fff
-}
-.form-group input:focus,.form-group select:focus,.form-group textarea:focus{
-border-color:var(--primary2)
-}
-.btn{padding:11px 16px;border-radius:9px;font-weight:bold}
-.btn-primary{background:var(--primary);color:#fff}
-.btn-primary:hover{background:#1e40af}
+button,input,select,textarea{font:inherit}button{cursor:pointer;border:0}.hidden{display:none!important}
+#authPage{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:linear-gradient(135deg,#0f172a,#1d4ed8)}
+.auth-card{width:100%;max-width:440px;background:#fff;border-radius:20px;padding:30px;box-shadow:0 20px 50px #0005}
+.logo-box{text-align:center;margin-bottom:25px}.app-logo{width:82px;height:82px;margin:auto;border-radius:20px;background:#1d4ed8;display:flex;align-items:center;justify-content:center}.app-logo img{width:65px;height:65px}.logo-box h1{font-size:22px;margin-top:14px}.logo-box p{color:var(--muted);margin-top:6px}
+.form-group{margin-bottom:15px}.form-group label{display:block;font-size:14px;font-weight:bold;margin-bottom:7px}.form-group input,.form-group select,.form-group textarea{width:100%;border:1px solid var(--border);border-radius:9px;padding:12px;outline:none;background:#fff}.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--primary2)}
+.btn{padding:10px 15px;border-radius:9px;font-weight:bold}.btn-primary{background:var(--primary);color:#fff}.btn-success{background:var(--success);color:#fff}.btn-danger{background:var(--danger);color:#fff}.btn-warning{background:var(--warning);color:#fff}.btn-light{background:#f1f5f9;color:#334155}
 .btn-google{width:100%;margin-top:10px;background:#fff;color:#111827;border:1px solid var(--border)}
-.btn-danger{background:var(--danger);color:#fff}
-.btn-success{background:var(--success);color:#fff}
-.btn-warning{background:var(--warning);color:#fff}
-.btn-light{background:#e2e8f0;color:#1e293b}
-.auth-switch{text-align:center;margin-top:18px;color:var(--muted)}
-.auth-switch button{background:none;color:var(--primary);font-weight:bold}
-.message{padding:11px;border-radius:8px;margin-bottom:15px;font-size:14px}
-.message.error{background:#fee2e2;color:#991b1b}
-.message.success{background:#dcfce7;color:#166534}
-.message.info{background:#dbeafe;color:#1e40af}
-
-.topbar{
-height:65px;background:#fff;border-bottom:1px solid var(--border);
-display:flex;align-items:center;justify-content:space-between;padding:0 22px;
-position:fixed;top:0;left:0;right:0;z-index:100
-}
-.brand{display:flex;align-items:center;gap:12px;font-weight:bold}
-.brand-icon{
-width:40px;height:40px;border-radius:10px;background:var(--primary);
-display:flex;align-items:center;justify-content:center
-}
-.brand-icon svg{width:29px;height:29px}
-.top-actions{display:flex;align-items:center;gap:10px}
-.language{border:1px solid var(--border);padding:8px;border-radius:8px;background:#fff}
-.install-btn{background:#16a34a;color:#fff;padding:9px 12px;border-radius:8px;font-weight:bold}
-.user-menu{
-display:flex;align-items:center;gap:8px;padding:7px 10px;
-border:1px solid var(--border);border-radius:8px
-}
-.user-avatar{
-width:30px;height:30px;border-radius:50%;background:var(--primary);
-color:#fff;display:flex;align-items:center;justify-content:center;font-weight:bold
-}
-.admin-label{
-font-size:11px;color:#fff;background:#16a34a;padding:3px 7px;
-border-radius:10px;font-weight:bold
-}
-.sidebar{
-position:fixed;top:65px;left:0;bottom:0;width:255px;background:#0f172a;
-color:#fff;overflow-y:auto;padding:15px 10px;z-index:90
-}
-.nav-title{
-color:#94a3b8;font-size:11px;text-transform:uppercase;font-weight:bold;
-padding:15px 12px 7px
-}
-.nav-btn{
-width:100%;display:flex;align-items:center;gap:11px;padding:11px 12px;
-border-radius:8px;background:transparent;color:#cbd5e1;text-align:left;margin-bottom:3px
-}
-.nav-btn:hover,.nav-btn.active{background:#1d4ed8;color:#fff}
-.main{margin-left:255px;padding:90px 25px 30px}
-.page-title{
-display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:22px
-}
-.page-title h2{font-size:25px}
-.page-title p{color:var(--muted);margin-top:4px}
-.stats{
-display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:25px
-}
-.stat-card{
-background:#fff;border:1px solid var(--border);border-radius:13px;padding:20px
-}
-.stat-icon{font-size:25px;margin-bottom:12px}
-.stat-card .number{font-size:28px;font-weight:bold}
-.stat-card .label{color:var(--muted);margin-top:5px}
-.panel{
-background:#fff;border:1px solid var(--border);border-radius:13px;
-padding:20px;margin-bottom:20px
-}
-.panel-header{
-display:flex;justify-content:space-between;align-items:center;
-gap:10px;margin-bottom:17px;flex-wrap:wrap
-}
-.search{padding:10px 12px;border:1px solid var(--border);border-radius:8px;min-width:220px}
-.table-wrap{overflow-x:auto}
-table{width:100%;border-collapse:collapse;min-width:650px}
-th,td{padding:12px;border-bottom:1px solid var(--border);text-align:left;font-size:14px}
-th{background:#f8fafc;color:#475569}
-.badge{display:inline-block;padding:5px 9px;border-radius:20px;font-size:12px;font-weight:bold}
-.badge-success{background:#dcfce7;color:#166534}
-.badge-warning{background:#fef3c7;color:#92400e}
-.badge-danger{background:#fee2e2;color:#991b1b}
-.actions{display:flex;gap:6px;flex-wrap:wrap}
-.actions button{padding:7px 9px;border-radius:7px;font-size:12px}
-.empty{text-align:center;color:var(--muted);padding:35px 10px}
-.grid-form{display:grid;grid-template-columns:repeat(2,1fr);gap:15px}
-.full{grid-column:1/-1}
-.modal{
-position:fixed;inset:0;background:#0008;display:flex;align-items:center;
-justify-content:center;padding:20px;z-index:300
-}
-.modal-card{
-width:100%;max-width:700px;max-height:90vh;overflow:auto;
-background:#fff;border-radius:15px;padding:22px
-}
-.modal-header{
-display:flex;justify-content:space-between;align-items:center;margin-bottom:20px
-}
-.close{width:35px;height:35px;border-radius:50%;background:#f1f5f9}
-.toast{
-position:fixed;right:20px;bottom:20px;z-index:500;padding:13px 18px;
-border-radius:10px;color:#fff;background:#0f172a;box-shadow:0 10px 30px #0003
-}
-.mobile-menu{
-display:none;background:var(--primary);color:#fff;width:40px;height:40px;border-radius:8px
-}
-.admin-card{border-left:5px solid #16a34a;background:#f0fdf4}
-.card-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-.assignment-card{
-background:#fff;border:1px solid var(--border);border-radius:13px;padding:18px
-}
-.assignment-card h3{margin-bottom:8px}
-.assignment-card p{color:var(--muted);line-height:1.55;margin:6px 0}
-.assignment-card .meta{font-size:13px;color:#475569;margin:8px 0}
-.note20{font-size:25px;font-weight:bold;color:var(--primary)}
-.note100{font-size:15px;color:var(--success);font-weight:bold}
-.role-box{padding:15px;background:#eff6ff;border-radius:10px;margin-bottom:18px}
-
-@media(max-width:900px){
-.stats{grid-template-columns:repeat(2,1fr)}
-.sidebar{transform:translateX(-100%);transition:.25s}
-.sidebar.open{transform:translateX(0)}
-.main{margin-left:0}
-.mobile-menu{display:block}
-.brand-name{display:none}
-.card-grid{grid-template-columns:1fr}
-}
-@media(max-width:600px){
-.topbar{padding:0 10px}
-.top-actions{gap:5px}
-.user-menu span{display:none}
-.main{padding:82px 12px 20px}
-.stats{grid-template-columns:1fr 1fr;gap:9px}
-.stat-card{padding:14px}
-.stat-card .number{font-size:23px}
-.grid-form{grid-template-columns:1fr}
-.full{grid-column:auto}
-.page-title{align-items:flex-start;flex-direction:column}
-.search{width:100%;min-width:0}
-.install-btn{font-size:12px;padding:8px}
-}
+.auth-switch{text-align:center;margin-top:18px;color:var(--muted)}.auth-switch button{background:none;color:var(--primary);font-weight:bold}
+.message{padding:11px;border-radius:8px;margin-bottom:15px;font-size:14px}.message.error{background:#fee2e2;color:#991b1b}.message.success{background:#dcfce7;color:#166534}.message.info{background:#dbeafe;color:#1e40af}
+.topbar{height:65px;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 22px;position:fixed;top:0;left:0;right:0;z-index:100}.brand{display:flex;align-items:center;gap:12px;font-weight:bold}.brand-icon{width:40px;height:40px;border-radius:10px;background:var(--primary);display:flex;align-items:center;justify-content:center}.brand-icon img{width:32px;height:32px}.top-actions{display:flex;align-items:center;gap:8px}.language{border:1px solid var(--border);padding:8px;border-radius:8px;background:#fff}.install-btn{background:#16a34a;color:#fff;padding:9px 12px;border-radius:8px;font-weight:bold}.user-menu{display:flex;align-items:center;gap:8px;padding:7px 10px;border:1px solid var(--border);border-radius:8px}.user-avatar{width:30px;height:30px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:bold}.role-label{font-size:11px;color:#fff;background:#16a34a;padding:3px 7px;border-radius:10px;font-weight:bold}
+.sidebar{position:fixed;top:65px;left:0;bottom:0;width:255px;background:#0f172a;color:#fff;overflow-y:auto;padding:15px 10px;z-index:90}.nav-title{color:#94a3b8;font-size:11px;text-transform:uppercase;font-weight:bold;padding:15px 12px 7px}.nav-btn{width:100%;display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:8px;background:transparent;color:#cbd5e1;text-align:left;margin-bottom:3px}.nav-btn:hover,.nav-btn.active{background:#1d4ed8;color:#fff}.main{margin-left:255px;padding:90px 25px 30px}.page-title{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:22px}.page-title h2{font-size:25px}.page-title p{color:var(--muted);margin-top:4px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:25px}.stat-card{background:#fff;border:1px solid var(--border);border-radius:13px;padding:20px}.stat-icon{font-size:25px;margin-bottom:10px}.stat-card .number{font-size:28px;font-weight:bold}.stat-card .label{color:var(--muted);margin-top:5px}
+.panel{background:#fff;border:1px solid var(--border);border-radius:13px;padding:20px;margin-bottom:20px}.panel-header{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:17px;flex-wrap:wrap}.search{padding:10px 12px;border:1px solid var(--border);border-radius:8px;min-width:220px}.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:700px}th,td{padding:12px;border-bottom:1px solid var(--border);text-align:left;font-size:14px}th{background:#f8fafc;color:#475569}.badge{display:inline-block;padding:5px 9px;border-radius:20px;font-size:12px;font-weight:bold}.badge-success{background:#dcfce7;color:#166534}.badge-warning{background:#fef3c7;color:#92400e}.badge-danger{background:#fee2e2;color:#991b1b}.actions{display:flex;gap:6px;flex-wrap:wrap}.actions button{padding:7px 9px;border-radius:7px;font-size:12px}.empty{text-align:center;color:var(--muted);padding:35px 10px}.grid-form{display:grid;grid-template-columns:repeat(2,1fr);gap:15px}.full{grid-column:1/-1}
+.modal{position:fixed;inset:0;background:#0008;display:flex;align-items:center;justify-content:center;padding:20px;z-index:300}.modal-card{width:100%;max-width:650px;max-height:90vh;overflow:auto;background:#fff;border-radius:15px;padding:22px}.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}.close{width:35px;height:35px;border-radius:50%;background:#f1f5f9}.toast{position:fixed;right:20px;bottom:20px;z-index:500;padding:13px 18px;border-radius:10px;color:#fff;background:#0f172a;box-shadow:0 10px 30px #0003}.mobile-menu{display:none;background:var(--primary);color:#fff;width:40px;height:40px;border-radius:8px}
+.card-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.assignment-card{background:#fff;border:1px solid var(--border);border-radius:13px;padding:18px}.assignment-card h3{margin-bottom:8px}.assignment-card p{color:var(--muted);line-height:1.55;margin:6px 0}.assignment-card .meta{font-size:13px;color:#475569;margin:8px 0}.note20{font-size:25px;font-weight:bold;color:var(--primary)}.note100{font-size:15px;color:var(--success);font-weight:bold}.role-box{padding:15px;background:#eff6ff;border-radius:10px;margin-bottom:18px}
+@media(max-width:1000px){.stats{grid-template-columns:repeat(2,1fr)}.card-grid{grid-template-columns:repeat(2,1fr)}.sidebar{transform:translateX(-100%);transition:.25s}.sidebar.open{transform:translateX(0)}.main{margin-left:0}.mobile-menu{display:block}}
+@media(max-width:600px){.topbar{padding:0 8px}.brand-name{display:none}.top-actions{gap:4px}.user-menu span{display:none}.main{padding:82px 12px 20px}.stats{grid-template-columns:1fr 1fr;gap:9px}.stat-card{padding:14px}.stat-card .number{font-size:23px}.grid-form{grid-template-columns:1fr}.full{grid-column:auto}.page-title{align-items:flex-start;flex-direction:column}.search{width:100%;min-width:0}.install-btn{font-size:11px;padding:8px}.card-grid{grid-template-columns:1fr}}
 </style>
 </head>
-
 <body>
 
 <div id="authPage">
 <div class="auth-card">
-
 <div class="logo-box">
-<div class="app-logo">
-<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-<path d="M10 30L50 12L90 30L50 48Z" fill="white"/>
-<path d="M22 40V66C35 78 65 78 78 66V40L50 53Z" fill="white"/>
-<path d="M90 31V65" stroke="white" stroke-width="5" stroke-linecap="round"/>
-<circle cx="90" cy="69" r="4" fill="white"/>
-</svg>
-</div>
+<div class="app-logo"><img src="./icon-192.png" alt="Logo"></div>
 <h1>Centre de Formation Le Pédagogue</h1>
 <p>Gestion universitaire & école professionnelle</p>
 </div>
@@ -266,7 +94,7 @@ Créer mon compte
 
 <p style="margin-top:15px;font-size:13px;color:#64748b;text-align:center;line-height:1.5">
 Après l'inscription, votre compte sera <strong>en attente</strong>.
-Seul l'administrateur peut l'approuver.
+L'administrateur choisira votre rôle.
 </p>
 
 <div class="auth-switch">
@@ -274,7 +102,6 @@ Déjà un compte ?
 <button onclick="showLogin()">Se connecter</button>
 </div>
 </div>
-
 </div>
 </div>
 
@@ -283,23 +110,23 @@ Déjà un compte ?
 <header class="topbar">
 
 <div class="brand">
+
 <button class="mobile-menu" onclick="toggleSidebar()">☰</button>
 
 <div class="brand-icon">
-<svg viewBox="0 0 100 100">
-<path d="M10 30L50 12L90 30L50 48Z" fill="white"/>
-<path d="M22 40V66C35 78 65 78 78 66V40L50 53Z" fill="white"/>
-<path d="M90 31V65" stroke="white" stroke-width="5" stroke-linecap="round"/>
-</svg>
+<img src="./icon-192.png" alt="">
 </div>
 
-<div class="brand-name">Centre de Formation Le Pédagogue</div>
+<div class="brand-name">
+Centre de Formation Le Pédagogue
+</div>
+
 </div>
 
 <div class="top-actions">
 
 <button id="installBtn" class="install-btn" onclick="installApp()">
-📲 Installer l'application
+📲 Installer
 </button>
 
 <select id="language" class="language" onchange="changeLanguage(this.value)">
@@ -308,50 +135,62 @@ Déjà un compte ?
 </select>
 
 <div class="user-menu">
+
 <div class="user-avatar" id="userAvatar">U</div>
+
 <span id="userNameTop">Utilisateur</span>
-<span id="adminLabel" class="admin-label hidden">ADMIN</span>
-<button onclick="logout()" style="background:none;font-size:18px">⋮</button>
+
+<span id="roleLabel" class="role-label">USER</span>
+
+<button onclick="logout()" style="background:none;font-size:18px">
+⋮
+</button>
+
 </div>
 
 </div>
+
 </header>
 
 <aside id="sidebar" class="sidebar">
 
-<div class="nav-title">Principal</div>
+<div class="nav-title">
+Principal
+</div>
 
 <button class="nav-btn active" onclick="showPage('dashboard',this)">
 🏠 <span>Accueil</span>
 </button>
 
-<div class="nav-title">Administration académique</div>
+<div class="nav-title">
+Administration académique
+</div>
 
-<button class="nav-btn" onclick="showPage('etudiants',this)">
+<button class="nav-btn admin-only" onclick="showPage('etudiants',this)">
 👨‍🎓 <span>Étudiants</span>
 </button>
 
-<button class="nav-btn" onclick="showPage('professeurs',this)">
+<button class="nav-btn admin-only" onclick="showPage('professeurs',this)">
 👨‍🏫 <span>Professeurs</span>
 </button>
 
-<button class="nav-btn" onclick="showPage('departements',this)">
+<button class="nav-btn admin-only" onclick="showPage('departements',this)">
 🏛️ <span>Départements</span>
 </button>
 
-<button class="nav-btn" onclick="showPage('filieres',this)">
+<button class="nav-btn admin-only" onclick="showPage('filieres',this)">
 🎓 <span>Filières / Programmes</span>
 </button>
 
-<button class="nav-btn" onclick="showPage('classes',this)">
+<button class="nav-btn admin-only" onclick="showPage('classes',this)">
 🏫 <span>Classes / Groupes</span>
 </button>
 
-<button class="nav-btn" onclick="showPage('matieres',this)">
+<button class="nav-btn admin-only" onclick="showPage('matieres',this)">
 📚 <span>Matières / Cours</span>
 </button>
 
-<button class="nav-btn" onclick="showPage('annees',this)">
+<button class="nav-btn admin-only" onclick="showPage('annees',this)">
 📅 <span>Années académiques</span>
 </button>
 
@@ -360,24 +199,30 @@ Déjà un compte ?
 </button>
 
 <button class="nav-btn" onclick="showPage('remises',this)">
-📤 <span>Remises</span>
+📤 <span>Remises / Corrections</span>
 </button>
 
 <button class="nav-btn" onclick="showPage('resultats',this)">
 📊 <span>Résultats / Notes</span>
 </button>
 
-<div class="nav-title">Système</div>
+<div class="nav-title">
+Système
+</div>
 
-<button id="usersMenu" class="nav-btn" onclick="showPage('users',this)">
+<button id="adminNav" class="nav-btn hidden" onclick="showPage('users',this)">
 👥 <span>Utilisateurs</span>
 </button>
 
-<button class="nav-btn" onclick="showPage('statistiques',this)">
+<button id="coursesNav" class="nav-btn hidden" onclick="showPage('mescours',this)">
+📚 <span>Mes cours</span>
+</button>
+
+<button class="nav-btn admin-only" onclick="showPage('statistiques',this)">
 📈 <span>Statistiques</span>
 </button>
 
-<button class="nav-btn" onclick="showPage('configuration',this)">
+<button class="nav-btn admin-only" onclick="showPage('configuration',this)">
 ⚙️ <span>Configuration</span>
 </button>
 
@@ -389,88 +234,7 @@ Déjà un compte ?
 
 <main class="main">
 
-<section id="page-dashboard" class="page">
-
-<div class="page-title">
-<div>
-<h2>Tableau de bord</h2>
-<p>Bienvenue dans votre espace de gestion académique.</p>
-</div>
-</div>
-
-<div id="adminInfo" class="panel admin-card hidden">
-<h3>👑 Administrateur</h3>
-<p style="margin-top:10px;line-height:1.7">
-<strong id="adminEmailDisplay"></strong><br>
-Vous avez les droits complets pour gérer les utilisateurs et les données.
-</p>
-</div>
-
-<div id="profInfo"></div>
-
-<div class="stats" id="dashboardStats">
-
-<div class="stat-card">
-<div class="stat-icon">👨‍🎓</div>
-<div class="number" id="countEtudiants">0</div>
-<div class="label">Étudiants</div>
-</div>
-
-<div class="stat-card">
-<div class="stat-icon">👨‍🏫</div>
-<div class="number" id="countProfesseurs">0</div>
-<div class="label">Professeurs</div>
-</div>
-
-<div class="stat-card">
-<div class="stat-icon">🏫</div>
-<div class="number" id="countClasses">0</div>
-<div class="label">Classes</div>
-</div>
-
-<div class="stat-card">
-<div class="stat-icon">📚</div>
-<div class="number" id="countMatieres">0</div>
-<div class="label">Matières</div>
-</div>
-
-<div class="stat-card">
-<div class="stat-icon">📝</div>
-<div class="number" id="countDevoirs">0</div>
-<div class="label">Devoirs</div>
-</div>
-
-<div class="stat-card">
-<div class="stat-icon">📤</div>
-<div class="number" id="countRemises">0</div>
-<div class="label">Remises</div>
-</div>
-
-<div class="stat-card">
-<div class="stat-icon">📊</div>
-<div class="number" id="countResultats">0</div>
-<div class="label">Résultats</div>
-</div>
-
-<div class="stat-card">
-<div class="stat-icon">⏳</div>
-<div class="number" id="countPending">0</div>
-<div class="label">En attente</div>
-</div>
-
-</div>
-
-<div class="panel">
-<h3>🏛️ Centre de Formation Le Pédagogue</h3>
-<p style="color:var(--muted);line-height:1.7;margin-top:12px">
-Plateforme de gestion universitaire et de formation professionnelle.
-<br><br>
-Utilisez le menu pour gérer les étudiants, professeurs, classes,
-programmes, cours, devoirs, résultats et utilisateurs.
-</p>
-</div>
-
-</section>
+<section id="page-dashboard" class="page"></section>
 
 <section id="page-etudiants" class="page hidden"></section>
 <section id="page-professeurs" class="page hidden"></section>
@@ -483,6 +247,7 @@ programmes, cours, devoirs, résultats et utilisateurs.
 <section id="page-remises" class="page hidden"></section>
 <section id="page-resultats" class="page hidden"></section>
 <section id="page-users" class="page hidden"></section>
+<section id="page-mescours" class="page hidden"></section>
 <section id="page-statistiques" class="page hidden"></section>
 <section id="page-configuration" class="page hidden"></section>
 
@@ -491,11 +256,14 @@ programmes, cours, devoirs, résultats et utilisateurs.
 
 <div id="modal" class="modal hidden">
 <div class="modal-card">
+
 <div class="modal-header">
 <h3 id="modalTitle">Ajouter</h3>
 <button class="close" onclick="closeModal()">✕</button>
 </div>
+
 <div id="modalBody"></div>
+
 </div>
 </div>
 
@@ -568,7 +336,8 @@ fields:[
 ["filiere","Filière / Programme","text"],
 ["classe","Classe / Groupe","text"],
 ["matricule","Matricule","text"]
-]},
+]
+},
 
 professeurs:{
 title:"Professeurs",
@@ -579,7 +348,8 @@ fields:[
 ["telephone","Téléphone","text"],
 ["specialite","Spécialité","text"],
 ["departement","Département","text"]
-]},
+]
+},
 
 departements:{
 title:"Départements",
@@ -588,7 +358,8 @@ fields:[
 ["nom","Nom du département","text"],
 ["responsable","Responsable","text"],
 ["description","Description","textarea"]
-]},
+]
+},
 
 filieres:{
 title:"Filières / Programmes",
@@ -599,7 +370,8 @@ fields:[
 ["niveau","Niveau","text"],
 ["duree","Durée","text"],
 ["description","Description","textarea"]
-]},
+]
+},
 
 classes:{
 title:"Classes / Groupes",
@@ -610,7 +382,8 @@ fields:[
 ["niveau","Niveau","text"],
 ["annee","Année académique","text"],
 ["responsable","Responsable","text"]
-]},
+]
+},
 
 matieres:{
 title:"Matières / Cours",
@@ -621,7 +394,8 @@ fields:[
 ["professeur","Professeur","text"],
 ["classe","Classe","text"],
 ["coefficient","Coefficient","number"]
-]},
+]
+},
 
 annees:{
 collection:"annees_academiques",
@@ -632,14 +406,16 @@ fields:[
 ["debut","Date de début","date"],
 ["fin","Date de fin","date"],
 ["statut","Statut","text"]
-]}
+]
+}
 
 };
 
 
-function esc(value){
-if(value===null||value===undefined)return "";
-return String(value)
+function esc(v){
+return v==null
+?""
+:String(v)
 .replaceAll("&","&amp;")
 .replaceAll("<","&lt;")
 .replaceAll(">","&gt;")
@@ -647,169 +423,94 @@ return String(value)
 .replaceAll("'","&#039;");
 }
 
-function toast(message){
-const box=document.getElementById("toast");
-box.textContent=message;
-box.classList.remove("hidden");
-setTimeout(()=>box.classList.add("hidden"),3500);
+
+function toast(m){
+const b=document.getElementById("toast");
+b.textContent=m;
+b.classList.remove("hidden");
+setTimeout(()=>b.classList.add("hidden"),3500);
 }
 
-function showAuthMessage(message,type="error"){
+
+function showAuthMessage(m,type="error"){
 document.getElementById("authMessage").innerHTML=
-`<div class="message ${type}">${esc(message)}</div>`;
+`<div class="message ${type}">${esc(m)}</div>`;
 }
+
 
 function clearAuthMessage(){
 document.getElementById("authMessage").innerHTML="";
 }
 
-function isAdmin(){
-return currentProfile?.role==="administrateur" &&
-currentProfile?.status==="accepted";
+
+function cn(k){
+return COLLECTIONS[k]?.collection||k;
 }
 
-function isProfessor(){
-return currentProfile?.role==="professeur" &&
-currentProfile?.status==="accepted";
+
+function isAdmin(){
+return currentProfile?.role==="administrateur"
+&& currentProfile?.status==="accepted";
 }
+
+
+function isProfessor(){
+return currentProfile?.role==="professeur"
+&& currentProfile?.status==="accepted";
+}
+
 
 function isStudent(){
 return (
-currentProfile?.role==="etudiant" ||
-currentProfile?.role==="eleve"
-) &&
-currentProfile?.status==="accepted";
-}
-
-function collectionName(key){
-return COLLECTIONS[key]?.collection||key;
+currentProfile?.role==="etudiant"
+||currentProfile?.role==="eleve"
+)
+&& currentProfile?.status==="accepted";
 }
 
 
-window.showRegister=function(){
+window.showRegister=()=>{
 clearAuthMessage();
-document.getElementById("loginBox").classList.add("hidden");
-document.getElementById("registerBox").classList.remove("hidden");
-};
-
-window.showLogin=function(){
-clearAuthMessage();
-document.getElementById("registerBox").classList.add("hidden");
-document.getElementById("loginBox").classList.remove("hidden");
+loginBox.classList.add("hidden");
+registerBox.classList.remove("hidden");
 };
 
 
-window.loginEmailPassword=async function(){
+window.showLogin=()=>{
+clearAuthMessage();
+registerBox.classList.add("hidden");
+loginBox.classList.remove("hidden");
+};
 
-const email=document.getElementById("loginEmail").value.trim();
-const password=document.getElementById("loginPassword").value;
+
+window.loginEmailPassword=async()=>{
+
+const email=loginEmail.value.trim();
+const password=loginPassword.value;
 
 if(!email||!password){
-showAuthMessage("Veuillez remplir tous les champs.");
-return;
-}
-
-try{
-await signInWithEmailAndPassword(auth,email,password);
-}catch(error){
-console.error(error);
-let msg="Connexion impossible.";
-if(error.code==="auth/invalid-credential")
-msg="Email ou mot de passe incorrect.";
-if(error.code==="auth/too-many-requests")
-msg="Trop de tentatives. Réessayez plus tard.";
-showAuthMessage(msg);
-}
-};
-
-
-window.registerAccount=async function(){
-
-const name=document.getElementById("registerName").value.trim();
-const email=document.getElementById("registerEmail").value.trim();
-const password=document.getElementById("registerPassword").value;
-
-if(!name||!email||!password){
-showAuthMessage("Veuillez remplir tous les champs.");
-return;
-}
-
-if(password.length<6){
-showAuthMessage("Le mot de passe doit contenir au moins 6 caractères.");
-return;
+return showAuthMessage("Veuillez remplir tous les champs.");
 }
 
 try{
 
-const credential=
-await createUserWithEmailAndPassword(auth,email,password);
-
-await createProfile(credential.user,name);
-
-await signOut(auth);
-
-showLogin();
-
-showAuthMessage(
-"Compte créé. Il est maintenant en attente d'approbation par l'administrateur.",
-"success"
+await signInWithEmailAndPassword(
+auth,
+email,
+password
 );
-
-}catch(error){
-
-console.error(error);
-
-let msg="Impossible de créer le compte.";
-
-if(error.code==="auth/email-already-in-use")
-msg="Cette adresse email possède déjà un compte.";
-
-if(error.code==="auth/invalid-email")
-msg="Adresse email invalide.";
-
-if(error.code==="auth/weak-password")
-msg="Le mot de passe est trop faible.";
-
-showAuthMessage(msg);
-}
-};
-
-
-window.loginGoogle=async function(){
-
-try{
-
-await signInWithPopup(auth,googleProvider);
-
-}catch(error){
-
-console.error("Google Login Error:",error);
-
-if(
-error.code==="auth/popup-blocked"||
-error.code==="auth/popup-closed-by-user"||
-error.code==="auth/cancelled-popup-request"
-){
-
-try{
-
-await signInWithRedirect(auth,googleProvider);
 
 }catch(e){
 
-console.error("Google Redirect Error:",e);
+console.error(e);
 
 showAuthMessage(
-"La connexion Google n'a pas pu être lancée."
+e.code==="auth/invalid-credential"
+?
+"Email ou mot de passe incorrect."
+:
+"Connexion impossible."
 );
-
-}
-
-}else{
-
-showAuthMessage("Connexion Google impossible.");
-
-}
 
 }
 
@@ -819,39 +520,153 @@ showAuthMessage("Connexion Google impossible.");
 async function createProfile(user,name=""){
 
 const ref=doc(db,"users",user.uid);
-const existing=await getDoc(ref);
+const snap=await getDoc(ref);
 
 const email=(user.email||"").toLowerCase();
-const isAdminEmail=email===ADMIN_EMAIL.toLowerCase();
 
-if(existing.exists()){
+const admin=
+email===ADMIN_EMAIL.toLowerCase();
 
-if(isAdminEmail){
+if(snap.exists()){
 
-await updateDoc(ref,{
+if(admin){
+
+await updateDoc(
+ref,
+{
 email:user.email,
 nom:name||user.displayName||"",
 role:"administrateur",
 status:"accepted",
 updatedAt:serverTimestamp()
-});
+}
+);
 
 }
 
 return;
 }
 
-await setDoc(ref,{
+await setDoc(
+ref,
+{
 uid:user.uid,
 email:user.email||"",
 nom:name||user.displayName||"",
-role:isAdminEmail?"administrateur":"attente",
-status:isAdminEmail?"accepted":"pending",
+role:admin?"administrateur":"attente",
+status:admin?"accepted":"pending",
 createdAt:serverTimestamp(),
 updatedAt:serverTimestamp()
-});
+}
+);
 
 }
+
+
+window.registerAccount=async()=>{
+
+const name=registerName.value.trim();
+const email=registerEmail.value.trim();
+const password=registerPassword.value;
+
+if(!name||!email||!password){
+return showAuthMessage(
+"Veuillez remplir tous les champs."
+);
+}
+
+if(password.length<6){
+return showAuthMessage(
+"Le mot de passe doit contenir au moins 6 caractères."
+);
+}
+
+try{
+
+const c=
+await createUserWithEmailAndPassword(
+auth,
+email,
+password
+);
+
+await createProfile(c.user,name);
+
+await signOut(auth);
+
+showLogin();
+
+showAuthMessage(
+"Compte créé. Il est en attente d'approbation.",
+"success"
+);
+
+}catch(e){
+
+console.error(e);
+
+showAuthMessage(
+e.code==="auth/email-already-in-use"
+?
+"Cette adresse email possède déjà un compte."
+:
+"Impossible de créer le compte."
+);
+
+}
+
+};
+
+
+window.loginGoogle=async()=>{
+
+try{
+
+await signInWithPopup(
+auth,
+googleProvider
+);
+
+}catch(e){
+
+console.error(e);
+
+if(
+[
+"auth/popup-blocked",
+"auth/popup-closed-by-user",
+"auth/cancelled-popup-request"
+].includes(e.code)
+){
+
+try{
+
+await signInWithRedirect(
+auth,
+googleProvider
+);
+
+}catch(x){
+
+console.error(x);
+
+showAuthMessage(
+"La connexion Google n'a pas pu être lancée."
+);
+
+}
+
+}else{
+
+showAuthMessage(
+"Connexion Google impossible."
+);
+
+}
+
+}
+
+};
 
 
 async function getProfile(user){
@@ -863,36 +678,41 @@ if(!snap.exists()){
 
 await createProfile(user);
 
-const again=await getDoc(ref);
+const s=await getDoc(ref);
 
-return again.exists()?again.data():null;
+return s.exists()?s.data():null;
 }
 
-const data=snap.data();
+const d=snap.data();
 
 if(
-user.email &&
+user.email
+&&
 user.email.toLowerCase()===ADMIN_EMAIL.toLowerCase()
+&&
+(
+d.role!=="administrateur"
+||
+d.status!=="accepted"
+)
 ){
 
-if(
-data.role!=="administrateur"||
-data.status!=="accepted"
-){
-
-await updateDoc(ref,{
+await updateDoc(
+ref,
+{
 email:user.email,
 role:"administrateur",
 status:"accepted",
 updatedAt:serverTimestamp()
-});
-
-data.role="administrateur";
-data.status="accepted";
 }
+);
+
+d.role="administrateur";
+d.status="accepted";
 }
 
-return data;
+return d;
+
 }
 
 
@@ -903,8 +723,8 @@ if(!user){
 currentUser=null;
 currentProfile=null;
 
-document.getElementById("authPage").classList.remove("hidden");
-document.getElementById("appPage").classList.add("hidden");
+authPage.classList.remove("hidden");
+appPage.classList.add("hidden");
 
 return;
 }
@@ -912,636 +732,344 @@ return;
 try{
 
 currentUser=user;
+
 currentProfile=await getProfile(user);
 
 if(!currentProfile){
 
 await signOut(auth);
-showAuthMessage("Votre profil n'a pas pu être créé.");
-return;
+
+return showAuthMessage(
+"Votre profil n'a pas pu être créé."
+);
+
 }
 
 if(currentProfile.status!=="accepted"){
 
 await signOut(auth);
 
-showAuthMessage(
+return showAuthMessage(
 "Votre compte est en attente d'approbation par l'administrateur.",
 "info"
 );
 
-return;
 }
 
-document.getElementById("authPage").classList.add("hidden");
-document.getElementById("appPage").classList.remove("hidden");
+authPage.classList.add("hidden");
+appPage.classList.remove("hidden");
 
 updateUserUI();
 
-if(isAdmin()){
+buildDashboard();
 
-document.getElementById("usersMenu").classList.remove("hidden");
-document.getElementById("adminLabel").classList.remove("hidden");
-document.getElementById("adminInfo").classList.remove("hidden");
-document.getElementById("adminEmailDisplay").textContent=
-currentUser.email||ADMIN_EMAIL;
+showPage("dashboard");
 
-}else{
+loadConfiguration();
 
-document.getElementById("usersMenu").classList.add("hidden");
-document.getElementById("adminLabel").classList.add("hidden");
-document.getElementById("adminInfo").classList.add("hidden");
+}catch(e){
 
-}
+console.error(e);
 
-await setupRoleMenu();
-await showPage("dashboard");
-
-}catch(error){
-
-console.error(error);
 await signOut(auth);
-showAuthMessage("Une erreur est survenue pendant la connexion.");
+
+showAuthMessage(
+"Une erreur est survenue pendant la connexion."
+);
 
 }
 
 });
+
+
+getRedirectResult(auth)
+.catch(e=>console.error("Google redirect:",e));
 
 
 function updateUserUI(){
 
 const name=
-currentProfile?.nom||
-currentUser?.displayName||
-currentUser?.email||
+currentProfile?.nom
+||
+currentUser?.displayName
+||
+currentUser?.email
+||
 "Utilisateur";
 
-document.getElementById("userNameTop").textContent=name;
-document.getElementById("userAvatar").textContent=
+userNameTop.textContent=name;
+
+userAvatar.textContent=
 name.charAt(0).toUpperCase();
 
-}
+roleLabel.textContent=
+isAdmin()
+?
+"ADMIN"
+:
+isProfessor()
+?
+"PROFESSEUR"
+:
+isStudent()
+?
+"ÉTUDIANT"
+:
+"USER";
 
+adminNav.classList.toggle(
+"hidden",
+!isAdmin()
+);
 
-async function setupRoleMenu(){
+coursesNav.classList.toggle(
+"hidden",
+!isProfessor()
+);
 
-const existing=document.getElementById("roleMenuExtra");
-
-if(existing)existing.remove();
-
-const systemTitle=
-[...document.querySelectorAll(".nav-title")]
-.find(x=>x.textContent==="Système");
-
-if(isProfessor()){
-
-const html=`
-
-<div id="roleMenuExtra">
-
-<div class="nav-title">Espace professeur</div>
-
-<button class="nav-btn" onclick="showPage('mesCours',this)">
-📚 <span>Mes cours</span>
-</button>
-
-<button class="nav-btn" onclick="showPage('mesDevoirs',this)">
-📝 <span>Mes devoirs</span>
-</button>
-
-<button class="nav-btn" onclick="showPage('mesRemises',this)">
-📤 <span>Remises à corriger</span>
-</button>
-
-<button class="nav-btn" onclick="showPage('mesResultats',this)">
-📊 <span>Mes résultats</span>
-</button>
-
-</div>
-`;
-
-if(systemTitle)
-systemTitle.insertAdjacentHTML("beforebegin",html);
-
-}
-
-if(isStudent()){
-
-const html=`
-
-<div id="roleMenuExtra">
-
-<div class="nav-title">Espace étudiant</div>
-
-<button class="nav-btn" onclick="showPage('mesDevoirs',this)">
-📝 <span>Mes devoirs</span>
-</button>
-
-<button class="nav-btn" onclick="showPage('mesRemises',this)">
-📤 <span>Mes remises</span>
-</button>
-
-<button class="nav-btn" onclick="showPage('mesResultats',this)">
-📊 <span>Mes résultats</span>
-</button>
-
-</div>
-`;
-
-if(systemTitle)
-systemTitle.insertAdjacentHTML("beforebegin",html);
-
-}
+document
+.querySelectorAll(".admin-only")
+.forEach(el=>{
+el.classList.toggle(
+"hidden",
+!isAdmin()
+);
+});
 
 }
 
 
-window.logout=async function(){
-try{await signOut(auth)}catch(error){console.error(error)}
-};
-
-window.toggleSidebar=function(){
-document.getElementById("sidebar").classList.toggle("open");
+window.logout=async()=>{
+try{
+await signOut(auth);
+}catch(e){
+console.error(e);
+}
 };
 
 
-window.showPage=async function(page,button=null){
+window.toggleSidebar=()=>{
+sidebar.classList.toggle("open");
+};
 
-document.querySelectorAll(".page").forEach(p=>p.classList.add("hidden"));
 
-let target=document.getElementById("page-"+page);
+window.showPage=async(page,button)=>{
 
-if(!target){
+document
+.querySelectorAll(".page")
+.forEach(p=>p.classList.add("hidden"));
 
-target=document.createElement("section");
-target.id="page-"+page;
-target.className="page hidden";
-document.querySelector(".main").appendChild(target);
+const target=
+document.getElementById("page-"+page);
 
-}
-
+if(target)
 target.classList.remove("hidden");
 
-document.querySelectorAll(".nav-btn").forEach(b=>b.classList.remove("active"));
+document
+.querySelectorAll(".nav-btn")
+.forEach(b=>b.classList.remove("active"));
 
-if(button)button.classList.add("active");
+if(button)
+button.classList.add("active");
 
-if(page==="dashboard")await refreshDashboard();
+sidebar.classList.remove("open");
 
-if(page==="users"){
+if(page==="dashboard")
+buildDashboard();
 
-if(!isAdmin()){
-toast("Accès réservé à l'administrateur.");
-return;
-}
+if(
+COLLECTIONS[page]
+&&
+isAdmin()
+)
+await loadGenericPage(page);
 
+if(
+page==="users"
+&&
+isAdmin()
+)
 await loadUsers();
-}
 
-if(page==="statistiques")await loadStatistics();
+if(
+page==="statistiques"
+&&
+isAdmin()
+)
+await loadStatistics();
 
-if(COLLECTIONS[page])await loadGenericPage(page);
+if(page==="configuration")
+loadConfiguration();
 
-if(page==="devoirs")await loadAssignments();
+if(page==="devoirs")
+await loadAssignments();
 
-if(page==="remises")await loadSubmissions();
+if(page==="remises")
+await loadSubmissions();
 
-if(page==="resultats")await loadResults();
+if(page==="resultats")
+await loadResults();
 
-if(page==="mesDevoirs")await loadAssignments();
+if(
+page==="mescours"
+&&
+isProfessor()
+)
+await loadProfessorCourses();
 
-if(page==="mesRemises")await loadSubmissions();
-
-if(page==="mesResultats")await loadResults();
-
-if(page==="mesCours")await loadProfessorCourses();
-
-if(page==="configuration")loadConfiguration();
-
-document.getElementById("sidebar").classList.remove("open");
 };
 
 
-async function loadGenericPage(key){
+function buildDashboard(){
 
-const config=COLLECTIONS[key];
-const page=document.getElementById("page-"+key);
+const role=
+isAdmin()
+?
+"Administrateur"
+:
+isProfessor()
+?
+"Professeur"
+:
+isStudent()
+?
+"Étudiant"
+:
+"Utilisateur";
 
-if(!page)return;
-
-page.innerHTML=`
+pageDashboard.innerHTML=`
 
 <div class="page-title">
 
 <div>
-<h2>${config.icon} ${config.title}</h2>
-<p>Gestion des ${config.title.toLowerCase()}.</p>
+
+<h2>Tableau de bord</h2>
+
+<p>
+Bienvenue dans votre espace de gestion académique.
+</p>
+
+</div>
+
+</div>
+
+<div class="role-box">
+
+<strong>👤 ${role}</strong>
+
+<br>
+
+<span style="color:var(--muted)">
+${esc(currentUser?.email||"")}
+</span>
+
 </div>
 
 ${
 isAdmin()
 ?
-`<button class="btn btn-primary" onclick="openAddModal('${key}')">➕ Ajouter</button>`
-:
-""
-}
+`
+<div class="stats">
+
+<div class="stat-card">
+<div class="stat-icon">👨‍🎓</div>
+<div class="number" id="dEt">0</div>
+<div class="label">Étudiants</div>
+</div>
+
+<div class="stat-card">
+<div class="stat-icon">👨‍🏫</div>
+<div class="number" id="dPr">0</div>
+<div class="label">Professeurs</div>
+</div>
+
+<div class="stat-card">
+<div class="stat-icon">🏫</div>
+<div class="number" id="dCl">0</div>
+<div class="label">Classes</div>
+</div>
+
+<div class="stat-card">
+<div class="stat-icon">📚</div>
+<div class="number" id="dMa">0</div>
+<div class="label">Matières</div>
+</div>
+
+<div class="stat-card">
+<div class="stat-icon">📝</div>
+<div class="number" id="dDe">0</div>
+<div class="label">Devoirs</div>
+</div>
+
+<div class="stat-card">
+<div class="stat-icon">⏳</div>
+<div class="number" id="dPe">0</div>
+<div class="label">En attente</div>
+</div>
 
 </div>
+`
+:
+isProfessor()
+?
+`
+<div class="stats">
+
+<div class="stat-card">
+<div class="stat-icon">📝</div>
+<div class="number" id="pDe">0</div>
+<div class="label">Mes devoirs</div>
+</div>
+
+<div class="stat-card">
+<div class="stat-icon">📤</div>
+<div class="number" id="pRe">0</div>
+<div class="label">Remises à corriger</div>
+</div>
+
+<div class="stat-card">
+<div class="stat-icon">📊</div>
+<div class="number" id="pCo">0</div>
+<div class="label">Corrections</div>
+</div>
+
+</div>
+`
+:
+`
+<div class="panel">
+
+<h3>🎓 Espace étudiant</h3>
+
+<p style="margin-top:10px;color:var(--muted);line-height:1.7">
+
+Consultez vos devoirs, envoyez vos remises
+et consultez vos notes et commentaires.
+
+</p>
+
+</div>
+`
+}
 
 <div class="panel">
 
-<div class="panel-header">
+<h3>🏛️ Centre de Formation Le Pédagogue</h3>
 
-<h3>Liste des ${config.title}</h3>
+<p style="margin-top:10px;color:var(--muted);line-height:1.7">
 
-<input
-id="search-${key}"
-class="search"
-placeholder="🔍 Rechercher..."
-oninput="filterTable('${key}')">
+Plateforme de gestion universitaire et de formation professionnelle.
 
-</div>
-
-<div id="table-${key}" class="table-wrap">
-<div class="empty">⏳ Chargement...</div>
-</div>
+</p>
 
 </div>
 `;
 
-await loadGenericTable(key);
-}
-
-
-async function loadGenericTable(key){
-
-const config=COLLECTIONS[key];
-const box=document.getElementById("table-"+key);
-
-if(!box)return;
-
-try{
-
-const snap=await getDocs(collection(db,collectionName(key)));
-
-if(snap.empty){
-
-box.innerHTML=`<div class="empty">Aucune donnée enregistrée.</div>`;
-return;
-}
-
-let html="<table><thead><tr>";
-
-config.fields.forEach(field=>{
-html+=`<th>${esc(field[1])}</th>`;
-});
-
-html+="<th>Actions</th></tr></thead><tbody>";
-
-snap.forEach(item=>{
-
-const data=item.data();
-
-html+="<tr>";
-
-config.fields.forEach(field=>{
-
-let value=data[field[0]];
-
-if(value&&typeof value==="object"&&value.seconds)
-value=new Date(value.seconds*1000).toLocaleDateString();
-
-html+=`<td>${esc(value)}</td>`;
-});
-
-html+=`
-
-<td>
-<div class="actions">
-
-${
-isAdmin()
-?
-`
-<button class="btn btn-warning"
-onclick="openEditModal('${key}','${item.id}')">
-✏️ Modifier
-</button>
-
-<button class="btn btn-danger"
-onclick="deleteRecord('${key}','${item.id}')">
-🗑️ Effacer
-</button>
-`
-:
-`<span style="color:var(--muted)">Lecture</span>`
-}
-
-</div>
-</td>
-`;
-
-html+="</tr>";
-});
-
-html+="</tbody></table>";
-
-box.innerHTML=html;
-
-}catch(error){
-
-console.error(error);
-
-box.innerHTML=
-`<div class="empty">Impossible de charger les données.</div>`;
-
-}
-
-}
-
-
-window.openAddModal=function(key){
-
-if(!isAdmin()){
-
-toast("Seul l'administrateur peut ajouter.");
-return;
-}
-
-const config=COLLECTIONS[key];
-
-document.getElementById("modalTitle").textContent=
-"Ajouter - "+config.title;
-
-let html=`<form onsubmit="saveNewRecord(event,'${key}')">
-<div class="grid-form">`;
-
-config.fields.forEach(field=>{
-
-const[name,label,type]=field;
-
-html+=`
-
-<div class="${type==="textarea"?"full":""} form-group">
-
-<label>${esc(label)}</label>
-
-${
-type==="textarea"
-?
-`<textarea id="field-${name}" rows="4"></textarea>`
-:
-`<input id="field-${name}" type="${type}">`
-}
-
-</div>
-`;
-});
-
-html+=`
-
-</div>
-
-<button class="btn btn-primary" type="submit">
-💾 Enregistrer
-</button>
-
-</form>`;
-
-document.getElementById("modalBody").innerHTML=html;
-document.getElementById("modal").classList.remove("hidden");
-
-};
-
-
-window.saveNewRecord=async function(event,key){
-
-event.preventDefault();
-
-if(!isAdmin()){
-toast("Seul l'administrateur peut enregistrer.");
-return;
-}
-
-const config=COLLECTIONS[key];
-const data={};
-
-config.fields.forEach(field=>{
-data[field[0]]=
-document.getElementById("field-"+field[0]).value.trim();
-});
-
-data.createdAt=serverTimestamp();
-data.updatedAt=serverTimestamp();
-
-try{
-
-await addDoc(collection(db,collectionName(key)),data);
-
-closeModal();
-toast("Donnée ajoutée avec succès.");
-
-await loadGenericPage(key);
-await refreshDashboard();
-
-}catch(error){
-
-console.error(error);
-toast("Impossible d'enregistrer la donnée.");
-
-}
-
-};
-
-
-window.openEditModal=async function(key,id){
-
-if(!isAdmin()){
-toast("Seul l'administrateur peut modifier.");
-return;
-}
-
-const config=COLLECTIONS[key];
-
-try{
-
-const snap=await getDoc(doc(db,collectionName(key),id));
-
-if(!snap.exists()){
-toast("Donnée introuvable.");
-return;
-}
-
-const data=snap.data();
-
-document.getElementById("modalTitle").textContent=
-"Modifier - "+config.title;
-
-let html=
-`<form onsubmit="updateRecord(event,'${key}','${id}')">
-<div class="grid-form">`;
-
-config.fields.forEach(field=>{
-
-const[name,label,type]=field;
-let value=data[name]??"";
-
-if(value&&typeof value==="object"&&value.seconds)
-value=new Date(value.seconds*1000).toISOString().split("T")[0];
-
-html+=`
-
-<div class="${type==="textarea"?"full":""} form-group">
-
-<label>${esc(label)}</label>
-
-${
-type==="textarea"
-?
-`<textarea id="edit-${name}" rows="4">${esc(value)}</textarea>`
-:
-`<input id="edit-${name}" type="${type}" value="${esc(value)}">`
-}
-
-</div>
-`;
-});
-
-html+=`
-
-</div>
-
-<button class="btn btn-primary" type="submit">
-💾 Enregistrer les modifications
-</button>
-
-</form>`;
-
-document.getElementById("modalBody").innerHTML=html;
-document.getElementById("modal").classList.remove("hidden");
-
-}catch(error){
-
-console.error(error);
-toast("Impossible de charger la donnée.");
-
-}
-
-};
-
-
-window.updateRecord=async function(event,key,id){
-
-event.preventDefault();
-
-if(!isAdmin()){
-toast("Seul l'administrateur peut modifier.");
-return;
-}
-
-const config=COLLECTIONS[key];
-const data={};
-
-config.fields.forEach(field=>{
-data[field[0]]=
-document.getElementById("edit-"+field[0]).value.trim();
-});
-
-data.updatedAt=serverTimestamp();
-
-try{
-
-await updateDoc(
-doc(db,collectionName(key),id),
-data
-);
-
-closeModal();
-toast("Modification enregistrée.");
-
-await loadGenericPage(key);
-await refreshDashboard();
-
-}catch(error){
-
-console.error(error);
-toast("Impossible de modifier.");
-
-}
-
-};
-
-
-window.deleteRecord=async function(key,id){
-
-if(!isAdmin()){
-toast("Seul l'administrateur peut effacer.");
-return;
-}
-
-const ok=confirm(
-"Êtes-vous sûr de vouloir effacer cet élément ?\n\nCette action est irréversible."
-);
-
-if(!ok)return;
-
-try{
-
-await deleteDoc(doc(db,collectionName(key),id));
-
-toast("Élément effacé avec succès.");
-
-await loadGenericPage(key);
-await refreshDashboard();
-
-}catch(error){
-
-console.error(error);
-toast("Impossible d'effacer cet élément.");
-
-}
-
-};
-
-
-window.closeModal=function(){
-
-document.getElementById("modal").classList.add("hidden");
-document.getElementById("modalBody").innerHTML="";
-
-};
-
-
-window.filterTable=function(key){
-
-const input=document.getElementById("search-"+key);
-const table=document.querySelector("#table-"+key+" table");
-
-if(!input||!table)return;
-
-const value=input.value.toLowerCase();
-
-table.querySelectorAll("tbody tr").forEach(row=>{
-row.style.display=
-row.textContent.toLowerCase().includes(value)?"":"none";
-});
-
-};
-
-
-async function getCount(name){
-
-try{
-
-const snap=await getDocs(collection(db,name));
-return snap.size;
-
-}catch(error){
-
-console.error(error);
-return 0;
-
-}
+if(isAdmin())
+refreshAdminDash();
+
+else if(isProfessor())
+refreshProfessorDash();
 
 }
 
@@ -1550,7 +1078,7 @@ async function countWhere(name,field,value){
 
 try{
 
-const snap=
+const s=
 await getDocs(
 query(
 collection(db,name),
@@ -1558,11 +1086,12 @@ where(field,"==",value)
 )
 );
 
-return snap.size;
+return s.size;
 
-}catch(error){
+}catch(e){
 
-console.error(error);
+console.error(e);
+
 return 0;
 
 }
@@ -1570,137 +1099,544 @@ return 0;
 }
 
 
-async function refreshDashboard(){
-
-if(isProfessor()){
-
-document.getElementById("profInfo").innerHTML=`
-
-<div class="panel role-box">
-
-<h3>👨‍🏫 Espace Professeur</h3>
-
-<p style="margin-top:8px">
-Bienvenue ${esc(currentProfile.nom||currentUser.email)}.
-Vous pouvez créer des devoirs, consulter les remises,
-corriger les travaux et attribuer des notes.
-</p>
-
-</div>
-`;
-
-document.getElementById("countDevoirs").textContent=
-await countWhere("devoirs","professeurId",currentUser.uid);
-
-document.getElementById("countRemises").textContent=
-await countWhere("remises","professeurId",currentUser.uid);
-
-document.getElementById("countResultats").textContent=
-await countWhere("resultats","professeurId",currentUser.uid);
-
-return;
-
-}
-
-if(isStudent()){
-
-document.getElementById("profInfo").innerHTML=`
-
-<div class="panel role-box">
-
-<h3>👨‍🎓 Espace Étudiant</h3>
-
-<p style="margin-top:8px">
-Bienvenue ${esc(currentProfile.nom||currentUser.email)}.
-Consultez vos devoirs, remettez vos travaux et consultez vos notes.
-</p>
-
-</div>
-`;
-
-document.getElementById("countDevoirs").textContent=
-await getCount("devoirs");
-
-document.getElementById("countRemises").textContent=
-await countWhere("remises","etudiantId",currentUser.uid);
-
-document.getElementById("countResultats").textContent=
-await countWhere("resultats","etudiantId",currentUser.uid);
-
-return;
-
-}
-
-document.getElementById("profInfo").innerHTML="";
-
-for(
-const [key,id]
-of [
-["etudiants","countEtudiants"],
-["professeurs","countProfesseurs"],
-["classes","countClasses"],
-["matieres","countMatieres"],
-["devoirs","countDevoirs"],
-["remises","countRemises"],
-["resultats","countResultats"]
-]){
-
-document.getElementById(id).textContent=
-await getCount(collectionName(key));
-
-}
-
-await refreshPending();
-
-}
-
-
-async function refreshPending(){
-
-const el=document.getElementById("countPending");
-
-if(!el)return;
+async function getCount(name){
 
 try{
 
-const snap=await getDocs(collection(db,"users"));
+return (
+await getDocs(
+collection(db,name)
+)
+).size;
 
-let count=0;
+}catch(e){
 
-snap.forEach(item=>{
+console.error(e);
 
-const data=item.data();
+return 0;
 
-if(data.status==="pending"||data.status==="attente")
-count++;
+}
+
+}
+
+
+async function refreshAdminDash(){
+
+for(
+const [c,id]
+of [
+["etudiants","dEt"],
+["professeurs","dPr"],
+["classes","dCl"],
+["matieres","dMa"],
+["devoirs","dDe"]
+]
+){
+
+document.getElementById(id).textContent=
+await getCount(c);
+
+}
+
+try{
+
+const s=
+await getDocs(
+collection(db,"users")
+);
+
+let n=0;
+
+s.forEach(x=>{
+
+if(
+["pending","attente"].includes(
+x.data().status
+)
+)n++;
 
 });
 
-el.textContent=count;
+dPe.textContent=n;
 
-}catch(error){
+}catch(e){
 
-console.error(error);
-el.textContent="0";
-
-}
+dPe.textContent=0;
 
 }
 
+}
 
-async function loadUsers(){
 
-if(!isAdmin())return;
+async function refreshProfessorDash(){
 
-const page=document.getElementById("page-users");
+pDe.textContent=
+await countWhere(
+"devoirs",
+"professeurId",
+currentUser.uid
+);
+
+pRe.textContent=
+await countWhere(
+"remises",
+"professeurId",
+currentUser.uid
+);
+
+pCo.textContent=
+await countWhere(
+"remises",
+"professeurId",
+currentUser.uid
+);
+
+}
+
+
+async function loadGenericPage(key){
+
+const c=COLLECTIONS[key];
+
+const page=
+document.getElementById("page-"+key);
 
 page.innerHTML=`
 
 <div class="page-title">
 
 <div>
+
+<h2>
+${c.icon} ${c.title}
+</h2>
+
+<p>
+Gestion des ${c.title.toLowerCase()}.
+</p>
+
+</div>
+
+<button
+class="btn btn-primary"
+onclick="openAddModal('${key}')">
+
+➕ Ajouter
+
+</button>
+
+</div>
+
+<div class="panel">
+
+<div class="panel-header">
+
+<h3>Liste</h3>
+
+<input
+class="search"
+id="search-${key}"
+placeholder="🔍 Rechercher..."
+oninput="filterTable('${key}')">
+
+</div>
+
+<div
+id="table-${key}"
+class="table-wrap">
+
+<div class="empty">
+⏳ Chargement...
+</div>
+
+</div>
+
+</div>
+`;
+
+await loadGenericTable(key);
+
+}
+
+
+async function loadGenericTable(key){
+
+const c=COLLECTIONS[key];
+
+const box=
+document.getElementById("table-"+key);
+
+try{
+
+const s=
+await getDocs(
+collection(db,cn(key))
+);
+
+if(s.empty){
+
+box.innerHTML=
+'<div class="empty">Aucune donnée enregistrée.</div>';
+
+return;
+}
+
+let h=
+"<table><thead><tr>"
++
+c.fields
+.map(f=>`<th>${esc(f[1])}</th>`)
+.join("")
++
+"<th>Actions</th></tr></thead><tbody>";
+
+s.forEach(x=>{
+
+const d=x.data();
+
+h+=
+"<tr>"
++
+c.fields
+.map(f=>`<td>${esc(d[f[0]])}</td>`)
+.join("")
++
+`
+<td>
+
+<div class="actions">
+
+<button
+class="btn-warning"
+onclick="openEditModal('${key}','${x.id}')">
+
+✏️
+
+</button>
+
+<button
+class="btn-danger"
+onclick="deleteRecord('${key}','${x.id}')">
+
+🗑️
+
+</button>
+
+</div>
+
+</td>
+</tr>
+`;
+
+});
+
+box.innerHTML=
+h+
+"</tbody></table>";
+
+}catch(e){
+
+console.error(e);
+
+box.innerHTML=
+'<div class="empty">Impossible de charger les données.</div>';
+
+}
+
+}
+
+
+window.filterTable=k=>{
+
+const i=
+document.getElementById("search-"+k);
+
+const t=
+document.querySelector(
+"#table-"+k+" table"
+);
+
+if(!i||!t)return;
+
+const v=i.value.toLowerCase();
+
+t.querySelectorAll("tbody tr")
+.forEach(r=>
+r.style.display=
+r.textContent
+.toLowerCase()
+.includes(v)
+?
+""
+:
+"none"
+);
+
+};
+
+
+window.openAddModal=key=>{
+
+if(!isAdmin())
+return toast(
+"Accès réservé à l'administrateur."
+);
+
+const c=COLLECTIONS[key];
+
+modalTitle.textContent=
+"Ajouter - "+c.title;
+
+modalBody.innerHTML=`
+
+<form onsubmit="saveNewRecord(event,'${key}')">
+
+<div class="grid-form">
+
+${c.fields.map(f=>`
+
+<div class="${f[2]==="textarea"?"full ":""}form-group">
+
+<label>${esc(f[1])}</label>
+
+${
+f[2]==="textarea"
+?
+`<textarea id="field-${f[0]}" rows="4"></textarea>`
+:
+`<input id="field-${f[0]}" type="${f[2]}">`
+}
+
+</div>
+
+`).join("")}
+
+</div>
+
+<button class="btn btn-primary">
+💾 Enregistrer
+</button>
+
+</form>
+`;
+
+modal.classList.remove("hidden");
+
+};
+
+
+window.saveNewRecord=async(e,key)=>{
+
+e.preventDefault();
+
+if(!isAdmin())return;
+
+const c=COLLECTIONS[key];
+
+const d={};
+
+c.fields.forEach(
+f=>
+d[f[0]]=
+document
+.getElementById("field-"+f[0])
+.value.trim()
+);
+
+d.createdAt=serverTimestamp();
+d.updatedAt=serverTimestamp();
+
+try{
+
+await addDoc(
+collection(db,cn(key)),
+d
+);
+
+closeModal();
+
+toast("Donnée ajoutée.");
+
+await loadGenericPage(key);
+
+refreshAdminDash();
+
+}catch(x){
+
+console.error(x);
+
+toast("Impossible d'enregistrer.");
+
+}
+
+};
+
+
+window.openEditModal=async(key,id)=>{
+
+if(!isAdmin())return;
+
+const c=COLLECTIONS[key];
+
+try{
+
+const s=
+await getDoc(
+doc(db,cn(key),id)
+);
+
+if(!s.exists())
+return toast("Donnée introuvable.");
+
+const d=s.data();
+
+modalTitle.textContent=
+"Modifier - "+c.title;
+
+modalBody.innerHTML=`
+
+<form onsubmit="updateRecord(event,'${key}','${id}')">
+
+<div class="grid-form">
+
+${c.fields.map(f=>`
+
+<div class="${f[2]==="textarea"?"full ":""}form-group">
+
+<label>${esc(f[1])}</label>
+
+${
+f[2]==="textarea"
+?
+`<textarea id="edit-${f[0]}" rows="4">${esc(d[f[0]])}</textarea>`
+:
+`<input id="edit-${f[0]}" type="${f[2]}" value="${esc(d[f[0]])}">`
+}
+
+</div>
+
+`).join("")}
+
+</div>
+
+<button class="btn btn-primary">
+💾 Enregistrer
+</button>
+
+</form>
+`;
+
+modal.classList.remove("hidden");
+
+}catch(e){
+
+console.error(e);
+
+toast("Impossible de charger.");
+
+}
+
+};
+
+
+window.updateRecord=async(e,key,id)=>{
+
+e.preventDefault();
+
+if(!isAdmin())return;
+
+const c=COLLECTIONS[key];
+
+const d={};
+
+c.fields.forEach(
+f=>
+d[f[0]]=
+document
+.getElementById("edit-"+f[0])
+.value.trim()
+);
+
+d.updatedAt=serverTimestamp();
+
+try{
+
+await updateDoc(
+doc(db,cn(key),id),
+d
+);
+
+closeModal();
+
+toast("Modification enregistrée.");
+
+await loadGenericPage(key);
+
+}catch(x){
+
+console.error(x);
+
+toast("Impossible de modifier.");
+
+}
+
+};
+
+
+window.deleteRecord=async(key,id)=>{
+
+if(
+!isAdmin()
+||
+!confirm("Effacer cet élément ?")
+)return;
+
+try{
+
+await deleteDoc(
+doc(db,cn(key),id)
+);
+
+toast("Élément effacé.");
+
+await loadGenericPage(key);
+
+}catch(e){
+
+console.error(e);
+
+toast("Impossible d'effacer.");
+
+}
+
+};
+
+
+window.closeModal=()=>{
+
+modal.classList.add("hidden");
+
+modalBody.innerHTML="";
+
+};
+
+
+async function loadUsers(){
+
+const page=pageUsers;
+
+page.innerHTML=`
+
+<div class="page-title">
+
+<div>
+
 <h2>👥 Utilisateurs</h2>
-<p>Gestion des comptes et des approbations.</p>
+
+<p>
+Approbation et gestion des rôles.
+</p>
+
 </div>
 
 </div>
@@ -1709,18 +1645,24 @@ page.innerHTML=`
 
 <div class="panel-header">
 
-<h3>Comptes utilisateurs</h3>
+<h3>Comptes</h3>
 
 <input
-id="search-users"
 class="search"
-placeholder="🔍 Rechercher..."
-oninput="filterUsers()">
+id="search-users"
+oninput="filterUsers()"
+placeholder="🔍 Rechercher...">
 
 </div>
 
-<div id="usersTable" class="table-wrap">
-<div class="empty">⏳ Chargement...</div>
+<div
+id="usersTable"
+class="table-wrap">
+
+<div class="empty">
+⏳ Chargement...
+</div>
+
 </div>
 
 </div>
@@ -1728,86 +1670,119 @@ oninput="filterUsers()">
 
 try{
 
-const snap=await getDocs(collection(db,"users"));
+const s=
+await getDocs(
+collection(db,"users")
+);
 
-if(snap.empty){
+if(s.empty){
 
-document.getElementById("usersTable").innerHTML=
-`<div class="empty">Aucun utilisateur.</div>`;
+usersTable.innerHTML=
+'<div class="empty">Aucun utilisateur.</div>';
 
 return;
+
 }
 
-let html=`
+let h=`
 
 <table id="userTable">
 
 <thead>
+
 <tr>
+
 <th>Nom</th>
 <th>Email</th>
 <th>Rôle</th>
 <th>Statut</th>
 <th>UID</th>
 <th>Actions</th>
+
 </tr>
+
 </thead>
 
 <tbody>
 `;
 
-snap.forEach(item=>{
+s.forEach(x=>{
 
-const d=item.data();
+const d=x.data();
 
-const role=d.role||"attente";
-const status=d.status||"pending";
+const r=d.role||"attente";
 
-html+=`
+const st=d.status||"pending";
+
+h+=`
 
 <tr>
 
 <td>${esc(d.nom)}</td>
+
 <td>${esc(d.email)}</td>
 
-<td>
-<span class="badge ${
-role==="administrateur"?"badge-success":"badge-warning"
-}">
-${esc(role)}
-</span>
-</td>
+<td>${esc(r)}</td>
 
 <td>
-<span class="badge ${
-status==="accepted"?"badge-success":"badge-warning"
-}">
-${status==="accepted"?"Accepté":"En attente"}
-</span>
+
+${
+st==="accepted"
+?
+"<span class='badge badge-success'>Accepté</span>"
+:
+"<span class='badge badge-warning'>En attente</span>"
+}
+
 </td>
 
-<td style="font-size:11px">${esc(item.id)}</td>
+<td style="font-size:10px">
+${esc(x.id)}
+</td>
 
 <td>
 
 <div class="actions">
 
 ${
-status!=="accepted"
+st!=="accepted"
 ?
-`<button class="btn btn-success" onclick="acceptUser('${item.id}')">
+`
+<button
+class="btn-success"
+onclick="acceptUser('${x.id}')">
+
 ✅ Approuver
-</button>`
-:""
+
+</button>
+`
+:
+""
 }
 
-<button class="btn btn-warning" onclick="changeUserRole('${item.id}')">
-✏️ Modifier rôle
+<button
+class="btn-warning"
+onclick="changeUserRole('${x.id}')">
+
+✏️ Rôle
+
 </button>
 
-<button class="btn btn-danger" onclick="deleteUser('${item.id}')">
-🗑️ Effacer
+${
+x.id!==currentUser.uid
+?
+`
+<button
+class="btn-danger"
+onclick="deleteUser('${x.id}')">
+
+🗑️
+
 </button>
+`
+:
+""
+}
 
 </div>
 
@@ -1818,79 +1793,66 @@ status!=="accepted"
 
 });
 
-html+=`</tbody></table>`;
+usersTable.innerHTML=
+h+
+"</tbody></table>";
 
-document.getElementById("usersTable").innerHTML=html;
+}catch(e){
 
-}catch(error){
+console.error(e);
 
-console.error(error);
-
-document.getElementById("usersTable").innerHTML=
-`<div class="empty">Impossible de charger les utilisateurs.</div>`;
-
-}
+usersTable.innerHTML=
+'<div class="empty">Impossible de charger les utilisateurs.</div>';
 
 }
 
+}
 
-window.acceptUser=async function(uid){
 
-if(!isAdmin())return;
+window.filterUsers=()=>{
 
-const role=prompt(
-"Choisissez le rôle :\n\n"+
-"1 = etudiant\n"+
-"2 = professeur\n"+
-"3 = administrateur",
-"1"
+const v=
+searchUsers.value.toLowerCase();
+
+userTable
+?.querySelectorAll("tbody tr")
+.forEach(
+r=>
+r.style.display=
+r.textContent
+.toLowerCase()
+.includes(v)
+?
+""
+:
+"none"
 );
-
-if(role===null)return;
-
-let selected="etudiant";
-
-if(role==="2")selected="professeur";
-if(role==="3")selected="administrateur";
-
-try{
-
-await updateDoc(
-doc(db,"users",uid),
-{
-role:selected,
-status:"accepted",
-approvedBy:currentUser.email,
-approvedAt:serverTimestamp(),
-updatedAt:serverTimestamp()
-}
-);
-
-toast("Utilisateur approuvé avec succès.");
-
-await loadUsers();
-await refreshPending();
-
-}catch(error){
-
-console.error(error);
-toast("Impossible d'approuver l'utilisateur.");
-
-}
 
 };
 
 
-window.changeUserRole=async function(uid){
+window.acceptUser=async uid=>{
 
 if(!isAdmin())return;
 
-const role=prompt(
-"Nouveau rôle :\n\netudiant\nprofesseur\nadministrateur"
+const r=
+prompt(
+"Rôle :\n1 = etudiant\n2 = professeur\n3 = administrateur",
+"1"
 );
 
-if(!["etudiant","professeur","administrateur"].includes(role))
-return toast("Rôle invalide.");
+if(r===null)return;
+
+const role=
+r==="2"
+?
+"professeur"
+:
+r==="3"
+?
+"administrateur"
+:
+"etudiant";
 
 try{
 
@@ -1899,69 +1861,96 @@ doc(db,"users",uid),
 {
 role,
 status:"accepted",
+approvedBy:currentUser.email,
+approvedAt:serverTimestamp(),
+updatedAt:serverTimestamp()
+}
+);
+
+toast("Utilisateur approuvé.");
+
+await loadUsers();
+
+}catch(e){
+
+console.error(e);
+
+toast("Impossible d'approuver.");
+
+}
+
+};
+
+
+window.changeUserRole=async uid=>{
+
+if(!isAdmin())return;
+
+const r=
+prompt(
+"Écrire le rôle : etudiant, professeur ou administrateur"
+);
+
+if(
+![
+"etudiant",
+"professeur",
+"administrateur"
+].includes(r)
+)
+return toast("Rôle invalide.");
+
+try{
+
+await updateDoc(
+doc(db,"users",uid),
+{
+role:r,
+status:"accepted",
 updatedAt:serverTimestamp()
 }
 );
 
 toast("Rôle modifié.");
+
 await loadUsers();
 
-}catch(error){
+}catch(e){
 
-console.error(error);
-toast("Impossible de modifier le rôle.");
+console.error(e);
+
+toast("Impossible de modifier.");
 
 }
 
 };
 
 
-window.deleteUser=async function(uid){
+window.deleteUser=async uid=>{
 
-if(!isAdmin())return;
-
-if(uid===currentUser.uid){
-
-toast("Vous ne pouvez pas supprimer votre propre compte ici.");
-return;
-
-}
-
-if(!confirm("Êtes-vous sûr de vouloir effacer cet utilisateur ?"))
-return;
+if(
+!isAdmin()
+||
+!confirm("Effacer cet utilisateur ?")
+)return;
 
 try{
 
-await deleteDoc(doc(db,"users",uid));
+await deleteDoc(
+doc(db,"users",uid)
+);
 
 toast("Utilisateur effacé.");
 
 await loadUsers();
-await refreshPending();
 
-}catch(error){
+}catch(e){
 
-console.error(error);
-toast("Impossible d'effacer l'utilisateur.");
+console.error(e);
+
+toast("Impossible d'effacer.");
 
 }
-
-};
-
-
-window.filterUsers=function(){
-
-const input=document.getElementById("search-users");
-const table=document.getElementById("userTable");
-
-if(!input||!table)return;
-
-const value=input.value.toLowerCase();
-
-table.querySelectorAll("tbody tr").forEach(row=>{
-row.style.display=
-row.textContent.toLowerCase().includes(value)?"":"none";
-});
 
 };
 
@@ -1970,103 +1959,141 @@ row.textContent.toLowerCase().includes(value)?"":"none";
 
 async function loadAssignments(){
 
-const page=document.getElementById("page-devoirs")||
-document.getElementById("page-mesDevoirs");
+const page=pageDevoirs;
 
-if(!page)return;
-
-const canCreate=isAdmin()||isProfessor();
+const canCreate=
+isAdmin()||
+isProfessor();
 
 page.innerHTML=`
 
 <div class="page-title">
 
 <div>
+
 <h2>📝 Devoirs</h2>
-<p>${
-isProfessor()
-?"Créez et gérez vos devoirs."
-:
-isStudent()
-?"Consultez les devoirs à réaliser."
-:
-"Gestion des devoirs."
-}</p>
+
+<p>
+Création, consultation et suivi des travaux.
+</p>
+
 </div>
 
 ${
 canCreate
 ?
-`<button class="btn btn-primary" onclick="openAssignmentModal()">
+`
+<button
+class="btn btn-primary"
+onclick="openAssignmentModal()">
+
 ➕ Nouveau devoir
-</button>`
+
+</button>
+`
 :
 ""
 }
 
 </div>
 
-<div id="assignmentList" class="card-grid">
-<div class="empty">⏳ Chargement...</div>
+<div
+id="assignmentList"
+class="card-grid">
+
+<div class="empty">
+⏳ Chargement...
+</div>
+
 </div>
 `;
 
 try{
 
-let qRef;
+let q;
 
 if(isProfessor()){
 
-qRef=query(
+q=
+query(
 collection(db,"devoirs"),
-where("professeurId","==",currentUser.uid)
+where(
+"professeurId",
+"==",
+currentUser.uid
+)
 );
 
 }else{
 
-qRef=collection(db,"devoirs");
+q=collection(db,"devoirs");
 
 }
 
-const snap=await getDocs(qRef);
+const s=
+await getDocs(q);
 
-const box=document.getElementById("assignmentList");
+if(s.empty){
 
-if(snap.empty){
-
-box.innerHTML=
-`<div class="empty">Aucun devoir disponible.</div>`;
+assignmentList.innerHTML=
+'<div class="panel empty">Aucun devoir disponible.</div>';
 
 return;
 
 }
 
-let html="";
+let h="";
 
-snap.forEach(item=>{
+s.forEach(x=>{
 
-const d=item.data();
+const d=x.data();
 
-html+=`
+h+=`
 
 <div class="assignment-card">
 
-<h3>📝 ${esc(d.titre)}</h3>
-
-<p>${esc(d.description||"")}</p>
+<h3>
+${esc(d.titre)}
+</h3>
 
 <div class="meta">
-📚 Matière : ${esc(d.matiere||"—")}<br>
-🏫 Classe : ${esc(d.classe||"—")}<br>
-📅 Date limite : ${esc(d.dateLimite||"—")}
+
+📚 ${esc(d.matiere||d.cours||"")}
+·
+🏫 ${esc(d.classe||"")}
+
 </div>
+
+<p>
+${esc(d.description||"")}
+</p>
+
+<p>
+📅 Date limite :
+${esc(d.dateLimite||"Non définie")}
+</p>
+
+<p>
+Barème :
+<strong>/20</strong>
+(conversion automatique
+<strong>/100</strong>)
+</p>
+
+<div class="actions">
 
 ${
 isStudent()
 ?
-`<button class="btn btn-primary" onclick="submitAssignment('${item.id}')">
-📤 Remettre mon travail
-</button>`
+`
+<button
+class="btn btn-primary"
+onclick="openSubmissionModal('${x.id}')">
+
+📤 Remettre
+
+</button>
+`
 :
 ""
 }
@@ -2074,80 +2101,92 @@ isStudent()
 ${
 isProfessor()
 ?
-`<button class="btn btn-primary" onclick="showPage('mesRemises')">
+`
+<button
+class="btn btn-success"
+onclick="openProfessorSubmissions('${x.id}')">
+
 📤 Voir les remises
-</button>`
+
+</button>
+
+<button
+class="btn-danger"
+onclick="deleteAssignment('${x.id}')">
+
+🗑️
+
+</button>
+`
 :
 ""
 }
+
+</div>
 
 </div>
 `;
 
 });
 
-box.innerHTML=html;
+assignmentList.innerHTML=h;
 
-}catch(error){
+}catch(e){
 
-console.error(error);
+console.error(e);
 
-document.getElementById("assignmentList").innerHTML=
-`<div class="empty">Impossible de charger les devoirs.</div>`;
-
-}
+assignmentList.innerHTML=
+'<div class="panel empty">Impossible de charger les devoirs.</div>';
 
 }
 
+}
 
-window.openAssignmentModal=function(){
 
-if(!(isAdmin()||isProfessor())){
+window.openAssignmentModal=()=>{
 
-toast("Accès refusé.");
+if(!(isAdmin()||isProfessor()))
 return;
 
-}
+modalTitle.textContent="Créer un devoir";
 
-document.getElementById("modalTitle").textContent="Créer un devoir";
-
-document.getElementById("modalBody").innerHTML=`
+modalBody.innerHTML=`
 
 <form onsubmit="saveAssignment(event)">
-
-<div class="form-group">
-<label>Titre du devoir</label>
-<input id="aTitre" required>
-</div>
 
 <div class="grid-form">
 
 <div class="form-group">
-<label>Matière</label>
+<label>Titre</label>
+<input id="aTitre" required>
+</div>
+
+<div class="form-group">
+<label>Matière / Cours</label>
 <input id="aMatiere" required>
 </div>
 
 <div class="form-group">
-<label>Classe</label>
+<label>Classe / Groupe</label>
 <input id="aClasse" required>
 </div>
 
 <div class="form-group">
 <label>Date limite</label>
-<input id="aDate" type="date" required>
+<input id="aDate" type="date">
 </div>
+
+<div class="form-group full">
+
+<label>Description / consigne</label>
+
+<textarea
+id="aDesc"
+rows="5"
+required></textarea>
 
 </div>
 
-<div class="form-group">
-<label>Description / consignes</label>
-<textarea id="aDesc" rows="6" required></textarea>
-</div>
-
-<div class="role-box">
-<strong>Barème :</strong> /20
-<br>
-La note sera automatiquement convertie en /100.
 </div>
 
 <button class="btn btn-primary">
@@ -2157,54 +2196,66 @@ La note sera automatiquement convertie en /100.
 </form>
 `;
 
-document.getElementById("modal").classList.remove("hidden");
+modal.classList.remove("hidden");
 
 };
 
 
-window.saveAssignment=async function(event){
+window.saveAssignment=async e=>{
 
-event.preventDefault();
+e.preventDefault();
 
-if(!(isAdmin()||isProfessor()))return;
+if(!(isAdmin()||isProfessor()))
+return;
 
-const data={
+const d={
 
-titre:document.getElementById("aTitre").value.trim(),
+titre:aTitre.value.trim(),
 
-matiere:document.getElementById("aMatiere").value.trim(),
+matiere:aMatiere.value.trim(),
 
-classe:document.getElementById("aClasse").value.trim(),
+classe:aClasse.value.trim(),
 
-dateLimite:document.getElementById("aDate").value,
+dateLimite:aDate.value,
 
-description:document.getElementById("aDesc").value.trim(),
+description:aDesc.value.trim(),
 
-bareme20:20,
+professeurId:
+isProfessor()
+?
+currentUser.uid
+:
+"",
 
-professeurId:isProfessor()?currentUser.uid:"",
-
-professeurEmail:isProfessor()?currentUser.email:"",
+professeurEmail:
+isProfessor()
+?
+currentUser.email
+:
+"",
 
 createdAt:serverTimestamp(),
+
 updatedAt:serverTimestamp()
 
 };
 
 try{
 
-await addDoc(collection(db,"devoirs"),data);
+await addDoc(
+collection(db,"devoirs"),
+d
+);
 
 closeModal();
 
 toast("Devoir publié.");
 
 await loadAssignments();
-await refreshDashboard();
 
-}catch(error){
+}catch(x){
 
-console.error(error);
+console.error(x);
 
 toast("Impossible de publier le devoir.");
 
@@ -2213,23 +2264,52 @@ toast("Impossible de publier le devoir.");
 };
 
 
-window.submitAssignment=async function(devoirId){
+window.deleteAssignment=async id=>{
 
-if(!isStudent()){
+if(
+!isProfessor()
+||
+!confirm("Effacer ce devoir ?")
+)return;
 
-toast("Accès réservé aux étudiants.");
+try{
 
-return;
+await deleteDoc(
+doc(db,"devoirs",id)
+);
+
+toast("Devoir effacé.");
+
+await loadAssignments();
+
+}catch(e){
+
+console.error(e);
+
+toast("Impossible d'effacer.");
 
 }
 
-const s=await getDoc(doc(db,"devoirs",devoirId));
+};
+
+
+/* ================= REMISES ================= */
+
+window.openSubmissionModal=async devoirId=>{
+
+if(!isStudent())return;
+
+const s=
+await getDoc(
+doc(db,"devoirs",devoirId)
+);
 
 if(!s.exists())return;
 
 const d=s.data();
 
-const old=await getDocs(
+const old=
+await getDocs(
 query(
 collection(db,"remises"),
 where("devoirId","==",devoirId),
@@ -2239,28 +2319,44 @@ where("etudiantId","==",currentUser.uid)
 
 let existing=null;
 
-old.forEach(x=>{
-existing={id:x.id,...x.data()};
-});
+old.forEach(
+x=>
+existing={
+id:x.id,
+...x.data()
+}
+);
 
-document.getElementById("modalTitle").textContent="Remettre le devoir";
+modalTitle.textContent=
+"Remettre le devoir";
 
-document.getElementById("modalBody").innerHTML=`
+modalBody.innerHTML=`
 
-<form onsubmit="saveSubmission(event,'${devoirId}','${existing?.id||""}')">
+<form
+onsubmit="saveSubmission(event,'${devoirId}','${existing?.id||""}')">
 
 <p style="margin-bottom:15px">
-<strong>${esc(d.titre)}</strong><br>
+
+<strong>
+${esc(d.titre)}
+</strong>
+
+<br>
+
 ${esc(d.description||"")}
+
 </p>
 
 <div class="form-group">
 
-<label>Votre réponse / travail</label>
+<label>
+Votre réponse / travail
+</label>
 
-<textarea id="submissionText" rows="9" required>
-${esc(existing?.contenu||"")}
-</textarea>
+<textarea
+id="submissionText"
+rows="9"
+required>${esc(existing?.contenu||"")}</textarea>
 
 </div>
 
@@ -2271,14 +2367,15 @@ existing?.note20!=null
 <div class="role-box">
 
 Note :
-<strong>${esc(existing.note20)}/20</strong>
+<strong>${existing.note20}/20</strong>
+
 —
-<strong>${esc(existing.note100)}/100</strong>
+
+<strong>${existing.note100}/100</strong>
 
 <br>
 
-Commentaire :
-${esc(existing.commentaire||"Aucun")}
+${esc(existing.commentaire||"")}
 
 </div>
 `
@@ -2293,18 +2390,25 @@ ${esc(existing.commentaire||"Aucun")}
 </form>
 `;
 
-document.getElementById("modal").classList.remove("hidden");
+modal.classList.remove("hidden");
 
 };
 
 
-window.saveSubmission=async function(e,devoirId,existingId){
+window.saveSubmission=async(
+e,
+devoirId,
+existingId
+)=>{
 
 e.preventDefault();
 
 if(!isStudent())return;
 
-const devoir=await getDoc(doc(db,"devoirs",devoirId));
+const devoir=
+await getDoc(
+doc(db,"devoirs",devoirId)
+);
 
 if(!devoir.exists())return;
 
@@ -2320,19 +2424,30 @@ etudiantId:currentUser.uid,
 
 etudiantEmail:currentUser.email,
 
-etudiantNom:currentProfile.nom||currentUser.displayName||"",
+etudiantNom:
+currentProfile.nom||
+currentUser.displayName||
+"",
 
-professeurId:d.professeurId||"",
+professeurId:
+d.professeurId||
+"",
 
-professeurEmail:d.professeurEmail||"",
+professeurEmail:
+d.professeurEmail||
+"",
 
-contenu:document.getElementById("submissionText").value.trim(),
+contenu:
+submissionText.value.trim(),
 
-dateRemise:serverTimestamp(),
+dateRemise:
+serverTimestamp(),
 
-statut:"remis",
+statut:
+"remis",
 
-updatedAt:serverTimestamp()
+updatedAt:
+serverTimestamp()
 
 };
 
@@ -2347,7 +2462,8 @@ data
 
 }else{
 
-data.createdAt=serverTimestamp();
+data.createdAt=
+serverTimestamp();
 
 await addDoc(
 collection(db,"remises"),
@@ -2358,525 +2474,47 @@ data
 
 closeModal();
 
-toast("Travail remis avec succès.");
+toast("Travail remis.");
 
 await loadSubmissions();
-await refreshDashboard();
 
-}catch(error){
+}catch(x){
 
-console.error(error);
-toast("Impossible d'envoyer le travail.");
+console.error(x);
+
+toast(
+"Impossible d'envoyer le travail."
+);
 
 }
 
 };
 
-
-/* ================= REMISES ================= */
 
 async function loadSubmissions(){
 
-const page=
-document.getElementById("page-remises")||
-document.getElementById("page-mesRemises");
-
-if(!page)return;
+const page=pageRemises;
 
 page.innerHTML=`
 
 <div class="page-title">
 
 <div>
-<h2>📤 Remises</h2>
-<p>${
-isProfessor()
-?"Travaux remis par vos étudiants."
-:
-isStudent()
-?"Vos travaux remis et vos corrections."
-:
-"Gestion des remises."
-}</p>
-</div>
 
-</div>
-
-<div class="panel">
-
-<div id="subTable" class="table-wrap">
-<div class="empty">⏳ Chargement...</div>
-</div>
-
-</div>
-`;
-
-try{
-
-let qRef;
-
-if(isProfessor()){
-
-qRef=query(
-collection(db,"remises"),
-where("professeurId","==",currentUser.uid)
-);
-
-}else if(isStudent()){
-
-qRef=query(
-collection(db,"remises"),
-where("etudiantId","==",currentUser.uid)
-);
-
-}else{
-
-qRef=collection(db,"remises");
-
-}
-
-const snap=await getDocs(qRef);
-
-const box=document.getElementById("subTable");
-
-if(snap.empty){
-
-box.innerHTML=
-`<div class="empty">Aucune remise trouvée.</div>`;
-
-return;
-
-}
-
-let html=`
-
-<table>
-
-<thead>
-
-<tr>
-
-<th>Devoir</th>
-<th>Étudiant</th>
-<th>Date</th>
-<th>/20</th>
-<th>/100</th>
-<th>État</th>
-<th>Action</th>
-
-</tr>
-
-</thead>
-
-<tbody>
-`;
-
-snap.forEach(x=>{
-
-const d=x.data();
-
-const date=d.dateRemise?.seconds
-?
-new Date(d.dateRemise.seconds*1000).toLocaleDateString()
-:
-"";
-
-html+=`
-
-<tr>
-
-<td>${esc(d.devoirTitre)}</td>
-
-<td>${esc(d.etudiantNom||d.etudiantEmail)}</td>
-
-<td>${date}</td>
-
-<td>${d.note20??"—"}</td>
-
-<td>${d.note100??"—"}</td>
-
-<td>
-
-${
-d.corrige
-?
-`<span class="badge badge-success">Corrigé</span>`
-:
-`<span class="badge badge-warning">À corriger</span>`
-}
-
-</td>
-
-<td>
-
-${
-isProfessor()
-?
-`
-<button class="btn btn-primary"
-onclick="openCorrectionModal('${x.id}')">
-✏️ Corriger
-</button>
-`
-:
-`
-<button class="btn btn-light"
-onclick="viewSubmission('${x.id}')">
-👁️ Voir
-</button>
-`
-}
-
-</td>
-
-</tr>
-`;
-
-});
-
-html+="</tbody></table>";
-
-box.innerHTML=html;
-
-}catch(error){
-
-console.error(error);
-
-document.getElementById("subTable").innerHTML=
-`<div class="empty">Impossible de charger les remises.</div>`;
-
-}
-
-};
-
-
-window.openCorrectionModal=async function(id){
-
-if(!isProfessor()&&!isAdmin()){
-
-toast("Accès réservé au professeur.");
-
-return;
-
-}
-
-const snap=await getDoc(doc(db,"remises",id));
-
-if(!snap.exists()){
-
-toast("Remise introuvable.");
-
-return;
-
-}
-
-const d=snap.data();
-
-document.getElementById("modalTitle").textContent=
-"Correction du devoir";
-
-document.getElementById("modalBody").innerHTML=`
-
-<div class="role-box">
-
-<strong>${esc(d.devoirTitre)}</strong>
-
-<br>
-
-Étudiant :
-${esc(d.etudiantNom||d.etudiantEmail)}
-
-</div>
-
-<div class="panel">
-
-<h3>Travail de l'étudiant</h3>
-
-<p style="white-space:pre-wrap;margin-top:12px;line-height:1.7">
-${esc(d.contenu||"")}
-</p>
-
-</div>
-
-<form onsubmit="saveCorrection(event,'${id}')">
-
-<div class="grid-form">
-
-<div class="form-group">
-
-<label>Note /20</label>
-
-<input
-id="note20"
-type="number"
-min="0"
-max="20"
-step="0.01"
-value="${d.note20??""}"
-required
-oninput="previewNote100()">
-
-</div>
-
-<div class="form-group">
-
-<label>Note /100</label>
-
-<input
-id="note100"
-type="number"
-readonly
-value="${d.note100??""}">
-
-</div>
-
-</div>
-
-<div class="form-group">
-
-<label>Commentaire / correction</label>
-
-<textarea
-id="commentaire"
-rows="7">${esc(d.commentaire||"")}</textarea>
-
-</div>
-
-<button class="btn btn-success">
-✅ Enregistrer la correction
-</button>
-
-</form>
-`;
-
-document.getElementById("modal").classList.remove("hidden");
-
-};
-
-
-window.previewNote100=function(){
-
-const n=parseFloat(document.getElementById("note20").value);
-
-document.getElementById("note100").value=
-Number.isFinite(n)
-?
-(n*5).toFixed(2)
-:
-"";
-
-};
-
-
-window.saveCorrection=async function(e,id){
-
-e.preventDefault();
-
-if(!isProfessor()&&!isAdmin())return;
-
-const note20=parseFloat(
-document.getElementById("note20").value
-);
-
-if(!Number.isFinite(note20)||note20<0||note20>20){
-
-toast("La note doit être comprise entre 0 et 20.");
-
-return;
-
-}
-
-const note100=note20*5;
-
-const commentaire=
-document.getElementById("commentaire").value.trim();
-
-try{
-
-const ref=doc(db,"remises",id);
-
-const snap=await getDoc(ref);
-
-if(!snap.exists())return;
-
-const old=snap.data();
-
-await updateDoc(ref,{
-
-note20,
-
-note100,
-
-commentaire,
-
-corrige:true,
-
-statut:"corrige",
-
-dateCorrection:serverTimestamp(),
-
-updatedAt:serverTimestamp()
-
-});
-
-const resultQuery=await getDocs(
-query(
-collection(db,"resultats"),
-where("remiseId","==",id)
-)
-);
-
-const resultData={
-
-remiseId:id,
-
-devoirId:old.devoirId||"",
-
-devoirTitre:old.devoirTitre||"",
-
-etudiantId:old.etudiantId||"",
-
-etudiantNom:old.etudiantNom||"",
-
-etudiantEmail:old.etudiantEmail||"",
-
-professeurId:old.professeurId||currentUser.uid,
-
-professeurEmail:old.professeurEmail||currentUser.email,
-
-note20,
-
-note100,
-
-commentaire,
-
-dateCorrection:serverTimestamp(),
-
-updatedAt:serverTimestamp()
-
-};
-
-if(resultQuery.empty){
-
-resultData.createdAt=serverTimestamp();
-
-await addDoc(
-collection(db,"resultats"),
-resultData
-);
-
-}else{
-
-for(const item of resultQuery.docs){
-
-await updateDoc(
-doc(db,"resultats",item.id),
-resultData
-);
-
-}
-
-}
-
-closeModal();
-
-toast(
-`Correction enregistrée : ${note20}/20 = ${note100}/100`
-);
-
-await loadSubmissions();
-
-await refreshDashboard();
-
-}catch(error){
-
-console.error(error);
-
-toast("Impossible d'enregistrer la correction.");
-
-}
-
-};
-
-
-window.viewSubmission=async function(id){
-
-const s=await getDoc(doc(db,"remises",id));
-
-if(!s.exists())return;
-
-const d=s.data();
-
-document.getElementById("modalTitle").textContent=
-"Ma remise";
-
-document.getElementById("modalBody").innerHTML=`
+<h2>
+📤 Remises / Corrections
+</h2>
 
 <p>
-<strong>${esc(d.devoirTitre)}</strong>
-</p>
 
-<div class="panel" style="margin-top:15px">
-
-<h3>Mon travail</h3>
-
-<p style="white-space:pre-wrap;margin-top:12px;line-height:1.7">
-${esc(d.contenu||"")}
-</p>
-
-</div>
-
-<div class="role-box">
-
-<div class="note20">
-${d.note20??"—"}/20
-</div>
-
-<div class="note100">
-${d.note100??"—"}/100
-</div>
-
-<p style="margin-top:10px">
-<strong>Commentaire :</strong><br>
-${esc(d.commentaire||"Aucun commentaire pour le moment.")}
-</p>
-
-</div>
-`;
-
-document.getElementById("modal").classList.remove("hidden");
-
-};
-
-
-/* ================= RESULTATS ================= */
-
-async function loadResults(){
-
-const page=
-document.getElementById("page-resultats")||
-document.getElementById("page-mesResultats");
-
-if(!page)return;
-
-page.innerHTML=`
-
-<div class="page-title">
-
-<div>
-
-<h2>📊 Résultats / Notes</h2>
-
-<p>
 ${
-isStudent()
-?"Vos résultats scolaires."
-:
 isProfessor()
-?"Résultats de vos étudiants."
+?
+"Corrigez les travaux de vos étudiants."
 :
-"Gestion des résultats."
+"Consultez vos remises et corrections."
 }
+
 </p>
 
 </div>
@@ -2885,7 +2523,9 @@ isProfessor()
 
 <div class="panel">
 
-<div id="resultsTable" class="table-wrap">
+<div
+id="subTable"
+class="table-wrap">
 
 <div class="empty">
 ⏳ Chargement...
@@ -2898,42 +2538,44 @@ isProfessor()
 
 try{
 
-let qRef;
+let q=
+isProfessor()
+?
+query(
+collection(db,"remises"),
+where(
+"professeurId",
+"==",
+currentUser.uid
+)
+)
+:
+isStudent()
+?
+query(
+collection(db,"remises"),
+where(
+"etudiantId",
+"==",
+currentUser.uid
+)
+)
+:
+collection(db,"remises");
 
-if(isStudent()){
+const s=
+await getDocs(q);
 
-qRef=query(
-collection(db,"resultats"),
-where("etudiantId","==",currentUser.uid)
-);
+if(s.empty){
 
-}else if(isProfessor()){
-
-qRef=query(
-collection(db,"resultats"),
-where("professeurId","==",currentUser.uid)
-);
-
-}else{
-
-qRef=collection(db,"resultats");
-
-}
-
-const snap=await getDocs(qRef);
-
-const box=document.getElementById("resultsTable");
-
-if(snap.empty){
-
-box.innerHTML=
-`<div class="empty">Aucun résultat disponible.</div>`;
+subTable.innerHTML=
+'<div class="empty">Aucune remise.</div>';
 
 return;
 
 }
 
-let html=`
+let h=`
 
 <table>
 
@@ -2943,8 +2585,499 @@ let html=`
 
 <th>Devoir</th>
 <th>Étudiant</th>
+<th>Date</th>
 <th>Note /20</th>
 <th>Note /100</th>
+<th>Statut</th>
+<th>Action</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+`;
+
+s.forEach(x=>{
+
+const d=x.data();
+
+let date=
+d.dateRemise?.seconds
+?
+new Date(
+d.dateRemise.seconds*1000
+).toLocaleDateString()
+:
+"";
+
+h+=`
+
+<tr>
+
+<td>
+${esc(d.devoirTitre)}
+</td>
+
+<td>
+${esc(d.etudiantNom||d.etudiantEmail)}
+</td>
+
+<td>
+${date}
+</td>
+
+<td>
+${d.note20??"—"}
+</td>
+
+<td>
+${d.note100??"—"}
+</td>
+
+<td>
+
+${
+d.corrige
+?
+"<span class='badge badge-success'>Corrigé</span>"
+:
+"<span class='badge badge-warning'>À corriger</span>"
+}
+
+</td>
+
+<td>
+
+${
+isProfessor()
+?
+`
+<button
+class="btn-primary"
+onclick="openCorrectionModal('${x.id}')">
+
+✏️ Corriger
+
+</button>
+`
+:
+`
+<button
+class="btn-light"
+onclick="viewSubmission('${x.id}')">
+
+👁️ Voir
+
+</button>
+`
+}
+
+</td>
+
+</tr>
+`;
+
+});
+
+subTable.innerHTML=
+h+
+"</tbody></table>";
+
+}catch(e){
+
+console.error(e);
+
+subTable.innerHTML=
+'<div class="empty">Impossible de charger les remises.</div>';
+
+}
+
+}
+
+
+window.openProfessorSubmissions=async devoirId=>{
+
+await loadSubmissions();
+
+showPage("remises");
+
+};
+
+
+window.viewSubmission=async id=>{
+
+if(!isStudent())return;
+
+const s=
+await getDoc(
+doc(db,"remises",id)
+);
+
+if(!s.exists())return;
+
+const d=s.data();
+
+modalTitle.textContent=
+"Ma remise";
+
+modalBody.innerHTML=`
+
+<p>
+<strong>
+${esc(d.devoirTitre)}
+</strong>
+</p>
+
+<div
+class="panel"
+style="margin-top:15px">
+
+${esc(d.contenu)}
+
+</div>
+
+<p>
+
+Note :
+<strong>
+${d.note20??"—"}/20
+</strong>
+
+—
+
+<strong>
+${d.note100??"—"}/100
+</strong>
+
+</p>
+
+<p style="margin-top:8px">
+
+Commentaire :
+${esc(d.commentaire||"Aucun")}
+
+</p>
+`;
+
+modal.classList.remove("hidden");
+
+};
+
+
+window.openCorrectionModal=async id=>{
+
+if(!isProfessor())return;
+
+const s=
+await getDoc(
+doc(db,"remises",id)
+);
+
+if(!s.exists())return;
+
+const d=s.data();
+
+modalTitle.textContent=
+"Corriger le travail";
+
+modalBody.innerHTML=`
+
+<p>
+
+<strong>
+${esc(d.devoirTitre)}
+</strong>
+
+—
+
+${esc(d.etudiantNom||d.etudiantEmail)}
+
+</p>
+
+<div
+class="panel"
+style="margin-top:15px;white-space:pre-wrap">
+
+${esc(d.contenu)}
+
+</div>
+
+<form
+onsubmit="saveCorrection(event,'${id}')">
+
+<div class="form-group">
+
+<label>
+Note sur /20
+</label>
+
+<input
+id="note20"
+type="number"
+min="0"
+max="20"
+step="0.25"
+value="${d.note20??""}"
+required>
+
+</div>
+
+<div class="form-group">
+
+<label>
+Note calculée /100
+</label>
+
+<input
+id="note100"
+readonly
+value="${d.note100??""}">
+
+</div>
+
+<div class="form-group">
+
+<label>
+Commentaire / correction
+</label>
+
+<textarea
+id="commentaire"
+rows="5">${esc(d.commentaire||"")}</textarea>
+
+</div>
+
+<button class="btn btn-success">
+✅ Enregistrer la correction
+</button>
+
+</form>
+`;
+
+modal.classList.remove("hidden");
+
+note20.oninput=()=>{
+
+note100.value=
+(Number(note20.value)*5)
+.toFixed(2);
+
+};
+
+};
+
+
+window.saveCorrection=async(e,id)=>{
+
+e.preventDefault();
+
+if(!isProfessor())return;
+
+const n=Number(note20.value);
+
+if(n<0||n>20){
+
+return toast(
+"La note doit être entre 0 et 20."
+);
+
+}
+
+const s=
+await getDoc(
+doc(db,"remises",id)
+);
+
+if(!s.exists())return;
+
+const d=s.data();
+
+const note100=
+Number((n*5).toFixed(2));
+
+try{
+
+await updateDoc(
+doc(db,"remises",id),
+{
+note20:n,
+note100,
+commentaire:
+commentaire.value.trim(),
+corrige:true,
+statut:"corrige",
+dateCorrection:
+serverTimestamp(),
+updatedAt:
+serverTimestamp()
+}
+);
+
+const rq=
+await getDocs(
+query(
+collection(db,"resultats"),
+where(
+"remiseId",
+"==",
+id
+)
+)
+);
+
+if(rq.empty){
+
+await addDoc(
+collection(db,"resultats"),
+{
+remiseId:id,
+devoirId:d.devoirId,
+devoirTitre:d.devoirTitre,
+etudiantId:d.etudiantId,
+etudiantNom:d.etudiantNom,
+professeurId:currentUser.uid,
+note20:n,
+note100,
+commentaire:
+commentaire.value.trim(),
+dateCorrection:
+serverTimestamp()
+}
+);
+
+}else{
+
+await updateDoc(
+doc(
+db,
+"resultats",
+rq.docs[0].id
+),
+{
+note20:n,
+note100,
+commentaire:
+commentaire.value.trim(),
+dateCorrection:
+serverTimestamp()
+}
+);
+
+}
+
+closeModal();
+
+toast(
+`Correction enregistrée : ${n}/20 = ${note100}/100`
+);
+
+await loadSubmissions();
+
+}catch(x){
+
+console.error(x);
+
+toast(
+"Impossible d'enregistrer la correction."
+);
+
+}
+
+};
+
+
+/* ================= RESULTATS ================= */
+
+async function loadResults(){
+
+const page=pageResultats;
+
+page.innerHTML=`
+
+<div class="page-title">
+
+<div>
+
+<h2>
+📊 Résultats / Notes
+</h2>
+
+<p>
+Les notes sont affichées sur /20
+et automatiquement sur /100.
+</p>
+
+</div>
+
+</div>
+
+<div class="panel">
+
+<div
+id="resultTable"
+class="table-wrap">
+
+<div class="empty">
+⏳ Chargement...
+</div>
+
+</div>
+
+</div>
+`;
+
+try{
+
+let q=
+isProfessor()
+?
+query(
+collection(db,"resultats"),
+where(
+"professeurId",
+"==",
+currentUser.uid
+)
+)
+:
+isStudent()
+?
+query(
+collection(db,"resultats"),
+where(
+"etudiantId",
+"==",
+currentUser.uid
+)
+)
+:
+collection(db,"resultats");
+
+const s=
+await getDocs(q);
+
+if(s.empty){
+
+resultTable.innerHTML=
+'<div class="empty">Aucun résultat.</div>';
+
+return;
+
+}
+
+let h=`
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Devoir</th>
+<th>Étudiant</th>
+<th>/20</th>
+<th>/100</th>
 <th>Commentaire</th>
 
 </tr>
@@ -2954,66 +3087,74 @@ let html=`
 <tbody>
 `;
 
-snap.forEach(x=>{
+s.forEach(x=>{
 
 const d=x.data();
 
-html+=`
+h+=`
 
 <tr>
 
-<td>${esc(d.devoirTitre)}</td>
-
-<td>${esc(d.etudiantNom||d.etudiantEmail)}</td>
-
 <td>
-<strong>${d.note20??"—"}/20</strong>
+${esc(d.devoirTitre)}
 </td>
 
 <td>
-<strong>${d.note100??"—"}/100</strong>
+${esc(d.etudiantNom)}
 </td>
 
-<td>${esc(d.commentaire||"")}</td>
+<td>
+<strong>
+${d.note20??"—"}
+</strong>
+</td>
+
+<td>
+<strong>
+${d.note100??"—"}
+</strong>
+</td>
+
+<td>
+${esc(d.commentaire||"")}
+</td>
 
 </tr>
 `;
 
 });
 
-html+="</tbody></table>";
+resultTable.innerHTML=
+h+
+"</tbody></table>";
 
-box.innerHTML=html;
+}catch(e){
 
-}catch(error){
+console.error(e);
 
-console.error(error);
-
-document.getElementById("resultsTable").innerHTML=
-`<div class="empty">Impossible de charger les résultats.</div>`;
-
-}
+resultTable.innerHTML=
+'<div class="empty">Impossible de charger les résultats.</div>';
 
 }
 
+}
 
-/* ================= COURS PROFESSEUR ================= */
 
 async function loadProfessorCourses(){
 
-const page=document.getElementById("page-mesCours");
-
-if(!page)return;
-
-page.innerHTML=`
+pageMescours.innerHTML=`
 
 <div class="page-title">
 
 <div>
 
-<h2>📚 Mes cours</h2>
+<h2>
+📚 Mes cours
+</h2>
 
-<p>Les matières et cours associés à votre profil.</p>
+<p>
+Vos matières et votre activité pédagogique.
+</p>
 
 </div>
 
@@ -3021,57 +3162,17 @@ page.innerHTML=`
 
 <div class="panel">
 
-<div id="courseList" class="card-grid">
+<p style="color:var(--muted)">
 
-<div class="empty">⏳ Chargement...</div>
+Les devoirs que vous créez sont automatiquement liés
+à votre compte professeur.
 
-</div>
+Utilisez
+<strong>Devoirs</strong>
+pour publier un travail et
+<strong>Remises / Corrections</strong>
+pour corriger les étudiants.
 
-</div>
-`;
-
-try{
-
-const snap=await getDocs(collection(db,"matieres"));
-
-const box=document.getElementById("courseList");
-
-let found=false;
-let html="";
-
-snap.forEach(x=>{
-
-const d=x.data();
-
-const professor=
-String(d.professeur||"").toLowerCase();
-
-const email=
-String(currentUser.email||"").toLowerCase();
-
-if(
-professor===email||
-professor===String(currentProfile.nom||"").toLowerCase()
-){
-
-found=true;
-
-html+=`
-
-<div class="assignment-card">
-
-<h3>📚 ${esc(d.nom)}</h3>
-
-<p>
-<strong>Code :</strong> ${esc(d.code||"—")}
-</p>
-
-<p>
-<strong>Classe :</strong> ${esc(d.classe||"—")}
-</p>
-
-<p>
-<strong>Coefficient :</strong> ${esc(d.coefficient||"—")}
 </p>
 
 </div>
@@ -3079,46 +3180,22 @@ html+=`
 
 }
 
-});
-
-if(!found){
-
-box.innerHTML=
-`<div class="empty">Aucun cours associé à votre profil.</div>`;
-
-}else{
-
-box.innerHTML=html;
-
-}
-
-}catch(error){
-
-console.error(error);
-
-document.getElementById("courseList").innerHTML=
-`<div class="empty">Impossible de charger les cours.</div>`;
-
-}
-
-}
-
-
-/* ================= STATISTIQUES ================= */
 
 async function loadStatistics(){
 
-const page=document.getElementById("page-statistiques");
-
-page.innerHTML=`
+pageStatistiques.innerHTML=`
 
 <div class="page-title">
 
 <div>
 
-<h2>📈 Statistiques</h2>
+<h2>
+📈 Statistiques
+</h2>
 
-<p>Vue globale de l'activité académique.</p>
+<p>
+Vue globale de l'activité académique.
+</p>
 
 </div>
 
@@ -3128,62 +3205,65 @@ page.innerHTML=`
 
 <div class="stat-card">
 <div class="stat-icon">👨‍🎓</div>
-<div class="number" id="s1">0</div>
-<div class="label">Étudiants</div>
+<div class="number">
+${await getCount("etudiants")}
+</div>
+<div class="label">
+Étudiants
+</div>
 </div>
 
 <div class="stat-card">
 <div class="stat-icon">👨‍🏫</div>
-<div class="number" id="s2">0</div>
-<div class="label">Professeurs</div>
+<div class="number">
+${await getCount("professeurs")}
+</div>
+<div class="label">
+Professeurs
+</div>
 </div>
 
 <div class="stat-card">
 <div class="stat-icon">📝</div>
-<div class="number" id="s3">0</div>
-<div class="label">Devoirs</div>
+<div class="number">
+${await getCount("devoirs")}
+</div>
+<div class="label">
+Devoirs
+</div>
 </div>
 
 <div class="stat-card">
 <div class="stat-icon">📊</div>
-<div class="number" id="s4">0</div>
-<div class="label">Résultats</div>
+<div class="number">
+${await getCount("resultats")}
+</div>
+<div class="label">
+Résultats
+</div>
 </div>
 
 </div>
-
 `;
-
-document.getElementById("s1").textContent=
-await getCount("etudiants");
-
-document.getElementById("s2").textContent=
-await getCount("professeurs");
-
-document.getElementById("s3").textContent=
-await getCount("devoirs");
-
-document.getElementById("s4").textContent=
-await getCount("resultats");
 
 }
 
 
-/* ================= CONFIGURATION ================= */
-
 function loadConfiguration(){
 
-const page=document.getElementById("page-configuration");
-
-page.innerHTML=`
+pageConfiguration.innerHTML=`
 
 <div class="page-title">
 
 <div>
 
-<h2>⚙️ Configuration</h2>
+<h2>
+⚙️ Configuration
+</h2>
 
-<p>Paramètres du Centre de Formation Le Pédagogue.</p>
+<p>
+Paramètres du Centre de Formation Le Pédagogue.
+</p>
 
 </div>
 
@@ -3191,53 +3271,17 @@ page.innerHTML=`
 
 <div class="panel">
 
-<h3>🏛️ Établissement</h3>
+<h3>
+🏛️ Établissement
+</h3>
 
-<div class="grid-form" style="margin-top:18px">
+<p
+style="margin-top:10px;color:var(--muted)">
 
-<div class="form-group">
+Centre de Formation Le Pédagogue —
+gestion universitaire et école professionnelle.
 
-<label>Nom de l'établissement</label>
-
-<input
-id="schoolName"
-value="Centre de Formation Le Pédagogue">
-
-</div>
-
-<div class="form-group">
-
-<label>Type</label>
-
-<input
-value="Université & École professionnelle"
-readonly>
-
-</div>
-
-<div class="form-group full">
-
-<label>Description</label>
-
-<textarea id="schoolDescription" rows="4">
-Centre de formation universitaire et professionnelle.
-</textarea>
-
-</div>
-
-</div>
-
-${
-isAdmin()
-?
-`
-<button class="btn btn-primary" onclick="saveConfiguration()">
-💾 Enregistrer
-</button>
-`
-:
-""
-}
+</p>
 
 </div>
 `;
@@ -3245,47 +3289,17 @@ isAdmin()
 }
 
 
-window.saveConfiguration=async function(){
-
-if(!isAdmin()){
-
-toast("Accès réservé à l'administrateur.");
-return;
-
-}
-
-try{
-
-await setDoc(
-doc(db,"configuration","etablissement"),
-{
-nom:document.getElementById("schoolName").value,
-description:document.getElementById("schoolDescription").value,
-updatedAt:serverTimestamp()
-},
-{merge:true}
-);
-
-toast("Configuration enregistrée.");
-
-}catch(error){
-
-console.error(error);
-toast("Impossible d'enregistrer la configuration.");
-
-}
-
-};
-
-
 /* ================= LANGUAGE ================= */
 
-window.changeLanguage=function(language){
+window.changeLanguage=v=>{
 
-localStorage.setItem("lePedagogueLanguage",language);
+localStorage.setItem(
+"lePedagogueLanguage",
+v
+);
 
 toast(
-language==="ht"
+v==="ht"
 ?
 "Lang Kreyòl chwazi."
 :
@@ -3295,68 +3309,46 @@ language==="ht"
 };
 
 const savedLanguage=
-localStorage.getItem("lePedagogueLanguage");
+localStorage.getItem(
+"lePedagogueLanguage"
+);
 
 if(savedLanguage)
-document.getElementById("language").value=savedLanguage;
+language.value=savedLanguage;
 
 
 /* ================= PWA ================= */
 
 window.addEventListener(
 "beforeinstallprompt",
-event=>{
+e=>{
 
-event.preventDefault();
-deferredPrompt=event;
+e.preventDefault();
+
+deferredPrompt=e;
 
 }
 );
 
-
-window.installApp=async function(){
+window.installApp=async()=>{
 
 if(deferredPrompt){
 
 deferredPrompt.prompt();
 
-const result=await deferredPrompt.userChoice;
-
-console.log("Installation:",result.outcome);
+await deferredPrompt.userChoice;
 
 deferredPrompt=null;
 
-return;
-
-}
+}else{
 
 toast(
-"Si la fenêtre d'installation ne s'ouvre pas, ouvrez le menu ⋮ de Chrome puis choisissez « Installer l'application » ou « Ajouter à l'écran d'accueil »."
-);
-
-};
-
-
-/* ================= GOOGLE REDIRECT ================= */
-
-getRedirectResult(auth)
-.then(result=>{
-
-if(result&&result.user){
-
-console.log(
-"Connexion Google réussie:",
-result.user.email
+"Utilisez le menu ⋮ de Chrome puis « Installer l'application » ou « Ajouter à l'écran d'accueil »."
 );
 
 }
 
-})
-.catch(error=>{
-
-console.error("Google Redirect Error:",error);
-
-});
+};
 
 
 /* ================= SERVICE WORKER ================= */
@@ -3365,22 +3357,15 @@ if("serviceWorker" in navigator){
 
 window.addEventListener(
 "load",
-()=>{
-
+()=>
 navigator.serviceWorker
 .register("./sw.js")
-.then(()=>console.log("Service Worker activé."))
-.catch(error=>console.error("Service Worker:",error));
-
-}
+.catch(
+e=>console.error("SW",e)
+)
 );
 
 }
-
-
-/* ================= START ================= */
-
-loadConfiguration();
 
 </script>
 
