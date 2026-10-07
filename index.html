@@ -3,46 +3,38 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<meta name="theme-color" content="#1d4ed8">
+<meta name="theme-color" content="#0f3d91">
 <meta name="description" content="Centre de Formation Le Pédagogue - Gestion universitaire et école professionnelle">
+
 <link rel="manifest" href="./manifest.json">
-<link rel="icon" href="./icon-192.png">
+<link rel="icon" type="image/png" href="./icon-192.png">
+
 <title>Centre de Formation Le Pédagogue</title>
 
 <style>
-*{
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
-}
+*{box-sizing:border-box;margin:0;padding:0}
 
 :root{
-  --blue:#1d4ed8;
-  --blue2:#2563eb;
-  --blue3:#eff6ff;
-  --dark:#0f172a;
-  --text:#334155;
-  --muted:#64748b;
-  --border:#e2e8f0;
+  --blue:#0f3d91;
+  --blue2:#1d4ed8;
+  --light:#f4f7fb;
   --white:#fff;
+  --dark:#172033;
+  --gray:#64748b;
+  --border:#e2e8f0;
   --green:#16a34a;
   --red:#dc2626;
   --orange:#ea580c;
-  --bg:#f8fafc;
-  --shadow:0 8px 25px rgba(15,23,42,.08);
+  --shadow:0 4px 18px rgba(15,61,145,.10);
 }
 
 body{
   font-family:Arial,Helvetica,sans-serif;
-  background:var(--bg);
-  color:var(--text);
-  min-height:100vh;
+  background:var(--light);
+  color:var(--dark);
 }
 
-button,
-input,
-select,
-textarea{
+button,input,select,textarea{
   font:inherit;
 }
 
@@ -54,27 +46,23 @@ button{
   display:none!important;
 }
 
-/* =========================
-   AUTH
-========================= */
-
+/* AUTH */
 #authPage{
   min-height:100vh;
   display:flex;
-  align-items:center;
   justify-content:center;
+  align-items:center;
   padding:20px;
-  background:linear-gradient(135deg,#eff6ff,#f8fafc);
+  background:linear-gradient(135deg,#0f3d91,#2563eb);
 }
 
 .auth-box{
   width:100%;
   max-width:450px;
-  background:#fff;
+  background:white;
   border-radius:20px;
   padding:30px;
-  box-shadow:var(--shadow);
-  border:1px solid var(--border);
+  box-shadow:0 20px 60px rgba(0,0,0,.25);
 }
 
 .logo-box{
@@ -83,78 +71,34 @@ button{
 }
 
 .logo-box img{
-  width:85px;
-  height:85px;
+  width:90px;
+  height:90px;
   object-fit:contain;
   border-radius:18px;
-  margin-bottom:10px;
 }
 
 .logo-box h1{
-  color:var(--dark);
-  font-size:24px;
+  color:var(--blue);
+  margin-top:12px;
+  font-size:23px;
 }
 
 .logo-box p{
-  color:var(--muted);
-  margin-top:6px;
-  font-size:14px;
+  color:var(--gray);
+  margin-top:5px;
 }
 
-.auth-tabs{
-  display:flex;
-  margin-bottom:20px;
-  background:#f1f5f9;
-  padding:4px;
-  border-radius:10px;
-}
-
-.auth-tabs button{
-  flex:1;
-  border:0;
-  background:transparent;
-  padding:11px;
-  border-radius:8px;
-  color:var(--muted);
-}
-
-.auth-tabs button.active{
-  background:#fff;
-  color:var(--blue);
-  font-weight:bold;
-  box-shadow:0 2px 8px rgba(0,0,0,.08);
-}
-
-.form-group{
-  margin-bottom:15px;
-}
-
-.form-group label{
-  display:block;
-  font-size:14px;
-  font-weight:bold;
-  margin-bottom:7px;
-  color:var(--dark);
-}
-
-.form-group input,
-.form-group select,
-.form-group textarea,
-.search-box input{
+.auth-box input{
   width:100%;
-  padding:12px 13px;
+  padding:13px;
+  margin:7px 0;
   border:1px solid var(--border);
   border-radius:9px;
   outline:none;
-  background:#fff;
 }
 
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus,
-.search-box input:focus{
+.auth-box input:focus{
   border-color:var(--blue2);
-  box-shadow:0 0 0 3px rgba(37,99,235,.1);
 }
 
 .btn{
@@ -162,331 +106,223 @@ button{
   border-radius:9px;
   padding:11px 16px;
   font-weight:bold;
-  transition:.2s;
+  color:white;
+  background:var(--blue2);
 }
 
 .btn:hover{
   opacity:.9;
-  transform:translateY(-1px);
 }
 
-.btn-primary{
-  background:var(--blue);
-  color:#fff;
-}
-
-.btn-google{
-  background:#fff;
-  color:#334155;
-  border:1px solid var(--border);
-  width:100%;
-  margin-top:10px;
-}
-
-.btn-danger{
-  background:var(--red);
-  color:#fff;
-}
-
-.btn-success{
-  background:var(--green);
-  color:#fff;
-}
-
-.btn-warning{
-  background:#f59e0b;
-  color:#fff;
-}
-
-.btn-secondary{
+.btn-green{background:var(--green)}
+.btn-red{background:var(--red)}
+.btn-orange{background:var(--orange)}
+.btn-gray{
   background:#64748b;
-  color:#fff;
 }
 
-.auth-message{
-  padding:11px;
-  border-radius:8px;
-  margin-bottom:15px;
-  font-size:14px;
-  display:none;
+.full{
+  width:100%;
 }
 
-.auth-message.error{
-  display:block;
-  background:#fee2e2;
-  color:#991b1b;
+.auth-separator{
+  text-align:center;
+  margin:18px 0;
+  color:#94a3b8;
 }
 
-.auth-message.success{
-  display:block;
-  background:#dcfce7;
-  color:#166534;
-}
-
-/* =========================
-   APP
-========================= */
-
+/* APP */
 #appPage{
   min-height:100vh;
 }
 
-.sidebar{
+.header{
   position:fixed;
-  left:0;
   top:0;
-  bottom:0;
-  width:255px;
-  background:#0f172a;
-  color:#fff;
-  overflow-y:auto;
-  z-index:1000;
-}
-
-.sidebar-brand{
-  padding:20px 16px;
-  border-bottom:1px solid rgba(255,255,255,.1);
-  text-align:center;
-}
-
-.sidebar-brand img{
-  width:58px;
-  height:58px;
-  object-fit:contain;
-  border-radius:12px;
-  margin-bottom:8px;
-}
-
-.sidebar-brand h2{
-  font-size:16px;
-}
-
-.sidebar-brand small{
-  color:#94a3b8;
-  display:block;
-  margin-top:4px;
-}
-
-.menu{
-  padding:12px 10px;
-}
-
-.menu button{
-  width:100%;
-  border:0;
-  background:transparent;
-  color:#cbd5e1;
-  text-align:left;
-  padding:12px 13px;
-  border-radius:8px;
-  margin-bottom:3px;
-  font-size:14px;
-}
-
-.menu button:hover,
-.menu button.active{
-  background:#1d4ed8;
-  color:#fff;
-}
-
-.menu-section{
-  color:#64748b;
-  font-size:11px;
-  text-transform:uppercase;
-  font-weight:bold;
-  padding:15px 12px 7px;
-}
-
-.main{
-  margin-left:255px;
-  min-height:100vh;
-}
-
-.topbar{
+  left:0;
+  right:0;
   height:68px;
-  background:#fff;
+  background:white;
   border-bottom:1px solid var(--border);
   display:flex;
   align-items:center;
   justify-content:space-between;
-  padding:0 22px;
-  position:sticky;
-  top:0;
-  z-index:900;
+  padding:0 18px;
+  z-index:1000;
 }
 
-.topbar-left{
+.header-left{
   display:flex;
   align-items:center;
   gap:12px;
 }
 
-.topbar-title{
-  font-weight:bold;
-  color:var(--dark);
+.header-logo{
+  width:42px;
+  height:42px;
+  border-radius:9px;
+  object-fit:contain;
 }
 
-.topbar-right{
+.header-title{
+  font-weight:bold;
+  color:var(--blue);
+  font-size:17px;
+}
+
+.header-right{
   display:flex;
   align-items:center;
-  gap:10px;
+  gap:8px;
 }
 
-.language-select{
+.language{
   border:1px solid var(--border);
   border-radius:8px;
   padding:8px;
-  background:#fff;
+  background:white;
 }
 
-.user-menu{
-  display:flex;
-  align-items:center;
-  gap:9px;
-  padding:7px 10px;
-  border:1px solid var(--border);
-  border-radius:9px;
-}
-
-.avatar{
-  width:34px;
-  height:34px;
-  border-radius:50%;
-  background:var(--blue);
-  color:#fff;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+.install-btn{
+  background:#16a34a;
+  color:white;
+  border:0;
+  border-radius:8px;
+  padding:9px 12px;
   font-weight:bold;
 }
 
-.content{
-  padding:24px;
+.user-btn{
+  border:1px solid var(--border);
+  background:white;
+  padding:8px 12px;
+  border-radius:8px;
 }
 
-.page{
-  display:none;
+.sidebar{
+  position:fixed;
+  left:0;
+  top:68px;
+  bottom:0;
+  width:255px;
+  background:#0f3d91;
+  color:white;
+  overflow-y:auto;
+  z-index:900;
 }
 
-.page.active{
-  display:block;
+.sidebar-title{
+  padding:18px 18px 8px;
+  font-size:11px;
+  text-transform:uppercase;
+  opacity:.65;
+  font-weight:bold;
 }
 
-.page-header{
+.menu-btn{
+  width:100%;
+  border:0;
+  background:transparent;
+  color:white;
+  text-align:left;
+  padding:12px 18px;
   display:flex;
-  justify-content:space-between;
   align-items:center;
-  gap:15px;
-  margin-bottom:20px;
-}
-
-.page-header h1{
-  color:var(--dark);
-  font-size:25px;
-}
-
-.page-header p{
-  color:var(--muted);
-  margin-top:5px;
+  gap:10px;
   font-size:14px;
 }
 
-/* =========================
-   DASHBOARD
-========================= */
-
-.stats-grid{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:15px;
-  margin-bottom:22px;
+.menu-btn:hover,
+.menu-btn.active{
+  background:rgba(255,255,255,.15);
 }
 
-.stat-card{
-  background:#fff;
-  border:1px solid var(--border);
-  border-radius:13px;
-  padding:19px;
-  box-shadow:0 3px 12px rgba(15,23,42,.04);
+.main{
+  margin-left:255px;
+  padding:92px 25px 30px;
 }
 
-.stat-card .icon{
+.page-title{
+  margin-bottom:20px;
+}
+
+.page-title h2{
   font-size:25px;
-  margin-bottom:12px;
 }
 
-.stat-card .number{
+.page-title p{
+  color:var(--gray);
+  margin-top:5px;
+}
+
+/* DASHBOARD */
+.stats{
+  display:grid;
+  grid-template-columns:repeat(6,1fr);
+  gap:15px;
+  margin-bottom:25px;
+}
+
+.stat{
+  background:white;
+  border-radius:14px;
+  padding:18px;
+  box-shadow:var(--shadow);
+  border:1px solid var(--border);
+}
+
+.stat-icon{
+  font-size:26px;
+}
+
+.stat-title{
+  color:var(--gray);
+  font-size:13px;
+  margin-top:8px;
+}
+
+.stat-number{
   font-size:28px;
   font-weight:bold;
-  color:var(--dark);
-}
-
-.stat-card .label{
-  color:var(--muted);
-  font-size:13px;
+  color:var(--blue);
   margin-top:5px;
 }
 
 .panel{
-  background:#fff;
+  background:white;
+  border-radius:14px;
   border:1px solid var(--border);
-  border-radius:13px;
+  box-shadow:var(--shadow);
   padding:20px;
-  box-shadow:0 3px 12px rgba(15,23,42,.04);
+  margin-bottom:20px;
 }
 
 .panel h3{
-  color:var(--dark);
   margin-bottom:15px;
+  color:var(--blue);
 }
 
 .quick-grid{
   display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:14px;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px;
 }
 
-.quick-card{
+.quick{
+  padding:18px;
   border:1px solid var(--border);
-  border-radius:10px;
-  padding:17px;
-  cursor:pointer;
-  background:#fff;
+  border-radius:12px;
+  background:#f8fafc;
+  text-align:left;
 }
 
-.quick-card:hover{
-  border-color:var(--blue2);
-  background:var(--blue3);
-}
-
-.quick-card strong{
+.quick strong{
   display:block;
-  color:var(--dark);
-  margin-bottom:6px;
+  color:var(--blue);
+  margin-bottom:5px;
 }
 
-.quick-card span{
-  color:var(--muted);
-  font-size:13px;
-}
-
-/* =========================
-   TABLE
-========================= */
-
-.toolbar{
-  display:flex;
-  gap:10px;
-  align-items:center;
-  justify-content:space-between;
-  margin-bottom:15px;
-  flex-wrap:wrap;
-}
-
-.search-box{
-  width:280px;
-}
-
+/* TABLE */
 .table-wrap{
   overflow-x:auto;
 }
@@ -494,32 +330,25 @@ button{
 table{
   width:100%;
   border-collapse:collapse;
-  min-width:700px;
 }
 
-th,
-td{
+th,td{
+  padding:12px;
   border-bottom:1px solid var(--border);
-  padding:12px 10px;
   text-align:left;
-  font-size:13px;
+  white-space:nowrap;
 }
 
 th{
-  background:#f8fafc;
-  color:#475569;
-  font-weight:bold;
-}
-
-td{
-  color:#334155;
+  background:#f1f5f9;
+  color:var(--blue);
 }
 
 .badge{
   display:inline-block;
-  padding:5px 8px;
+  padding:5px 9px;
   border-radius:20px;
-  font-size:11px;
+  font-size:12px;
   font-weight:bold;
 }
 
@@ -533,153 +362,121 @@ td{
   color:#9a3412;
 }
 
-.badge-blue{
-  background:#dbeafe;
-  color:#1e40af;
-}
-
 .badge-red{
   background:#fee2e2;
   color:#991b1b;
 }
 
-.actions{
-  display:flex;
-  gap:5px;
-  flex-wrap:wrap;
-}
-
-.actions .btn{
-  padding:7px 9px;
-  font-size:11px;
-}
-
-/* =========================
-   MODAL
-========================= */
-
-.modal{
-  position:fixed;
-  inset:0;
-  background:rgba(15,23,42,.55);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  padding:20px;
-  z-index:2000;
-}
-
-.modal.show{
-  display:flex;
-}
-
-.modal-box{
-  width:100%;
-  max-width:600px;
-  max-height:90vh;
-  overflow-y:auto;
-  background:#fff;
-  border-radius:15px;
-  padding:22px;
-}
-
-.modal-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:18px;
-}
-
-.modal-header h2{
-  color:var(--dark);
-}
-
-.close{
-  border:0;
-  background:#f1f5f9;
-  width:34px;
-  height:34px;
-  border-radius:50%;
-}
-
+/* FORMS */
 .form-grid{
   display:grid;
-  grid-template-columns:1fr 1fr;
+  grid-template-columns:repeat(2,1fr);
   gap:12px;
 }
 
-.form-grid .full{
-  grid-column:1/-1;
-}
-
-.modal-footer{
+.form-group{
   display:flex;
-  justify-content:flex-end;
-  gap:10px;
-  margin-top:18px;
+  flex-direction:column;
+  gap:6px;
 }
 
-/* =========================
-   TOAST
-========================= */
+.form-group label{
+  font-size:13px;
+  font-weight:bold;
+}
 
+.form-group input,
+.form-group select,
+.form-group textarea{
+  padding:11px;
+  border:1px solid var(--border);
+  border-radius:8px;
+  outline:none;
+}
+
+.form-group textarea{
+  min-height:100px;
+  resize:vertical;
+}
+
+.form-actions{
+  margin-top:15px;
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+/* TOAST */
 #toast{
   position:fixed;
   right:20px;
   bottom:20px;
   z-index:5000;
-  max-width:380px;
+  background:#172033;
+  color:white;
+  padding:14px 18px;
+  border-radius:10px;
+  box-shadow:0 8px 30px rgba(0,0,0,.25);
+  max-width:350px;
 }
 
-.toast-item{
-  background:#0f172a;
-  color:#fff;
-  padding:13px 16px;
-  border-radius:9px;
-  margin-top:8px;
-  box-shadow:var(--shadow);
-  font-size:13px;
+/* INSTALL MODAL */
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.55);
+  z-index:4000;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:20px;
 }
 
-.toast-item.success{
-  background:#166534;
+.modal-box{
+  background:white;
+  max-width:450px;
+  width:100%;
+  border-radius:18px;
+  padding:25px;
 }
 
-.toast-item.error{
-  background:#991b1b;
+.modal-box h3{
+  color:var(--blue);
+  margin-bottom:15px;
 }
 
-.toast-item.warning{
-  background:#9a3412;
+.modal-box p{
+  line-height:1.6;
+  margin-bottom:12px;
 }
 
-/* =========================
-   MOBILE
-========================= */
+.modal-close{
+  float:right;
+  border:0;
+  background:#fee2e2;
+  color:#991b1b;
+  width:32px;
+  height:32px;
+  border-radius:50%;
+}
 
-.mobile-menu-btn{
+/* MOBILE */
+.mobile-menu{
   display:none;
   border:0;
-  background:#eff6ff;
-  color:var(--blue);
-  width:38px;
-  height:38px;
+  background:#eef2ff;
+  padding:8px 10px;
   border-radius:8px;
   font-size:20px;
 }
 
-@media(max-width:1000px){
-  .stats-grid{
-    grid-template-columns:repeat(2,1fr);
-  }
-
-  .quick-grid{
-    grid-template-columns:repeat(2,1fr);
+@media(max-width:1100px){
+  .stats{
+    grid-template-columns:repeat(3,1fr);
   }
 }
 
-@media(max-width:700px){
-
+@media(max-width:800px){
   .sidebar{
     transform:translateX(-100%);
     transition:.25s;
@@ -691,68 +488,54 @@ td{
 
   .main{
     margin-left:0;
+    padding:85px 12px 25px;
   }
 
-  .mobile-menu-btn{
+  .mobile-menu{
     display:block;
   }
 
-  .topbar{
-    padding:0 12px;
-  }
-
-  .topbar-title{
-    font-size:13px;
-  }
-
-  .topbar-right{
-    gap:5px;
-  }
-
-  .user-menu span{
+  .header-title{
     display:none;
   }
 
-  .content{
-    padding:14px;
+  .header-right{
+    gap:5px;
   }
 
-  .stats-grid{
-    grid-template-columns:1fr 1fr;
-    gap:9px;
+  .install-btn{
+    padding:8px;
+    font-size:12px;
   }
 
-  .stat-card{
-    padding:14px;
+  .stats{
+    grid-template-columns:repeat(2,1fr);
   }
 
-  .stat-card .number{
-    font-size:22px;
+  .quick-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .form-grid{
+    grid-template-columns:1fr;
+  }
+}
+
+@media(max-width:480px){
+  .stats{
+    grid-template-columns:1fr;
   }
 
   .quick-grid{
     grid-template-columns:1fr;
   }
 
-  .page-header{
-    align-items:flex-start;
-    flex-direction:column;
+  .header{
+    padding:0 8px;
   }
 
-  .form-grid{
-    grid-template-columns:1fr;
-  }
-
-  .form-grid .full{
-    grid-column:auto;
-  }
-
-  .search-box{
-    width:100%;
-  }
-
-  .auth-box{
-    padding:22px;
+  .language{
+    max-width:75px;
   }
 }
 </style>
@@ -760,1043 +543,458 @@ td{
 
 <body>
 
-<!-- =====================================================
-     AUTH PAGE
-===================================================== -->
-
+<!-- AUTHENTIFICATION -->
 <section id="authPage">
 
   <div class="auth-box">
 
     <div class="logo-box">
-      <img src="./icon-192.png"
-           alt="Centre de Formation Le Pédagogue"
-           onerror="this.style.display='none'">
-
+      <img src="./icon-192.png" alt="Logo">
       <h1>Centre de Formation Le Pédagogue</h1>
       <p>Gestion universitaire et école professionnelle</p>
     </div>
 
-    <div class="auth-tabs">
-      <button id="loginTab"
-              class="active"
-              onclick="showAuthForm('login')">
+    <div id="loginBox">
+
+      <h2 style="margin-bottom:15px;color:#0f3d91">
         Connexion
+      </h2>
+
+      <input id="loginEmail" type="email" placeholder="Adresse e-mail">
+
+      <input id="loginPassword" type="password" placeholder="Mot de passe">
+
+      <button class="btn full" onclick="loginEmailPassword()">
+        🔐 Se connecter
       </button>
 
-      <button id="registerTab"
-              onclick="showAuthForm('register')">
-        Inscription
+      <div class="auth-separator">OU</div>
+
+      <button class="btn btn-gray full" onclick="loginGoogle()">
+        🇬 Google
       </button>
+
+      <p style="margin-top:18px;text-align:center">
+        Pas encore de compte ?
+        <button
+          style="border:0;background:none;color:#1d4ed8;font-weight:bold"
+          onclick="showRegister()">
+          Créer un compte
+        </button>
+      </p>
+
     </div>
 
-    <div id="authMessage"
-         class="auth-message"></div>
+    <div id="registerBox" class="hidden">
 
-    <!-- LOGIN -->
+      <h2 style="margin-bottom:15px;color:#0f3d91">
+        Créer un compte
+      </h2>
 
-    <form id="loginForm">
+      <input id="registerName" type="text" placeholder="Nom complet">
 
-      <div class="form-group">
-        <label>Email</label>
-        <input id="loginEmail"
-               type="email"
-               autocomplete="email"
-               required>
-      </div>
+      <input id="registerEmail" type="email" placeholder="Adresse e-mail">
 
-      <div class="form-group">
-        <label>Mot de passe</label>
-        <input id="loginPassword"
-               type="password"
-               autocomplete="current-password"
-               required>
-      </div>
+      <input id="registerPassword" type="password" placeholder="Mot de passe">
 
-      <button class="btn btn-primary"
-              style="width:100%"
-              type="submit">
-        Se connecter
+      <button class="btn btn-green full" onclick="registerAccount()">
+        📝 Créer mon compte
       </button>
 
-      <button class="btn btn-google"
-              type="button"
-              onclick="loginGoogle()">
-        🔵 Continuer avec Google
-      </button>
+      <p style="margin-top:18px;text-align:center">
+        Déjà un compte ?
+        <button
+          style="border:0;background:none;color:#1d4ed8;font-weight:bold"
+          onclick="showLogin()">
+          Se connecter
+        </button>
+      </p>
 
-    </form>
-
-
-    <!-- REGISTER -->
-
-    <form id="registerForm"
-          class="hidden">
-
-      <div class="form-group">
-        <label>Nom complet</label>
-        <input id="registerName"
-               type="text"
-               required>
-      </div>
-
-      <div class="form-group">
-        <label>Email</label>
-        <input id="registerEmail"
-               type="email"
-               autocomplete="email"
-               required>
-      </div>
-
-      <div class="form-group">
-        <label>Mot de passe</label>
-        <input id="registerPassword"
-               type="password"
-               minlength="6"
-               autocomplete="new-password"
-               required>
-      </div>
-
-      <div class="form-group">
-        <label>Confirmer le mot de passe</label>
-        <input id="registerPassword2"
-               type="password"
-               minlength="6"
-               autocomplete="new-password"
-               required>
-      </div>
-
-      <button class="btn btn-primary"
-              style="width:100%"
-              type="submit">
-        Créer mon compte
-      </button>
-
-      <button class="btn btn-google"
-              type="button"
-              onclick="registerGoogle()">
-        🔵 Créer avec Google
-      </button>
-
-    </form>
+    </div>
 
   </div>
+
 </section>
 
 
-<!-- =====================================================
-     APPLICATION
-===================================================== -->
+<!-- APPLICATION -->
+<section id="appPage" class="hidden">
 
-<section id="appPage"
-         class="hidden">
+  <header class="header">
 
-  <!-- SIDEBAR -->
+    <div class="header-left">
 
-  <aside class="sidebar"
-         id="sidebar">
+      <button class="mobile-menu" onclick="toggleSidebar()">
+        ☰
+      </button>
 
-    <div class="sidebar-brand">
+      <img
+        class="header-logo"
+        src="./icon-192.png"
+        alt="Logo">
 
-      <img src="./icon-192.png"
-           alt="Logo"
-           onerror="this.style.display='none'">
-
-      <h2>Le Pédagogue</h2>
-
-      <small>Centre de Formation</small>
+      <div class="header-title">
+        CENTRE DE FORMATION LE PÉDAGOGUE
+      </div>
 
     </div>
 
-    <nav class="menu">
+    <div class="header-right">
 
-      <div class="menu-section">
-        Général
-      </div>
+      <select
+        id="languageSelect"
+        class="language"
+        onchange="changeLanguage()">
+        <option value="fr">🇫🇷 Français</option>
+        <option value="ht">🇭🇹 Kreyòl</option>
+      </select>
 
-      <button data-page="dashboard"
-              onclick="openPage('dashboard')">
-        🏠 Accueil
+      <!-- BOUTON INSTALLATION TOUJOURS VISIBLE -->
+      <button
+        id="installBtn"
+        class="install-btn"
+        onclick="installApplication()">
+        📲 Installer l'application
       </button>
 
-
-      <div class="menu-section">
-        Gestion académique
-      </div>
-
-      <button data-page="etudiants"
-              onclick="openPage('etudiants')">
-        👨‍🎓 Élèves
+      <button class="user-btn" onclick="toggleUserMenu()">
+        👤 <span id="headerUserName">Utilisateur</span>
       </button>
 
-      <button data-page="professeurs"
-              onclick="openPage('professeurs')">
-        👨‍🏫 Professeurs
-      </button>
+    </div>
 
-      <button data-page="classes"
-              onclick="openPage('classes')">
-        🏫 Classes
-      </button>
-
-      <button data-page="matieres"
-              onclick="openPage('matieres')">
-        📚 Matières
-      </button>
-
-      <button data-page="devoirs"
-              onclick="openPage('devoirs')">
-        📝 Devoirs
-      </button>
-
-      <button data-page="remises"
-              onclick="openPage('remises')">
-        📤 Remises
-      </button>
-
-      <button data-page="resultats"
-              onclick="openPage('resultats')">
-        📊 Résultats
-      </button>
-
-      <button data-page="statistiques"
-              onclick="openPage('statistiques')">
-        📈 Statistiques
-      </button>
+  </header>
 
 
-      <div id="adminMenu">
+  <!-- SIDEBAR -->
+  <aside id="sidebar" class="sidebar">
 
-        <div class="menu-section">
-          Administration
-        </div>
+    <div class="sidebar-title">
+      ACADÉMIQUE
+    </div>
 
-        <button data-page="users"
-                onclick="openPage('users')">
-          👥 Utilisateurs
-        </button>
+    <button class="menu-btn active" onclick="showPage('dashboard',this)">
+      🏠 <span>Tableau de bord</span>
+    </button>
 
-        <button data-page="configuration"
-                onclick="openPage('configuration')">
-          ⚙️ Données / Sauvegarde
-        </button>
+    <button class="menu-btn" onclick="showPage('etudiants',this)">
+      🎓 <span>Étudiants</span>
+    </button>
 
-      </div>
+    <button class="menu-btn" onclick="showPage('professeurs',this)">
+      👨‍🏫 <span>Professeurs</span>
+    </button>
 
-    </nav>
+    <button class="menu-btn" onclick="showPage('classes',this)">
+      🏫 <span>Classes</span>
+    </button>
+
+    <button class="menu-btn" onclick="showPage('departements',this)">
+      🏛️ <span>Départements</span>
+    </button>
+
+    <button class="menu-btn" onclick="showPage('filieres',this)">
+      📚 <span>Filières</span>
+    </button>
+
+    <button class="menu-btn" onclick="showPage('matieres',this)">
+      📖 <span>Matières</span>
+    </button>
+
+    <button class="menu-btn" onclick="showPage('cours',this)">
+      📘 <span>Cours</span>
+    </button>
+
+
+    <div class="sidebar-title">
+      ÉVALUATION
+    </div>
+
+    <button class="menu-btn" onclick="showPage('devoirs',this)">
+      📝 <span>Devoirs</span>
+    </button>
+
+    <button class="menu-btn" onclick="showPage('remises',this)">
+      📤 <span>Remises</span>
+    </button>
+
+    <button class="menu-btn" onclick="showPage('corrections',this)">
+      ✏️ <span>Corrections</span>
+    </button>
+
+    <button class="menu-btn" onclick="showPage('resultats',this)">
+      📊 <span>Résultats</span>
+    </button>
+
+
+    <div class="sidebar-title">
+      ADMINISTRATION
+    </div>
+
+    <button class="menu-btn" onclick="showPage('statistiques',this)">
+      📈 <span>Statistiques</span>
+    </button>
+
+    <button
+      id="usersMenu"
+      class="menu-btn"
+      onclick="showPage('utilisateurs',this)">
+      👥 <span>Utilisateurs</span>
+    </button>
+
+    <button class="menu-btn" onclick="showPage('sauvegarde',this)">
+      💾 <span>Données / Sauvegarde</span>
+    </button>
+
+    <button class="menu-btn" onclick="logout()">
+      🚪 <span>Déconnexion</span>
+    </button>
+
   </aside>
 
 
   <!-- MAIN -->
-
   <main class="main">
 
-    <header class="topbar">
+    <!-- DASHBOARD -->
+    <section id="page-dashboard" class="page">
 
-      <div class="topbar-left">
+      <div class="page-title">
+        <h2>Tableau de bord</h2>
+        <p id="welcomeText">
+          Bienvenue dans votre espace de gestion.
+        </p>
+      </div>
 
-        <button class="mobile-menu-btn"
-                onclick="toggleSidebar()">
-          ☰
-        </button>
+      <div class="stats">
 
-        <div class="topbar-title">
-          Centre de Formation Le Pédagogue
+        <div class="stat">
+          <div class="stat-icon">🎓</div>
+          <div class="stat-title">Étudiants</div>
+          <div id="statEtudiants" class="stat-number">0</div>
+        </div>
+
+        <div class="stat">
+          <div class="stat-icon">👨‍🏫</div>
+          <div class="stat-title">Professeurs</div>
+          <div id="statProfesseurs" class="stat-number">0</div>
+        </div>
+
+        <div class="stat">
+          <div class="stat-icon">🏫</div>
+          <div class="stat-title">Classes</div>
+          <div id="statClasses" class="stat-number">0</div>
+        </div>
+
+        <div class="stat">
+          <div class="stat-icon">📖</div>
+          <div class="stat-title">Matières</div>
+          <div id="statMatieres" class="stat-number">0</div>
+        </div>
+
+        <div class="stat">
+          <div class="stat-icon">📝</div>
+          <div class="stat-title">Devoirs</div>
+          <div id="statDevoirs" class="stat-number">0</div>
+        </div>
+
+        <div class="stat">
+          <div class="stat-icon">⏳</div>
+          <div class="stat-title">En attente</div>
+          <div id="statPending" class="stat-number">0</div>
         </div>
 
       </div>
 
 
-      <div class="topbar-right">
+      <div class="panel">
 
-        <select id="languageSelect"
-                class="language-select"
-                onchange="changeLanguage()">
-          <option value="fr">🇫🇷 Français</option>
-          <option value="ht">🇭🇹 Kreyòl</option>
-        </select>
+        <h3>Accès rapide</h3>
 
+        <div class="quick-grid">
 
-        <button id="installBtn"
-                class="btn btn-primary hidden"
-                onclick="installPWA()">
-          📲 Installer
-        </button>
+          <button class="quick" onclick="quickPage('etudiants')">
+            <strong>🎓 Étudiants</strong>
+            Gérer les étudiants
+          </button>
 
+          <button class="quick" onclick="quickPage('professeurs')">
+            <strong>👨‍🏫 Professeurs</strong>
+            Gérer les enseignants
+          </button>
 
-        <div class="user-menu">
+          <button class="quick" onclick="quickPage('classes')">
+            <strong>🏫 Classes</strong>
+            Gérer les classes
+          </button>
 
-          <div class="avatar"
-               id="userAvatar">
-            U
-          </div>
+          <button class="quick" onclick="quickPage('matieres')">
+            <strong>📖 Matières</strong>
+            Gérer les matières
+          </button>
 
-          <span id="currentUserName">
-            Utilisateur
-          </span>
+          <button class="quick" onclick="quickPage('devoirs')">
+            <strong>📝 Devoirs</strong>
+            Gérer les devoirs
+          </button>
 
-          <button class="btn btn-secondary"
-                  style="padding:7px 9px"
-                  onclick="logout()">
-            Déconnexion
+          <button class="quick" onclick="quickPage('resultats')">
+            <strong>📊 Résultats</strong>
+            Notes et résultats
+          </button>
+
+          <button
+            id="quickUsers"
+            class="quick"
+            onclick="quickPage('utilisateurs')">
+            <strong>👥 Utilisateurs</strong>
+            Accepter les comptes
+          </button>
+
+          <button class="quick" onclick="quickPage('sauvegarde')">
+            <strong>💾 Sauvegarde</strong>
+            Exporter les données
           </button>
 
         </div>
 
       </div>
 
-    </header>
 
+      <div class="panel">
+
+        <h3>État du système</h3>
+
+        <p>
+          <strong>Utilisateur :</strong>
+          <span id="systemUser">-</span>
+        </p>
+
+        <p style="margin-top:8px">
+          <strong>Rôle :</strong>
+          <span id="systemRole">-</span>
+        </p>
+
+        <p style="margin-top:8px">
+          <strong>Statut :</strong>
+          <span id="systemStatus">-</span>
+        </p>
+
+        <p style="margin-top:8px">
+          <strong>Accès administrateur :</strong>
+          <span id="systemAdmin">Non</span>
+        </p>
+
+      </div>
+
+    </section>
+
+
+    <!-- PAGES DYNAMIQUES -->
+    <section id="page-etudiants" class="page hidden"></section>
+    <section id="page-professeurs" class="page hidden"></section>
+    <section id="page-classes" class="page hidden"></section>
+    <section id="page-departements" class="page hidden"></section>
+    <section id="page-filieres" class="page hidden"></section>
+    <section id="page-matieres" class="page hidden"></section>
+    <section id="page-cours" class="page hidden"></section>
+    <section id="page-devoirs" class="page hidden"></section>
+    <section id="page-remises" class="page hidden"></section>
+    <section id="page-corrections" class="page hidden"></section>
+    <section id="page-resultats" class="page hidden"></section>
+    <section id="page-statistiques" class="page hidden"></section>
+    <section id="page-utilisateurs" class="page hidden"></section>
+    <section id="page-sauvegarde" class="page hidden"></section>
 
-    <div class="content">
-
-
-      <!-- =================================================
-           DASHBOARD
-      ================================================= -->
-
-      <section id="page-dashboard"
-               class="page active">
-
-        <div class="page-header">
-
-          <div>
-            <h1>Tableau de bord</h1>
-            <p>Vue générale du Centre de Formation Le Pédagogue.</p>
-          </div>
-
-        </div>
-
-
-        <div class="stats-grid">
-
-          <div class="stat-card">
-            <div class="icon">👨‍🎓</div>
-            <div class="number" id="statEtudiants">0</div>
-            <div class="label">Nombre d'élèves</div>
-          </div>
-
-          <div class="stat-card">
-            <div class="icon">👨‍🏫</div>
-            <div class="number" id="statProfesseurs">0</div>
-            <div class="label">Professeurs</div>
-          </div>
-
-          <div class="stat-card">
-            <div class="icon">🏫</div>
-            <div class="number" id="statClasses">0</div>
-            <div class="label">Classes</div>
-          </div>
-
-          <div class="stat-card">
-            <div class="icon">📚</div>
-            <div class="number" id="statMatieres">0</div>
-            <div class="label">Matières</div>
-          </div>
-
-          <div class="stat-card">
-            <div class="icon">📝</div>
-            <div class="number" id="statDevoirs">0</div>
-            <div class="label">Devoirs</div>
-          </div>
-
-          <div class="stat-card">
-            <div class="icon">📤</div>
-            <div class="number" id="statRemises">0</div>
-            <div class="label">Remises</div>
-          </div>
-
-          <div class="stat-card">
-            <div class="icon">📊</div>
-            <div class="number" id="statResultats">0</div>
-            <div class="label">Résultats</div>
-          </div>
-
-          <div class="stat-card">
-            <div class="icon">⏳</div>
-            <div class="number" id="statPending">0</div>
-            <div class="label">Utilisateurs en attente</div>
-          </div>
-
-        </div>
-
-
-        <div class="panel">
-
-          <h3>Accès rapide</h3>
-
-          <div class="quick-grid">
-
-            <div class="quick-card"
-                 onclick="openPage('etudiants')">
-              <strong>👨‍🎓 Gestion des élèves</strong>
-              <span>Ajouter, modifier et consulter les élèves.</span>
-            </div>
-
-            <div class="quick-card"
-                 onclick="openPage('professeurs')">
-              <strong>👨‍🏫 Gestion des professeurs</strong>
-              <span>Gérer le personnel enseignant.</span>
-            </div>
-
-            <div class="quick-card"
-                 onclick="openPage('classes')">
-              <strong>🏫 Classes</strong>
-              <span>Organiser les classes et groupes.</span>
-            </div>
-
-            <div class="quick-card"
-                 onclick="openPage('matieres')">
-              <strong>📚 Matières</strong>
-              <span>Gérer les matières et cours.</span>
-            </div>
-
-            <div class="quick-card"
-                 onclick="openPage('devoirs')">
-              <strong>📝 Devoirs</strong>
-              <span>Créer et suivre les devoirs.</span>
-            </div>
-
-            <div class="quick-card"
-                 onclick="openPage('resultats')">
-              <strong>📊 Résultats</strong>
-              <span>Gérer les notes et résultats.</span>
-            </div>
-
-          </div>
-
-        </div>
-
-      </section>
-
-
-      <!-- =================================================
-           ETUDIANTS
-      ================================================= -->
-
-      <section id="page-etudiants"
-               class="page">
-
-        <div class="page-header">
-
-          <div>
-            <h1>Élèves</h1>
-            <p>Gestion des élèves du centre.</p>
-          </div>
-
-          <button id="addEtudiantBtn"
-                  class="btn btn-primary"
-                  onclick="openEntityModal('etudiants')">
-            + Ajouter un élève
-          </button>
-
-        </div>
-
-        <div class="panel">
-
-          <div class="toolbar">
-
-            <div class="search-box">
-              <input id="searchEtudiants"
-                     placeholder="Rechercher..."
-                     oninput="filterTable('etudiants')">
-            </div>
-
-          </div>
-
-          <div class="table-wrap">
-
-            <table>
-
-              <thead>
-                <tr>
-                  <th>Nom</th>
-                  <th>Email</th>
-                  <th>Téléphone</th>
-                  <th>Classe</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-
-              <tbody id="tableEtudiants"></tbody>
-
-            </table>
-
-          </div>
-
-        </div>
-
-      </section>
-
-
-      <!-- =================================================
-           PROFESSEURS
-      ================================================= -->
-
-      <section id="page-professeurs"
-               class="page">
-
-        <div class="page-header">
-
-          <div>
-            <h1>Professeurs</h1>
-            <p>Gestion du personnel enseignant.</p>
-          </div>
-
-          <button id="addProfesseurBtn"
-                  class="btn btn-primary"
-                  onclick="openEntityModal('professeurs')">
-            + Ajouter un professeur
-          </button>
-
-        </div>
-
-        <div class="panel">
-
-          <div class="toolbar">
-
-            <div class="search-box">
-              <input id="searchProfesseurs"
-                     placeholder="Rechercher..."
-                     oninput="filterTable('professeurs')">
-            </div>
-
-          </div>
-
-          <div class="table-wrap">
-
-            <table>
-
-              <thead>
-                <tr>
-                  <th>Nom</th>
-                  <th>Email</th>
-                  <th>Téléphone</th>
-                  <th>Spécialité</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-
-              <tbody id="tableProfesseurs"></tbody>
-
-            </table>
-
-          </div>
-
-        </div>
-
-      </section>
-
-
-      <!-- =================================================
-           CLASSES
-      ================================================= -->
-
-      <section id="page-classes"
-               class="page">
-
-        <div class="page-header">
-
-          <div>
-            <h1>Classes</h1>
-            <p>Gestion des classes et groupes.</p>
-          </div>
-
-          <button class="btn btn-primary"
-                  onclick="openEntityModal('classes')">
-            + Ajouter une classe
-          </button>
-
-        </div>
-
-        <div class="panel">
-
-          <div class="search-box">
-            <input id="searchClasses"
-                   placeholder="Rechercher..."
-                   oninput="filterTable('classes')">
-          </div>
-
-          <br>
-
-          <div class="table-wrap">
-
-            <table>
-
-              <thead>
-                <tr>
-                  <th>Nom</th>
-                  <th>Niveau</th>
-                  <th>Année</th>
-                  <th>Description</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-
-              <tbody id="tableClasses"></tbody>
-
-            </table>
-
-          </div>
-
-        </div>
-
-      </section>
-
-
-      <!-- =================================================
-           MATIERES
-      ================================================= -->
-
-      <section id="page-matieres"
-               class="page">
-
-        <div class="page-header">
-
-          <div>
-            <h1>Matières</h1>
-            <p>Gestion des matières enseignées.</p>
-          </div>
-
-          <button class="btn btn-primary"
-                  onclick="openEntityModal('matieres')">
-            + Ajouter une matière
-          </button>
-
-        </div>
-
-        <div class="panel">
-
-          <div class="search-box">
-            <input id="searchMatieres"
-                   placeholder="Rechercher..."
-                   oninput="filterTable('matieres')">
-          </div>
-
-          <br>
-
-          <div class="table-wrap">
-
-            <table>
-
-              <thead>
-                <tr>
-                  <th>Nom</th>
-                  <th>Code</th>
-                  <th>Coefficient</th>
-                  <th>Description</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-
-              <tbody id="tableMatieres"></tbody>
-
-            </table>
-
-          </div>
-
-        </div>
-
-      </section>
-
-
-      <!-- =================================================
-           DEVOIRS
-      ================================================= -->
-
-      <section id="page-devoirs"
-               class="page">
-
-        <div class="page-header">
-
-          <div>
-            <h1>Devoirs</h1>
-            <p>Création et suivi des devoirs.</p>
-          </div>
-
-          <button class="btn btn-primary"
-                  onclick="openEntityModal('devoirs')">
-            + Ajouter un devoir
-          </button>
-
-        </div>
-
-        <div class="panel">
-
-          <div class="search-box">
-            <input id="searchDevoirs"
-                   placeholder="Rechercher..."
-                   oninput="filterTable('devoirs')">
-          </div>
-
-          <br>
-
-          <div class="table-wrap">
-
-            <table>
-
-              <thead>
-                <tr>
-                  <th>Titre</th>
-                  <th>Matière</th>
-                  <th>Professeur</th>
-                  <th>Date limite</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-
-              <tbody id="tableDevoirs"></tbody>
-
-            </table>
-
-          </div>
-
-        </div>
-
-      </section>
-
-
-      <!-- =================================================
-           REMISES
-      ================================================= -->
-
-      <section id="page-remises"
-               class="page">
-
-        <div class="page-header">
-
-          <div>
-            <h1>Remises</h1>
-            <p>Travaux remis par les élèves.</p>
-          </div>
-
-        </div>
-
-        <div class="panel">
-
-          <div class="search-box">
-            <input id="searchRemises"
-                   placeholder="Rechercher..."
-                   oninput="filterTable('remises')">
-          </div>
-
-          <br>
-
-          <div class="table-wrap">
-
-            <table>
-
-              <thead>
-                <tr>
-                  <th>Élève</th>
-                  <th>Devoir</th>
-                  <th>Professeur</th>
-                  <th>Note</th>
-                  <th>Correction</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-
-              <tbody id="tableRemises"></tbody>
-
-            </table>
-
-          </div>
-
-        </div>
-
-      </section>
-
-
-      <!-- =================================================
-           RESULTATS
-      ================================================= -->
-
-      <section id="page-resultats"
-               class="page">
-
-        <div class="page-header">
-
-          <div>
-            <h1>Résultats</h1>
-            <p>Notes et résultats académiques.</p>
-          </div>
-
-          <button class="btn btn-primary"
-                  onclick="openEntityModal('resultats')">
-            + Ajouter un résultat
-          </button>
-
-        </div>
-
-        <div class="panel">
-
-          <div class="table-wrap">
-
-            <table>
-
-              <thead>
-                <tr>
-                  <th>Élève</th>
-                  <th>Matière</th>
-                  <th>Note /20</th>
-                  <th>Note /100</th>
-                  <th>Professeur</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-
-              <tbody id="tableResultats"></tbody>
-
-            </table>
-
-          </div>
-
-        </div>
-
-      </section>
-
-
-      <!-- =================================================
-           STATISTIQUES
-      ================================================= -->
-
-      <section id="page-statistiques"
-               class="page">
-
-        <div class="page-header">
-
-          <div>
-            <h1>Statistiques</h1>
-            <p>Vue statistique de l'établissement.</p>
-          </div>
-
-        </div>
-
-        <div class="stats-grid">
-
-          <div class="stat-card">
-            <div class="icon">👨‍🎓</div>
-            <div class="number" id="statsTotalStudents">0</div>
-            <div class="label">Élèves</div>
-          </div>
-
-          <div class="stat-card">
-            <div class="icon">👨‍🏫</div>
-            <div class="number" id="statsTotalTeachers">0</div>
-            <div class="label">Professeurs</div>
-          </div>
-
-          <div class="stat-card">
-            <div class="icon">📝</div>
-            <div class="number" id="statsTotalAssignments">0</div>
-            <div class="label">Devoirs</div>
-          </div>
-
-          <div class="stat-card">
-            <div class="icon">📊</div>
-            <div class="number" id="statsTotalResults">0</div>
-            <div class="label">Résultats</div>
-          </div>
-
-        </div>
-
-        <div class="panel">
-
-          <h3>Résumé académique</h3>
-
-          <p id="statisticsText">
-            Chargement des statistiques...
-          </p>
-
-        </div>
-
-      </section>
-
-
-      <!-- =================================================
-           USERS
-      ================================================= -->
-
-      <section id="page-users"
-               class="page">
-
-        <div class="page-header">
-
-          <div>
-            <h1>Utilisateurs</h1>
-            <p>Gestion des comptes et validation des inscriptions.</p>
-          </div>
-
-        </div>
-
-        <div class="panel">
-
-          <div class="toolbar">
-
-            <div class="search-box">
-              <input id="searchUsers"
-                     placeholder="Rechercher un utilisateur..."
-                     oninput="filterTable('users')">
-            </div>
-
-          </div>
-
-          <div class="table-wrap">
-
-            <table>
-
-              <thead>
-
-                <tr>
-                  <th>Nom</th>
-                  <th>Email</th>
-                  <th>Rôle</th>
-                  <th>Statut</th>
-                  <th>UID</th>
-                  <th>Actions</th>
-                </tr>
-
-              </thead>
-
-              <tbody id="tableUsers"></tbody>
-
-            </table>
-
-          </div>
-
-        </div>
-
-      </section>
-
-
-      <!-- =================================================
-           CONFIGURATION
-      ================================================= -->
-
-      <section id="page-configuration"
-               class="page">
-
-        <div class="page-header">
-
-          <div>
-            <h1>Données / Sauvegarde</h1>
-            <p>Informations et outils de gestion des données.</p>
-          </div>
-
-        </div>
-
-        <div class="panel">
-
-          <h3>Base de données</h3>
-
-          <p style="margin-bottom:15px">
-            Les données de l'application sont enregistrées dans
-            Firebase Firestore.
-          </p>
-
-          <button class="btn btn-primary"
-                  onclick="refreshAll()">
-            🔄 Actualiser les données
-          </button>
-
-          <button class="btn btn-secondary"
-                  onclick="exportData()">
-            📥 Exporter les données
-          </button>
-
-        </div>
-
-        <br>
-
-        <div class="panel">
-
-          <h3>Informations Firebase</h3>
-
-          <p>
-            Projet :
-            <strong>centre-de-formation-le-pe</strong>
-          </p>
-
-          <p style="margin-top:8px">
-            Authentification :
-            <strong>Email / Mot de passe + Google</strong>
-          </p>
-
-          <p style="margin-top:8px">
-            Base de données :
-            <strong>Cloud Firestore</strong>
-          </p>
-
-        </div>
-
-      </section>
-
-    </div>
   </main>
 
 </section>
 
 
-<!-- =====================================================
-     MODAL
-===================================================== -->
-
-<div id="entityModal"
-     class="modal">
+<!-- MENU UTILISATEUR -->
+<div id="userMenu" class="modal hidden">
 
   <div class="modal-box">
 
-    <div class="modal-header">
+    <button class="modal-close" onclick="closeUserMenu()">×</button>
 
-      <h2 id="modalTitle">
-        Ajouter
-      </h2>
+    <h3>Mon compte</h3>
 
-      <button class="close"
-              onclick="closeModal()">
-        ✕
+    <p>
+      <strong>Nom :</strong>
+      <span id="menuName">-</span>
+    </p>
+
+    <p>
+      <strong>E-mail :</strong>
+      <span id="menuEmail">-</span>
+    </p>
+
+    <p>
+      <strong>Rôle :</strong>
+      <span id="menuRole">-</span>
+    </p>
+
+    <p>
+      <strong>Statut :</strong>
+      <span id="menuStatus">-</span>
+    </p>
+
+    <div style="margin-top:20px">
+      <button class="btn btn-red full" onclick="logout()">
+        🚪 Déconnexion
       </button>
-
     </div>
-
-    <form id="entityForm">
-
-      <div id="modalFields"></div>
-
-      <div class="modal-footer">
-
-        <button type="button"
-                class="btn btn-secondary"
-                onclick="closeModal()">
-          Annuler
-        </button>
-
-        <button type="submit"
-                class="btn btn-primary">
-          Enregistrer
-        </button>
-
-      </div>
-
-    </form>
 
   </div>
 
 </div>
 
 
-<!-- =====================================================
-     TOAST
-===================================================== -->
+<!-- INSTALLATION -->
+<div id="installModal" class="modal hidden">
 
-<div id="toast"></div>
+  <div class="modal-box">
+
+    <button
+      class="modal-close"
+      onclick="closeInstallModal()">
+      ×
+    </button>
+
+    <h3>📲 Installer l'application</h3>
+
+    <p>
+      L'installation automatique n'est pas toujours disponible
+      dans Chrome Android.
+    </p>
+
+    <p>
+      <strong>Sur Android :</strong>
+    </p>
+
+    <p>
+      1. Ouvrez le menu <strong>⋮</strong> de Chrome.<br>
+      2. Cherchez <strong>Installer l'application</strong>
+      ou <strong>Ajouter à l'écran d'accueil</strong>.<br>
+      3. Validez l'installation.
+    </p>
+
+    <button
+      class="btn btn-green full"
+      onclick="closeInstallModal()">
+      Compris
+    </button>
+
+  </div>
+
+</div>
 
 
-<!-- =====================================================
-     FIREBASE
-===================================================== -->
+<div id="toast" class="hidden"></div>
 
+
+<!-- FIREBASE -->
 <script type="module">
 
 import {
@@ -1805,34 +1003,35 @@ import {
 
 import {
   getAuth,
-  onAuthStateChanged,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  signInWithPopup,
   GoogleAuthProvider,
+  signInWithPopup,
+  onAuthStateChanged,
   signOut,
-  updateProfile
+  setPersistence,
+  browserLocalPersistence
 } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 
 import {
   getFirestore,
-  collection,
   doc,
+  setDoc,
   getDoc,
+  collection,
   getDocs,
   addDoc,
-  setDoc,
   updateDoc,
   deleteDoc,
   query,
-  orderBy,
+  where,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
 
 /* =====================================================
-   FIREBASE CONFIG
-===================================================== */
+   FIREBASE CONFIGURATION
+   ===================================================== */
 
 const firebaseConfig = {
   apiKey: "AIzaSyAhrtcVaEZ7oU-p4Ihzl0APX2ccXKi4jBU",
@@ -1843,200 +1042,255 @@ const firebaseConfig = {
   appId: "1:11834103838:web:b82c994e78486cd313760f"
 };
 
-
-/* =====================================================
-   INITIALISATION
-===================================================== */
-
 const app = initializeApp(firebaseConfig);
 
 const auth = getAuth(app);
 
 const db = getFirestore(app);
 
-const googleProvider = new GoogleAuthProvider();
+setPersistence(auth,browserLocalPersistence);
 
 
 /* =====================================================
-   ETAT GLOBAL
-===================================================== */
+   VARIABLES
+   ===================================================== */
+
+const ADMIN_EMAIL =
+  "centredeformationlepedagogue@gmail.com";
 
 let currentUser = null;
 let currentUserData = null;
-let currentEntity = null;
-let currentEditId = null;
-
 let deferredPrompt = null;
 
-const dataCache = {
-  etudiants:[],
-  professeurs:[],
-  classes:[],
-  matieres:[],
-  devoirs:[],
-  remises:[],
-  resultats:[],
-  users:[]
+
+/* =====================================================
+   PWA INSTALLATION
+   ===================================================== */
+
+window.addEventListener(
+  "beforeinstallprompt",
+  event => {
+
+    event.preventDefault();
+
+    deferredPrompt = event;
+
+    const btn =
+      document.getElementById("installBtn");
+
+    if(btn){
+      btn.style.display = "block";
+      btn.textContent =
+        "📲 Installer l'application";
+    }
+  }
+);
+
+
+window.addEventListener(
+  "appinstalled",
+  () => {
+
+    deferredPrompt = null;
+
+    const btn =
+      document.getElementById("installBtn");
+
+    if(btn){
+      btn.textContent = "✅ Application installée";
+    }
+
+    showToast("Application installée avec succès.");
+  }
+);
+
+
+window.installApplication = async function(){
+
+  if(
+    window.matchMedia(
+      "(display-mode: standalone)"
+    ).matches
+  ){
+    showToast("L'application est déjà installée.");
+    return;
+  }
+
+  if(deferredPrompt){
+
+    deferredPrompt.prompt();
+
+    const result =
+      await deferredPrompt.userChoice;
+
+    if(result.outcome === "accepted"){
+      showToast("Installation acceptée.");
+    }
+
+    deferredPrompt = null;
+
+    return;
+  }
+
+  document
+    .getElementById("installModal")
+    .classList.remove("hidden");
+};
+
+
+window.closeInstallModal = function(){
+
+  document
+    .getElementById("installModal")
+    .classList.add("hidden");
 };
 
 
 /* =====================================================
-   COLLECTIONS
-===================================================== */
+   SERVICE WORKER
+   ===================================================== */
 
-const collections = [
-  "etudiants",
-  "professeurs",
-  "classes",
-  "matieres",
-  "devoirs",
-  "remises",
-  "resultats",
-  "users"
-];
+if("serviceWorker" in navigator){
 
+  window.addEventListener(
+    "load",
+    () => {
 
-/* =====================================================
-   UTILITAIRES
-===================================================== */
+      navigator.serviceWorker
+        .register("./service-worker.js")
+        .catch(error => {
+          console.error(
+            "Service Worker:",
+            error
+          );
+        });
 
-function safe(value){
-  if(value === undefined || value === null){
-    return "";
-  }
-
-  return String(value);
-}
-
-function escapeHTML(value){
-  return safe(value)
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;")
-    .replace(/'/g,"&#039;");
-}
-
-function toast(message,type=""){
-  const container=document.getElementById("toast");
-
-  const item=document.createElement("div");
-
-  item.className="toast-item "+type;
-
-  item.textContent=message;
-
-  container.appendChild(item);
-
-  setTimeout(()=>{
-    item.remove();
-  },4000);
-}
-
-function showAuthMessage(message,type="error"){
-  const box=document.getElementById("authMessage");
-
-  box.textContent=message;
-
-  box.className="auth-message "+type;
-}
-
-function clearAuthMessage(){
-  const box=document.getElementById("authMessage");
-
-  box.textContent="";
-
-  box.className="auth-message";
-}
-
-function friendlyError(error){
-
-  console.error(error);
-
-  const code=error?.code || "";
-
-  if(code.includes("permission-denied")){
-    return "Accès refusé par les règles Firebase.";
-  }
-
-  if(code.includes("email-already-in-use")){
-    return "Cette adresse email est déjà utilisée.";
-  }
-
-  if(code.includes("invalid-credential")){
-    return "Email ou mot de passe incorrect.";
-  }
-
-  if(code.includes("popup-closed-by-user")){
-    return "La fenêtre Google a été fermée.";
-  }
-
-  if(code.includes("popup-blocked")){
-    return "Le navigateur a bloqué la fenêtre Google.";
-  }
-
-  if(code.includes("weak-password")){
-    return "Le mot de passe doit contenir au moins 6 caractères.";
-  }
-
-  if(code.includes("network-request-failed")){
-    return "Problème de connexion Internet.";
-  }
-
-  return "Une erreur est survenue. Vérifiez la console si nécessaire.";
+    }
+  );
 }
 
 
 /* =====================================================
-   AUTH FORM
-===================================================== */
+   AUTHENTIFICATION
+   ===================================================== */
 
-window.showAuthForm=function(type){
+window.showRegister = function(){
 
-  const loginForm=document.getElementById("loginForm");
-  const registerForm=document.getElementById("registerForm");
+  document
+    .getElementById("loginBox")
+    .classList.add("hidden");
 
-  const loginTab=document.getElementById("loginTab");
-  const registerTab=document.getElementById("registerTab");
+  document
+    .getElementById("registerBox")
+    .classList.remove("hidden");
+};
 
-  clearAuthMessage();
 
-  if(type==="login"){
+window.showLogin = function(){
 
-    loginForm.classList.remove("hidden");
-    registerForm.classList.add("hidden");
+  document
+    .getElementById("registerBox")
+    .classList.add("hidden");
 
-    loginTab.classList.add("active");
-    registerTab.classList.remove("active");
+  document
+    .getElementById("loginBox")
+    .classList.remove("hidden");
+};
 
-  }else{
 
-    loginForm.classList.add("hidden");
-    registerForm.classList.remove("hidden");
+window.registerAccount = async function(){
 
-    loginTab.classList.remove("active");
-    registerTab.classList.add("active");
+  const name =
+    document
+      .getElementById("registerName")
+      .value.trim();
 
+  const email =
+    document
+      .getElementById("registerEmail")
+      .value.trim();
+
+  const password =
+    document
+      .getElementById("registerPassword")
+      .value;
+
+  if(!name || !email || !password){
+
+    showToast(
+      "Veuillez remplir tous les champs."
+    );
+
+    return;
+  }
+
+  if(password.length < 6){
+
+    showToast(
+      "Le mot de passe doit contenir au moins 6 caractères."
+    );
+
+    return;
+  }
+
+  try{
+
+    const credential =
+      await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
+    await setDoc(
+      doc(db,"users",credential.user.uid),
+      {
+        uid:credential.user.uid,
+        name:name,
+        email:email,
+        role:"eleve",
+        status:"attente",
+        createdAt:serverTimestamp()
+      }
+    );
+
+    showToast(
+      "Compte créé. Attendez l'acceptation de l'administrateur."
+    );
+
+    await signOut(auth);
+
+    showLogin();
+
+  }catch(error){
+
+    console.error(error);
+
+    showToast(
+      getFriendlyError(error)
+    );
   }
 };
 
 
-/* =====================================================
-   LOGIN EMAIL
-===================================================== */
+window.loginEmailPassword = async function(){
 
-document.getElementById("loginForm").addEventListener("submit",async(e)=>{
+  const email =
+    document
+      .getElementById("loginEmail")
+      .value.trim();
 
-  e.preventDefault();
-
-  clearAuthMessage();
-
-  const email=document.getElementById("loginEmail").value.trim();
-
-  const password=document.getElementById("loginPassword").value;
+  const password =
+    document
+      .getElementById("loginPassword")
+      .value;
 
   if(!email || !password){
-    showAuthMessage("Veuillez remplir tous les champs.");
+
+    showToast(
+      "Entrez votre e-mail et votre mot de passe."
+    );
+
     return;
   }
 
@@ -2050,335 +1304,198 @@ document.getElementById("loginForm").addEventListener("submit",async(e)=>{
 
   }catch(error){
 
-    showAuthMessage(friendlyError(error));
+    console.error(error);
 
-  }
-
-});
-
-
-/* =====================================================
-   REGISTER EMAIL
-===================================================== */
-
-document.getElementById("registerForm").addEventListener("submit",async(e)=>{
-
-  e.preventDefault();
-
-  clearAuthMessage();
-
-  const name=document.getElementById("registerName").value.trim();
-
-  const email=document.getElementById("registerEmail").value.trim();
-
-  const password=document.getElementById("registerPassword").value;
-
-  const password2=document.getElementById("registerPassword2").value;
-
-  if(password!==password2){
-
-    showAuthMessage("Les deux mots de passe ne correspondent pas.");
-
-    return;
-  }
-
-  try{
-
-    const credential=
-      await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-
-    const user=credential.user;
-
-    if(name){
-
-      await updateProfile(user,{
-        displayName:name
-      });
-
-    }
-
-    await setDoc(
-      doc(db,"users",user.uid),
-      {
-        uid:user.uid,
-        nom:name,
-        name:name,
-        email:user.email || email,
-        role:"eleve",
-        status:"attente",
-        provider:"password",
-        createdAt:serverTimestamp()
-      }
+    showToast(
+      getFriendlyError(error)
     );
-
-    toast(
-      "Compte créé. Votre inscription est en attente d'acceptation.",
-      "success"
-    );
-
-  }catch(error){
-
-    showAuthMessage(friendlyError(error));
-
   }
-
-});
-
-
-/* =====================================================
-   GOOGLE LOGIN
-===================================================== */
-
-window.loginGoogle=async function(){
-
-  clearAuthMessage();
-
-  try{
-
-    const result=
-      await signInWithPopup(
-        auth,
-        googleProvider
-      );
-
-    await ensureUserProfile(result.user);
-
-  }catch(error){
-
-    showAuthMessage(friendlyError(error));
-
-  }
-
 };
 
 
-/* =====================================================
-   GOOGLE REGISTER
-===================================================== */
-
-window.registerGoogle=async function(){
-
-  clearAuthMessage();
+window.loginGoogle = async function(){
 
   try{
 
-    const result=
+    const provider =
+      new GoogleAuthProvider();
+
+    const result =
       await signInWithPopup(
         auth,
-        googleProvider
+        provider
       );
 
-    await ensureUserProfile(result.user);
+    const user =
+      result.user;
 
-  }catch(error){
+    const userRef =
+      doc(db,"users",user.uid);
 
-    showAuthMessage(friendlyError(error));
+    const snap =
+      await getDoc(userRef);
 
-  }
+    if(!snap.exists()){
 
-};
-
-
-/* =====================================================
-   CREER PROFILE USER SI ABSENT
-===================================================== */
-
-async function ensureUserProfile(user){
-
-  const ref=doc(db,"users",user.uid);
-
-  const snapshot=await getDoc(ref);
-
-  if(snapshot.exists()){
-
-    return snapshot.data();
-
-  }
-
-  const data={
-    uid:user.uid,
-    nom:user.displayName || "",
-    name:user.displayName || "",
-    email:user.email || "",
-    role:"eleve",
-    status:"attente",
-    provider:"google",
-    createdAt:serverTimestamp()
-  };
-
-  await setDoc(ref,data);
-
-  return data;
-}
-
-
-/* =====================================================
-   AUTH STATE
-===================================================== */
-
-onAuthStateChanged(auth,async(user)=>{
-
-  try{
-
-    if(!user){
-
-      currentUser=null;
-      currentUserData=null;
-
-      document
-        .getElementById("authPage")
-        .classList.remove("hidden");
-
-      document
-        .getElementById("appPage")
-        .classList.add("hidden");
-
-      return;
-    }
-
-    currentUser=user;
-
-    const ref=doc(db,"users",user.uid);
-
-    let snapshot=await getDoc(ref);
-
-    if(!snapshot.exists()){
-
-      /*
-       * Cas du compte Google / premier accès.
-       */
-
-      await ensureUserProfile(user);
-
-      snapshot=await getDoc(ref);
-    }
-
-    if(!snapshot.exists()){
-
-      await signOut(auth);
-
-      showAuthMessage(
-        "Impossible de créer votre profil.",
-        "error"
-      );
-
-      return;
-    }
-
-    currentUserData=snapshot.data();
-
-    const email=(user.email || "").toLowerCase();
-
-    const isMainAdmin=
-      email==="centredeformationlepedagogue@gmail.com";
-
-    const isAdmin=
-      isMainAdmin ||
-      (
-        currentUserData.role==="administrateur" &&
-        currentUserData.status==="accepted"
-      );
-
-    const accepted=
-      isAdmin ||
-      currentUserData.status==="accepted";
-
-    if(!accepted){
-
-      document
-        .getElementById("authPage")
-        .classList.remove("hidden");
-
-      document
-        .getElementById("appPage")
-        .classList.add("hidden");
-
-      await signOut(auth);
-
-      showAuthMessage(
-        "Votre compte est encore en attente d'acceptation par l'administrateur.",
-        "error"
-      );
-
-      return;
-    }
-
-    /*
-     * Si email principal admin, on s'assure que
-     * son profile est administrateur / accepted.
-     */
-
-    if(isMainAdmin){
-
-      if(
-        currentUserData.role!=="administrateur" ||
-        currentUserData.status!=="accepted"
-      ){
-
-        try{
-
-          await setDoc(
-            ref,
-            {
-              ...currentUserData,
-              uid:user.uid,
-              email:user.email,
-              role:"administrateur",
-              status:"accepted",
-              nom:user.displayName || currentUserData.nom || "",
-              updatedAt:serverTimestamp()
-            },
-            {merge:true}
-          );
-
-          const refreshed=await getDoc(ref);
-
-          if(refreshed.exists()){
-            currentUserData=refreshed.data();
-          }
-
-        }catch(error){
-
-          console.error(
-            "Impossible de mettre à jour le profil admin:",
-            error
-          );
-
+      await setDoc(
+        userRef,
+        {
+          uid:user.uid,
+          name:user.displayName || "Utilisateur",
+          email:user.email,
+          role:"eleve",
+          status:"attente",
+          createdAt:serverTimestamp()
         }
-      }
-    }
+      );
 
-    openApplication();
+      await signOut(auth);
+
+      showToast(
+        "Compte Google créé. Attendez l'acceptation de l'administrateur."
+      );
+    }
 
   }catch(error){
 
     console.error(error);
 
-    document
-      .getElementById("authPage")
-      .classList.remove("hidden");
+    showToast(
+      getFriendlyError(error)
+    );
+  }
+};
+
+
+window.logout = async function(){
+
+  try{
+
+    await signOut(auth);
 
     document
-      .getElementById("appPage")
+      .getElementById("userMenu")
       .classList.add("hidden");
 
-    showAuthMessage(
-      friendlyError(error),
-      "error"
-    );
+  }catch(error){
+
+    console.error(error);
 
   }
-
-});
+};
 
 
 /* =====================================================
-   OUVRIR APPLICATION
-===================================================== */
+   AUTH STATE
+   ===================================================== */
+
+onAuthStateChanged(
+  auth,
+  async user => {
+
+    if(!user){
+
+      currentUser = null;
+      currentUserData = null;
+
+      document
+        .getElementById("authPage")
+        .classList.remove("hidden");
+
+      document
+        .getElementById("appPage")
+        .classList.add("hidden");
+
+      return;
+    }
+
+    try{
+
+      const ref =
+        doc(db,"users",user.uid);
+
+      const snap =
+        await getDoc(ref);
+
+      let data;
+
+      if(!snap.exists()){
+
+        const isAdmin =
+          user.email?.toLowerCase() ===
+          ADMIN_EMAIL.toLowerCase();
+
+        data = {
+          uid:user.uid,
+          name:user.displayName || "Administrateur",
+          email:user.email,
+          role:isAdmin
+            ? "administrateur"
+            : "eleve",
+          status:isAdmin
+            ? "accepted"
+            : "attente",
+          createdAt:serverTimestamp()
+        };
+
+        await setDoc(ref,data);
+
+      }else{
+
+        data = snap.data();
+
+      }
+
+      const isAdmin =
+        user.email?.toLowerCase() ===
+          ADMIN_EMAIL.toLowerCase()
+        ||
+        (
+          data.role === "administrateur"
+          &&
+          data.status === "accepted"
+        );
+
+      if(
+        !isAdmin &&
+        data.status !== "accepted"
+      ){
+
+        await signOut(auth);
+
+        showToast(
+          "Votre compte est en attente d'acceptation par l'administrateur."
+        );
+
+        return;
+      }
+
+      currentUser = user;
+
+      currentUserData = {
+        ...data,
+        isAdmin:isAdmin
+      };
+
+      openApplication();
+
+    }catch(error){
+
+      console.error(error);
+
+      await signOut(auth);
+
+      showToast(
+        "Impossible de charger votre profil. Vérifiez les règles Firebase."
+      );
+    }
+  }
+);
+
+
+/* =====================================================
+   OPEN APP
+   ===================================================== */
 
 function openApplication(){
 
@@ -2390,1138 +1507,1046 @@ function openApplication(){
     .getElementById("appPage")
     .classList.remove("hidden");
 
-  const name=
-    currentUserData?.nom ||
-    currentUserData?.name ||
+  const name =
+    currentUserData.name ||
     currentUser?.displayName ||
     currentUser?.email ||
     "Utilisateur";
 
-  document.getElementById("currentUserName").textContent=name;
-
-  document.getElementById("userAvatar").textContent=
-    name.charAt(0).toUpperCase();
-
-  const isAdminUser=
-    currentUserData?.role==="administrateur" ||
-    (currentUser?.email || "").toLowerCase()
-      ==="centredeformationlepedagogue@gmail.com";
+  document
+    .getElementById("headerUserName")
+    .textContent = name;
 
   document
-    .getElementById("adminMenu")
-    .classList.toggle("hidden",!isAdminUser);
+    .getElementById("systemUser")
+    .textContent =
+      currentUser?.email || "-";
 
-  if(!isAdminUser){
+  document
+    .getElementById("systemRole")
+    .textContent =
+      currentUserData.role || "-";
 
-    document
-      .getElementById("addEtudiantBtn")
-      ?.classList.add("hidden");
+  document
+    .getElementById("systemStatus")
+    .textContent =
+      currentUserData.status || "-";
 
-    document
-      .getElementById("addProfesseurBtn")
-      ?.classList.add("hidden");
+  document
+    .getElementById("systemAdmin")
+    .textContent =
+      currentUserData.isAdmin
+        ? "Oui"
+        : "Non";
 
+  document
+    .getElementById("menuName")
+    .textContent =
+      name;
+
+  document
+    .getElementById("menuEmail")
+    .textContent =
+      currentUser?.email || "-";
+
+  document
+    .getElementById("menuRole")
+    .textContent =
+      currentUserData.role || "-";
+
+  document
+    .getElementById("menuStatus")
+    .textContent =
+      currentUserData.status || "-";
+
+  const usersMenu =
+    document.getElementById("usersMenu");
+
+  const quickUsers =
+    document.getElementById("quickUsers");
+
+  if(currentUserData.isAdmin){
+
+    usersMenu.classList.remove("hidden");
+
+    quickUsers.classList.remove("hidden");
+
+  }else{
+
+    usersMenu.classList.add("hidden");
+
+    quickUsers.classList.add("hidden");
   }
 
-  openPage("dashboard");
-
-  refreshAll();
-
+  loadDashboard();
 }
 
 
 /* =====================================================
-   LOGOUT
-===================================================== */
+   NAVIGATION
+   ===================================================== */
 
-window.logout=async function(){
-
-  try{
-
-    await signOut(auth);
-
-    toast("Déconnexion réussie.","success");
-
-  }catch(error){
-
-    toast(friendlyError(error),"error");
-
-  }
-
-};
-
-
-/* =====================================================
-   SIDEBAR
-===================================================== */
-
-window.toggleSidebar=function(){
+window.toggleSidebar = function(){
 
   document
     .getElementById("sidebar")
     .classList.toggle("open");
-
 };
 
 
-/* =====================================================
-   OPEN PAGE
-===================================================== */
-
-window.openPage=function(page){
+window.showPage = async function(
+  page,
+  button
+){
 
   document
     .querySelectorAll(".page")
-    .forEach(el=>el.classList.remove("active"));
+    .forEach(p =>
+      p.classList.add("hidden")
+    );
 
-  const target=
-    document.getElementById("page-"+page);
+  const target =
+    document.getElementById(
+      "page-" + page
+    );
 
-  if(target){
-    target.classList.add("active");
-  }
+  if(!target)return;
+
+  target.classList.remove("hidden");
 
   document
-    .querySelectorAll(".menu button[data-page]")
-    .forEach(btn=>{
-      btn.classList.toggle(
-        "active",
-        btn.dataset.page===page
-      );
-    });
+    .querySelectorAll(".menu-btn")
+    .forEach(btn =>
+      btn.classList.remove("active")
+    );
+
+  if(button){
+    button.classList.add("active");
+  }
 
   document
     .getElementById("sidebar")
     .classList.remove("open");
 
-  if(page==="users"){
-    loadCollection("users");
+  if(page === "dashboard")
+    loadDashboard();
+
+  else
+    loadModule(page);
+};
+
+
+window.quickPage = function(page){
+
+  const button =
+    [...document.querySelectorAll(".menu-btn")]
+      .find(
+        b =>
+          b.getAttribute("onclick") &&
+          b.getAttribute("onclick")
+            .includes("'" + page + "'")
+      );
+
+  showPage(page,button);
+};
+
+
+/* =====================================================
+   MODULE GENERATOR
+   ===================================================== */
+
+const moduleInfo = {
+
+  etudiants:{
+    title:"Gestion des étudiants",
+    collection:"etudiants",
+    icon:"🎓",
+    fields:[
+      ["nom","Nom complet","text"],
+      ["email","E-mail","email"],
+      ["telephone","Téléphone","text"],
+      ["classe","Classe","text"]
+    ]
+  },
+
+  professeurs:{
+    title:"Gestion des professeurs",
+    collection:"professeurs",
+    icon:"👨‍🏫",
+    fields:[
+      ["nom","Nom complet","text"],
+      ["email","E-mail","email"],
+      ["telephone","Téléphone","text"],
+      ["specialite","Spécialité","text"]
+    ]
+  },
+
+  classes:{
+    title:"Gestion des classes",
+    collection:"classes",
+    icon:"🏫",
+    fields:[
+      ["nom","Nom de la classe","text"],
+      ["niveau","Niveau","text"],
+      ["annee","Année académique","text"]
+    ]
+  },
+
+  departements:{
+    title:"Gestion des départements",
+    collection:"departements",
+    icon:"🏛️",
+    fields:[
+      ["nom","Nom du département","text"],
+      ["description","Description","text"]
+    ]
+  },
+
+  filieres:{
+    title:"Gestion des filières",
+    collection:"filieres",
+    icon:"📚",
+    fields:[
+      ["nom","Nom de la filière","text"],
+      ["departement","Département","text"],
+      ["niveau","Niveau","text"]
+    ]
+  },
+
+  matieres:{
+    title:"Gestion des matières",
+    collection:"matieres",
+    icon:"📖",
+    fields:[
+      ["nom","Nom de la matière","text"],
+      ["code","Code","text"],
+      ["credits","Crédits","number"]
+    ]
+  },
+
+  cours:{
+    title:"Gestion des cours",
+    collection:"cours",
+    icon:"📘",
+    fields:[
+      ["nom","Nom du cours","text"],
+      ["matiere","Matière","text"],
+      ["professeur","Professeur","text"],
+      ["classe","Classe","text"]
+    ]
+  },
+
+  devoirs:{
+    title:"Gestion des devoirs",
+    collection:"devoirs",
+    icon:"📝",
+    fields:[
+      ["titre","Titre","text"],
+      ["matiere","Matière","text"],
+      ["description","Description","text"],
+      ["dateLimite","Date limite","date"]
+    ]
+  },
+
+  remises:{
+    title:"Remises des étudiants",
+    collection:"remises",
+    icon:"📤",
+    fields:[
+      ["devoir","Devoir","text"],
+      ["etudiant","Étudiant","text"],
+      ["fichier","Lien du fichier","text"],
+      ["commentaire","Commentaire","text"]
+    ]
+  },
+
+  corrections:{
+    title:"Corrections",
+    collection:"resultats",
+    icon:"✏️",
+    fields:[
+      ["etudiant","Étudiant","text"],
+      ["matiere","Matière","text"],
+      ["note","Note /100","number"],
+      ["commentaire","Commentaire","text"]
+    ]
+  },
+
+  resultats:{
+    title:"Résultats académiques",
+    collection:"resultats",
+    icon:"📊",
+    fields:[
+      ["etudiant","Étudiant","text"],
+      ["matiere","Matière","text"],
+      ["note","Note /100","number"],
+      ["periode","Période","text"]
+    ]
   }
 
 };
 
 
 /* =====================================================
-   ADMIN CHECK
-===================================================== */
+   LOAD MODULE
+   ===================================================== */
 
-function isAdmin(){
+async function loadModule(page){
 
-  const email=(currentUser?.email || "").toLowerCase();
+  if(
+    page === "utilisateurs" &&
+    !currentUserData?.isAdmin
+  ){
 
-  return email==="centredeformationlepedagogue@gmail.com"
-    ||
-    (
-      currentUserData?.role==="administrateur"
-      &&
-      currentUserData?.status==="accepted"
-    );
-}
-
-
-/* =====================================================
-   CHARGER COLLECTION
-===================================================== */
-
-async function loadCollection(name){
-
-  try{
-
-    const ref=collection(db,name);
-
-    const snapshot=await getDocs(ref);
-
-    const data=[];
-
-    snapshot.forEach(item=>{
-
-      data.push({
-        id:item.id,
-        ...item.data()
-      });
-
-    });
-
-    dataCache[name]=data;
-
-    renderCollection(name,data);
-
-  }catch(error){
-
-    console.error(
-      "Erreur collection "+name,
-      error
+    showToast(
+      "Accès réservé à l'administrateur."
     );
 
-    toast(
-      "Impossible de charger "+name+". Vérifiez vos permissions.",
-      "error"
-    );
-
-  }
-
-}
-
-
-/* =====================================================
-   REFRESH
-===================================================== */
-
-window.refreshAll=async function(){
-
-  if(!currentUser || !currentUserData){
     return;
   }
 
-  try{
+  if(page === "statistiques"){
+    renderStatistics();
+    return;
+  }
 
-    for(const name of collections){
+  if(page === "sauvegarde"){
+    renderBackup();
+    return;
+  }
 
-      await loadCollection(name);
+  if(page === "utilisateurs"){
+    await renderUsers();
+    return;
+  }
 
+  const info =
+    moduleInfo[page];
+
+  if(!info)return;
+
+  const container =
+    document.getElementById(
+      "page-" + page
+    );
+
+  container.innerHTML = `
+
+    <div class="page-title">
+      <h2>${info.icon} ${info.title}</h2>
+      <p>Gestion des données du Centre de Formation Le Pédagogue.</p>
+    </div>
+
+    <div class="panel">
+
+      <h3>Ajouter</h3>
+
+      <div class="form-grid">
+
+        ${info.fields.map(
+          f => `
+
+            <div class="form-group">
+
+              <label>${f[1]}</label>
+
+              <input
+                id="field-${page}-${f[0]}"
+                type="${f[2]}"
+                placeholder="${f[1]}"
+              >
+
+            </div>
+
+          `
+        ).join("")}
+
+      </div>
+
+      <div class="form-actions">
+
+        <button
+          class="btn btn-green"
+          onclick="addRecord('${page}')">
+          ➕ Ajouter
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <div class="panel">
+
+      <h3>Liste</h3>
+
+      <div class="table-wrap">
+
+        <table>
+
+          <thead>
+
+            <tr>
+
+              ${info.fields.map(
+                f => `<th>${f[1]}</th>`
+              ).join("")}
+
+              <th>Actions</th>
+
+            </tr>
+
+          </thead>
+
+          <tbody id="table-${page}">
+            <tr>
+              <td colspan="${info.fields.length + 1}">
+                Chargement...
+              </td>
+            </tr>
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </div>
+  `;
+
+  await refreshTable(page);
+}
+
+
+/* =====================================================
+   ADD RECORD
+   ===================================================== */
+
+window.addRecord = async function(page){
+
+  const info =
+    moduleInfo[page];
+
+  if(!info)return;
+
+  if(!currentUserData?.isAdmin){
+
+    if(
+      page === "devoirs" &&
+      currentUserData?.role !== "professeur"
+    ){
+
+      showToast(
+        "Vous n'avez pas les droits nécessaires."
+      );
+
+      return;
     }
 
-    updateStats();
+    if(
+      page !== "devoirs" &&
+      page !== "remises"
+    ){
 
-    updateStatistics();
+      showToast(
+        "Seul l'administrateur peut ajouter ces données."
+      );
+
+      return;
+    }
+  }
+
+  const data = {};
+
+  let valid = true;
+
+  info.fields.forEach(
+    f => {
+
+      const input =
+        document.getElementById(
+          `field-${page}-${f[0]}`
+        );
+
+      const value =
+        input?.value.trim() || "";
+
+      if(!value){
+        valid = false;
+      }
+
+      data[f[0]] = value;
+    }
+  );
+
+  if(!valid){
+
+    showToast(
+      "Veuillez remplir tous les champs."
+    );
+
+    return;
+  }
+
+  data.createdAt =
+    serverTimestamp();
+
+  data.createdBy =
+    currentUser.uid;
+
+  if(page === "devoirs"){
+    data.professeurId =
+      currentUser.uid;
+  }
+
+  if(page === "remises"){
+    data.etudiantId =
+      currentUser.uid;
+  }
+
+  try{
+
+    await addDoc(
+      collection(db,info.collection),
+      data
+    );
+
+    showToast(
+      "Donnée ajoutée avec succès."
+    );
+
+    info.fields.forEach(
+      f => {
+
+        const input =
+          document.getElementById(
+            `field-${page}-${f[0]}`
+          );
+
+        if(input)
+          input.value = "";
+
+      }
+    );
+
+    await refreshTable(page);
+
+    loadDashboard();
 
   }catch(error){
 
     console.error(error);
 
-  }
-
-};
-
-
-/* =====================================================
-   RENDER
-===================================================== */
-
-function renderCollection(name,data){
-
-  const tbody=
-    document.getElementById("table"+capitalize(name));
-
-  if(!tbody){
-    return;
-  }
-
-  tbody.innerHTML="";
-
-  if(data.length===0){
-
-    tbody.innerHTML=`
-      <tr>
-        <td colspan="10"
-            style="text-align:center;color:#64748b;padding:25px">
-          Aucune donnée disponible.
-        </td>
-      </tr>
-    `;
-
-    return;
-  }
-
-  data.forEach(item=>{
-
-    let html="";
-
-    if(name==="etudiants"){
-
-      html=`
-        <tr>
-          <td>${escapeHTML(item.nom || item.name)}</td>
-          <td>${escapeHTML(item.email)}</td>
-          <td>${escapeHTML(item.telephone)}</td>
-          <td>${escapeHTML(item.classe)}</td>
-          <td>${entityActions(name,item.id)}</td>
-        </tr>
-      `;
-
-    }else if(name==="professeurs"){
-
-      html=`
-        <tr>
-          <td>${escapeHTML(item.nom || item.name)}</td>
-          <td>${escapeHTML(item.email)}</td>
-          <td>${escapeHTML(item.telephone)}</td>
-          <td>${escapeHTML(item.specialite)}</td>
-          <td>${entityActions(name,item.id)}</td>
-        </tr>
-      `;
-
-    }else if(name==="classes"){
-
-      html=`
-        <tr>
-          <td>${escapeHTML(item.nom)}</td>
-          <td>${escapeHTML(item.niveau)}</td>
-          <td>${escapeHTML(item.annee)}</td>
-          <td>${escapeHTML(item.description)}</td>
-          <td>${entityActions(name,item.id)}</td>
-        </tr>
-      `;
-
-    }else if(name==="matieres"){
-
-      html=`
-        <tr>
-          <td>${escapeHTML(item.nom)}</td>
-          <td>${escapeHTML(item.code)}</td>
-          <td>${escapeHTML(item.coefficient)}</td>
-          <td>${escapeHTML(item.description)}</td>
-          <td>${entityActions(name,item.id)}</td>
-        </tr>
-      `;
-
-    }else if(name==="devoirs"){
-
-      html=`
-        <tr>
-          <td>${escapeHTML(item.titre)}</td>
-          <td>${escapeHTML(item.matiere)}</td>
-          <td>${escapeHTML(item.professeurNom || item.professeurId)}</td>
-          <td>${escapeHTML(item.dateLimite)}</td>
-          <td>${entityActions(name,item.id)}</td>
-        </tr>
-      `;
-
-    }else if(name==="remises"){
-
-      html=`
-        <tr>
-          <td>${escapeHTML(item.etudiantNom || item.etudiantId)}</td>
-          <td>${escapeHTML(item.devoirTitre || item.devoirId)}</td>
-          <td>${escapeHTML(item.professeurNom || item.professeurId)}</td>
-          <td>${escapeHTML(item.note)}</td>
-          <td>
-            ${
-              item.corrige===true
-              ? '<span class="badge badge-green">Corrigée</span>'
-              : '<span class="badge badge-orange">En attente</span>'
-            }
-          </td>
-          <td>${entityActions(name,item.id)}</td>
-        </tr>
-      `;
-
-    }else if(name==="resultats"){
-
-      const note20=parseFloat(item.note20 || 0);
-
-      const note100=
-        item.note100!==undefined
-        ? item.note100
-        : Math.round(note20*5);
-
-      html=`
-        <tr>
-          <td>${escapeHTML(item.etudiantNom || item.etudiantId)}</td>
-          <td>${escapeHTML(item.matiere)}</td>
-          <td>${escapeHTML(note20)} / 20</td>
-          <td>${escapeHTML(note100)} / 100</td>
-          <td>${escapeHTML(item.professeurNom || item.professeurId)}</td>
-          <td>${entityActions(name,item.id)}</td>
-        </tr>
-      `;
-
-    }else if(name==="users"){
-
-      const status=item.status || "attente";
-
-      let badge="badge-orange";
-
-      if(status==="accepted"){
-        badge="badge-green";
-      }
-
-      html=`
-        <tr>
-
-          <td>
-            ${escapeHTML(item.nom || item.name || "")}
-          </td>
-
-          <td>
-            ${escapeHTML(item.email)}
-          </td>
-
-          <td>
-            <span class="badge badge-blue">
-              ${escapeHTML(item.role || "eleve")}
-            </span>
-          </td>
-
-          <td>
-            <span class="badge ${badge}">
-              ${escapeHTML(status)}
-            </span>
-          </td>
-
-          <td style="font-size:10px">
-            ${escapeHTML(item.uid || item.id)}
-          </td>
-
-          <td>
-
-            <div class="actions">
-
-              ${
-                status!=="accepted"
-                ? `
-                  <button
-                    class="btn btn-success"
-                    onclick="acceptUser('${item.id}')">
-                    Accepter
-                  </button>
-                `
-                : ""
-              }
-
-              <button
-                class="btn btn-warning"
-                onclick="changeUserRole('${item.id}')">
-                Modifier rôle
-              </button>
-
-              <button
-                class="btn btn-danger"
-                onclick="deleteUser('${item.id}')">
-                Supprimer
-              </button>
-
-            </div>
-
-          </td>
-
-        </tr>
-      `;
-
-    }
-
-    tbody.insertAdjacentHTML("beforeend",html);
-
-  });
-
-}
-
-
-/* =====================================================
-   CAPITALIZE
-===================================================== */
-
-function capitalize(value){
-
-  return value.charAt(0).toUpperCase()+value.slice(1);
-
-}
-
-
-/* =====================================================
-   ENTITY ACTIONS
-===================================================== */
-
-function entityActions(name,id){
-
-  if(!isAdmin()){
-
-    return `<span style="color:#94a3b8">Lecture</span>`;
-
-  }
-
-  return `
-    <div class="actions">
-
-      <button
-        class="btn btn-warning"
-        onclick="editEntity('${name}','${id}')">
-        Modifier
-      </button>
-
-      <button
-        class="btn btn-danger"
-        onclick="deleteEntity('${name}','${id}')">
-        Supprimer
-      </button>
-
-    </div>
-  `;
-
-}
-
-
-/* =====================================================
-   MODAL
-===================================================== */
-
-window.openEntityModal=function(name,id=null){
-
-  if(!isAdmin() && name!=="devoirs" && name!=="remises"){
-    toast(
-      "Seul l'administrateur peut effectuer cette action.",
-      "warning"
+    showToast(
+      "Impossible d'ajouter cette donnée."
     );
-    return;
   }
-
-  currentEntity=name;
-  currentEditId=id;
-
-  document
-    .getElementById("entityModal")
-    .classList.add("show");
-
-  document.getElementById("modalTitle").textContent=
-    id ? "Modifier" : "Ajouter";
-
-  buildModalFields(name,id);
-
-};
-
-
-window.closeModal=function(){
-
-  document
-    .getElementById("entityModal")
-    .classList.remove("show");
-
-  document
-    .getElementById("entityForm")
-    .reset();
-
-  currentEntity=null;
-  currentEditId=null;
-
 };
 
 
 /* =====================================================
-   MODAL FIELDS
-===================================================== */
+   REFRESH TABLE
+   ===================================================== */
 
-function field(label,id,type="text",value="",required=false){
+async function refreshTable(page){
 
-  return `
-    <div class="form-group">
-      <label>${label}</label>
-      <input
-        id="field_${id}"
-        type="${type}"
-        value="${escapeHTML(value)}"
-        ${required ? "required" : ""}>
-    </div>
-  `;
+  const info =
+    moduleInfo[page];
 
-}
+  if(!info)return;
 
+  const tbody =
+    document.getElementById(
+      "table-" + page
+    );
 
-function textareaField(label,id,value=""){
+  if(!tbody)return;
 
-  return `
-    <div class="form-group full">
-      <label>${label}</label>
-      <textarea
-        id="field_${id}"
-        rows="4">${escapeHTML(value)}</textarea>
-    </div>
-  `;
+  try{
 
-}
+    const snap =
+      await getDocs(
+        collection(
+          db,
+          info.collection
+        )
+      );
 
+    if(snap.empty){
 
-function buildModalFields(name,id){
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="${info.fields.length + 1}">
+            Aucune donnée.
+          </td>
+        </tr>
+      `;
 
-  const existing=
-    id
-    ? dataCache[name].find(x=>x.id===id) || {}
-    : {};
-
-  let html="";
-
-  if(name==="etudiants"){
-
-    html=`
-      <div class="form-grid">
-
-        ${field(
-          "Nom complet",
-          "nom",
-          "text",
-          existing.nom || existing.name || "",
-          true
-        )}
-
-        ${field(
-          "Email",
-          "email",
-          "email",
-          existing.email || ""
-        )}
-
-        ${field(
-          "Téléphone",
-          "telephone",
-          "tel",
-          existing.telephone || ""
-        )}
-
-        ${field(
-          "Classe",
-          "classe",
-          "text",
-          existing.classe || ""
-        )}
-
-        ${textareaField(
-          "Adresse / informations",
-          "description",
-          existing.description || ""
-        )}
-
-      </div>
-    `;
-
-  }else if(name==="professeurs"){
-
-    html=`
-      <div class="form-grid">
-
-        ${field(
-          "Nom complet",
-          "nom",
-          "text",
-          existing.nom || existing.name || "",
-          true
-        )}
-
-        ${field(
-          "Email",
-          "email",
-          "email",
-          existing.email || ""
-        )}
-
-        ${field(
-          "Téléphone",
-          "telephone",
-          "tel",
-          existing.telephone || ""
-        )}
-
-        ${field(
-          "Spécialité",
-          "specialite",
-          "text",
-          existing.specialite || ""
-        )}
-
-        ${textareaField(
-          "Description",
-          "description",
-          existing.description || ""
-        )}
-
-      </div>
-    `;
-
-  }else if(name==="classes"){
-
-    html=`
-      <div class="form-grid">
-
-        ${field(
-          "Nom de la classe",
-          "nom",
-          "text",
-          existing.nom || "",
-          true
-        )}
-
-        ${field(
-          "Niveau",
-          "niveau",
-          "text",
-          existing.niveau || ""
-        )}
-
-        ${field(
-          "Année académique",
-          "annee",
-          "text",
-          existing.annee || ""
-        )}
-
-        ${textareaField(
-          "Description",
-          "description",
-          existing.description || ""
-        )}
-
-      </div>
-    `;
-
-  }else if(name==="matieres"){
-
-    html=`
-      <div class="form-grid">
-
-        ${field(
-          "Nom de la matière",
-          "nom",
-          "text",
-          existing.nom || "",
-          true
-        )}
-
-        ${field(
-          "Code",
-          "code",
-          "text",
-          existing.code || ""
-        )}
-
-        ${field(
-          "Coefficient",
-          "coefficient",
-          "number",
-          existing.coefficient || "1"
-        )}
-
-        ${textareaField(
-          "Description",
-          "description",
-          existing.description || ""
-        )}
-
-      </div>
-    `;
-
-  }else if(name==="devoirs"){
-
-    html=`
-      <div class="form-grid">
-
-        ${field(
-          "Titre du devoir",
-          "titre",
-          "text",
-          existing.titre || "",
-          true
-        )}
-
-        ${field(
-          "Matière",
-          "matiere",
-          "text",
-          existing.matiere || "",
-          true
-        )}
-
-        ${field(
-          "Date limite",
-          "dateLimite",
-          "date",
-          existing.dateLimite || ""
-        )}
-
-        ${field(
-          "Professeur UID",
-          "professeurId",
-          "text",
-          existing.professeurId ||
-          currentUser?.uid ||
-          ""
-        )}
-
-        ${textareaField(
-          "Consigne",
-          "description",
-          existing.description || ""
-        )}
-
-      </div>
-    `;
-
-  }else if(name==="resultats"){
-
-    html=`
-      <div class="form-grid">
-
-        ${field(
-          "Élève UID",
-          "etudiantId",
-          "text",
-          existing.etudiantId || "",
-          true
-        )}
-
-        ${field(
-          "Nom de l'élève",
-          "etudiantNom",
-          "text",
-          existing.etudiantNom || ""
-        )}
-
-        ${field(
-          "Matière",
-          "matiere",
-          "text",
-          existing.matiere || "",
-          true
-        )}
-
-        ${field(
-          "Note /20",
-          "note20",
-          "number",
-          existing.note20 || "",
-          true
-        )}
-
-        ${field(
-          "Professeur UID",
-          "professeurId",
-          "text",
-          existing.professeurId ||
-          currentUser?.uid ||
-          ""
-        )}
-
-        ${field(
-          "Nom professeur",
-          "professeurNom",
-          "text",
-          existing.professeurNom ||
-          currentUserData?.nom ||
-          currentUser?.displayName ||
-          ""
-        )}
-
-      </div>
-    `;
-
-  }else{
-
-    html=`
-      <p>
-        Formulaire non disponible.
-      </p>
-    `;
-
-  }
-
-  document.getElementById("modalFields").innerHTML=html;
-
-}
-
-
-/* =====================================================
-   SAVE ENTITY
-===================================================== */
-
-document
-  .getElementById("entityForm")
-  .addEventListener("submit",async(e)=>{
-
-    e.preventDefault();
-
-    if(!currentEntity){
       return;
     }
 
-    try{
+    tbody.innerHTML = "";
 
-      const data={};
+    snap.forEach(
+      item => {
 
-      if(currentEntity==="etudiants"){
+        const data =
+          item.data();
 
-        data.nom=document.getElementById("field_nom").value.trim();
-        data.email=document.getElementById("field_email").value.trim();
-        data.telephone=document.getElementById("field_telephone").value.trim();
-        data.classe=document.getElementById("field_classe").value.trim();
-        data.description=document.getElementById("field_description").value.trim();
+        const tr =
+          document.createElement("tr");
 
-      }else if(currentEntity==="professeurs"){
+        info.fields.forEach(
+          f => {
 
-        data.nom=document.getElementById("field_nom").value.trim();
-        data.email=document.getElementById("field_email").value.trim();
-        data.telephone=document.getElementById("field_telephone").value.trim();
-        data.specialite=document.getElementById("field_specialite").value.trim();
-        data.description=document.getElementById("field_description").value.trim();
+            const td =
+              document.createElement("td");
 
-      }else if(currentEntity==="classes"){
+            td.textContent =
+              data[f[0]] ?? "";
 
-        data.nom=document.getElementById("field_nom").value.trim();
-        data.niveau=document.getElementById("field_niveau").value.trim();
-        data.annee=document.getElementById("field_annee").value.trim();
-        data.description=document.getElementById("field_description").value.trim();
+            tr.appendChild(td);
 
-      }else if(currentEntity==="matieres"){
+          }
+        );
 
-        data.nom=document.getElementById("field_nom").value.trim();
-        data.code=document.getElementById("field_code").value.trim();
-        data.coefficient=
-          Number(document.getElementById("field_coefficient").value || 1);
-        data.description=document.getElementById("field_description").value.trim();
+        const td =
+          document.createElement("td");
 
-      }else if(currentEntity==="devoirs"){
+        const edit =
+          document.createElement("button");
 
-        data.titre=document.getElementById("field_titre").value.trim();
-        data.matiere=document.getElementById("field_matiere").value.trim();
-        data.dateLimite=document.getElementById("field_dateLimite").value;
-        data.professeurId=document.getElementById("field_professeurId").value.trim();
-        data.description=document.getElementById("field_description").value.trim();
+        edit.className =
+          "btn";
 
-        data.professeurNom=
-          currentUserData?.nom ||
-          currentUser?.displayName ||
-          currentUser?.email ||
-          "";
+        edit.textContent =
+          "Modifier";
 
-      }else if(currentEntity==="resultats"){
+        edit.onclick =
+          () =>
+            editRecord(
+              page,
+              item.id,
+              data
+            );
 
-        const note20=
-          Number(document.getElementById("field_note20").value);
+        td.appendChild(edit);
 
-        if(note20<0 || note20>20){
+        if(currentUserData?.isAdmin){
 
-          toast(
-            "La note doit être comprise entre 0 et 20.",
-            "warning"
-          );
+          const del =
+            document.createElement("button");
 
-          return;
+          del.className =
+            "btn btn-red";
+
+          del.style.marginLeft =
+            "5px";
+
+          del.textContent =
+            "Supprimer";
+
+          del.onclick =
+            () =>
+              deleteRecord(
+                page,
+                item.id
+              );
+
+          td.appendChild(del);
         }
 
-        data.etudiantId=
-          document.getElementById("field_etudiantId").value.trim();
+        tr.appendChild(td);
 
-        data.etudiantNom=
-          document.getElementById("field_etudiantNom").value.trim();
-
-        data.matiere=
-          document.getElementById("field_matiere").value.trim();
-
-        data.note20=note20;
-
-        data.note100=
-          Math.round(note20*5);
-
-        data.professeurId=
-          document.getElementById("field_professeurId").value.trim();
-
-        data.professeurNom=
-          document.getElementById("field_professeurNom").value.trim();
-
+        tbody.appendChild(tr);
       }
+    );
 
+  }catch(error){
 
-      data.updatedAt=serverTimestamp();
+    console.error(error);
 
-      if(currentEditId){
-
-        await updateDoc(
-          doc(db,currentEntity,currentEditId),
-          data
-        );
-
-        toast(
-          "Modification enregistrée.",
-          "success"
-        );
-
-      }else{
-
-        data.createdAt=serverTimestamp();
-
-        await addDoc(
-          collection(db,currentEntity),
-          data
-        );
-
-        toast(
-          "Donnée ajoutée avec succès.",
-          "success"
-        );
-
-      }
-
-      closeModal();
-
-      await loadCollection(currentEntity);
-
-      updateStats();
-
-    }catch(error){
-
-      console.error(error);
-
-      toast(
-        friendlyError(error),
-        "error"
-      );
-
-    }
-
-});
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="${info.fields.length + 1}">
+          Impossible de charger les données.
+        </td>
+      </tr>
+    `;
+  }
+}
 
 
 /* =====================================================
-   EDIT ENTITY
-===================================================== */
+   EDIT
+   ===================================================== */
 
-window.editEntity=function(name,id){
+window.editRecord =
+async function(
+  page,
+  id,
+  data
+){
 
-  if(!isAdmin()){
+  if(!currentUserData?.isAdmin){
 
-    toast(
-      "Seul l'administrateur peut modifier cette donnée.",
-      "warning"
+    showToast(
+      "Seul l'administrateur peut modifier cette donnée."
     );
 
     return;
   }
 
-  openEntityModal(name,id);
+  const info =
+    moduleInfo[page];
 
+  const updates = {};
+
+  for(const f of info.fields){
+
+    const oldValue =
+      data[f[0]] ?? "";
+
+    const newValue =
+      prompt(
+        f[1],
+        oldValue
+      );
+
+    if(newValue === null)
+      return;
+
+    updates[f[0]] =
+      newValue.trim();
+  }
+
+  try{
+
+    await updateDoc(
+      doc(
+        db,
+        info.collection,
+        id
+      ),
+      updates
+    );
+
+    showToast(
+      "Donnée modifiée."
+    );
+
+    await refreshTable(page);
+
+  }catch(error){
+
+    console.error(error);
+
+    showToast(
+      "Modification impossible."
+    );
+  }
 };
 
 
 /* =====================================================
-   DELETE ENTITY
-===================================================== */
+   DELETE
+   ===================================================== */
 
-window.deleteEntity=async function(name,id){
+window.deleteRecord =
+async function(
+  page,
+  id
+){
 
-  if(!isAdmin()){
+  if(!currentUserData?.isAdmin){
 
-    toast(
-      "Seul l'administrateur peut supprimer cette donnée.",
-      "warning"
+    showToast(
+      "Seul l'administrateur peut supprimer."
     );
 
     return;
   }
 
-  const ok=confirm(
-    "Voulez-vous vraiment supprimer cette donnée ?"
-  );
-
-  if(!ok){
+  if(
+    !confirm(
+      "Voulez-vous vraiment supprimer cette donnée ?"
+    )
+  )
     return;
-  }
+
+  const info =
+    moduleInfo[page];
 
   try{
 
     await deleteDoc(
-      doc(db,name,id)
+      doc(
+        db,
+        info.collection,
+        id
+      )
     );
 
-    toast(
-      "Donnée supprimée.",
-      "success"
+    showToast(
+      "Donnée supprimée."
     );
 
-    await loadCollection(name);
+    await refreshTable(page);
 
-    updateStats();
+    loadDashboard();
 
   }catch(error){
 
     console.error(error);
 
-    toast(
-      friendlyError(error),
-      "error"
+    showToast(
+      "Suppression impossible."
     );
-
   }
-
 };
 
 
 /* =====================================================
-   USER ACCEPT
-===================================================== */
+   USERS ADMIN
+   ===================================================== */
 
-window.acceptUser=async function(uid){
+async function renderUsers(){
 
-  if(!isAdmin()){
-    return;
+  const container =
+    document.getElementById(
+      "page-utilisateurs"
+    );
+
+  container.innerHTML = `
+
+    <div class="page-title">
+
+      <h2>👥 Gestion des utilisateurs</h2>
+
+      <p>
+        L'administrateur contrôle les comptes,
+        les rôles et les statuts.
+      </p>
+
+    </div>
+
+    <div class="panel">
+
+      <h3>Utilisateurs enregistrés</h3>
+
+      <div class="table-wrap">
+
+        <table>
+
+          <thead>
+
+            <tr>
+              <th>Nom</th>
+              <th>E-mail</th>
+              <th>Rôle</th>
+              <th>Statut</th>
+              <th>UID</th>
+              <th>Actions</th>
+            </tr>
+
+          </thead>
+
+          <tbody id="usersTable">
+            <tr>
+              <td colspan="6">
+                Chargement...
+              </td>
+            </tr>
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </div>
+  `;
+
+  try{
+
+    const snap =
+      await getDocs(
+        collection(db,"users")
+      );
+
+    const tbody =
+      document.getElementById(
+        "usersTable"
+      );
+
+    tbody.innerHTML = "";
+
+    snap.forEach(
+      item => {
+
+        const data =
+          item.data();
+
+        const tr =
+          document.createElement("tr");
+
+        tr.innerHTML = `
+          <td>${escapeHtml(data.name || "")}</td>
+          <td>${escapeHtml(data.email || "")}</td>
+          <td>${escapeHtml(data.role || "")}</td>
+          <td>
+            <span class="badge ${
+              data.status === "accepted"
+                ? "badge-green"
+                : "badge-orange"
+            }">
+              ${escapeHtml(data.status || "")}
+            </span>
+          </td>
+          <td>${escapeHtml(data.uid || item.id)}</td>
+          <td></td>
+        `;
+
+        const actions =
+          tr.lastElementChild;
+
+        if(
+          data.status !== "accepted"
+        ){
+
+          const accept =
+            document.createElement("button");
+
+          accept.className =
+            "btn btn-green";
+
+          accept.textContent =
+            "Accepter";
+
+          accept.onclick =
+            () =>
+              updateUserStatus(
+                item.id,
+                "accepted"
+              );
+
+          actions.appendChild(accept);
+        }
+
+        const role =
+          document.createElement("button");
+
+        role.className =
+          "btn";
+
+        role.style.marginLeft =
+          "5px";
+
+        role.textContent =
+          "Rôle";
+
+        role.onclick =
+          () =>
+            changeUserRole(
+              item.id,
+              data.role || "eleve"
+            );
+
+        actions.appendChild(role);
+
+        if(
+          item.id !== currentUser.uid
+        ){
+
+          const del =
+            document.createElement("button");
+
+          del.className =
+            "btn btn-red";
+
+          del.style.marginLeft =
+            "5px";
+
+          del.textContent =
+            "Supprimer";
+
+          del.onclick =
+            () =>
+              deleteUserProfile(
+                item.id
+              );
+
+          actions.appendChild(del);
+        }
+
+        tbody.appendChild(tr);
+      }
+    );
+
+  }catch(error){
+
+    console.error(error);
+
+    showToast(
+      "Impossible de charger les utilisateurs."
+    );
   }
+}
+
+
+async function updateUserStatus(
+  uid,
+  status
+){
 
   try{
 
     await updateDoc(
       doc(db,"users",uid),
-      {
-        status:"accepted",
-        updatedAt:serverTimestamp()
-      }
+      {status:status}
     );
 
-    toast(
-      "Utilisateur accepté.",
-      "success"
+    showToast(
+      "Utilisateur accepté."
     );
 
-    await loadCollection("users");
+    await renderUsers();
 
-    updateStats();
+    loadDashboard();
 
   }catch(error){
 
-    toast(
-      friendlyError(error),
-      "error"
+    console.error(error);
+
+    showToast(
+      "Impossible de modifier le statut."
+    );
+  }
+}
+
+
+async function changeUserRole(
+  uid,
+  oldRole
+){
+
+  const role =
+    prompt(
+      "Entrez le rôle : administrateur, professeur ou eleve",
+      oldRole
     );
 
-  }
-
-};
-
-
-/* =====================================================
-   CHANGE USER ROLE
-===================================================== */
-
-window.changeUserRole=async function(uid){
-
-  if(!isAdmin()){
+  if(role === null)
     return;
-  }
 
-  const user=
-    dataCache.users.find(x=>x.id===uid);
-
-  if(!user){
-    return;
-  }
-
-  const role=prompt(
-    "Choisissez le rôle : administrateur, professeur ou eleve",
-    user.role || "eleve"
-  );
-
-  if(role===null){
-    return;
-  }
-
-  const clean=role.trim().toLowerCase();
-
-  const valid=[
+  const allowed = [
     "administrateur",
     "professeur",
-    "eleve",
-    "etudiant"
+    "eleve"
   ];
 
-  if(!valid.includes(clean)){
+  if(!allowed.includes(role)){
 
-    toast(
-      "Rôle invalide.",
-      "warning"
+    showToast(
+      "Rôle invalide."
     );
 
     return;
@@ -3531,72 +2556,36 @@ window.changeUserRole=async function(uid){
 
     await updateDoc(
       doc(db,"users",uid),
-      {
-        role:clean,
-        updatedAt:serverTimestamp()
-      }
+      {role:role}
     );
 
-    toast(
-      "Rôle modifié.",
-      "success"
+    showToast(
+      "Rôle modifié."
     );
 
-    await loadCollection("users");
+    await renderUsers();
 
   }catch(error){
 
-    toast(
-      friendlyError(error),
-      "error"
+    console.error(error);
+
+    showToast(
+      "Impossible de modifier le rôle."
     );
-
   }
+}
 
-};
 
-
-/* =====================================================
-   DELETE USER
-===================================================== */
-
-window.deleteUser=async function(uid){
-
-  if(!isAdmin()){
-    return;
-  }
-
-  if(uid===currentUser?.uid){
-
-    toast(
-      "Vous ne pouvez pas supprimer votre propre compte depuis cette interface.",
-      "warning"
-    );
-
-    return;
-  }
-
-  const user=
-    dataCache.users.find(x=>x.id===uid);
+async function deleteUserProfile(
+  uid
+){
 
   if(
-    user?.email?.toLowerCase()
-    ==="centredeformationlepedagogue@gmail.com"
-  ){
-
-    toast(
-      "Le compte administrateur principal est protégé.",
-      "warning"
-    );
-
+    !confirm(
+      "Supprimer le profil Firestore de cet utilisateur ?"
+    )
+  )
     return;
-  }
-
-  if(!confirm(
-    "Voulez-vous vraiment supprimer cet utilisateur ?"
-  )){
-    return;
-  }
 
   try{
 
@@ -3604,338 +2593,453 @@ window.deleteUser=async function(uid){
       doc(db,"users",uid)
     );
 
-    toast(
-      "Utilisateur supprimé de Firestore.",
-      "success"
+    showToast(
+      "Profil supprimé."
     );
 
-    await loadCollection("users");
+    await renderUsers();
 
-    updateStats();
+    loadDashboard();
 
   }catch(error){
 
-    toast(
-      friendlyError(error),
-      "error"
+    console.error(error);
+
+    showToast(
+      "Suppression impossible."
     );
-
   }
-
-};
-
-
-/* =====================================================
-   STATS
-===================================================== */
-
-function updateStats(){
-
-  const pending=
-    dataCache.users.filter(
-      u=>u.status==="attente"
-    ).length;
-
-  setText(
-    "statEtudiants",
-    dataCache.etudiants.length
-  );
-
-  setText(
-    "statProfesseurs",
-    dataCache.professeurs.length
-  );
-
-  setText(
-    "statClasses",
-    dataCache.classes.length
-  );
-
-  setText(
-    "statMatieres",
-    dataCache.matieres.length
-  );
-
-  setText(
-    "statDevoirs",
-    dataCache.devoirs.length
-  );
-
-  setText(
-    "statRemises",
-    dataCache.remises.length
-  );
-
-  setText(
-    "statResultats",
-    dataCache.resultats.length
-  );
-
-  setText(
-    "statPending",
-    pending
-  );
-
-  setText(
-    "statsTotalStudents",
-    dataCache.etudiants.length
-  );
-
-  setText(
-    "statsTotalTeachers",
-    dataCache.professeurs.length
-  );
-
-  setText(
-    "statsTotalAssignments",
-    dataCache.devoirs.length
-  );
-
-  setText(
-    "statsTotalResults",
-    dataCache.resultats.length
-  );
-
 }
 
 
-function setText(id,value){
+/* =====================================================
+   DASHBOARD
+   ===================================================== */
 
-  const el=document.getElementById(id);
+async function countCollection(
+  name
+){
 
-  if(el){
-    el.textContent=safe(value);
+  try{
+
+    const snap =
+      await getDocs(
+        collection(db,name)
+      );
+
+    return snap.size;
+
+  }catch(error){
+
+    console.error(error);
+
+    return 0;
   }
+}
 
+
+async function loadDashboard(){
+
+  const [
+    etudiants,
+    professeurs,
+    classes,
+    matieres,
+    devoirs
+  ] =
+    await Promise.all([
+      countCollection("etudiants"),
+      countCollection("professeurs"),
+      countCollection("classes"),
+      countCollection("matieres"),
+      countCollection("devoirs")
+    ]);
+
+  document
+    .getElementById("statEtudiants")
+    .textContent =
+      etudiants;
+
+  document
+    .getElementById("statProfesseurs")
+    .textContent =
+      professeurs;
+
+  document
+    .getElementById("statClasses")
+    .textContent =
+      classes;
+
+  document
+    .getElementById("statMatieres")
+    .textContent =
+      matieres;
+
+  document
+    .getElementById("statDevoirs")
+    .textContent =
+      devoirs;
+
+  if(currentUserData?.isAdmin){
+
+    try{
+
+      const users =
+        await getDocs(
+          collection(db,"users")
+        );
+
+      let pending = 0;
+
+      users.forEach(
+        d => {
+
+          if(
+            d.data().status ===
+            "attente"
+          ){
+            pending++;
+          }
+
+        }
+      );
+
+      document
+        .getElementById("statPending")
+        .textContent =
+          pending;
+
+    }catch(error){
+
+      console.error(error);
+
+    }
+  }
 }
 
 
 /* =====================================================
    STATISTICS
-===================================================== */
+   ===================================================== */
 
-function updateStatistics(){
+async function renderStatistics(){
 
-  const text=document.getElementById(
-    "statisticsText"
-  );
+  const container =
+    document.getElementById(
+      "page-statistiques"
+    );
 
-  if(!text){
-    return;
-  }
+  container.innerHTML = `
 
-  const students=dataCache.etudiants.length;
+    <div class="page-title">
 
-  const teachers=dataCache.professeurs.length;
+      <h2>📈 Statistiques</h2>
 
-  const classes=dataCache.classes.length;
+      <p>
+        Vue générale des données académiques.
+      </p>
 
-  const subjects=dataCache.matieres.length;
+    </div>
 
-  const assignments=dataCache.devoirs.length;
+    <div class="stats">
 
-  const submissions=dataCache.remises.length;
+      <div class="stat">
+        <div class="stat-icon">🎓</div>
+        <div class="stat-title">Étudiants</div>
+        <div id="s1" class="stat-number">0</div>
+      </div>
 
-  const results=dataCache.resultats.length;
+      <div class="stat">
+        <div class="stat-icon">👨‍🏫</div>
+        <div class="stat-title">Professeurs</div>
+        <div id="s2" class="stat-number">0</div>
+      </div>
 
-  text.textContent=
-    `L'établissement compte actuellement ${students} élève(s), `+
-    `${teachers} professeur(s), ${classes} classe(s), `+
-    `${subjects} matière(s), ${assignments} devoir(s), `+
-    `${submissions} remise(s) et ${results} résultat(s).`;
+      <div class="stat">
+        <div class="stat-icon">🏫</div>
+        <div class="stat-title">Classes</div>
+        <div id="s3" class="stat-number">0</div>
+      </div>
 
+      <div class="stat">
+        <div class="stat-icon">📚</div>
+        <div class="stat-title">Matières</div>
+        <div id="s4" class="stat-number">0</div>
+      </div>
+
+    </div>
+  `;
+
+  document.getElementById("s1").textContent =
+    await countCollection("etudiants");
+
+  document.getElementById("s2").textContent =
+    await countCollection("professeurs");
+
+  document.getElementById("s3").textContent =
+    await countCollection("classes");
+
+  document.getElementById("s4").textContent =
+    await countCollection("matieres");
 }
 
 
 /* =====================================================
-   FILTER
-===================================================== */
+   BACKUP
+   ===================================================== */
 
-window.filterTable=function(name){
+function renderBackup(){
 
-  const input=
+  const container =
     document.getElementById(
-      "search"+
-      capitalize(name)
+      "page-sauvegarde"
     );
 
-  if(!input){
-    return;
-  }
+  container.innerHTML = `
 
-  const term=input.value.toLowerCase();
+    <div class="page-title">
 
-  const filtered=
-    dataCache[name].filter(item=>
-      JSON.stringify(item)
-        .toLowerCase()
-        .includes(term)
-    );
+      <h2>💾 Données / Sauvegarde</h2>
 
-  renderCollection(name,filtered);
+      <p>
+        Exportez les données de votre établissement.
+      </p>
 
-};
+    </div>
 
+    <div class="panel">
 
-/* =====================================================
-   LANGUAGE
-===================================================== */
+      <h3>Exporter les données</h3>
 
-function loadLanguage(){
+      <p style="margin-bottom:15px">
+        L'export crée un fichier JSON contenant
+        les collections accessibles.
+      </p>
 
-  const lang=
-    localStorage.getItem(
-      "pedagogue_language"
-    ) || "fr";
+      <button
+        class="btn btn-green"
+        onclick="exportData()">
+        💾 Télécharger la sauvegarde
+      </button>
 
-  document.getElementById(
-    "languageSelect"
-  ).value=lang;
-
+    </div>
+  `;
 }
 
-window.changeLanguage=function(){
 
-  const lang=
-    document.getElementById(
-      "languageSelect"
-    ).value;
+window.exportData = async function(){
 
-  localStorage.setItem(
-    "pedagogue_language",
-    lang
-  );
+  if(!currentUserData?.isAdmin){
 
-  /*
-   * L'interface principale reste en français
-   * pour cette première version.
-   * Le choix est conservé pour les prochaines
-   * améliorations de traduction.
-   */
-
-  toast(
-    lang==="ht"
-      ? "Lang Kreyòl chwazi."
-      : "Langue française choisie.",
-    "success"
-  );
-
-};
-
-
-/* =====================================================
-   PWA INSTALL
-===================================================== */
-
-window.addEventListener(
-  "beforeinstallprompt",
-  (event)=>{
-
-    event.preventDefault();
-
-    deferredPrompt=event;
-
-    document
-      .getElementById("installBtn")
-      .classList.remove("hidden");
-
-  }
-);
-
-
-window.installPWA=async function(){
-
-  if(!deferredPrompt){
-    toast(
-      "L'installation n'est pas disponible pour le moment.",
-      "warning"
-    );
-    return;
-  }
-
-  deferredPrompt.prompt();
-
-  const result=
-    await deferredPrompt.userChoice;
-
-  console.log(
-    "Installation:",
-    result.outcome
-  );
-
-  deferredPrompt=null;
-
-  document
-    .getElementById("installBtn")
-    .classList.add("hidden");
-
-};
-
-
-/* =====================================================
-   EXPORT DATA
-===================================================== */
-
-window.exportData=function(){
-
-  if(!isAdmin()){
-
-    toast(
-      "Seul l'administrateur peut exporter les données.",
-      "warning"
+    showToast(
+      "Seul l'administrateur peut exporter les données."
     );
 
     return;
   }
 
-  const output={
-    exportedAt:new Date().toISOString(),
-    projectId:firebaseConfig.projectId,
-    data:dataCache
-  };
+  const collections = [
+    "users",
+    "etudiants",
+    "professeurs",
+    "classes",
+    "departements",
+    "filieres",
+    "matieres",
+    "cours",
+    "devoirs",
+    "remises",
+    "resultats"
+  ];
 
-  const blob=
+  const backup = {};
+
+  for(
+    const name of collections
+  ){
+
+    try{
+
+      const snap =
+        await getDocs(
+          collection(db,name)
+        );
+
+      backup[name] =
+        snap.docs.map(
+          d => ({
+            id:d.id,
+            ...d.data()
+          })
+        );
+
+    }catch(error){
+
+      backup[name] = [];
+
+    }
+  }
+
+  const blob =
     new Blob(
-      [JSON.stringify(output,null,2)],
-      {type:"application/json"}
+      [
+        JSON.stringify(
+          backup,
+          null,
+          2
+        )
+      ],
+      {
+        type:"application/json"
+      }
     );
 
-  const url=
+  const url =
     URL.createObjectURL(blob);
 
-  const a=document.createElement("a");
+  const a =
+    document.createElement("a");
 
-  a.href=url;
+  a.href = url;
 
-  a.download=
-    "centre-de-formation-le-pedagogue-backup.json";
+  a.download =
+    "sauvegarde-centre-formation-le-pedagogue.json";
 
   a.click();
 
   URL.revokeObjectURL(url);
 
+  showToast(
+    "Sauvegarde téléchargée."
+  );
 };
 
 
 /* =====================================================
-   LANGUAGE INIT
-===================================================== */
+   LANGUAGE
+   ===================================================== */
 
-loadLanguage();
+window.changeLanguage = function(){
+
+  const value =
+    document
+      .getElementById("languageSelect")
+      .value;
+
+  localStorage.setItem(
+    "language",
+    value
+  );
+
+  if(value === "ht"){
+
+    document
+      .getElementById("welcomeText")
+      .textContent =
+        "Byenveni nan espas jesyon Centre de Formation Le Pédagogue.";
+
+  }else{
+
+    document
+      .getElementById("welcomeText")
+      .textContent =
+        "Bienvenue dans votre espace de gestion.";
+
+  }
+};
+
+
+const savedLanguage =
+  localStorage.getItem("language");
+
+if(savedLanguage){
+
+  document
+    .getElementById("languageSelect")
+    .value =
+      savedLanguage;
+}
 
 
 /* =====================================================
-   CONSOLE INFORMATION
-===================================================== */
+   USER MENU
+   ===================================================== */
 
-console.log(
-  "Centre de Formation Le Pédagogue chargé."
-);
+window.toggleUserMenu = function(){
 
-console.log(
-  "Firebase Project:",
-  firebaseConfig.projectId
-);
+  document
+    .getElementById("userMenu")
+    .classList.remove("hidden");
+};
+
+
+window.closeUserMenu = function(){
+
+  document
+    .getElementById("userMenu")
+    .classList.add("hidden");
+};
+
+
+/* =====================================================
+   TOAST
+   ===================================================== */
+
+function showToast(message){
+
+  const toast =
+    document.getElementById("toast");
+
+  toast.textContent =
+    message;
+
+  toast.classList.remove("hidden");
+
+  setTimeout(
+    () => {
+      toast.classList.add("hidden");
+    },
+    3500
+  );
+}
+
+
+function getFriendlyError(error){
+
+  const code =
+    error?.code || "";
+
+  if(code.includes("email-already-in-use"))
+    return "Cette adresse e-mail est déjà utilisée.";
+
+  if(code.includes("invalid-credential"))
+    return "E-mail ou mot de passe incorrect.";
+
+  if(code.includes("invalid-email"))
+    return "Adresse e-mail invalide.";
+
+  if(code.includes("weak-password"))
+    return "Le mot de passe est trop faible.";
+
+  if(code.includes("popup-closed-by-user"))
+    return "La fenêtre Google a été fermée.";
+
+  if(code.includes("permission-denied"))
+    return "Accès refusé par les règles Firebase.";
+
+  return "Une erreur est survenue. Vérifiez les informations saisies.";
+}
+
+
+function escapeHtml(value){
+
+  return String(value)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
 
 </script>
 
