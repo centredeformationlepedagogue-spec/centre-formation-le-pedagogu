@@ -657,7 +657,7 @@ CENTRE DE FORMATION LE PÉDAGOGUE
 <option value="ht">🇭🇹 Kreyòl</option>
 </select>
 
-<button id="installBtn" class="install-btn" onclick="installApplication()">
+<button id="installBtn" class="install-btn" onclick="installApplication">
 📲 Installer
 </button>
 
@@ -1570,7 +1570,8 @@ collection:"matieres",
 icon:"📖",
 fields:[
 ["nom","Nom de la matière","text"],
-["code","Code","text"]
+["code","Code","text"],
+["credits","Crédits","number"]
 ]
 },
 
@@ -2035,7 +2036,7 @@ return String(value??"")
 .replaceAll("'","&#039;");
 
 }
-</script>
+
 
 <script>
 
@@ -2077,7 +2078,7 @@ async function renderAffectations(){
         </div>
       </div>
 
-      <div class="panel">
+      <div class="card">
 
         <div id="affectationMessage"
              style="margin-bottom:15px;">
@@ -2254,7 +2255,7 @@ async function renderAffectations(){
 
       <!-- TABLE -->
 
-      <div class="panel"
+      <div class="card"
            style="margin-top:20px;">
 
         <h3>
@@ -3008,6 +3009,9 @@ function showAffectationMessage(
 
   if(!box){
 
+    /* Si la zone n'existe pas,
+       utiliser le toast général */
+
     if(
       typeof showToast ===
       "function"
@@ -3084,13 +3088,15 @@ function showAffectationMessage(
 
 </script>
 
-<script>
 
 /* =====================================================
    INSCRIPTIONS ÉLÈVES / CLASSES
    ===================================================== */
 
 function initialiserInscriptionsElevesClasses() {
+  // Gestion des inscriptions élèves/classes
+  // Cette fonction est volontairement vide pour éviter
+  // les erreurs si aucune inscription n'est encore créée.
 }
 
 initialiserInscriptionsElevesClasses();
@@ -5854,3 +5860,5 @@ return "Une erreur est survenue. Vérifiez les informations.";
 
 </body>
 </html>
+
+
