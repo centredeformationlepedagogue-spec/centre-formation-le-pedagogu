@@ -608,8 +608,6 @@ th{
 
     </div>
 
-    <!-- CONNEXION -->
-
     <div id="loginBox">
 
       <h2 style="margin-bottom:15px;color:#0f3d91">
@@ -640,8 +638,6 @@ th{
         OU
       </div>
 
-      <!-- GOOGLE LOGIN -->
-
       <button
         id="googleLoginBtn"
         class="btn google-btn full"
@@ -667,8 +663,6 @@ th{
 
     </div>
 
-
-    <!-- INSCRIPTION -->
 
     <div id="registerBox" class="hidden">
 
@@ -792,8 +786,6 @@ th{
 
   </header>
 
-
-  <!-- ================= SIDEBAR ================= -->
 
   <aside
     id="sidebar"
@@ -961,11 +953,7 @@ th{
   </aside>
 
 
-  <!-- ================= MAIN ================= -->
-
   <main class="main">
-
-    <!-- DASHBOARD -->
 
     <section
       id="page-dashboard"
@@ -987,116 +975,39 @@ th{
       <div class="stats">
 
         <div class="stat">
-
-          <div class="stat-icon">
-            🎓
-          </div>
-
-          <div class="stat-title">
-            Étudiants
-          </div>
-
-          <div
-            id="statEtudiants"
-            class="stat-number">
-            0
-          </div>
-
+          <div class="stat-icon">🎓</div>
+          <div class="stat-title">Étudiants</div>
+          <div id="statEtudiants" class="stat-number">0</div>
         </div>
 
-
         <div class="stat">
-
-          <div class="stat-icon">
-            👨‍🏫
-          </div>
-
-          <div class="stat-title">
-            Professeurs
-          </div>
-
-          <div
-            id="statProfesseurs"
-            class="stat-number">
-            0
-          </div>
-
+          <div class="stat-icon">👨‍🏫</div>
+          <div class="stat-title">Professeurs</div>
+          <div id="statProfesseurs" class="stat-number">0</div>
         </div>
 
-
         <div class="stat">
-
-          <div class="stat-icon">
-            🏫
-          </div>
-
-          <div class="stat-title">
-            Classes
-          </div>
-
-          <div
-            id="statClasses"
-            class="stat-number">
-            0
-          </div>
-
+          <div class="stat-icon">🏫</div>
+          <div class="stat-title">Classes</div>
+          <div id="statClasses" class="stat-number">0</div>
         </div>
 
-
         <div class="stat">
-
-          <div class="stat-icon">
-            📖
-          </div>
-
-          <div class="stat-title">
-            Matières
-          </div>
-
-          <div
-            id="statMatieres"
-            class="stat-number">
-            0
-          </div>
-
+          <div class="stat-icon">📖</div>
+          <div class="stat-title">Matières</div>
+          <div id="statMatieres" class="stat-number">0</div>
         </div>
 
-
         <div class="stat">
-
-          <div class="stat-icon">
-            📝
-          </div>
-
-          <div class="stat-title">
-            Devoirs
-          </div>
-
-          <div
-            id="statDevoirs"
-            class="stat-number">
-            0
-          </div>
-
+          <div class="stat-icon">📝</div>
+          <div class="stat-title">Devoirs</div>
+          <div id="statDevoirs" class="stat-number">0</div>
         </div>
 
-
         <div class="stat">
-
-          <div class="stat-icon">
-            ⏳
-          </div>
-
-          <div class="stat-title">
-            En attente
-          </div>
-
-          <div
-            id="statPending"
-            class="stat-number">
-            0
-          </div>
-
+          <div class="stat-icon">⏳</div>
+          <div class="stat-title">En attente</div>
+          <div id="statPending" class="stat-number">0</div>
         </div>
 
       </div>
@@ -1113,105 +1024,58 @@ th{
           <button
             class="quick"
             onclick="quickPage('etudiants')">
-
-            <strong>
-              🎓 Étudiants
-            </strong>
-
+            <strong>🎓 Étudiants</strong>
             Gérer les étudiants
-
           </button>
-
 
           <button
             class="quick"
             onclick="quickPage('professeurs')">
-
-            <strong>
-              👨‍🏫 Professeurs
-            </strong>
-
+            <strong>👨‍🏫 Professeurs</strong>
             Gérer les enseignants
-
           </button>
-
 
           <button
             class="quick"
             onclick="quickPage('classes')">
-
-            <strong>
-              🏫 Classes
-            </strong>
-
+            <strong>🏫 Classes</strong>
             Gérer les classes
-
           </button>
-
 
           <button
             class="quick"
             onclick="quickPage('matieres')">
-
-            <strong>
-              📖 Matières
-            </strong>
-
+            <strong>📖 Matières</strong>
             Gérer les matières
-
           </button>
-
 
           <button
             class="quick"
             onclick="quickPage('devoirs')">
-
-            <strong>
-              📝 Devoirs
-            </strong>
-
+            <strong>📝 Devoirs</strong>
             Gérer les devoirs
-
           </button>
-
 
           <button
             class="quick"
             onclick="quickPage('resultats')">
-
-            <strong>
-              📊 Résultats
-            </strong>
-
+            <strong>📊 Résultats</strong>
             Notes et résultats
-
           </button>
-
 
           <button
             id="quickUsers"
             class="quick"
             onclick="quickPage('utilisateurs')">
-
-            <strong>
-              👥 Utilisateurs
-            </strong>
-
+            <strong>👥 Utilisateurs</strong>
             Accepter les comptes
-
           </button>
-
 
           <button
             class="quick"
             onclick="quickPage('sauvegarde')">
-
-            <strong>
-              💾 Sauvegarde
-            </strong>
-
+            <strong>💾 Sauvegarde</strong>
             Exporter les données
-
           </button>
 
         </div>
@@ -1250,63 +1114,20 @@ th{
     </section>
 
 
-    <!-- PAGES -->
-
-    <section
-      id="page-etudiants"
-      class="page hidden"></section>
-
-    <section
-      id="page-professeurs"
-      class="page hidden"></section>
-
-    <section
-      id="page-classes"
-      class="page hidden"></section>
-
-    <section
-      id="page-departements"
-      class="page hidden"></section>
-
-    <section
-      id="page-filieres"
-      class="page hidden"></section>
-
-    <section
-      id="page-matieres"
-      class="page hidden"></section>
-
-    <section
-      id="page-cours"
-      class="page hidden"></section>
-
-    <section
-      id="page-devoirs"
-      class="page hidden"></section>
-
-    <section
-      id="page-remises"
-      class="page hidden"></section>
-
-    <section
-      id="page-corrections"
-      class="page hidden"></section>
-
-    <section
-      id="page-resultats"
-      class="page hidden"></section>
-
-    <section
-      id="page-statistiques"
-      class="page hidden"></section>
-
-    <section
-      id="page-utilisateurs"
-      class="page hidden"></section>
-
-    <section
-      id="page-sauvegarde"
-      class="page hidden"></section>
+    <section id="page-etudiants" class="page hidden"></section>
+    <section id="page-professeurs" class="page hidden"></section>
+    <section id="page-classes" class="page hidden"></section>
+    <section id="page-departements" class="page hidden"></section>
+    <section id="page-filieres" class="page hidden"></section>
+    <section id="page-matieres" class="page hidden"></section>
+    <section id="page-cours" class="page hidden"></section>
+    <section id="page-devoirs" class="page hidden"></section>
+    <section id="page-remises" class="page hidden"></section>
+    <section id="page-corrections" class="page hidden"></section>
+    <section id="page-resultats" class="page hidden"></section>
+    <section id="page-statistiques" class="page hidden"></section>
+    <section id="page-utilisateurs" class="page hidden"></section>
+    <section id="page-sauvegarde" class="page hidden"></section>
 
   </main>
 
@@ -1324,9 +1145,7 @@ th{
     <button
       class="modal-close"
       onclick="closeUserMenu()">
-
       ×
-
     </button>
 
     <h3>
@@ -1381,9 +1200,7 @@ th{
     <button
       class="modal-close"
       onclick="closeInstallModal()">
-
       ×
-
     </button>
 
     <h3>
@@ -1610,7 +1427,6 @@ function(){
 
 /* =====================================================
    SERVICE WORKER
-   IMPORTANT : LE FICHIER S'APPELLE sw.js
    ===================================================== */
 
 if("serviceWorker" in navigator){
@@ -1875,12 +1691,6 @@ async function(){
       new GoogleAuthProvider();
 
 
-    /*
-      IMPORTANT :
-      Demande à Google d'afficher
-      l'écran "Choisir un compte".
-    */
-
     provider.setCustomParameters({
       prompt:"select_account"
     });
@@ -1908,10 +1718,6 @@ async function(){
     const snap =
       await getDoc(userRef);
 
-
-    /*
-      PREMIÈRE CONNEXION GOOGLE
-    */
 
     if(!snap.exists()){
 
@@ -1959,13 +1765,6 @@ async function(){
 
       return;
     }
-
-
-    /*
-      SI LE PROFIL EXISTE DÉJÀ,
-      onAuthStateChanged() vérifie
-      automatiquement le rôle et le statut.
-    */
 
   }catch(error){
 
@@ -2068,10 +1867,6 @@ onAuthStateChanged(
       let data;
 
 
-      /*
-        SI LE PROFIL N'EXISTE PAS
-      */
-
       if(!snap.exists()){
 
         const isAdmin =
@@ -2108,10 +1903,6 @@ onAuthStateChanged(
       }
 
 
-      /*
-        VERIFICATION ADMIN
-      */
-
       const isAdmin =
         user.email?.toLowerCase() ===
           ADMIN_EMAIL.toLowerCase()
@@ -2124,10 +1915,6 @@ onAuthStateChanged(
             "accepted"
         );
 
-
-      /*
-        COMPTE NON ACCEPTE
-      */
 
       if(
         !isAdmin &&
@@ -2320,6 +2107,19 @@ async function(
   button
 ){
 
+  if(
+    page === "utilisateurs" &&
+    !currentUserData?.isAdmin
+  ){
+
+    showToast(
+      "Accès réservé à l'administrateur."
+    );
+
+    return;
+  }
+
+
   document
     .querySelectorAll(".page")
     .forEach(
@@ -2382,6 +2182,19 @@ async function(
 
 window.quickPage =
 function(page){
+
+  if(
+    page === "utilisateurs" &&
+    !currentUserData?.isAdmin
+  ){
+
+    showToast(
+      "Accès réservé à l'administrateur."
+    );
+
+    return;
+  }
+
 
   const button =
     [
@@ -2722,6 +2535,7 @@ async function loadModule(page){
 
 /* =====================================================
    ADD RECORD
+   ADMINISTRATEUR SEULEMENT
    ===================================================== */
 
 window.addRecord =
@@ -2730,41 +2544,22 @@ async function(page){
   const info =
     moduleInfo[page];
 
-
   if(!info)
     return;
 
 
+  /*
+    SEUL L'ADMINISTRATEUR PEUT AJOUTER
+    UNE DONNÉE DANS L'APPLICATION.
+  */
+
   if(!currentUserData?.isAdmin){
 
-    if(
-      page === "devoirs" &&
-      currentUserData?.role !==
-        "professeur"
-    ){
+    showToast(
+      "Seul l'administrateur peut ajouter des données."
+    );
 
-      showToast(
-        "Vous n'avez pas les droits nécessaires."
-      );
-
-      return;
-
-    }
-
-
-    if(
-      page !== "devoirs" &&
-      page !== "remises"
-    ){
-
-      showToast(
-        "Seul l'administrateur peut ajouter ces données."
-      );
-
-      return;
-
-    }
-
+    return;
   }
 
 
@@ -2781,17 +2576,14 @@ async function(page){
           `field-${page}-${f[0]}`
         );
 
-
       const value =
         input?.value.trim() || "";
-
 
       if(!value){
 
         valid = false;
 
       }
-
 
       data[f[0]] =
         value;
@@ -2819,22 +2611,6 @@ async function(page){
     currentUser.uid;
 
 
-  if(page === "devoirs"){
-
-    data.professeurId =
-      currentUser.uid;
-
-  }
-
-
-  if(page === "remises"){
-
-    data.etudiantId =
-      currentUser.uid;
-
-  }
-
-
   try{
 
     await addDoc(
@@ -2858,7 +2634,6 @@ async function(page){
           document.getElementById(
             `field-${page}-${f[0]}`
           );
-
 
         if(input)
           input.value = "";
@@ -2983,35 +2758,43 @@ async function refreshTable(page){
           );
 
 
-        const edit =
-          document.createElement(
-            "button"
-          );
+        /*
+          BOUTON MODIFIER :
+          visible seulement pour l'admin.
+        */
 
+        if(currentUserData?.isAdmin){
 
-        edit.className =
-          "btn";
-
-
-        edit.textContent =
-          "Modifier";
-
-
-        edit.onclick =
-          () =>
-            editRecord(
-              page,
-              item.id,
-              data
+          const edit =
+            document.createElement(
+              "button"
             );
 
 
-        td.appendChild(edit);
+          edit.className =
+            "btn";
 
 
-        if(
-          currentUserData?.isAdmin
-        ){
+          edit.textContent =
+            "Modifier";
+
+
+          edit.onclick =
+            () =>
+              editRecord(
+                page,
+                item.id,
+                data
+              );
+
+
+          td.appendChild(edit);
+
+
+          /*
+            BOUTON SUPPRIMER :
+            visible seulement pour l'admin.
+          */
 
           const del =
             document.createElement(
@@ -3040,6 +2823,11 @@ async function refreshTable(page){
 
 
           td.appendChild(del);
+
+        }else{
+
+          td.textContent =
+            "Consultation";
 
         }
 
@@ -3079,6 +2867,7 @@ async function refreshTable(page){
 
 /* =====================================================
    EDIT
+   ADMINISTRATEUR SEULEMENT
    ===================================================== */
 
 window.editRecord =
@@ -3167,6 +2956,7 @@ async function(
 
 /* =====================================================
    DELETE
+   ADMINISTRATEUR SEULEMENT
    ===================================================== */
 
 window.deleteRecord =
@@ -3242,6 +3032,22 @@ async function(
 
 async function renderUsers(){
 
+  /*
+    PROTECTION SUPPLÉMENTAIRE :
+    même si quelqu'un appelle directement
+    renderUsers(), seul l'admin continue.
+  */
+
+  if(!currentUserData?.isAdmin){
+
+    showToast(
+      "Accès réservé à l'administrateur."
+    );
+
+    return;
+  }
+
+
   const container =
     document.getElementById(
       "page-utilisateurs"
@@ -3278,29 +3084,12 @@ async function renderUsers(){
 
             <tr>
 
-              <th>
-                Nom
-              </th>
-
-              <th>
-                E-mail
-              </th>
-
-              <th>
-                Rôle
-              </th>
-
-              <th>
-                Statut
-              </th>
-
-              <th>
-                UID
-              </th>
-
-              <th>
-                Actions
-              </th>
+              <th>Nom</th>
+              <th>E-mail</th>
+              <th>Rôle</th>
+              <th>Statut</th>
+              <th>UID</th>
+              <th>Actions</th>
 
             </tr>
 
@@ -3537,10 +3326,25 @@ async function renderUsers(){
 }
 
 
+/* =====================================================
+   UPDATE USER STATUS
+   ADMINISTRATEUR SEULEMENT
+   ===================================================== */
+
 async function updateUserStatus(
   uid,
   status
 ){
+
+  if(!currentUserData?.isAdmin){
+
+    showToast(
+      "Seul l'administrateur peut modifier le statut."
+    );
+
+    return;
+  }
+
 
   try{
 
@@ -3557,7 +3361,9 @@ async function updateUserStatus(
 
 
     showToast(
-      "Utilisateur accepté."
+      status === "accepted"
+        ? "Utilisateur accepté."
+        : "Statut modifié."
     );
 
 
@@ -3580,45 +3386,67 @@ async function updateUserStatus(
 }
 
 
+/* =====================================================
+   CHANGE USER ROLE
+   ADMINISTRATEUR SEULEMENT
+   ===================================================== */
+
 async function changeUserRole(
   uid,
   oldRole
 ){
 
+  if(!currentUserData?.isAdmin){
+
+    showToast(
+      "Seul l'administrateur peut modifier les rôles."
+    );
+
+    return;
+  }
+
+
   const roleInput =
     prompt(
-      "Entrez le rôle :\n\n1 = administrateur\n2 = professeur\n3 = eleve\n\nOu ka ekri non rôle a tou.",
+      "Entrez le rôle :\n\n1 = administrateur\n2 = professeur\n3 = eleve",
       oldRole || "professeur"
     );
 
+
   if(roleInput === null)
     return;
+
 
   const valeur =
     roleInput
       .trim()
       .toLowerCase();
 
+
   const roleMap = {
-    "1": "administrateur",
-    "2": "professeur",
-    "3": "eleve",
 
-    "administrateur": "administrateur",
-    "admin": "administrateur",
+    "1":"administrateur",
+    "2":"professeur",
+    "3":"eleve",
 
-    "professeur": "professeur",
-    "prof": "professeur",
-    "professeure": "professeur",
+    "administrateur":"administrateur",
+    "admin":"administrateur",
 
-    "eleve": "eleve",
-    "élève": "eleve",
-    "etudiant": "eleve",
-    "étudiant": "eleve"
+    "professeur":"professeur",
+    "prof":"professeur",
+    "professeure":"professeur",
+
+    "eleve":"eleve",
+    "élève":"eleve",
+    "etudiant":"eleve",
+    "étudiant":"eleve"
+
   };
+
 
   const role =
     roleMap[valeur];
+
 
   if(!role){
 
@@ -3629,7 +3457,14 @@ async function changeUserRole(
     return;
   }
 
+
   try{
+
+    /*
+      IMPORTANT :
+      On modifie seulement le rôle.
+      Le statut reste inchangé.
+    */
 
     await updateDoc(
       doc(
@@ -3638,20 +3473,23 @@ async function changeUserRole(
         uid
       ),
       {
-        role: role,
-        status: "accepted"
+        role:role
       }
     );
+
 
     showToast(
       "Rôle modifié avec succès."
     );
 
+
     await renderUsers();
+
 
   }catch(error){
 
     console.error(error);
+
 
     showToast(
       "Impossible de modifier le rôle."
@@ -3662,9 +3500,39 @@ async function changeUserRole(
 }
 
 
+/* =====================================================
+   DELETE USER PROFILE
+   ADMINISTRATEUR SEULEMENT
+   ===================================================== */
+
 async function deleteUserProfile(
   uid
 ){
+
+  if(!currentUserData?.isAdmin){
+
+    showToast(
+      "Seul l'administrateur peut supprimer un utilisateur."
+    );
+
+    return;
+  }
+
+
+  /*
+    Empêche l'administrateur de supprimer
+    son propre profil Firestore depuis cette page.
+  */
+
+  if(uid === currentUser?.uid){
+
+    showToast(
+      "Vous ne pouvez pas supprimer votre propre profil administrateur."
+    );
+
+    return;
+  }
+
 
   if(
     !confirm(
@@ -3865,6 +3733,15 @@ async function loadDashboard(){
       console.error(error);
 
     }
+
+  }else{
+
+    document
+      .getElementById(
+        "statPending"
+      )
+      .textContent =
+        "0";
 
   }
 
