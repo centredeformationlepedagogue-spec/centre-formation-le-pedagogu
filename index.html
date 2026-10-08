@@ -3,157 +3,166 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<meta name="theme-color" content="#0f3d91">
+<meta name="theme-color" content="#1d4ed8">
 <meta name="description" content="Centre de Formation Le Pédagogue - Gestion universitaire et école professionnelle">
 <link rel="manifest" href="./manifest.json">
-<link rel="icon" type="image/png" href="./icon-192.png">
+<link rel="icon" href="./icon-192.png">
 <title>Centre de Formation Le Pédagogue</title>
 
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-
 :root{
---blue:#0f3d91;
---blue2:#1d4ed8;
---light:#f4f7fb;
+--primary:#1d4ed8;
+--primary2:#2563eb;
+--dark:#0f172a;
+--bg:#f1f5f9;
 --white:#fff;
---dark:#172033;
---gray:#64748b;
 --border:#e2e8f0;
---green:#16a34a;
---red:#dc2626;
---orange:#ea580c;
---purple:#7c3aed;
---shadow:0 4px 18px rgba(15,61,145,.10)
+--text:#1e293b;
+--muted:#64748b;
+--danger:#dc2626;
+--success:#16a34a;
+--warning:#d97706
 }
-
 body{
 font-family:Arial,Helvetica,sans-serif;
-background:var(--light);
-color:var(--dark)
+background:var(--bg);
+color:var(--text)
 }
-
 button,input,select,textarea{font:inherit}
-button{cursor:pointer}
+button{cursor:pointer;border:0}
 .hidden{display:none!important}
 
 #authPage{
 min-height:100vh;
 display:flex;
-justify-content:center;
 align-items:center;
+justify-content:center;
 padding:20px;
-background:linear-gradient(135deg,#0f3d91,#2563eb)
+background:linear-gradient(135deg,#0f172a,#1d4ed8)
 }
 
-.auth-box{
+.auth-card{
 width:100%;
-max-width:450px;
-background:white;
+max-width:440px;
+background:#fff;
 border-radius:20px;
 padding:30px;
-box-shadow:0 20px 60px rgba(0,0,0,.25)
+box-shadow:0 20px 50px #0005
 }
 
 .logo-box{text-align:center;margin-bottom:25px}
-
-.logo-box img{
-width:90px;
-height:90px;
-object-fit:contain;
-border-radius:18px
-}
-
-.logo-box h1{
-color:var(--blue);
-margin-top:12px;
-font-size:23px
-}
-
-.logo-box p{
-color:var(--gray);
-margin-top:5px
-}
-
-.auth-box input{
-width:100%;
-padding:13px;
-margin:7px 0;
-border:1px solid var(--border);
-border-radius:9px;
-outline:none
-}
-
-.auth-box input:focus{border-color:var(--blue2)}
-
-.btn{
-border:0;
-border-radius:9px;
-padding:10px 14px;
-font-weight:bold;
-color:white;
-background:var(--blue2)
-}
-
-.btn:hover{opacity:.9}
-.btn-green{background:var(--green)}
-.btn-red{background:var(--red)}
-.btn-orange{background:var(--orange)}
-.btn-gray{background:#64748b}
-.btn-purple{background:var(--purple)}
-.full{width:100%}
-
-.google-btn{
-background:#fff;
-color:#1f2937;
-border:1px solid #d1d5db;
+.app-logo{
+width:82px;
+height:82px;
+margin:auto;
+border-radius:20px;
+background:#1d4ed8;
 display:flex;
 align-items:center;
-justify-content:center;
-gap:8px
+justify-content:center
+}
+.app-logo img{width:65px;height:65px}
+.logo-box h1{font-size:22px;margin-top:14px}
+.logo-box p{color:var(--muted);margin-top:6px}
+
+.form-group{margin-bottom:15px}
+.form-group label{
+display:block;
+font-size:14px;
+font-weight:bold;
+margin-bottom:7px
+}
+.form-group input,
+.form-group select,
+.form-group textarea{
+width:100%;
+border:1px solid var(--border);
+border-radius:9px;
+padding:12px;
+outline:none;
+background:#fff
+}
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus{
+border-color:var(--primary2)
 }
 
-.auth-separator{
+.btn{
+padding:10px 15px;
+border-radius:9px;
+font-weight:bold
+}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-success{background:var(--success);color:#fff}
+.btn-danger{background:var(--danger);color:#fff}
+.btn-warning{background:var(--warning);color:#fff}
+.btn-light{background:#f1f5f9;color:#334155}
+
+.btn-google{
+width:100%;
+margin-top:10px;
+background:#fff;
+color:#111827;
+border:1px solid var(--border)
+}
+
+.auth-switch{
 text-align:center;
-margin:18px 0;
-color:#94a3b8
+margin-top:18px;
+color:var(--muted)
+}
+.auth-switch button{
+background:none;
+color:var(--primary);
+font-weight:bold
 }
 
-.header{
-position:fixed;
-top:0;
-left:0;
-right:0;
-height:68px;
-background:white;
+.message{
+padding:11px;
+border-radius:8px;
+margin-bottom:15px;
+font-size:14px
+}
+.message.error{background:#fee2e2;color:#991b1b}
+.message.success{background:#dcfce7;color:#166534}
+.message.info{background:#dbeafe;color:#1e40af}
+
+.topbar{
+height:65px;
+background:#fff;
 border-bottom:1px solid var(--border);
 display:flex;
 align-items:center;
 justify-content:space-between;
-padding:0 18px;
-z-index:1000
+padding:0 22px;
+position:fixed;
+top:0;
+left:0;
+right:0;
+z-index:100
 }
 
-.header-left{
+.brand{
 display:flex;
 align-items:center;
-gap:12px
+gap:12px;
+font-weight:bold
 }
 
-.header-logo{
-width:42px;
-height:42px;
-border-radius:9px;
-object-fit:contain
+.brand-icon{
+width:40px;
+height:40px;
+border-radius:10px;
+background:var(--primary);
+display:flex;
+align-items:center;
+justify-content:center
 }
+.brand-icon img{width:32px;height:32px}
 
-.header-title{
-font-weight:bold;
-color:var(--blue);
-font-size:17px
-}
-
-.header-right{
+.top-actions{
 display:flex;
 align-items:center;
 gap:8px
@@ -161,197 +170,179 @@ gap:8px
 
 .language{
 border:1px solid var(--border);
-border-radius:8px;
 padding:8px;
-background:white
+border-radius:8px;
+background:#fff
 }
 
 .install-btn{
 background:#16a34a;
-color:white;
-border:0;
-border-radius:8px;
+color:#fff;
 padding:9px 12px;
+border-radius:8px;
 font-weight:bold
 }
 
-.user-btn{
+.user-menu{
+display:flex;
+align-items:center;
+gap:8px;
+padding:7px 10px;
 border:1px solid var(--border);
-background:white;
-padding:8px 12px;
 border-radius:8px
+}
+
+.user-avatar{
+width:30px;
+height:30px;
+border-radius:50%;
+background:var(--primary);
+color:#fff;
+display:flex;
+align-items:center;
+justify-content:center;
+font-weight:bold
+}
+
+.role-label{
+font-size:11px;
+color:#fff;
+background:#16a34a;
+padding:3px 7px;
+border-radius:10px;
+font-weight:bold
 }
 
 .sidebar{
 position:fixed;
+top:65px;
 left:0;
-top:68px;
 bottom:0;
-width:270px;
-background:#0f3d91;
-color:white;
+width:255px;
+background:#0f172a;
+color:#fff;
 overflow-y:auto;
-z-index:900
+padding:15px 10px;
+z-index:90
 }
 
-.sidebar-title{
-padding:18px 18px 8px;
+.nav-title{
+color:#94a3b8;
 font-size:11px;
 text-transform:uppercase;
-opacity:.65;
-font-weight:bold
+font-weight:bold;
+padding:15px 12px 7px
 }
 
-.menu-btn{
+.nav-btn{
 width:100%;
-border:0;
-background:transparent;
-color:white;
-text-align:left;
-padding:12px 18px;
 display:flex;
 align-items:center;
-gap:10px;
-font-size:14px
+gap:11px;
+padding:11px 12px;
+border-radius:8px;
+background:transparent;
+color:#cbd5e1;
+text-align:left;
+margin-bottom:3px
 }
 
-.menu-btn:hover,
-.menu-btn.active{
-background:rgba(255,255,255,.15)
+.nav-btn:hover,
+.nav-btn.active{
+background:#1d4ed8;
+color:#fff
 }
 
 .main{
-margin-left:270px;
-padding:92px 25px 30px
+margin-left:255px;
+padding:90px 25px 30px
 }
 
-.page-title{margin-bottom:20px}
+.page-title{
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:15px;
+margin-bottom:22px
+}
+
 .page-title h2{font-size:25px}
 .page-title p{
-color:var(--gray);
-margin-top:5px
+color:var(--muted);
+margin-top:4px
 }
 
 .stats{
 display:grid;
-grid-template-columns:repeat(6,1fr);
-gap:15px;
+grid-template-columns:repeat(4,1fr);
+gap:16px;
 margin-bottom:25px
 }
 
-.stat{
-background:white;
-border-radius:14px;
-padding:18px;
-box-shadow:var(--shadow);
-border:1px solid var(--border)
+.stat-card{
+background:#fff;
+border:1px solid var(--border);
+border-radius:13px;
+padding:20px
 }
 
-.stat-icon{font-size:26px}
-
-.stat-title{
-color:var(--gray);
-font-size:13px;
-margin-top:8px
+.stat-icon{
+font-size:25px;
+margin-bottom:10px
 }
 
-.stat-number{
+.stat-card .number{
 font-size:28px;
-font-weight:bold;
-color:var(--blue);
+font-weight:bold
+}
+
+.stat-card .label{
+color:var(--muted);
 margin-top:5px
 }
 
 .panel{
-background:white;
-border-radius:14px;
+background:#fff;
 border:1px solid var(--border);
-box-shadow:var(--shadow);
+border-radius:13px;
 padding:20px;
 margin-bottom:20px
 }
 
-.panel h3{
-margin-bottom:15px;
-color:var(--blue)
+.panel-header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:10px;
+margin-bottom:17px;
+flex-wrap:wrap
 }
 
-.quick-grid{
-display:grid;
-grid-template-columns:repeat(4,1fr);
-gap:12px
-}
-
-.quick{
-padding:18px;
+.search{
+padding:10px 12px;
 border:1px solid var(--border);
-border-radius:12px;
-background:#f8fafc;
-text-align:left
-}
-
-.quick strong{
-display:block;
-color:var(--blue);
-margin-bottom:5px
+border-radius:8px;
+min-width:220px
 }
 
 .table-wrap{overflow-x:auto}
 
 table{
 width:100%;
-border-collapse:collapse
+border-collapse:collapse;
+min-width:700px
 }
 
 th,td{
 padding:12px;
 border-bottom:1px solid var(--border);
 text-align:left;
-white-space:nowrap
+font-size:14px
 }
 
 th{
-background:#f1f5f9;
-color:var(--blue)
-}
-
-.form-grid{
-display:grid;
-grid-template-columns:repeat(2,1fr);
-gap:12px
-}
-
-.form-group{
-display:flex;
-flex-direction:column;
-gap:6px
-}
-
-.form-group label{
-font-size:13px;
-font-weight:bold
-}
-
-.form-group input,
-.form-group select,
-.form-group textarea{
-padding:11px;
-border:1px solid var(--border);
-border-radius:8px;
-outline:none;
-background:white
-}
-
-.form-group textarea{
-min-height:100px;
-resize:vertical
-}
-
-.form-actions{
-margin-top:15px;
-display:flex;
-gap:8px;
-flex-wrap:wrap
+background:#f8fafc;
+color:#475569
 }
 
 .badge{
@@ -362,2486 +353,7282 @@ font-size:12px;
 font-weight:bold
 }
 
-.badge-green{
+.badge-success{
 background:#dcfce7;
 color:#166534
 }
 
-.badge-orange{
-background:#ffedd5;
-color:#9a3412
+.badge-warning{
+background:#fef3c7;
+color:#92400e
 }
 
-.badge-red{
+.badge-danger{
 background:#fee2e2;
 color:#991b1b
 }
 
-.badge-blue{
-background:#dbeafe;
-color:#1e40af
-}
-
-.info-box{
-padding:13px 15px;
-background:#eff6ff;
-border:1px solid #bfdbfe;
-border-radius:9px;
-color:#1e40af;
-margin-bottom:15px;
-line-height:1.5
-}
-
-.warning-box{
-padding:13px 15px;
-background:#fff7ed;
-border:1px solid #fed7aa;
-border-radius:9px;
-color:#9a3412;
-margin-bottom:15px;
-line-height:1.5
-}
-
-.action-group{
+.actions{
 display:flex;
-gap:5px;
+gap:6px;
 flex-wrap:wrap
 }
 
-.note-input{
-width:90px;
-padding:7px;
-border:1px solid var(--border);
-border-radius:7px
+.actions button{
+padding:7px 9px;
+border-radius:7px;
+font-size:12px
 }
 
-.comment-input{
-min-width:180px;
-padding:7px;
-border:1px solid var(--border);
-border-radius:7px
+.empty{
+text-align:center;
+color:var(--muted);
+padding:35px 10px
 }
 
-#toast{
-position:fixed;
-right:20px;
-bottom:20px;
-z-index:5000;
-background:#172033;
-color:white;
-padding:14px 18px;
-border-radius:10px;
-box-shadow:0 8px 30px rgba(0,0,0,.25);
-max-width:350px
+.grid-form{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:15px
 }
+
+.full{grid-column:1/-1}
 
 .modal{
 position:fixed;
 inset:0;
-background:rgba(0,0,0,.55);
-z-index:4000;
+background:#0008;
 display:flex;
-justify-content:center;
 align-items:center;
-padding:20px
+justify-content:center;
+padding:20px;
+z-index:300
 }
 
-.modal-box{
-background:white;
-max-width:600px;
+.modal-card{
 width:100%;
+max-width:650px;
 max-height:90vh;
-overflow-y:auto;
-border-radius:18px;
-padding:25px
+overflow:auto;
+background:#fff;
+border-radius:15px;
+padding:22px
 }
 
-.modal-box h3{
-color:var(--blue);
-margin-bottom:15px
+.modal-header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:20px
 }
 
-.modal-close{
-float:right;
-border:0;
-background:#fee2e2;
-color:#991b1b;
-width:32px;
-height:32px;
-border-radius:50%
+.close{
+width:35px;
+height:35px;
+border-radius:50%;
+background:#f1f5f9
+}
+
+.toast{
+position:fixed;
+right:20px;
+bottom:20px;
+z-index:500;
+padding:13px 18px;
+border-radius:10px;
+color:#fff;
+background:#0f172a;
+box-shadow:0 10px 30px #0003
 }
 
 .mobile-menu{
 display:none;
-border:0;
-background:#eef2ff;
-padding:8px 10px;
-border-radius:8px;
-font-size:20px
+background:var(--primary);
+color:#fff;
+width:40px;
+height:40px;
+border-radius:8px
 }
 
-.small-text{
-font-size:12px;
-color:var(--gray)
+.card-grid{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:16px
 }
 
-.empty{
-padding:25px;
-text-align:center;
-color:var(--gray)
+.assignment-card{
+background:#fff;
+border:1px solid var(--border);
+border-radius:13px;
+padding:18px
 }
 
-@media(max-width:1100px){
-.stats{grid-template-columns:repeat(3,1fr)}
+.assignment-card h3{margin-bottom:8px}
+
+.assignment-card p{
+color:var(--muted);
+line-height:1.55;
+margin:6px 0
 }
 
-@media(max-width:800px){
+.assignment-card .meta{
+font-size:13px;
+color:#475569;
+margin:8px 0
+}
+
+.note20{
+font-size:25px;
+font-weight:bold;
+color:var(--primary)
+}
+
+.note100{
+font-size:15px;
+color:var(--success);
+font-weight:bold
+}
+
+.role-box{
+padding:15px;
+background:#eff6ff;
+border-radius:10px;
+margin-bottom:18px
+}
+
+@media(max-width:1000px){
+.stats{grid-template-columns:repeat(2,1fr)}
+.card-grid{grid-template-columns:repeat(2,1fr)}
 .sidebar{
 transform:translateX(-100%);
 transition:.25s
 }
-.sidebar.open{
-transform:translateX(0)
-}
-.main{
-margin-left:0;
-padding:85px 12px 25px
-}
-.mobile-menu{
-display:block
-}
-.header-title{
-display:none
-}
-.header-right{
-gap:5px
-}
-.install-btn{
-padding:8px;
-font-size:12px
-}
-.stats{
-grid-template-columns:repeat(2,1fr)
-}
-.quick-grid{
-grid-template-columns:repeat(2,1fr)
-}
-.form-grid{
-grid-template-columns:1fr
-}
+.sidebar.open{transform:translateX(0)}
+.main{margin-left:0}
+.mobile-menu{display:block}
 }
 
-@media(max-width:480px){
+@media(max-width:600px){
+.topbar{padding:0 8px}
+.brand-name{display:none}
+.top-actions{gap:4px}
+.user-menu span{display:none}
+.main{
+padding:82px 12px 20px
+}
 .stats{
-grid-template-columns:1fr
+grid-template-columns:1fr 1fr;
+gap:9px
 }
-.quick-grid{
-grid-template-columns:1fr
+.stat-card{padding:14px}
+.stat-card .number{font-size:23px}
+.grid-form{grid-template-columns:1fr}
+.full{grid-column:auto}
+.page-title{
+align-items:flex-start;
+flex-direction:column
 }
-.header{
-padding:0 8px
+.search{
+width:100%;
+min-width:0
 }
-.language{
-max-width:75px
+.install-btn{
+font-size:11px;
+padding:8px
 }
-.user-btn{
-max-width:110px;
-overflow:hidden;
-text-overflow:ellipsis
-}
+.card-grid{grid-template-columns:1fr}
 }
 </style>
 </head>
 
 <body>
 
-<section id="authPage">
-<div class="auth-box">
+<div id="authPage">
+
+<div class="auth-card">
+
 <div class="logo-box">
+
+<div class="app-logo">
 <img src="./icon-192.png" alt="Logo">
-<h1>Centre de Formation Le Pédagogue</h1>
-<p>Gestion universitaire et école professionnelle</p>
 </div>
 
-<div id="loginBox">
-<h2 style="margin-bottom:15px;color:#0f3d91">Connexion</h2>
-<input id="loginEmail" type="email" placeholder="Adresse e-mail" autocomplete="email">
-<input id="loginPassword" type="password" placeholder="Mot de passe" autocomplete="current-password">
-<button class="btn full" onclick="loginEmailPassword()">🔐 Se connecter</button>
-<div class="auth-separator">OU</div>
-<button id="googleLoginBtn" class="btn google-btn full" onclick="loginGoogle()">🔵 Continuer avec Google</button>
-<p style="margin-top:18px;text-align:center">
-Pas encore de compte ?
-<button style="border:0;background:none;color:#1d4ed8;font-weight:bold" onclick="showRegister()">Créer un compte</button>
+<h1>Centre de Formation Le Pédagogue</h1>
+
+<p>
+Gestion universitaire & école professionnelle
 </p>
+
+</div>
+
+<div id="authMessage"></div>
+
+<div id="loginBox">
+
+<h2 style="margin-bottom:18px">
+Connexion
+</h2>
+
+<div class="form-group">
+<label>Email</label>
+<input
+id="loginEmail"
+type="email"
+placeholder="Votre adresse email">
+</div>
+
+<div class="form-group">
+<label>Mot de passe</label>
+<input
+id="loginPassword"
+type="password"
+placeholder="Votre mot de passe">
+</div>
+
+<button
+class="btn btn-primary"
+style="width:100%"
+onclick="loginEmailPassword()">
+Se connecter
+</button>
+
+<button
+class="btn btn-google"
+onclick="loginGoogle()">
+🔵 Continuer avec Google
+</button>
+
+<div class="auth-switch">
+Pas encore de compte ?
+<button onclick="showRegister()">
+Créer un compte
+</button>
+</div>
+
 </div>
 
 <div id="registerBox" class="hidden">
-<h2 style="margin-bottom:15px;color:#0f3d91">Créer un compte</h2>
-<input id="registerName" type="text" placeholder="Nom complet">
-<input id="registerEmail" type="email" placeholder="Adresse e-mail">
-<input id="registerPassword" type="password" placeholder="Mot de passe" autocomplete="new-password">
-<button class="btn btn-green full" onclick="registerAccount()">📝 Créer mon compte</button>
-<p style="margin-top:18px;text-align:center">
-Déjà un compte ?
-<button style="border:0;background:none;color:#1d4ed8;font-weight:bold" onclick="showLogin()">Se connecter</button>
-</p>
-</div>
-</div>
-</section>
 
-<section id="appPage" class="hidden">
-<header class="header">
-<div class="header-left">
-<button class="mobile-menu" onclick="toggleSidebar()">☰</button>
-<img class="header-logo" src="./icon-192.png" alt="Logo">
-<div class="header-title">CENTRE DE FORMATION LE PÉDAGOGUE</div>
+<h2 style="margin-bottom:18px">
+Créer un compte
+</h2>
+
+<div class="form-group">
+<label>Nom complet</label>
+<input
+id="registerName"
+type="text"
+placeholder="Nom et prénom">
 </div>
-<div class="header-right">
-<select id="languageSelect" class="language" onchange="changeLanguage()">
-<option value="fr">🇫🇷 Français</option>
-<option value="ht">🇭🇹 Kreyòl</option>
+
+<div class="form-group">
+<label>Email</label>
+<input
+id="registerEmail"
+type="email"
+placeholder="Votre adresse email">
+</div>
+
+<div class="form-group">
+<label>Mot de passe</label>
+<input
+id="registerPassword"
+type="password"
+placeholder="Minimum 6 caractères">
+</div>
+
+<button
+class="btn btn-primary"
+style="width:100%"
+onclick="registerAccount()">
+Créer mon compte
+</button>
+
+<p style="margin-top:15px;font-size:13px;color:#64748b;text-align:center;line-height:1.5">
+Après l'inscription, votre compte sera
+<strong>en attente</strong>.
+L'administrateur choisira votre rôle.
+</p>
+
+<div class="auth-switch">
+Déjà un compte ?
+<button onclick="showLogin()">
+Se connecter
+</button>
+</div>
+
+</div>
+
+</div>
+</div>
+
+
+<div id="appPage" class="hidden">
+
+<header class="topbar">
+
+<div class="brand">
+
+<button
+class="mobile-menu"
+onclick="toggleSidebar()">
+☰
+</button>
+
+<div class="brand-icon">
+<img src="./icon-192.png" alt="">
+</div>
+
+<div class="brand-name">
+Centre de Formation Le Pédagogue
+</div>
+
+</div>
+
+<div class="top-actions">
+
+<button
+id="installBtn"
+class="install-btn"
+onclick="installApp()">
+📲 Installer
+</button>
+
+<select
+id="language"
+class="language"
+onchange="changeLanguage(this.value)">
+
+<option value="fr">
+🇫🇷 Français
+</option>
+
+<option value="ht">
+🇭🇹 Kreyòl
+</option>
+
 </select>
-<button id="installBtn" class="install-btn" onclick="installApplication()">📲 Installer</button>
-<button class="user-btn" onclick="toggleUserMenu()">👤 <span id="headerUserName">Utilisateur</span></button>
+
+<div class="user-menu">
+
+<div
+id="userAvatar"
+class="user-avatar">
+U
 </div>
+
+<div>
+<strong id="userName">
+Utilisateur
+</strong>
+
+<span
+id="userRole"
+class="role-label">
+Utilisateur
+</span>
+</div>
+
+</div>
+
+<button
+class="btn btn-light"
+onclick="logoutUser()">
+Déconnexion
+</button>
+
+</div>
+
 </header>
 
-<aside id="sidebar" class="sidebar">
-<div class="sidebar-title">ACADÉMIQUE</div>
-<div id="adminAcademic">
-<button class="menu-btn active" onclick="showPage('dashboard',this)">🏠 <span>Tableau de bord</span></button>
-<button class="menu-btn" onclick="showPage('etudiants',this)">🎓 <span>Étudiants</span></button>
-<button class="menu-btn" onclick="showPage('professeurs',this)">👨‍🏫 <span>Professeurs</span></button>
-<button class="menu-btn" onclick="showPage('classes',this)">🏫 <span>Classes</span></button>
-<button class="menu-btn" onclick="showPage('departements',this)">🏛️ <span>Départements</span></button>
-<button class="menu-btn" onclick="showPage('filieres',this)">📚 <span>Filières</span></button>
-<button class="menu-btn" onclick="showPage('matieres',this)">📖 <span>Matières</span></button>
-<button class="menu-btn" onclick="showPage('cours',this)">📘 <span>Cours</span></button>
-<button class="menu-btn" onclick="showPage('affectations',this)">🔗 <span>Affectations</span></button>
-<button class="menu-btn" onclick="showPage('inscriptions',this)">👥 <span>Élèves / Classes</span></button>
+
+<aside
+id="sidebar"
+class="sidebar">
+
+<div class="nav-title">
+Général
 </div>
 
-<div id="profAcademic" class="hidden">
-<button class="menu-btn" onclick="showPage('mesclasses',this)">🏫 <span>Mes classes</span></button>
-<button class="menu-btn" onclick="showPage('mescours',this)">📘 <span>Mes cours</span></button>
+<button
+class="nav-btn active"
+data-page="accueil"
+onclick="showPage('accueil')">
+🏠 Accueil
+</button>
+
+
+<div class="nav-title">
+Administration académique
 </div>
 
-<div id="studentAcademic" class="hidden">
-<button class="menu-btn" onclick="showPage('maclasse',this)">🏫 <span>Ma classe</span></button>
-<button class="menu-btn" onclick="showPage('mescours',this)">📘 <span>Mes cours</span></button>
+<button
+class="nav-btn"
+data-page="etudiants"
+onclick="showPage('etudiants')">
+👨‍🎓 Étudiants
+</button>
+
+<button
+class="nav-btn"
+data-page="professeurs"
+onclick="showPage('professeurs')">
+👨‍🏫 Professeurs
+</button>
+
+<button
+class="nav-btn"
+data-page="departements"
+onclick="showPage('departements')">
+🏛️ Départements
+</button>
+
+<button
+class="nav-btn"
+data-page="filieres"
+onclick="showPage('filieres')">
+📚 Filières
+</button>
+
+<button
+class="nav-btn"
+data-page="classes"
+onclick="showPage('classes')">
+🏫 Classes
+</button>
+
+<button
+class="nav-btn"
+data-page="matieres"
+onclick="showPage('matieres')">
+📖 Matières
+</button>
+
+<button
+class="nav-btn"
+data-page="cours"
+onclick="showPage('cours')">
+📘 Cours
+</button>
+
+<button
+class="nav-btn"
+data-page="affectations"
+onclick="showPage('affectations')">
+🔗 Affectations
+</button>
+
+<button
+class="nav-btn"
+data-page="inscriptions"
+onclick="showPage('inscriptions')">
+👥 Élèves / Classes
+</button>
+
+
+<div class="nav-title">
+Pédagogie
 </div>
 
-<div class="sidebar-title">ÉVALUATION</div>
-<button id="devoirsMenu" class="menu-btn" onclick="showPage('devoirs',this)">📝 <span>Devoirs</span></button>
-<button id="remisesMenu" class="menu-btn" onclick="showPage('remises',this)">📤 <span>Remises</span></button>
-<button id="correctionsMenu" class="menu-btn" onclick="showPage('corrections',this)">✏️ <span>Corrections</span></button>
-<button id="resultatsMenu" class="menu-btn" onclick="showPage('resultats',this)">📊 <span>Résultats</span></button>
+<button
+class="nav-btn"
+data-page="devoirs"
+onclick="showPage('devoirs')">
+📝 Devoirs
+</button>
 
-<div id="adminSection" class="hidden">
-<div class="sidebar-title">ADMINISTRATION</div>
-<button id="usersMenu" class="menu-btn" onclick="showPage('utilisateurs',this)">👥 <span>Utilisateurs</span></button>
-<button class="menu-btn" onclick="showPage('statistiques',this)">📈 <span>Statistiques</span></button>
-<button class="menu-btn" onclick="showPage('sauvegarde',this)">💾 <span>Données / Sauvegarde</span></button>
+<button
+class="nav-btn"
+data-page="remises"
+onclick="showPage('remises')">
+📤 Remises / Corrections
+</button>
+
+<button
+class="nav-btn"
+data-page="resultats"
+onclick="showPage('resultats')">
+📊 Résultats
+</button>
+
+<button
+class="nav-btn"
+data-page="statistiques"
+onclick="showPage('statistiques')">
+📈 Statistiques
+</button>
+
+
+<div
+id="adminNav"
+class="hidden">
+
+<div class="nav-title">
+Administration
 </div>
 
-<button class="menu-btn" onclick="logout()">🚪 <span>Déconnexion</span></button>
+<button
+class="nav-btn"
+data-page="users"
+onclick="showPage('users')">
+👤 Utilisateurs
+</button>
+
+<button
+class="nav-btn"
+data-page="configuration"
+onclick="showPage('configuration')">
+⚙️ Données / Sauvegarde
+</button>
+
+</div>
+
 </aside>
 
+
 <main class="main">
-<section id="page-dashboard" class="page">
+
+<section
+id="page-accueil"
+class="page">
+
 <div class="page-title">
-<h2>Tableau de bord</h2>
-<p id="welcomeText">Bienvenue dans votre espace de gestion.</p>
+
+<div>
+
+<h2>
+Tableau de bord
+</h2>
+
+<p>
+Bienvenue dans Centre de Formation Le Pédagogue.
+</p>
+
 </div>
 
-<div class="stats">
-<div class="stat"><div class="stat-icon">🎓</div><div class="stat-title">Étudiants</div><div id="statEtudiants" class="stat-number">0</div></div>
-<div class="stat"><div class="stat-icon">👨‍🏫</div><div class="stat-title">Professeurs</div><div id="statProfesseurs" class="stat-number">0</div></div>
-<div class="stat"><div class="stat-icon">🏫</div><div class="stat-title">Classes</div><div id="statClasses" class="stat-number">0</div></div>
-<div class="stat"><div class="stat-icon">📖</div><div class="stat-title">Matières</div><div id="statMatieres" class="stat-number">0</div></div>
-<div class="stat"><div class="stat-icon">📝</div><div class="stat-title">Devoirs</div><div id="statDevoirs" class="stat-number">0</div></div>
-<div class="stat"><div class="stat-icon">📤</div><div class="stat-title">Remises</div><div id="statRemises" class="stat-number">0</div></div>
 </div>
+
+<div
+id="dashboardStats"
+class="stats">
+
+<div class="stat-card">
+<div class="stat-icon">👨‍🎓</div>
+<div
+id="statEtudiants"
+class="number">
+0
+</div>
+<div class="label">
+Étudiants
+</div>
+</div>
+
+<div class="stat-card">
+<div class="stat-icon">👨‍🏫</div>
+<div
+id="statProfesseurs"
+class="number">
+0
+</div>
+<div class="label">
+Professeurs
+</div>
+</div>
+
+<div class="stat-card">
+<div class="stat-icon">🏫</div>
+<div
+id="statClasses"
+class="number">
+0
+</div>
+<div class="label">
+Classes
+</div>
+</div>
+
+<div class="stat-card">
+<div class="stat-icon">📚</div>
+<div
+id="statMatieres"
+class="number">
+0
+</div>
+<div class="label">
+Matières
+</div>
+</div>
+
+<div class="stat-card">
+<div class="stat-icon">📝</div>
+<div
+id="statDevoirs"
+class="number">
+0
+</div>
+<div class="label">
+Devoirs
+</div>
+</div>
+
+<div class="stat-card">
+<div class="stat-icon">⏳</div>
+<div
+id="statPending"
+class="number">
+0
+</div>
+<div class="label">
+Utilisateurs en attente
+</div>
+</div>
+
+</div>
+
 
 <div class="panel">
-<h3>Accès rapide</h3>
-<div id="quickGrid" class="quick-grid">
-<button class="quick" onclick="quickPage('devoirs')"><strong>📝 Devoirs</strong>Gérer les devoirs</button>
-<button class="quick" onclick="quickPage('remises')"><strong>📤 Remises</strong>Devoirs remis</button>
-<button class="quick" onclick="quickPage('corrections')"><strong>✏️ Corrections</strong>Corriger et commenter</button>
-<button class="quick" onclick="quickPage('resultats')"><strong>📊 Résultats</strong>Notes sur 100</button>
-</div>
+
+<h3>
+Bienvenue
+</h3>
+
+<p
+style="margin-top:10px;color:var(--muted);line-height:1.7">
+
+Centre de Formation Le Pédagogue est une
+plateforme de gestion universitaire et d'école
+professionnelle permettant de gérer les étudiants,
+professeurs, classes, matières, affectations,
+devoirs, remises, corrections et résultats.
+
+</p>
+
 </div>
 
-<div class="panel">
-<h3>Mon affectation</h3>
-<div id="dashboardAssignmentInfo">Chargement...</div>
-</div>
-
-<div class="panel">
-<h3>État du système</h3>
-<p><strong>Utilisateur :</strong> <span id="systemUser">-</span></p>
-<p style="margin-top:8px"><strong>Rôle :</strong> <span id="systemRole">-</span></p>
-<p style="margin-top:8px"><strong>Statut :</strong> <span id="systemStatus">-</span></p>
-<p style="margin-top:8px"><strong>Accès administrateur :</strong> <span id="systemAdmin">Non</span></p>
-</div>
 </section>
 
-<section id="page-etudiants" class="page hidden"></section>
-<section id="page-professeurs" class="page hidden"></section>
-<section id="page-classes" class="page hidden"></section>
-<section id="page-departements" class="page hidden"></section>
-<section id="page-filieres" class="page hidden"></section>
-<section id="page-matieres" class="page hidden"></section>
-<section id="page-cours" class="page hidden"></section>
-<section id="page-affectations" class="page hidden"></section>
-<section id="page-inscriptions" class="page hidden"></section>
-<section id="page-mesclasses" class="page hidden"></section>
-<section id="page-mescours" class="page hidden"></section>
-<section id="page-maclasse" class="page hidden"></section>
-<section id="page-devoirs" class="page hidden"></section>
-<section id="page-remises" class="page hidden"></section>
-<section id="page-corrections" class="page hidden"></section>
-<section id="page-resultats" class="page hidden"></section>
-<section id="page-statistiques" class="page hidden"></section>
-<section id="page-utilisateurs" class="page hidden"></section>
-<section id="page-sauvegarde" class="page hidden"></section>
+
+<section
+id="page-etudiants"
+class="page hidden">
+</section>
+
+<section
+id="page-professeurs"
+class="page hidden">
+</section>
+
+<section
+id="page-departements"
+class="page hidden">
+</section>
+
+<section
+id="page-filieres"
+class="page hidden">
+</section>
+
+<section
+id="page-classes"
+class="page hidden">
+</section>
+
+<section
+id="page-matieres"
+class="page hidden">
+</section>
+
+<section
+id="page-cours"
+class="page hidden">
+</section>
+
+<section
+id="page-affectations"
+class="page hidden">
+</section>
+
+<section
+id="page-inscriptions"
+class="page hidden">
+</section>
+
+<section
+id="page-devoirs"
+class="page hidden">
+</section>
+
+<section
+id="page-remises"
+class="page hidden">
+</section>
+
+<section
+id="page-resultats"
+class="page hidden">
+</section>
+
+<section
+id="page-statistiques"
+class="page hidden">
+</section>
+
+<section
+id="page-users"
+class="page hidden">
+</section>
+
+<section
+id="page-configuration"
+class="page hidden">
+</section>
+
 </main>
-</section>
-
-<div id="userMenu" class="modal hidden">
-<div class="modal-box">
-<button class="modal-close" onclick="closeUserMenu()">×</button>
-<h3>Mon compte</h3>
-<p><strong>Nom :</strong> <span id="menuName">-</span></p>
-<p style="margin-top:8px"><strong>E-mail :</strong> <span id="menuEmail">-</span></p>
-<p style="margin-top:8px"><strong>Rôle :</strong> <span id="menuRole">-</span></p>
-<p style="margin-top:8px"><strong>Statut :</strong> <span id="menuStatus">-</span></p>
-<div style="margin-top:20px">
-<button class="btn btn-red full" onclick="logout()">🚪 Déconnexion</button>
-</div>
-</div>
 </div>
 
-<div id="installModal" class="modal hidden">
-<div class="modal-box">
-<button class="modal-close" onclick="closeInstallModal()">×</button>
-<h3>📲 Installer l'application</h3>
-<p>Si l'installation automatique ne fonctionne pas, ouvrez le menu <strong>⋮</strong> de Chrome et choisissez <strong>Installer l'application</strong> ou <strong>Ajouter à l'écran d'accueil</strong>.</p>
-<button class="btn btn-green full" style="margin-top:15px" onclick="closeInstallModal()">Compris</button>
-</div>
+
+<div
+id="modal"
+class="modal hidden">
+
+<div class="modal-card">
+
+<div class="modal-header">
+
+<h3 id="modalTitle">
+Formulaire
+</h3>
+
+<button
+class="close"
+onclick="closeModal()">
+×
+</button>
+
 </div>
 
-<div id="toast" class="hidden"></div>
+<div id="modalBody"></div>
+
+</div>
+
+</div>
+
+
+<div
+id="toast"
+class="toast hidden">
+</div>
+
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc, collection, getDocs, addDoc, updateDoc, deleteDoc, serverTimestamp, query, where } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyAhrtcVaEZ7oU-p4Ihzl0APX2ccXKi4jBU",
-  authDomain: "centre-de-formation-le-pe.firebaseapp.com",
-  projectId: "centre-de-formation-le-pe",
-  storageBucket: "centre-de-formation-le-pe.firebasestorage.app",
-  messagingSenderId: "11834103838",
-  appId: "1:11834103838:web:b82c994e78486cd313760f"
+import {
+initializeApp
+} from
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+getAuth,
+onAuthStateChanged,
+signInWithEmailAndPassword,
+createUserWithEmailAndPassword,
+GoogleAuthProvider,
+signInWithPopup,
+signOut,
+setPersistence,
+browserLocalPersistence
+} from
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+import {
+getFirestore,
+collection,
+doc,
+getDoc,
+getDocs,
+addDoc,
+updateDoc,
+deleteDoc,
+query,
+where,
+serverTimestamp
+} from
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+
+const firebaseConfig={
+apiKey:"AIzaSyAhrtcVaEZ7oU-p4Ihzl0APX2ccXKi4jBU",
+authDomain:"centre-de-formation-le-pe.firebaseapp.com",
+projectId:"centre-de-formation-le-pe",
+storageBucket:"centre-de-formation-le-pe.firebasestorage.app",
+messagingSenderId:"11834103838",
+appId:"1:11834103838:web:b82c994e78486cd313760f"
 };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
 
-setPersistence(auth, browserLocalPersistence).catch(console.error);
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
 
-const ADMIN_EMAIL = "centredeformationlepedagogue@gmail.com";
+await setPersistence(
+auth,
+browserLocalPersistence
+);
 
-let currentUser = null;
-let currentUserData = null;
-let deferredPrompt = null;
+const googleProvider=new GoogleAuthProvider();
 
-window.addEventListener("beforeinstallprompt", event => {
-  event.preventDefault();
-  deferredPrompt = event;
-  const btn = document.getElementById("installBtn");
-  if(btn) btn.style.display = "block";
+let currentUser=null;
+let currentProfile=null;
+let deferredPrompt=null;
+
+const ADMIN_EMAIL=
+"centredeformationlepedagogue@gmail.com";
+
+
+const $=id=>
+document.getElementById(id);
+
+
+const esc=value=>
+String(value??"")
+.replace(/&/g,"&amp;")
+.replace(/</g,"&lt;")
+.replace(/>/g,"&gt;")
+.replace(/"/g,"&quot;")
+.replace(/'/g,"&#039;");
+
+
+function toast(message){
+
+const t=$("toast");
+
+if(!t)return;
+
+t.textContent=message;
+t.classList.remove("hidden");
+
+clearTimeout(window.__toastTimer);
+
+window.__toastTimer=
+setTimeout(
+()=>t.classList.add("hidden"),
+3000
+);
+
+}
+
+
+window.showToast=toast;
+
+
+function showAuthMessage(
+message,
+type="info"
+){
+
+$("authMessage").innerHTML=
+`<div class="message ${type}">
+${esc(message)}
+</div>`;
+
+}
+
+
+function clearAuthMessage(){
+
+$("authMessage").innerHTML="";
+
+}
+
+
+function showLogin(){
+
+$("loginBox").classList.remove("hidden");
+$("registerBox").classList.add("hidden");
+clearAuthMessage();
+
+}
+
+
+window.showLogin=showLogin;
+
+
+function showRegister(){
+
+$("loginBox").classList.add("hidden");
+$("registerBox").classList.remove("hidden");
+clearAuthMessage();
+
+}
+
+
+window.showRegister=showRegister;
+
+
+function isAdmin(){
+
+return !!(
+currentUser &&
+(
+currentUser.email?.toLowerCase()===
+ADMIN_EMAIL ||
+(
+currentProfile?.role==="administrateur" &&
+currentProfile?.status==="accepted"
+)
+)
+);
+
+}
+
+
+function isProfessor(){
+
+return !!(
+currentUser &&
+currentProfile?.role==="professeur" &&
+currentProfile?.status==="accepted"
+);
+
+}
+
+
+function isStudent(){
+
+return !!(
+currentUser &&
+currentProfile?.role==="eleve" &&
+currentProfile?.status==="accepted"
+);
+
+}
+
+
+function isAccepted(){
+
+return isAdmin()||
+isProfessor()||
+isStudent();
+
+}
+
+
+window.isAdmin=isAdmin;
+window.isProfessor=isProfessor;
+window.isStudent=isStudent;
+
+
+async function getUserProfile(user){
+
+if(!user)return null;
+
+const ref=
+doc(db,"users",user.uid);
+
+const snap=
+await getDoc(ref);
+
+if(!snap.exists()){
+
+return null;
+
+}
+
+return {
+id:snap.id,
+...snap.data()
+};
+
+}
+
+
+async function ensureUserProfile(user){
+
+if(!user)return null;
+
+const ref=
+doc(db,"users",user.uid);
+
+const snap=
+await getDoc(ref);
+
+if(snap.exists()){
+
+const data=snap.data()||{};
+
+if(
+user.email?.toLowerCase()===
+ADMIN_EMAIL
+){
+
+if(
+data.role!=="administrateur" ||
+data.status!=="accepted"
+){
+
+await updateDoc(
+ref,
+{
+role:"administrateur",
+status:"accepted",
+email:user.email,
+nom:data.nom||user.displayName||"",
+updatedAt:serverTimestamp()
+}
+);
+
+return await getUserProfile(user);
+
+}
+
+}
+
+return {
+id:snap.id,
+...data
+};
+
+}
+
+
+const admin=
+user.email?.toLowerCase()===
+ADMIN_EMAIL;
+
+const profile={
+
+uid:user.uid,
+
+email:user.email||"",
+
+nom:user.displayName||"",
+
+role:admin?
+"administrateur":
+"eleve",
+
+status:admin?
+"accepted":
+"attente",
+
+createdAt:serverTimestamp()
+
+};
+
+
+await addDoc(
+collection(db,"users"),
+profile
+).catch(async()=>{
+
+await updateDoc(
+ref,
+profile
+);
+
 });
 
-window.addEventListener("appinstalled", () => {
-  deferredPrompt = null;
-  const btn = document.getElementById("installBtn");
-  if(btn) btn.textContent = "✅ Installée";
-  showToast("Application installée avec succès.");
+
+return await getUserProfile(user);
+
+}
+
+
+async function loginEmailPassword(){
+
+const email=
+$("loginEmail").value.trim();
+
+const password=
+$("loginPassword").value;
+
+
+if(!email||!password){
+
+showAuthMessage(
+"Veuillez remplir tous les champs.",
+"error"
+);
+
+return;
+
+}
+
+
+try{
+
+await signInWithEmailAndPassword(
+auth,
+email,
+password
+);
+
+}catch(error){
+
+console.error(error);
+
+showAuthMessage(
+"Impossible de se connecter. Vérifiez votre email et votre mot de passe.",
+"error"
+);
+
+}
+
+}
+
+
+window.loginEmailPassword=
+loginEmailPassword;
+
+
+async function loginGoogle(){
+
+try{
+
+await signInWithPopup(
+auth,
+googleProvider
+);
+
+}catch(error){
+
+console.error(error);
+
+showAuthMessage(
+"Connexion Google impossible. Veuillez réessayer.",
+"error"
+);
+
+}
+
+}
+
+
+window.loginGoogle=
+loginGoogle;
+
+
+async function registerAccount(){
+
+const nom=
+$("registerName").value.trim();
+
+const email=
+$("registerEmail").value.trim();
+
+const password=
+$("registerPassword").value;
+
+
+if(!nom||!email||!password){
+
+showAuthMessage(
+"Veuillez remplir tous les champs.",
+"error"
+);
+
+return;
+
+}
+
+
+if(password.length<6){
+
+showAuthMessage(
+"Le mot de passe doit contenir au moins 6 caractères.",
+"error"
+);
+
+return;
+
+}
+
+
+try{
+
+const credential=
+await createUserWithEmailAndPassword(
+auth,
+email,
+password
+);
+
+const user=
+credential.user;
+
+await updateDoc(
+doc(db,"users",user.uid),
+{
+nom,
+email,
+role:
+email.toLowerCase()===
+ADMIN_EMAIL?
+"administrateur":
+"eleve",
+status:
+email.toLowerCase()===
+ADMIN_EMAIL?
+"accepted":
+"attente",
+createdAt:serverTimestamp()
+}
+).catch(async()=>{
+
+await addDoc(
+collection(db,"users"),
+{
+uid:user.uid,
+nom,
+email,
+role:
+email.toLowerCase()===
+ADMIN_EMAIL?
+"administrateur":
+"eleve",
+status:
+email.toLowerCase()===
+ADMIN_EMAIL?
+"accepted":
+"attente",
+createdAt:serverTimestamp()
+}
+);
+
 });
 
-window.installApplication = async function(){
-  if(window.matchMedia("(display-mode: standalone)").matches){
-    showToast("L'application est déjà installée.");
-    return;
-  }
-  if(deferredPrompt){
-    deferredPrompt.prompt();
-    const result = await deferredPrompt.userChoice;
-    if(result.outcome === "accepted"){
-      showToast("Installation acceptée.");
-    }
-    deferredPrompt = null;
-    return;
-  }
-  document.getElementById("installModal").classList.remove("hidden");
-};
 
-window.closeInstallModal = function(){
-  document.getElementById("installModal").classList.add("hidden");
-};
+toast(
+"Compte créé avec succès."
+);
 
-if("serviceWorker" in navigator){
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./sw.js").then(() => console.log("Service Worker enregistré.")).catch(console.error);
-  });
+}catch(error){
+
+console.error(error);
+
+showAuthMessage(
+"Impossible de créer le compte.",
+"error"
+);
+
 }
 
-window.showRegister = function(){
-  document.getElementById("loginBox").classList.add("hidden");
-  document.getElementById("registerBox").classList.remove("hidden");
+}
+
+
+window.registerAccount=
+registerAccount;
+
+
+async function logoutUser(){
+
+try{
+
+await signOut(auth);
+
+}catch(error){
+
+console.error(error);
+
+}
+
+}
+
+
+window.logoutUser=
+logoutUser;
+
+
+window.toggleSidebar=()=>{
+
+$("sidebar").classList.toggle("open");
+
 };
 
-window.showLogin = function(){
-  document.getElementById("registerBox").classList.add("hidden");
-  document.getElementById("loginBox").classList.remove("hidden");
+
+window.showPage=async function(page){
+
+document
+.querySelectorAll(".page")
+.forEach(x=>
+x.classList.add("hidden")
+);
+
+const target=
+$("page-"+page);
+
+if(target){
+
+target.classList.remove("hidden");
+
+}
+
+
+document
+.querySelectorAll(".nav-btn")
+.forEach(btn=>
+btn.classList.toggle(
+"active",
+btn.dataset.page===page
+)
+);
+
+$("sidebar")
+.classList.remove("open");
+
+
+try{
+
+if(page==="accueil")
+await loadDashboard();
+
+if(page==="etudiants")
+await loadStudents();
+
+if(page==="professeurs")
+await loadProfessors();
+
+if(page==="departements")
+await loadDepartments();
+
+if(page==="filieres")
+await loadFilieres();
+
+if(page==="classes")
+await loadClasses();
+
+if(page==="matieres")
+await loadMatieres();
+
+if(page==="cours")
+await loadCours();
+
+if(page==="affectations")
+await loadAffectations();
+
+if(page==="inscriptions")
+await loadInscriptions();
+
+if(page==="devoirs")
+await loadAssignments();
+
+if(page==="remises")
+await loadSubmissions();
+
+if(page==="resultats")
+await loadResults();
+
+if(page==="statistiques")
+await loadStatistics();
+
+if(page==="users")
+await loadUsers();
+
+if(page==="configuration")
+loadConfiguration();
+
+}catch(error){
+
+console.error(error);
+
+toast(
+"Une erreur est survenue. Veuillez réessayer."
+);
+
+}
+
 };
 
-window.registerAccount = async function(){
-  const name = document.getElementById("registerName").value.trim();
-  const email = document.getElementById("registerEmail").value.trim();
-  const password = document.getElementById("registerPassword").value;
 
-  if(!name || !email || !password){
-    showToast("Veuillez remplir tous les champs.");
-    return;
-  }
-  if(password.length < 6){
-    showToast("Le mot de passe doit contenir au moins 6 caractères.");
-    return;
-  }
+async function getCount(name){
 
-  try {
-    const credential = await createUserWithEmailAndPassword(auth, email, password);
-    const isAdmin = email.toLowerCase() === ADMIN_EMAIL.toLowerCase();
+try{
 
-    await setDoc(doc(db, "users", credential.user.uid), {
-      uid: credential.user.uid,
-      name: name,
-      email: email,
-      role: isAdmin ? "administrateur" : "eleve",
-      status: isAdmin ? "accepted" : "attente",
-      createdAt: serverTimestamp()
-    });
+const snap=
+await getDocs(
+collection(db,name)
+);
 
-    await signOut(auth);
-    showToast(isAdmin ? "Compte administrateur créé." : "Compte créé. Attendez l'acceptation de l'administrateur.");
-    showLogin();
-  } catch(error){
-    console.error(error);
-    showToast(getFriendlyError(error));
-  }
-};
+return snap.size;
 
-window.loginEmailPassword = async function(){
-  const email = document.getElementById("loginEmail").value.trim();
-  const password = document.getElementById("loginPassword").value;
+}catch(error){
 
-  if(!email || !password){
-    showToast("Entrez votre e-mail et votre mot de passe.");
-    return;
-  }
+console.error(error);
+return 0;
 
-  try {
-    await signInWithEmailAndPassword(auth, email, password);
-  } catch(error){
-    console.error(error);
-    showToast(getFriendlyError(error));
-  }
-};
+}
 
-window.loginGoogle = async function(){
-  const button = document.getElementById("googleLoginBtn");
-  try {
-    button.disabled = true;
-    button.textContent = "⏳ Ouverture de Google...";
-    const provider = new GoogleAuthProvider();
-    provider.setCustomParameters({ prompt: "select_account" });
+}
 
-    const result = await signInWithPopup(auth, provider);
-    const user = result.user;
-    const userRef = doc(db, "users", user.uid);
-    const snap = await getDoc(userRef);
 
-    if(!snap.exists()){
-      const isAdmin = user.email?.toLowerCase() === ADMIN_EMAIL.toLowerCase();
-      await setDoc(userRef, {
-        uid: user.uid,
-        name: user.displayName || "Utilisateur",
-        email: user.email || "",
-        role: isAdmin ? "administrateur" : "eleve",
-        status: isAdmin ? "accepted" : "attente",
-        createdAt: serverTimestamp()
-      });
-      await signOut(auth);
-      showToast(isAdmin ? "Compte administrateur créé. Connectez-vous encore." : "Compte Google créé. Attendez l'acceptation.");
-    }
-  } catch(error){
-    console.error(error);
-    showToast(getFriendlyError(error));
-  } finally {
-    button.disabled = false;
-    button.innerHTML = "🔵 Continuer avec Google";
-  }
-};
+async function loadDashboard(){
 
-window.logout = async function(){
-  try {
-    await signOut(auth);
-    document.getElementById("userMenu").classList.add("hidden");
-  } catch(error){
-    console.error(error);
-  }
-};
+$("statEtudiants").textContent=
+await getCount("etudiants");
 
-onAuthStateChanged(auth, async user => {
-  if(!user){
-    currentUser = null;
-    currentUserData = null;
-    document.getElementById("authPage").classList.remove("hidden");
-    document.getElementById("appPage").classList.add("hidden");
-    return;
-  }
+$("statProfesseurs").textContent=
+await getCount("professeurs");
 
-  try {
-    const ref = doc(db, "users", user.uid);
-    const snap = await getDoc(ref);
-    let data;
+$("statClasses").textContent=
+await getCount("classes");
 
-    if(!snap.exists()){
-      const isAdmin = user.email?.toLowerCase() === ADMIN_EMAIL.toLowerCase();
-      data = {
-        uid: user.uid,
-        name: user.displayName || "Utilisateur",
-        email: user.email || "",
-        role: isAdmin ? "administrateur" : "eleve",
-        status: isAdmin ? "accepted" : "attente",
-        createdAt: serverTimestamp()
-      };
-      await setDoc(ref, data);
-    } else {
-      data = snap.data();
-    }
+$("statMatieres").textContent=
+await getCount("matieres");
 
-    const isAdmin = user.email?.toLowerCase() === ADMIN_EMAIL.toLowerCase() || (data.role === "administrateur" && data.status === "accepted");
+$("statDevoirs").textContent=
+await getCount("devoirs");
 
-    if(!isAdmin && data.status !== "accepted"){
-      await signOut(auth);
-      showToast("Votre compte est en attente d'acceptation par l'administrateur.");
-      return;
-    }
+if(isAdmin()){
 
-    currentUser = user;
-    currentUserData = { ...data, isAdmin: isAdmin };
-    openApplication();
-  } catch(error){
-    console.error(error);
-    await signOut(auth);
-    showToast("Impossible de charger votre profil. Vérifiez les règles Firebase.");
-  }
+const snap=
+await getDocs(
+query(
+collection(db,"users"),
+where("status","==","attente")
+)
+);
+
+$("statPending").textContent=
+snap.size;
+
+}else{
+
+$("statPending").textContent="0";
+
+}
+
+}
+
+
+function openModal(title,html){
+
+$("modalTitle").textContent=title;
+$("modalBody").innerHTML=html;
+$("modal").classList.remove("hidden");
+
+}
+
+
+window.openModal=openModal;
+
+
+function closeModal(){
+
+$("modal").classList.add("hidden");
+$("modalBody").innerHTML="";
+
+}
+
+
+window.closeModal=closeModal;
+
+
+function adminRequired(){
+
+if(!isAdmin()){
+
+toast(
+"Accès réservé à l'administrateur."
+);
+
+return false;
+
+}
+
+return true;
+
+}
+
+
+async function genericCollection(
+collectionName,
+title,
+fields,
+pageId
+){
+
+const page=
+$("page-"+pageId);
+
+if(!page)return;
+
+let html=`
+
+<div class="page-title">
+
+<div>
+<h2>${esc(title)}</h2>
+<p>Gestion des données ${esc(title.toLowerCase())}.</p>
+</div>
+
+<button
+class="btn btn-primary"
+onclick="openGenericForm(
+'${collectionName}',
+'${pageId}',
+'Ajouter ${title}'
+)">
+➕ Ajouter
+</button>
+
+</div>
+
+<div class="panel">
+
+<div class="panel-header">
+
+<h3>
+Liste des ${esc(title)}
+</h3>
+
+<input
+class="search"
+placeholder="Rechercher..."
+oninput="filterTable(this)"
+>
+
+</div>
+
+<div
+id="${pageId}Table"
+class="table-wrap">
+
+<div class="empty">
+⏳ Chargement...
+</div>
+
+</div>
+
+</div>
+`;
+
+page.innerHTML=html;
+
+
+try{
+
+const snap=
+await getDocs(
+collection(db,collectionName)
+);
+
+if(snap.empty){
+
+$(pageId+"Table").innerHTML=
+`<div class="empty">
+Aucune donnée disponible.
+</div>`;
+
+return;
+
+}
+
+let table=`
+
+<table>
+
+<thead>
+<tr>
+${fields.map(
+f=>`<th>${esc(f.label)}</th>`
+).join("")}
+<th>Actions</th>
+</tr>
+</thead>
+
+<tbody>
+`;
+
+snap.forEach(ds=>{
+
+const d=ds.data()||{};
+
+table+=`<tr>`;
+
+fields.forEach(f=>{
+
+table+=
+`<td>${esc(d[f.key]??"—")}</td>`;
+
 });
 
-function openApplication(){
-  document.getElementById("authPage").classList.add("hidden");
-  document.getElementById("appPage").classList.remove("hidden");
+table+=`
 
-  const role = currentUserData.role;
-  const name = currentUserData.name || currentUser?.displayName || currentUser?.email || "Utilisateur";
+<td>
 
-  document.getElementById("headerUserName").textContent = name;
-  document.getElementById("systemUser").textContent = currentUser?.email || "-";
-  document.getElementById("systemRole").textContent = role || "-";
-  document.getElementById("systemStatus").textContent = currentUserData.status || "-";
-  document.getElementById("systemAdmin").textContent = currentUserData.isAdmin ? "Oui" : "Non";
+<div class="actions">
 
-  document.getElementById("menuName").textContent = name;
-  document.getElementById("menuEmail").textContent = currentUser?.email || "-";
-  document.getElementById("menuRole").textContent = role || "-";
-  document.getElementById("menuStatus").textContent = currentUserData.status || "-";
+<button
+class="btn btn-light"
+onclick="openGenericForm(
+'${collectionName}',
+'${pageId}',
+'Modifier ${title}',
+'${ds.id}'
+)">
+✏️ Modifier
+</button>
 
-  const adminSection = document.getElementById("adminSection");
-  const academic = document.getElementById("adminAcademic");
-  const profAcademic = document.getElementById("profAcademic");
-  const studentAcademic = document.getElementById("studentAcademic");
+<button
+class="btn btn-danger"
+onclick="deleteGeneric(
+'${collectionName}',
+'${pageId}',
+'${ds.id}'
+)">
+🗑️ Supprimer
+</button>
 
-  adminSection.classList.add("hidden");
-  academic.classList.add("hidden");
-  profAcademic.classList.add("hidden");
-  studentAcademic.classList.add("hidden");
+</div>
 
-  if(currentUserData.isAdmin){
-    adminSection.classList.remove("hidden");
-    academic.classList.remove("hidden");
-  } else if(role === "professeur"){
-    profAcademic.classList.remove("hidden");
-  } else if(role === "eleve"){
-    studentAcademic.classList.remove("hidden");
-  }
+</td>
 
-  document.getElementById("correctionsMenu").classList.toggle("hidden", !(currentUserData.isAdmin || role === "professeur"));
-  loadDashboard();
+</tr>
+`;
+
+});
+
+table+=`</tbody></table>`;
+
+$(pageId+"Table").innerHTML=table;
+
+}catch(error){
+
+console.error(error);
+
+$(pageId+"Table").innerHTML=
+`<div class="empty">
+Impossible de charger les données.
+</div>`;
+
 }
 
-window.toggleSidebar = function(){
-  document.getElementById("sidebar").classList.toggle("open");
-};
-
-window.showPage = async function(page, button){
-  document.querySelectorAll(".page").forEach(p => p.classList.add("hidden"));
-  const target = document.getElementById("page-" + page);
-  if(!target) return;
-  target.classList.remove("hidden");
-  document.querySelectorAll(".menu-btn").forEach(btn => btn.classList.remove("active"));
-  if(button) button.classList.add("active");
-  document.getElementById("sidebar").classList.remove("open");
-
-  if(page === "dashboard"){
-    await loadDashboard();
-  } else {
-    await loadModule(page);
-  }
-};
-
-window.quickPage = function(page){
-  const button = [...document.querySelectorAll(".menu-btn")].find(b => b.getAttribute("onclick") && b.getAttribute("onclick").includes("'" + page + "'"));
-  showPage(page, button);
-};
-
-const adminModules = {
-  etudiants: { title: "Gestion des étudiants", collection: "etudiants", icon: "🎓", fields: [["nom","Nom complet","text"],["email","E-mail","email"],["telephone","Téléphone","text"]] },
-  professeurs: { title: "Gestion des professeurs", collection: "professeurs", icon: "👨‍🏫", fields: [["nom","Nom complet","text"],["email","E-mail","email"],["telephone","Téléphone","text"],["specialite","Spécialité","text"]] },
-  classes: { title: "Gestion des classes", collection: "classes", icon: "🏫", fields: [["nom","Nom de la classe","text"],["niveau","Niveau","text"],["annee","Année académique","text"]] },
-  departements: { title: "Gestion des départements", collection: "departements", icon: "🏛️", fields: [["nom","Nom du département","text"],["description","Description","text"]] },
-  filieres: { title: "Gestion des filières", collection: "filieres", icon: "📚", fields: [["nom","Nom de la filière","text"],["departement","Département","text"],["niveau","Niveau","text"]] },
-  matieres: { title: "Gestion des matières", collection: "matieres", icon: "📖", fields: [["nom","Nom de la matière","text"],["code","Code","text"],["credits","Crédits","number"]] },
-  cours: { title: "Gestion des cours", collection: "cours", icon: "📘", fields: [["nom","Nom du cours","text"],["matiere","Matière","text"],["professeur","Professeur","text"],["classe","Classe","text"]] }
-};
-
-async function loadModule(page){
-  if(Object.keys(adminModules).includes(page)){
-    if(!currentUserData?.isAdmin){
-      showToast("Accès réservé à l'administrateur.");
-      return;
-    }
-    await renderAdminModule(page);
-    return;
-  }
-  if(page === "affectations"){
-    if(!currentUserData?.isAdmin){
-      showToast("Accès réservé à l'administrateur.");
-      return;
-    }
-    await renderAffectations();
-    return;
-  }
-  if(page === "inscriptions"){
-    if(!currentUserData?.isAdmin){
-      showToast("Accès réservé à l'administrateur.");
-      return;
-    }
-    await renderInscriptions();
-    return;
-  }
-  if(page === "mesclasses"){ await renderMesClasses(); return; }
-  if(page === "mescours"){ await renderMesCours(); return; }
-  if(page === "maclasse"){ await renderMaClasse(); return; }
-  if(page === "devoirs"){ await renderDevoirs(); return; }
-  if(page === "remises"){ await renderRemises(); return; }
-  if(page === "corrections"){ await renderCorrections(); return; }
-  if(page === "resultats"){ await renderResultats(); return; }
-  if(page === "utilisateurs"){
-    if(!currentUserData?.isAdmin){ showToast("Accès réservé à l'administrateur."); return; }
-    await renderUsers();
-    return;
-  }
-  if(page === "statistiques"){
-    if(!currentUserData?.isAdmin){ showToast("Accès réservé à l'administrateur."); return; }
-    await renderStatistics();
-    return;
-  }
-  if(page === "sauvegarde"){
-    if(!currentUserData?.isAdmin){ showToast("Accès réservé à l'administrateur."); return; }
-    renderBackup();
-    return;
-  }
 }
 
-async function renderAdminModule(page){
-  const info = adminModules[page];
-  const container = document.getElementById("page-" + page);
-  container.innerHTML = `
-    <div class="page-title">
-      <h2>${info.icon} ${info.title}</h2>
-      <p>Gestion administrative.</p>
-    </div>
-    <div class="panel">
-      <h3>Ajouter</h3>
-      <div class="form-grid">
-        ${info.fields.map(f => `<div class="form-group"><label>${f[1]}</label><input id="field-${page}-${f[0]}" type="${f[2]}" placeholder="${f[1]}"></div>`).join("")}
-      </div>
-      <div class="form-actions">
-        <button class="btn btn-green" onclick="addAdminRecord('${page}')">➕ Ajouter</button>
-      </div>
-    </div>
-    <div class="panel">
-      <h3>Liste</h3>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>${info.fields.map(f => `<th>${f[1]}</th>`).join("")}<th>Actions</th></tr>
-          </thead>
-          <tbody id="table-${page}">
-            <tr><td colspan="${info.fields.length+1}">Chargement...</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  `;
-  await refreshAdminTable(page);
-}
 
-window.addAdminRecord = async function(page){
-  if(!currentUserData?.isAdmin){
-    showToast("Seul l'administrateur peut modifier ces données.");
-    return;
-  }
-  const info = adminModules[page];
-  const data = {};
-  let valid = true;
+window.filterTable=function(input){
 
-  info.fields.forEach(f => {
-    const input = document.getElementById(`field-${page}-${f[0]}`);
-    const value = input?.value.trim() || "";
-    if(!value) valid = false;
-    data[f[0]] = value;
-  });
+const table=
+input.closest(".panel")
+.querySelector("table");
 
-  if(!valid){
-    showToast("Veuillez remplir tous les champs.");
-    return;
-  }
+if(!table)return;
 
-  data.createdAt = serverTimestamp();
-  data.createdBy = currentUser.uid;
+const term=
+input.value.toLowerCase();
 
-  try {
-    await addDoc(collection(db, info.collection), data);
-    showToast("Donnée ajoutée avec succès.");
-    info.fields.forEach(f => {
-      const input = document.getElementById(`field-${page}-${f[0]}`);
-      if(input) input.value = "";
-    });
-    await refreshAdminTable(page);
-    loadDashboard();
-  } catch(error){
-    console.error(error);
-    showToast("Impossible d'ajouter cette donnée.");
-  }
+table
+.querySelectorAll("tbody tr")
+.forEach(row=>{
+
+row.style.display=
+row.textContent
+.toLowerCase()
+.includes(term)
+?"":"none";
+
+});
+
 };
 
-async function refreshAdminTable(page){
-  const info = adminModules[page];
-  const tbody = document.getElementById("table-" + page);
-  if(!tbody) return;
 
-  try {
-    const snap = await getDocs(collection(db, info.collection));
-    if(snap.empty){
-      tbody.innerHTML = `<tr><td colspan="${info.fields.length+1}">Aucune donnée.</td></tr>`;
-      return;
-    }
-    tbody.innerHTML = "";
-    snap.forEach(item => {
-      const data = item.data();
-      const tr = document.createElement("tr");
-      info.fields.forEach(f => {
-        const td = document.createElement("td");
-        td.textContent = data[f[0]] ?? "";
-        tr.appendChild(td);
-      });
-      const td = document.createElement("td");
-      const edit = document.createElement("button");
-      edit.className = "btn";
-      edit.textContent = "Modifier";
-      edit.onclick = () => editAdminRecord(page, item.id, data);
-      td.appendChild(edit);
+async function openGenericForm(
+collectionName,
+pageId,
+title,
+id=""
+){
 
-      const del = document.createElement("button");
-      del.className = "btn btn-red";
-      del.style.marginLeft = "5px";
-      del.textContent = "Supprimer";
-      del.onclick = () => deleteAdminRecord(page, item.id);
-      td.appendChild(del);
+if(!adminRequired())return;
 
-      tr.appendChild(td);
-      tbody.appendChild(tr);
-    });
-  } catch(error){
-    console.error(error);
-    tbody.innerHTML = `<tr><td colspan="${info.fields.length+1}">Impossible de charger.</td></tr>`;
-  }
+let data={};
+
+if(id){
+
+const snap=
+await getDoc(
+doc(db,collectionName,id)
+);
+
+if(!snap.exists())return;
+
+data=snap.data()||{};
+
 }
 
-window.editAdminRecord = async function(page, id, data){
-  if(!currentUserData?.isAdmin) return;
-  const info = adminModules[page];
-  const updates = {};
-  for(const f of info.fields){
-    const value = prompt(f[1], data[f[0]] ?? "");
-    if(value === null) return;
-    if(!value.trim()){
-      showToast("Valeur vide non autorisée.");
-      return;
-    }
-    updates[f[0]] = value.trim();
-  }
-  try {
-    await updateDoc(doc(db, info.collection, id), updates);
-    showToast("Donnée modifiée.");
-    await refreshAdminTable(page);
-  } catch(error){
-    console.error(error);
-    showToast("Modification impossible.");
-  }
+const definitions={
+
+etudiants:[
+["nom","Nom","text"],
+["prenom","Prénom","text"],
+["email","Email","email"],
+["telephone","Téléphone","text"],
+["dateNaissance","Date de naissance","date"],
+["sexe","Sexe","text"],
+["adresse","Adresse","text"],
+["filiere","Filière","text"],
+["classe","Classe","text"]
+],
+
+professeurs:[
+["nom","Nom","text"],
+["prenom","Prénom","text"],
+["email","Email","email"],
+["telephone","Téléphone","text"],
+["departement","Département","text"],
+["specialite","Spécialité","text"],
+["statut","Statut","text"]
+],
+
+departements:[
+["nom","Nom","text"],
+["description","Description","textarea"]
+],
+
+filieres:[
+["nom","Nom","text"],
+["description","Description","textarea"],
+["departement","Département","text"]
+],
+
+classes:[
+["nom","Nom","text"],
+["niveau","Niveau","text"],
+["filiere","Filière","text"],
+["annee","Année académique","text"]
+],
+
+matieres:[
+["nom","Nom","text"],
+["code","Code","text"],
+["coefficient","Coefficient","number"],
+["description","Description","textarea"]
+],
+
+cours:[
+["nom","Nom du cours","text"],
+["code","Code","text"],
+["description","Description","textarea"],
+["professeur","Professeur","text"]
+]
+
 };
 
-window.deleteAdminRecord = async function(page, id){
-  if(!currentUserData?.isAdmin) return;
-  if(!confirm("Voulez-vous vraiment supprimer cette donnée ?")) return;
-  const info = adminModules[page];
-  try {
-    await deleteDoc(doc(db, info.collection, id));
-    showToast("Donnée supprimée.");
-    await refreshAdminTable(page);
-    loadDashboard();
-  } catch(error){
-    console.error(error);
-    showToast("Suppression impossible.");
-  }
+const defs=
+definitions[collectionName]||[];
+
+let html=
+`<form onsubmit="
+saveGeneric(event,
+'${collectionName}',
+'${pageId}',
+'${id}'
+)">`;
+
+defs.forEach(f=>{
+
+const value=
+data[f[0]]??"";
+
+if(f[2]==="textarea"){
+
+html+=`
+
+<div class="form-group">
+
+<label>
+${esc(f[1])}
+</label>
+
+<textarea
+id="gf_${esc(f[0])}"
+rows="4">${esc(value)}</textarea>
+
+</div>
+
+`;
+
+}else{
+
+html+=`
+
+<div class="form-group">
+
+<label>
+${esc(f[1])}
+</label>
+
+<input
+id="gf_${esc(f[0])}"
+type="${f[2]}"
+value="${esc(value)}">
+
+</div>
+
+`;
+
+}
+
+});
+
+html+=`
+
+<button
+class="btn btn-primary"
+type="submit">
+💾 Enregistrer
+</button>
+
+</form>
+`;
+
+openModal(title,html);
+
+}
+
+
+window.openGenericForm=
+openGenericForm;
+
+
+window.saveGeneric=
+async function(
+event,
+collectionName,
+pageId,
+id
+){
+
+event.preventDefault();
+
+if(!adminRequired())return;
+
+const definitions={
+
+etudiants:["nom","prenom","email","telephone","dateNaissance","sexe","adresse","filiere","classe"],
+
+professeurs:["nom","prenom","email","telephone","departement","specialite","statut"],
+
+departements:["nom","description"],
+
+filieres:["nom","description","departement"],
+
+classes:["nom","niveau","filiere","annee"],
+
+matieres:["nom","code","coefficient","description"],
+
+cours:["nom","code","description","professeur"]
+
 };
 
-async function getCollectionData(name){
-  const snap = await getDocs(collection(db, name));
-  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+const keys=
+definitions[collectionName]||[];
+
+const data={};
+
+keys.forEach(key=>{
+
+const el=
+$("gf_"+key);
+
+if(el){
+
+data[key]=el.value.trim();
+
 }
 
-function escapeHtml(value){
-  return String(value ?? "").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
+});
+
+data.updatedAt=
+serverTimestamp();
+
+try{
+
+if(id){
+
+await updateDoc(
+doc(db,collectionName,id),
+data
+);
+
+}else{
+
+data.createdAt=
+serverTimestamp();
+
+await addDoc(
+collection(db,collectionName),
+data
+);
+
 }
+
+closeModal();
+toast("Enregistrement réussi.");
+
+showPage(pageId);
+
+}catch(error){
+
+console.error(error);
+
+toast(
+"Impossible d'enregistrer les données."
+);
+
+}
+
+};
+
+
+window.deleteGeneric=
+async function(
+collectionName,
+pageId,
+id
+){
+
+if(!adminRequired())return;
+
+if(!confirm(
+"Voulez-vous vraiment supprimer cet élément ?"
+))return;
+
+try{
+
+await deleteDoc(
+doc(db,collectionName,id)
+);
+
+toast("Élément supprimé.");
+
+showPage(pageId);
+
+}catch(error){
+
+console.error(error);
+
+toast(
+"Impossible de supprimer cet élément."
+);
+
+}
+
+};
+  /* =========================================================
+   BLOC 2/4 — MODULES ACADÉMIQUES
+   ========================================================= */
+
+async function loadStudents(){
+
+await genericCollection(
+"etudiants",
+"Étudiants",
+[
+{key:"nom",label:"Nom"},
+{key:"prenom",label:"Prénom"},
+{key:"email",label:"Email"},
+{key:"telephone",label:"Téléphone"},
+{key:"filiere",label:"Filière"},
+{key:"classe",label:"Classe"}
+],
+"etudiants"
+);
+
+}
+
+
+async function loadProfessors(){
+
+await genericCollection(
+"professeurs",
+"Professeurs",
+[
+{key:"nom",label:"Nom"},
+{key:"prenom",label:"Prénom"},
+{key:"email",label:"Email"},
+{key:"telephone",label:"Téléphone"},
+{key:"departement",label:"Département"},
+{key:"specialite",label:"Spécialité"}
+],
+"professeurs"
+);
+
+}
+
+
+async function loadDepartments(){
+
+await genericCollection(
+"departements",
+"Départements",
+[
+{key:"nom",label:"Nom"},
+{key:"description",label:"Description"}
+],
+"departements"
+);
+
+}
+
+
+async function loadFilieres(){
+
+await genericCollection(
+"filieres",
+"Filières",
+[
+{key:"nom",label:"Nom"},
+{key:"departement",label:"Département"},
+{key:"description",label:"Description"}
+],
+"filieres"
+);
+
+}
+
+
+async function loadClasses(){
+
+await genericCollection(
+"classes",
+"Classes",
+[
+{key:"nom",label:"Nom"},
+{key:"niveau",label:"Niveau"},
+{key:"filiere",label:"Filière"},
+{key:"annee",label:"Année académique"}
+],
+"classes"
+);
+
+}
+
+
+async function loadMatieres(){
+
+await genericCollection(
+"matieres",
+"Matières",
+[
+{key:"nom",label:"Nom"},
+{key:"code",label:"Code"},
+{key:"coefficient",label:"Coefficient"},
+{key:"description",label:"Description"}
+],
+"matieres"
+);
+
+}
+
+
+async function loadCours(){
+
+await genericCollection(
+"cours",
+"Cours",
+[
+{key:"nom",label:"Nom"},
+{key:"code",label:"Code"},
+{key:"professeur",label:"Professeur"},
+{key:"description",label:"Description"}
+],
+"cours"
+);
+
+}
+
 
 /* =========================================================
    AFFECTATIONS
    ========================================================= */
-async function renderAffectations(){
-  const container = document.getElementById("page-affectations");
-  if(!container) return;
-  try {
-    const [professeurs, classes, matieres, filieres] = await Promise.all([
-      getCollectionData("professeurs"),
-      getCollectionData("classes"),
-      getCollectionData("matieres"),
-      getCollectionData("filieres")
-    ]);
 
-    container.innerHTML = `
-      <div class="page-title">
-        <div>
-          <h2>🔐 Affectations</h2>
-          <p>Donner aux professeurs l'accès à leurs classes et matières</p>
-        </div>
-      </div>
-      <div class="panel">
-        <div id="affectationMessage" style="margin-bottom:15px;"></div>
-        <div class="form-grid">
-          <div class="form-group">
-            <label for="affProf">👨‍🏫 Professeur</label>
-            <select id="affProf">
-              <option value="">Sélectionner un professeur</option>
-              ${(professeurs || []).map(p => {
-                const uid = p.uid || p.userUid || p.id;
-                const nom = p.nom || p.name || p.email || "Professeur";
-                return `<option value="${escapeHtml(uid)}">${escapeHtml(nom)}${p.email ? " - " + escapeHtml(p.email) : ""}</option>`;
-              }).join("")}
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="affFiliere">🎓 Filière</label>
-            <select id="affFiliere">
-              <option value="">Sélectionner une filière</option>
-              ${(filieres || []).map(f => `<option value="${escapeHtml(f.id)}">${escapeHtml(f.nom || f.name || "Filière")}</option>`).join("")}
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="affClasse">🏫 Classe</label>
-            <select id="affClasse">
-              <option value="">Sélectionner une classe</option>
-              ${(classes || []).map(c => `<option value="${escapeHtml(c.id)}">${escapeHtml(c.nom || c.name || "Classe")}</option>`).join("")}
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="affMatiere">📚 Matière</label>
-            <select id="affMatiere">
-              <option value="">Sélectionner une matière</option>
-              ${(matieres || []).map(m => `<option value="${escapeHtml(m.id)}">${escapeHtml(m.nom || m.name || "Matière")}</option>`).join("")}
-            </select>
-          </div>
-        </div>
-        <div style="margin-top:15px;">
-          <button type="button" class="btn btn-green" onclick="addAffectation()">➕ Donner l'accès</button>
-        </div>
-      </div>
-      <div class="panel" style="margin-top:20px;">
-        <h3>📋 Affectations existantes</h3>
-        <div style="overflow-x:auto;">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>Professeur</th>
-                <th>Email</th>
-                <th>Filière</th>
-                <th>Classe</th>
-                <th>Matière</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody id="affectationsTable">
-              <tr><td colspan="6" style="text-align:center;">Chargement...</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    `;
-    await refreshAffectations();
-  } catch(error){
-    console.error("Erreur renderAffectations:", error);
-    showAffectationMessage("Impossible de charger les affectations.", "error");
-  }
-}
+async function loadAffectationData(){
 
-window.addAffectation = async function(){
-  if(!currentUser || !currentUserData?.isAdmin){
-    showAffectationMessage("Vous devez être administrateur.", "error");
-    return;
-  }
-  const profId = document.getElementById("affProf")?.value;
-  const filiereId = document.getElementById("affFiliere")?.value;
-  const classeId = document.getElementById("affClasse")?.value;
-  const matiereId = document.getElementById("affMatiere")?.value;
+const [
+profSnap,
+filiereSnap,
+classeSnap,
+matiereSnap
+]=await Promise.all([
 
-  if(!profId || !filiereId || !classeId || !matiereId){
-    showAffectationMessage("Choisissez le professeur, la filière, la classe et la matière.", "error");
-    return;
-  }
+getDocs(
+collection(db,"professeurs")
+),
 
-  try {
-    const [profSnap, filiereSnap, classeSnap, matiereSnap] = await Promise.all([
-      getDoc(doc(db, "professeurs", profId)),
-      getDoc(doc(db, "filieres", filiereId)),
-      getDoc(doc(db, "classes", classeId)),
-      getDoc(doc(db, "matieres", matiereId))
-    ]);
+getDocs(
+collection(db,"filieres")
+),
 
-    if(!profSnap.exists()){ showAffectationMessage("Le professeur sélectionné est introuvable.", "error"); return; }
-    if(!filiereSnap.exists()){ showAffectationMessage("La filière sélectionnée est introuvable.", "error"); return; }
-    if(!classeSnap.exists()){ showAffectationMessage("La classe sélectionnée est introuvable.", "error"); return; }
-    if(!matiereSnap.exists()){ showAffectationMessage("La matière sélectionnée est introuvable.", "error"); return; }
+getDocs(
+collection(db,"classes")
+),
 
-    const prof = profSnap.data();
-    const filiere = filiereSnap.data();
-    const classe = classeSnap.data();
-    const matiere = matiereSnap.data();
+getDocs(
+collection(db,"matieres")
+)
 
-    const professeurUid = prof.uid || prof.userUid || prof.userId || prof.authUid || profId;
-    if(!professeurUid){
-      showAffectationMessage("Le compte Firebase du professeur est introuvable.", "error");
-      return;
-    }
+]);
 
-    const userSnap = await getDoc(doc(db, "users", professeurUid));
-    if(!userSnap.exists()){
-      showAffectationMessage("Ce professeur n'est pas lié à un compte utilisateur Firebase.", "error");
-      return;
-    }
+return {
 
-    const userData = userSnap.data();
-    if(userData.role !== "professeur"){
-      showAffectationMessage("Le compte sélectionné n'est pas un compte professeur.", "error");
-      return;
-    }
-    if(userData.status !== "accepted"){
-      showAffectationMessage("Ce professeur n'est pas encore accepté.", "error");
-      return;
-    }
+professeurs:profSnap.docs.map(
+d=>({
+id:d.id,
+...d.data()
+})
+),
 
-    const existingSnap = await getDocs(query(
-      collection(db, "affectations"),
-      where("professeurUid", "==", professeurUid),
-      where("classeId", "==", classeId),
-      where("matiereId", "==", matiereId)
-    ));
+filieres:filiereSnap.docs.map(
+d=>({
+id:d.id,
+...d.data()
+})
+),
 
-    if(!existingSnap.empty){
-      showAffectationMessage("Cette affectation existe déjà pour ce professeur, cette classe et cette matière.", "error");
-      return;
-    }
+classes:classeSnap.docs.map(
+d=>({
+id:d.id,
+...d.data()
+})
+),
 
-    await addDoc(collection(db, "affectations"), {
-      professeurUid: professeurUid,
-      professeurNom: prof.nom || prof.name || userData.name || "",
-      professeurEmail: prof.email || userData.email || "",
-      filiereId: filiereId,
-      filiereNom: filiere.nom || filiere.name || "",
-      classeId: classeId,
-      classeNom: classe.nom || classe.name || "",
-      matiereId: matiereId,
-      matiereNom: matiere.nom || matiere.name || "",
-      createdAt: serverTimestamp(),
-      createdBy: currentUser.uid
-    });
+matieres:matiereSnap.docs.map(
+d=>({
+id:d.id,
+...d.data()
+})
+)
 
-    showAffectationMessage("✅ Accès donné au professeur avec succès.", "success");
-
-    document.getElementById("affProf").value = "";
-    document.getElementById("affFiliere").value = "";
-    document.getElementById("affClasse").value = "";
-    document.getElementById("affMatiere").value = "";
-
-    await refreshAffectations();
-  } catch(error){
-    console.error("ERREUR AFFECTATION FIREBASE:", error);
-    let message = "Impossible de créer l'affectation.";
-    if(error?.code === "permission-denied"){
-      message = "Firebase refuse l'accès. Vérifiez les règles Firestore.";
-    } else if(error?.message){
-      message = "Erreur Firebase : " + error.message;
-    }
-    showAffectationMessage(message, "error");
-  }
 };
 
-async function refreshAffectations(){
-  const tbody = document.getElementById("affectationsTable");
-  if(!tbody) return;
-  try {
-    const affectations = await getCollectionData("affectations");
-    tbody.innerHTML = "";
-    if(!affectations || affectations.length === 0){
-      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:20px;">Aucune affectation enregistrée.</td></tr>`;
-      return;
-    }
-    affectations.forEach(a => {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${escapeHtml(a.professeurNom || "")}</td>
-        <td>${escapeHtml(a.professeurEmail || "")}</td>
-        <td>${escapeHtml(a.filiereNom || "")}</td>
-        <td>${escapeHtml(a.classeNom || "")}</td>
-        <td>${escapeHtml(a.matiereNom || "")}</td>
-        <td><button type="button" class="btn btn-red" onclick="supprimerAffectation('${a.id}')">🗑️ Supprimer</button></td>
-      `;
-      tbody.appendChild(tr);
-    });
-  } catch(error){
-    console.error("Erreur refreshAffectations:", error);
-    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">Impossible de charger les affectations.</td></tr>`;
-  }
 }
 
-window.supprimerAffectation = async function(id){
-  if(!currentUserData?.isAdmin){
-    showAffectationMessage("Vous devez être administrateur.", "error");
-    return;
-  }
-  if(!confirm("Voulez-vous vraiment supprimer cette affectation ?")) return;
-  try {
-    await deleteDoc(doc(db, "affectations", id));
-    showAffectationMessage("Affectation supprimée.", "success");
-    await refreshAffectations();
-  } catch(error){
-    console.error("Erreur suppression affectation:", error);
-    showAffectationMessage("Impossible de supprimer l'affectation.", "error");
-  }
-};
 
-function showAffectationMessage(message, type = "info"){
-  const box = document.getElementById("affectationMessage");
-  if(!box){
-    if(typeof showToast === "function") showToast(message);
-    return;
-  }
-  let background = "#e0f2fe", color = "#075985";
-  if(type === "error"){ background = "#fee2e2"; color = "#991b1b"; }
-  if(type === "success"){ background = "#dcfce7"; color = "#166534"; }
-  box.innerHTML = `<div style="padding:12px 15px;border-radius:8px;background:${background};color:${color};font-weight:600;">${escapeHtml(message)}</div>`;
-  setTimeout(() => { if(box) box.innerHTML = ""; }, 5000);
+async function loadAffectations(){
+
+const page=
+$("page-affectations");
+
+if(!page)return;
+
+page.innerHTML=`
+
+<div class="page-title">
+
+<div>
+
+<h2>
+🔗 Affectations
+</h2>
+
+<p>
+Affecter un professeur à une filière,
+une classe et une matière.
+</p>
+
+</div>
+
+${
+isAdmin()
+?
+`
+<button
+class="btn btn-primary"
+onclick="openAffectationForm()">
+➕ Nouvelle affectation
+</button>
+`
+:
+""
 }
+
+</div>
+
+
+<div class="panel">
+
+<div class="panel-header">
+
+<h3>
+Liste des affectations
+</h3>
+
+<input
+class="search"
+placeholder="Rechercher..."
+oninput="filterTable(this)">
+
+</div>
+
+<div
+id="affectationsTable"
+class="table-wrap">
+
+<div class="empty">
+⏳ Chargement...
+</div>
+
+</div>
+
+</div>
+`;
+
+
+try{
+
+const snap=
+await getDocs(
+collection(db,"affectations")
+);
+
+if(snap.empty){
+
+$("affectationsTable").innerHTML=`
+
+<div class="empty">
+
+<div style="font-size:35px">
+🔗
+</div>
+
+<p>
+Aucune affectation enregistrée.
+</p>
+
+${
+isAdmin()
+?
+`
+<button
+class="btn btn-primary"
+style="margin-top:12px"
+onclick="openAffectationForm()">
+➕ Créer une affectation
+</button>
+`
+:
+""
+}
+
+</div>
+
+`;
+
+return;
+
+}
+
+
+let rows="";
+
+
+snap.forEach(ds=>{
+
+const d=ds.data()||{};
+
+rows+=`
+
+<tr>
+
+<td>
+${esc(d.professeurNom||"—")}
+</td>
+
+<td>
+${esc(d.professeurEmail||"—")}
+</td>
+
+<td>
+${esc(d.filiereNom||"—")}
+</td>
+
+<td>
+${esc(d.classeNom||"—")}
+</td>
+
+<td>
+${esc(d.matiereNom||"—")}
+</td>
+
+<td>
+
+${
+isAdmin()
+?
+`
+<div class="actions">
+
+<button
+class="btn btn-danger"
+onclick="deleteAffectation('${ds.id}')">
+🗑️ Supprimer
+</button>
+
+</div>
+`
+:
+"—"
+}
+
+</td>
+
+</tr>
+`;
+
+});
+
+
+$("affectationsTable").innerHTML=`
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Professeur</th>
+<th>Email</th>
+<th>Filière</th>
+<th>Classe</th>
+<th>Matière</th>
+<th>Actions</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+${rows}
+
+</tbody>
+
+</table>
+
+`;
+
+}catch(error){
+
+console.error(error);
+
+$("affectationsTable").innerHTML=`
+
+<div class="empty">
+
+Impossible de charger les affectations.
+
+</div>
+
+`;
+
+}
+
+}
+
+
+window.loadAffectations=
+loadAffectations;
+
 
 /* =========================================================
-   INSCRIPTIONS ÉLÈVES / CLASSES
+   FORMULAIRE AFFECTATION
    ========================================================= */
-async function renderInscriptions(){
-  const container = document.getElementById("page-inscriptions");
-  if(!container) return;
 
-  try {
-    const [eleves, classes] = await Promise.all([
-      getCollectionData("etudiants"),
-      getCollectionData("classes")
-    ]);
+window.openAffectationForm=
+async function(){
 
-    container.innerHTML = `
-      <div class="page-title">
-        <h2>👥 Élèves / Classes (Inscriptions)</h2>
-        <p>Affecter ou inscrire un élève dans une classe.</p>
-      </div>
-      <div class="panel">
-        <div id="inscriptionsMessage" style="margin-bottom:15px;"></div>
-        <div class="form-grid">
-          <div class="form-group">
-            <label for="insEleve">🎓 Élève</label>
-            <select id="insEleve">
-              <option value="">Sélectionner un élève</option>
-              ${(eleves || []).map(e => `<option value="${escapeHtml(e.id)}">${escapeHtml(e.nom || e.name || e.email || "Élève")}</option>`).join("")}
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="insClasse">🏫 Classe</label>
-            <select id="insClasse">
-              <option value="">Sélectionner une classe</option>
-              ${(classes || []).map(c => `<option value="${escapeHtml(c.id)}">${escapeHtml(c.nom || c.name || "Classe")}</option>`).join("")}
-            </select>
-          </div>
-        </div>
-        <div style="margin-top:15px;">
-          <button type="button" class="btn btn-green" onclick="addInscription()">➕ Inscrire l'élève</button>
-        </div>
-      </div>
-      <div class="panel" style="margin-top:20px;">
-        <h3>📋 Liste des inscriptions</h3>
-        <div style="overflow-x:auto;">
-          <table>
-            <thead>
-              <tr>
-                <th>Élève</th>
-                <th>Email</th>
-                <th>Classe</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody id="inscriptionsTable">
-              <tr><td colspan="4" style="text-align:center;">Chargement...</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    `;
-    await refreshInscriptions();
-  } catch(error){
-    console.error(error);
-    showToast("Impossible de charger les inscriptions.");
-  }
+if(!adminRequired())return;
+
+
+try{
+
+const data=
+await loadAffectationData();
+
+
+if(!data.professeurs.length){
+
+toast(
+"Aucun professeur n'est encore enregistré."
+);
+
+return;
+
 }
 
-window.addInscription = async function(){
-  if(!currentUserData?.isAdmin) return;
-  const etudiantId = document.getElementById("insEleve")?.value;
-  const classeId = document.getElementById("insClasse")?.value;
 
-  if(!etudiantId || !classeId){
-    showToast("Veuillez choisir un élève et une classe.");
-    return;
-  }
+if(!data.classes.length){
 
-  try {
-    const [etudiantSnap, classeSnap] = await Promise.all([
-      getDoc(doc(db, "etudiants", etudiantId)),
-      getDoc(doc(db, "classes", classeId))
-    ]);
+toast(
+"Aucune classe n'est encore enregistrée."
+);
 
-    if(!etudiantSnap.exists() || !classeSnap.exists()){
-      showToast("Élève ou classe introuvable.");
-      return;
-    }
+return;
 
-    const etudiant = etudiantSnap.data();
-    const classe = classeSnap.data();
-    const etudiantUid = etudiant.uid || etudiant.userUid || etudiantId;
-
-    const existingSnap = await getDocs(query(
-      collection(db, "inscriptions"),
-      where("etudiantUid", "==", etudiantUid)
-    ));
-
-    if(!existingSnap.empty){
-      const oldDocId = existingSnap.docs[0].id;
-      await deleteDoc(doc(db, "inscriptions", oldDocId));
-    }
-
-    await addDoc(collection(db, "inscriptions"), {
-      etudiantUid: etudiantUid,
-      etudiantNom: etudiant.nom || etudiant.name || "",
-      etudiantEmail: etudiant.email || "",
-      classeId: classeId,
-      classeNom: classe.nom || classe.name || "",
-      createdAt: serverTimestamp(),
-      createdBy: currentUser.uid
-    });
-
-    showToast("Élève inscrit dans la classe avec succès.");
-    document.getElementById("insEleve").value = "";
-    document.getElementById("insClasse").value = "";
-    await refreshInscriptions();
-  } catch(error){
-    console.error(error);
-    showToast("Impossible d'inscrire l'élève.");
-  }
-};
-
-async function refreshInscriptions(){
-  const tbody = document.getElementById("inscriptionsTable");
-  if(!tbody) return;
-  try {
-    const rows = await getCollectionData("inscriptions");
-    tbody.innerHTML = "";
-    if(!rows.length){
-      tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;">Aucune inscription.</td></tr>`;
-      return;
-    }
-    rows.forEach(r => {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${escapeHtml(r.etudiantNom || "")}</td>
-        <td>${escapeHtml(r.etudiantEmail || "")}</td>
-        <td>${escapeHtml(r.classeNom || "")}</td>
-        <td><button class="btn btn-red" onclick="supprimerInscription('${r.id}')">🗑️ Retirer</button></td>
-      `;
-      tbody.appendChild(tr);
-    });
-  } catch(error){
-    console.error(error);
-    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;">Erreur de chargement.</td></tr>`;
-  }
 }
 
-window.supprimerInscription = async function(id){
-  if(!currentUserData?.isAdmin) return;
-  if(!confirm("Retirer cet élève de sa classe ?")) return;
-  try {
-    await deleteDoc(doc(db, "inscriptions", id));
-    showToast("Inscription supprimée.");
-    await refreshInscriptions();
-  } catch(error){
-    console.error(error);
-    showToast("Impossible de supprimer.");
-  }
+
+if(!data.matieres.length){
+
+toast(
+"Aucune matière n'est encore enregistrée."
+);
+
+return;
+
+}
+
+
+let profOptions=`
+
+<option value="">
+-- Sélectionner un professeur --
+</option>
+`;
+
+data.professeurs.forEach(p=>{
+
+const nom=
+[p.prenom,p.nom]
+.filter(Boolean)
+.join(" ")
+.trim()
+||
+p.nom
+||
+"Professeur";
+
+const email=
+p.email||
+p.emailProfesseur||
+p.emailUtilisateur||
+p.mail||
+"";
+
+profOptions+=`
+
+<option value="${esc(p.id)}">
+
+${esc(nom)}
+${email?` — ${esc(email)}`:""}
+
+</option>
+
+`;
+
+});
+
+
+let filiereOptions=`
+
+<option value="">
+-- Sélectionner une filière --
+</option>
+`;
+
+data.filieres.forEach(f=>{
+
+filiereOptions+=`
+
+<option value="${esc(f.id)}">
+
+${esc(f.nom||"Filière")}
+
+</option>
+
+`;
+
+});
+
+
+let classeOptions=`
+
+<option value="">
+-- Sélectionner une classe --
+</option>
+`;
+
+data.classes.forEach(c=>{
+
+classeOptions+=`
+
+<option value="${esc(c.id)}">
+
+${esc(c.nom||"Classe")}
+
+</option>
+
+`;
+
+});
+
+
+let matiereOptions=`
+
+<option value="">
+-- Sélectionner une matière --
+</option>
+`;
+
+data.matieres.forEach(m=>{
+
+matiereOptions+=`
+
+<option value="${esc(m.id)}">
+
+${esc(m.nom||"Matière")}
+
+</option>
+
+`;
+
+});
+
+
+openModal(
+"Nouvelle affectation",
+`
+
+<form
+onsubmit="saveAffectation(event)">
+
+<div class="form-group">
+
+<label>
+Professeur
+</label>
+
+<select
+id="affProf"
+required>
+
+${profOptions}
+
+</select>
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+Filière
+</label>
+
+<select
+id="affFiliere"
+required>
+
+${filiereOptions}
+
+</select>
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+Classe
+</label>
+
+<select
+id="affClasse"
+required>
+
+${classeOptions}
+
+</select>
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+Matière
+</label>
+
+<select
+id="affMatiere"
+required>
+
+${matiereOptions}
+
+</select>
+
+</div>
+
+
+<div
+class="message info">
+
+Le professeur sera automatiquement
+lié à son compte Firebase grâce à
+son adresse email.
+
+</div>
+
+
+<button
+type="submit"
+class="btn btn-primary"
+style="width:100%">
+
+🔗 Créer l'affectation
+
+</button>
+
+</form>
+
+`
+);
+
+}catch(error){
+
+console.error(error);
+
+toast(
+"Impossible de préparer le formulaire."
+);
+
+}
+
 };
+
 
 /* =========================================================
-   PROFESSEUR : MES CLASSES
+   TROUVER LE COMPTE FIREBASE DU PROFESSEUR
    ========================================================= */
-async function renderMesClasses(){
-  const container = document.getElementById("page-mesclasses");
-  container.innerHTML = `
-    <div class="page-title">
-      <h2>🏫 Mes classes</h2>
-      <p>Classes et matières qui vous ont été attribuées par l'administrateur.</p>
-    </div>
-    <div class="panel">
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Filière</th><th>Classe</th><th>Matière</th></tr></thead>
-          <tbody id="mesClassesTable"><tr><td colspan="3">Chargement...</td></tr></tbody>
-        </table>
-      </div>
-    </div>
-  `;
-  try {
-    const q = query(collection(db, "affectations"), where("professeurUid", "==", currentUser.uid));
-    const snap = await getDocs(q);
-    const tbody = document.getElementById("mesClassesTable");
-    if(snap.empty){
-      tbody.innerHTML = `<tr><td colspan="3">Aucune classe ne vous a encore été attribuée.</td></tr>`;
-      return;
-    }
-    tbody.innerHTML = "";
-    snap.forEach(item => {
-      const d = item.data();
-      const tr = document.createElement("tr");
-      [d.filiereNom, d.classeNom, d.matiereNom].forEach(v => {
-        const td = document.createElement("td");
-        td.textContent = v || "";
-        tr.appendChild(td);
-      });
-      tbody.appendChild(tr);
-    });
-  } catch(error){
-    console.error(error);
-    showToast("Impossible de charger vos classes.");
-  }
+
+async function findProfessorFirebaseUser(
+professeur
+){
+
+/*
+ * 1. Chercher d'abord un UID déjà
+ * présent dans le document professeur.
+ */
+
+const possibleUid=
+professeur.uid||
+professeur.userUid||
+professeur.userId||
+professeur.authUid||
+"";
+
+
+if(possibleUid){
+
+try{
+
+const userSnap=
+await getDoc(
+doc(db,"users",possibleUid)
+);
+
+if(userSnap.exists()){
+
+const userData=
+userSnap.data()||{};
+
+return {
+
+uid:userData.uid||
+userSnap.id,
+
+...userData
+
+};
+
 }
 
-async function renderMesCours(){
-  const container = document.getElementById("page-mescours");
-  const role = currentUserData?.role;
-  container.innerHTML = `
-    <div class="page-title">
-      <h2>📘 Mes cours</h2>
-      <p>${role === "professeur" ? "Cours et classes attribués par l'administrateur." : "Cours disponibles dans votre classe."}</p>
-    </div>
-    <div class="panel">
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Filière</th><th>Classe</th><th>Matière</th><th>Professeur</th></tr></thead>
-          <tbody id="mesCoursTable"><tr><td colspan="4">Chargement...</td></tr></tbody>
-        </table>
-      </div>
-    </div>
-  `;
-  try {
-    let snap;
-    if(role === "professeur"){
-      snap = await getDocs(query(collection(db, "affectations"), where("professeurUid", "==", currentUser.uid)));
-    } else {
-      const ins = await getStudentInscription();
-      if(!ins){
-        document.getElementById("mesCoursTable").innerHTML = `<tr><td colspan="4">Vous n'avez pas encore de classe.</td></tr>`;
-        return;
-      }
-      snap = await getDocs(query(collection(db, "affectations"), where("classeId", "==", ins.classeId)));
-    }
-    const tbody = document.getElementById("mesCoursTable");
-    if(snap.empty){
-      tbody.innerHTML = `<tr><td colspan="4">Aucun cours disponible.</td></tr>`;
-      return;
-    }
-    tbody.innerHTML = "";
-    snap.forEach(item => {
-      const d = item.data();
-      const tr = document.createElement("tr");
-      [d.filiereNom, d.classeNom, d.matiereNom, d.professeurNom].forEach(v => {
-        const td = document.createElement("td");
-        td.textContent = v || "";
-        tr.appendChild(td);
-      });
-      tbody.appendChild(tr);
-    });
-  } catch(error){
-    console.error(error);
-    showToast("Impossible de charger les cours.");
-  }
+}catch(error){
+
+console.warn(
+"UID professeur non trouvé:",
+error
+);
+
 }
 
-async function renderMaClasse(){
-  const container = document.getElementById("page-maclasse");
-  container.innerHTML = `
-    <div class="page-title">
-      <h2>🏫 Ma classe</h2>
-      <p>Votre inscription et les cours de votre classe.</p>
-    </div>
-    <div id="studentClassContent">Chargement...</div>
-  `;
-  const ins = await getStudentInscription();
-  if(!ins){
-    document.getElementById("studentClassContent").innerHTML = `<div class="warning-box">⚠️ L'administrateur ne vous a pas encore affecté à une classe.</div>`;
-    return;
-  }
-  let courses = [];
-  try {
-    const snap = await getDocs(query(collection(db, "affectations"), where("classeId", "==", ins.classeId)));
-    courses = snap.docs.map(x => x.data());
-  } catch(error){
-    console.error(error);
-  }
-
-  document.getElementById("studentClassContent").innerHTML = `
-    <div class="panel">
-      <h3>🏫 Votre classe</h3>
-      <p><strong>Classe :</strong> ${escapeHtml(ins.classeNom)}</p>
-      <p style="margin-top:8px"><strong>Élève :</strong> ${escapeHtml(ins.etudiantNom)}</p>
-    </div>
-    <div class="panel">
-      <h3>📘 Cours de la classe</h3>
-      ${courses.length ? `
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Filière</th><th>Matière</th><th>Professeur</th></tr></thead>
-            <tbody>
-              ${courses.map(d => `<tr><td>${escapeHtml(d.filiereNom)}</td><td>${escapeHtml(d.matiereNom)}</td><td>${escapeHtml(d.professeurNom)}</td></tr>`).join("")}
-            </tbody>
-          </table>
-        </div>
-      ` : `<div class="empty">Aucun cours n'est encore affecté à cette classe.</div>`}
-    </div>
-  `;
 }
 
-async function getStudentInscription(){
-  if(!currentUser) return null;
-  const q = query(collection(db, "inscriptions"), where("etudiantUid", "==", currentUser.uid));
-  const snap = await getDocs(q);
-  if(snap.empty) return null;
-  return { id: snap.docs[0].id, ...snap.docs[0].data() };
+
+/*
+ * 2. Si aucun UID n'est trouvé,
+ * utiliser l'email du professeur.
+ */
+
+const email=
+(
+professeur.email||
+professeur.emailProfesseur||
+professeur.emailUtilisateur||
+professeur.mail||
+""
+)
+.trim()
+.toLowerCase();
+
+
+if(!email){
+
+return null;
+
 }
+
+
+/*
+ * 3. Chercher l'utilisateur
+ * Firebase avec son email.
+ */
+
+try{
+
+const usersSnap=
+await getDocs(
+query(
+collection(db,"users"),
+where("email","==",email)
+)
+);
+
+
+if(!usersSnap.empty){
+
+const userDoc=
+usersSnap.docs[0];
+
+const userData=
+userDoc.data()||{};
+
+return {
+
+uid:userData.uid||
+userDoc.id,
+
+...userData
+
+};
+
+}
+
+}catch(error){
+
+console.error(
+"Recherche utilisateur par email:",
+error
+);
+
+}
+
+
+/*
+ * 4. Fallback :
+ * lire les utilisateurs disponibles
+ * et comparer les emails sans tenir
+ * compte des majuscules.
+ */
+
+try{
+
+const usersSnap=
+await getDocs(
+collection(db,"users")
+);
+
+for(const userDoc of usersSnap.docs){
+
+const userData=
+userDoc.data()||{};
+
+const userEmail=
+String(
+userData.email||""
+)
+.trim()
+.toLowerCase();
+
+if(userEmail===email){
+
+return {
+
+uid:userData.uid||
+userDoc.id,
+
+...userData
+
+};
+
+}
+
+}
+
+}catch(error){
+
+console.error(
+"Fallback recherche users:",
+error
+);
+
+}
+
+
+return null;
+
+}
+
+
+/* =========================================================
+   CRÉER UNE AFFECTATION
+   ========================================================= */
+
+window.saveAffectation=
+async function(event){
+
+event.preventDefault();
+
+
+if(!adminRequired())return;
+
+
+const profId=
+$("affProf")?.value||
+"";
+
+const filiereId=
+$("affFiliere")?.value||
+"";
+
+const classeId=
+$("affClasse")?.value||
+"";
+
+const matiereId=
+$("affMatiere")?.value||
+"";
+
+
+if(
+!profId||
+!filiereId||
+!classeId||
+!matiereId
+){
+
+toast(
+"Veuillez sélectionner le professeur, la filière, la classe et la matière."
+);
+
+return;
+
+}
+
+
+try{
+
+/*
+ * Charger les documents sélectionnés.
+ */
+
+const [
+profSnap,
+filiereSnap,
+classeSnap,
+matiereSnap
+]=await Promise.all([
+
+getDoc(
+doc(db,"professeurs",profId)
+),
+
+getDoc(
+doc(db,"filieres",filiereId)
+),
+
+getDoc(
+doc(db,"classes",classeId)
+),
+
+getDoc(
+doc(db,"matieres",matiereId)
+)
+
+]);
+
+
+if(!profSnap.exists()){
+
+toast(
+"Le professeur sélectionné n'existe plus."
+);
+
+return;
+
+}
+
+
+if(!filiereSnap.exists()){
+
+toast(
+"La filière sélectionnée n'existe plus."
+);
+
+return;
+
+}
+
+
+if(!classeSnap.exists()){
+
+toast(
+"La classe sélectionnée n'existe plus."
+);
+
+return;
+
+}
+
+
+if(!matiereSnap.exists()){
+
+toast(
+"La matière sélectionnée n'existe plus."
+);
+
+return;
+
+}
+
+
+const prof=
+profSnap.data()||{};
+
+const filiere=
+filiereSnap.data()||{};
+
+const classe=
+classeSnap.data()||{};
+
+const matiere=
+matiereSnap.data()||{};
+
+
+/*
+ * Trouver le compte Firebase du professeur.
+ */
+
+const firebaseUser=
+await findProfessorFirebaseUser(prof);
+
+
+if(!firebaseUser){
+
+toast(
+"Le professeur n'est pas lié à un compte utilisateur Firebase. Vérifiez que son email correspond à celui de son compte."
+);
+
+return;
+
+}
+
+
+const professeurUid=
+firebaseUser.uid;
+
+
+if(!professeurUid){
+
+toast(
+"Impossible de récupérer le compte Firebase du professeur."
+);
+
+return;
+
+}
+
+
+/*
+ * Vérification du rôle.
+ *
+ * Si le document users contient un rôle,
+ * il doit être professeur.
+ */
+
+if(
+firebaseUser.role &&
+firebaseUser.role!=="professeur" &&
+firebaseUser.role!=="administrateur"
+){
+
+toast(
+"Le compte Firebase sélectionné n'est pas un compte professeur."
+);
+
+return;
+
+}
+
+
+/*
+ * Le professeur doit être accepté.
+ *
+ * Un administrateur peut être utilisé
+ * uniquement si le compte correspond
+ * volontairement à un profil professeur.
+ */
+
+if(
+firebaseUser.role==="professeur" &&
+firebaseUser.status &&
+firebaseUser.status!=="accepted"
+){
+
+toast(
+"Le compte Firebase du professeur n'est pas encore accepté."
+);
+
+return;
+
+}
+
+
+/*
+ * Récupérer les noms.
+ */
+
+const professeurNom=
+[
+prof.prenom,
+prof.nom
+]
+.filter(Boolean)
+.join(" ")
+.trim()
+||
+prof.nom
+||
+firebaseUser.nom
+||
+"Professeur";
+
+
+const professeurEmail=
+prof.email||
+prof.emailProfesseur||
+prof.emailUtilisateur||
+prof.mail||
+firebaseUser.email||
+"";
+
+
+const filiereNom=
+filiere.nom||
+"";
+
+
+const classeNom=
+classe.nom||
+"";
+
+
+const matiereNom=
+matiere.nom||
+"";
+
+
+/*
+ * Vérifier les doublons.
+ */
+
+const duplicateQuery=
+query(
+collection(db,"affectations"),
+where(
+"professeurUid",
+"==",
+professeurUid
+),
+where(
+"classeId",
+"==",
+classeId
+),
+where(
+"matiereId",
+"==",
+matiereId
+)
+);
+
+
+const duplicateSnap=
+await getDocs(
+duplicateQuery
+);
+
+
+if(!duplicateSnap.empty){
+
+toast(
+"Cette affectation existe déjà pour ce professeur, cette classe et cette matière."
+);
+
+return;
+
+}
+
+
+/*
+ * Créer l'affectation.
+ */
+
+await addDoc(
+collection(db,"affectations"),
+{
+
+professeurUid:
+professeurUid,
+
+professeurNom:
+professeurNom,
+
+professeurEmail:
+professeurEmail,
+
+filiereId:
+filiereId,
+
+filiereNom:
+filiereNom,
+
+classeId:
+classeId,
+
+classeNom:
+classeNom,
+
+matiereId:
+matiereId,
+
+matiereNom:
+matiereNom,
+
+createdBy:
+currentUser.uid,
+
+createdAt:
+serverTimestamp(),
+
+updatedAt:
+serverTimestamp()
+
+}
+);
+
+
+closeModal();
+
+toast(
+"Affectation créée avec succès."
+);
+
+await loadAffectations();
+
+
+}catch(error){
+
+console.error(
+"Erreur création affectation:",
+error
+);
+
+toast(
+"Impossible de créer l'affectation. Vérifiez les règles Firestore."
+);
+
+}
+
+};
+
+
+/* =========================================================
+   SUPPRIMER AFFECTATION
+   ========================================================= */
+
+window.deleteAffectation=
+async function(id){
+
+if(!adminRequired())return;
+
+
+if(!confirm(
+"Voulez-vous vraiment supprimer cette affectation ?"
+)){
+
+return;
+
+}
+
+
+try{
+
+await deleteDoc(
+doc(db,"affectations",id)
+);
+
+toast(
+"Affectation supprimée."
+);
+
+await loadAffectations();
+
+}catch(error){
+
+console.error(error);
+
+toast(
+"Impossible de supprimer l'affectation."
+);
+
+}
+
+};
+
+
+/* =========================================================
+   INSCRIPTIONS / ÉLÈVES - CLASSES
+   ========================================================= */
+
+async function loadInscriptions(){
+
+const page=
+$("page-inscriptions");
+
+if(!page)return;
+
+
+page.innerHTML=`
+
+<div class="page-title">
+
+<div>
+
+<h2>
+👥 Élèves / Classes
+</h2>
+
+<p>
+Affecter les élèves à leurs classes.
+</p>
+
+</div>
+
+${
+isAdmin()
+?
+`
+<button
+class="btn btn-primary"
+onclick="openInscriptionForm()">
+➕ Nouvelle inscription
+</button>
+`
+:
+""
+}
+
+</div>
+
+
+<div class="panel">
+
+<div class="panel-header">
+
+<h3>
+Liste des inscriptions
+</h3>
+
+<input
+class="search"
+placeholder="Rechercher..."
+oninput="filterTable(this)">
+
+</div>
+
+
+<div
+id="inscriptionsTable"
+class="table-wrap">
+
+<div class="empty">
+⏳ Chargement...
+</div>
+
+</div>
+
+</div>
+
+`;
+
+
+try{
+
+const snap=
+await getDocs(
+collection(db,"inscriptions")
+);
+
+
+if(snap.empty){
+
+$("inscriptionsTable").innerHTML=`
+
+<div class="empty">
+
+<div style="font-size:35px">
+👥
+</div>
+
+<p>
+Aucune inscription trouvée.
+</p>
+
+${
+isAdmin()
+?
+`
+<button
+class="btn btn-primary"
+style="margin-top:12px"
+onclick="openInscriptionForm()">
+➕ Inscrire un élève
+</button>
+`
+:
+""
+}
+
+</div>
+
+`;
+
+return;
+
+}
+
+
+let rows="";
+
+
+snap.forEach(ds=>{
+
+const d=
+ds.data()||{};
+
+
+rows+=`
+
+<tr>
+
+<td>
+${esc(d.etudiantNom||"—")}
+</td>
+
+<td>
+${esc(d.etudiantEmail||"—")}
+</td>
+
+<td>
+${esc(d.classeNom||"—")}
+</td>
+
+<td>
+${esc(d.filiereNom||"—")}
+</td>
+
+<td>
+
+${
+isAdmin()
+?
+`
+<div class="actions">
+
+<button
+class="btn btn-danger"
+onclick="deleteInscription('${ds.id}')">
+🗑️ Supprimer
+</button>
+
+</div>
+`
+:
+"—"
+}
+
+</td>
+
+</tr>
+
+`;
+
+});
+
+
+$("inscriptionsTable").innerHTML=`
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Élève</th>
+<th>Email</th>
+<th>Classe</th>
+<th>Filière</th>
+<th>Actions</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+${rows}
+
+</tbody>
+
+</table>
+
+`;
+
+}catch(error){
+
+console.error(error);
+
+$("inscriptionsTable").innerHTML=
+`
+
+<div class="empty">
+
+Impossible de charger les inscriptions.
+
+</div>
+
+`;
+
+}
+
+}
+
+
+window.openInscriptionForm=
+async function(){
+
+if(!adminRequired())return;
+
+
+try{
+
+const [
+studentSnap,
+classSnap,
+filiereSnap
+]=await Promise.all([
+
+getDocs(
+collection(db,"etudiants")
+),
+
+getDocs(
+collection(db,"classes")
+),
+
+getDocs(
+collection(db,"filieres")
+)
+
+]);
+
+
+if(studentSnap.empty){
+
+toast(
+"Aucun étudiant n'est enregistré."
+);
+
+return;
+
+}
+
+
+if(classSnap.empty){
+
+toast(
+"Aucune classe n'est enregistrée."
+);
+
+return;
+
+}
+
+
+let students=`
+
+<option value="">
+-- Sélectionner un élève --
+</option>
+`;
+
+
+studentSnap.forEach(ds=>{
+
+const d=
+ds.data()||{};
+
+const nom=
+[
+d.prenom,
+d.nom
+]
+.filter(Boolean)
+.join(" ")
+.trim()
+||
+d.nom
+||
+"Étudiant";
+
+
+students+=`
+
+<option value="${esc(ds.id)}">
+
+${esc(nom)}
+${d.email?` — ${esc(d.email)}`:""}
+
+</option>
+
+`;
+
+});
+
+
+let classes=`
+
+<option value="">
+-- Sélectionner une classe --
+</option>
+`;
+
+
+classSnap.forEach(ds=>{
+
+const d=
+ds.data()||{};
+
+classes+=`
+
+<option value="${esc(ds.id)}">
+
+${esc(d.nom||"Classe")}
+
+</option>
+
+`;
+
+});
+
+
+let filieres=`
+
+<option value="">
+-- Sélectionner une filière --
+</option>
+`;
+
+
+filiereSnap.forEach(ds=>{
+
+const d=
+ds.data()||{};
+
+filieres+=`
+
+<option value="${esc(ds.id)}">
+
+${esc(d.nom||"Filière")}
+
+</option>
+
+`;
+
+});
+
+
+openModal(
+"Nouvelle inscription",
+`
+
+<form
+onsubmit="saveInscription(event)">
+
+<div class="form-group">
+
+<label>
+Élève
+</label>
+
+<select
+id="insEtudiant"
+required>
+
+${students}
+
+</select>
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+Classe
+</label>
+
+<select
+id="insClasse"
+required>
+
+${classes}
+
+</select>
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+Filière
+</label>
+
+<select
+id="insFiliere">
+
+${filieres}
+
+</select>
+
+</div>
+
+
+<button
+class="btn btn-primary"
+style="width:100%"
+type="submit">
+
+💾 Enregistrer l'inscription
+
+</button>
+
+</form>
+
+`
+);
+
+}catch(error){
+
+console.error(error);
+
+toast(
+"Impossible de préparer l'inscription."
+);
+
+}
+
+};
+
+
+window.saveInscription=
+async function(event){
+
+event.preventDefault();
+
+
+if(!adminRequired())return;
+
+
+const studentId=
+$("insEtudiant")?.value||
+"";
+
+const classId=
+$("insClasse")?.value||
+"";
+
+const filiereId=
+$("insFiliere")?.value||
+"";
+
+
+if(!studentId||!classId){
+
+toast(
+"Veuillez sélectionner l'élève et la classe."
+);
+
+return;
+
+}
+
+
+try{
+
+const [
+studentSnap,
+classSnap
+]=await Promise.all([
+
+getDoc(
+doc(db,"etudiants",studentId)
+),
+
+getDoc(
+doc(db,"classes",classId)
+)
+
+]);
+
+
+if(!studentSnap.exists()){
+
+toast(
+"L'élève sélectionné est introuvable."
+);
+
+return;
+
+}
+
+
+if(!classSnap.exists()){
+
+toast(
+"La classe sélectionnée est introuvable."
+);
+
+return;
+
+}
+
+
+const student=
+studentSnap.data()||{};
+
+const classe=
+classSnap.data()||{};
+
+
+let filiere={};
+
+
+if(filiereId){
+
+const filiereSnap=
+await getDoc(
+doc(db,"filieres",filiereId)
+);
+
+if(filiereSnap.exists()){
+
+filiere=
+filiereSnap.data()||{};
+
+}
+
+}
+
+
+const etudiantNom=
+[
+student.prenom,
+student.nom
+]
+.filter(Boolean)
+.join(" ")
+.trim()
+||
+student.nom
+||
+"Étudiant";
+
+
+const existing=
+await getDocs(
+query(
+collection(db,"inscriptions"),
+where(
+"etudiantId",
+"==",
+studentId
+),
+where(
+"classeId",
+"==",
+classId
+)
+)
+);
+
+
+if(!existing.empty){
+
+toast(
+"Cet élève est déjà inscrit dans cette classe."
+);
+
+return;
+
+}
+
+
+await addDoc(
+collection(db,"inscriptions"),
+{
+
+etudiantId:
+studentId,
+
+etudiantNom:
+etudiantNom,
+
+etudiantEmail:
+student.email||
+"",
+
+classeId:
+classId,
+
+classeNom:
+classe.nom||
+"",
+
+filiereId:
+filiereId,
+
+filiereNom:
+filiere.nom||
+"",
+
+createdBy:
+currentUser.uid,
+
+createdAt:
+serverTimestamp(),
+
+updatedAt:
+serverTimestamp()
+
+}
+);
+
+
+closeModal();
+
+toast(
+"Élève inscrit avec succès."
+);
+
+await loadInscriptions();
+
+
+}catch(error){
+
+console.error(error);
+
+toast(
+"Impossible d'enregistrer l'inscription."
+);
+
+}
+
+};
+
+
+window.deleteInscription=
+async function(id){
+
+if(!adminRequired())return;
+
+
+if(!confirm(
+"Voulez-vous vraiment supprimer cette inscription ?"
+)){
+
+return;
+
+}
+
+
+try{
+
+await deleteDoc(
+doc(db,"inscriptions",id)
+);
+
+toast(
+"Inscription supprimée."
+);
+
+await loadInscriptions();
+
+}catch(error){
+
+console.error(error);
+
+toast(
+"Impossible de supprimer l'inscription."
+);
+
+}
+
+};
+  /* =========================================================
+   BLOC 3/4 — DEVOIRS, REMISES, CORRECTIONS, RESULTATS
+   ========================================================= */
+
 
 /* =========================================================
    DEVOIRS
    ========================================================= */
-async function renderDevoirs(){
-  const container = document.getElementById("page-devoirs");
-  const role = currentUserData?.role;
-  const canManage = currentUserData?.isAdmin || role === "professeur";
 
-  container.innerHTML = `
-    <div class="page-title">
-      <h2>📝 Devoirs</h2>
-      <p>${role === "eleve" ? "Devoirs de votre classe." : "Créer et gérer les devoirs des classes qui vous sont attribuées."}</p>
-    </div>
-    ${canManage ? `
-      <div class="panel">
-        <h3>➕ Ajouter un devoir</h3>
-        <div class="form-grid">
-          <div class="form-group"><label>Titre</label><input id="devTitre" type="text"></div>
-          <div class="form-group"><label>Date limite</label><input id="devDate" type="date"></div>
-          <div class="form-group"><label>Classe</label><select id="devClasse"></select></div>
-          <div class="form-group"><label>Matière / Cours</label><select id="devMatiere"></select></div>
-          <div class="form-group" style="grid-column:1/-1"><label>Description / Consignes</label><textarea id="devDescription"></textarea></div>
-        </div>
-        <div class="form-actions">
-          <button class="btn btn-green" onclick="addDevoir()">➕ Ajouter le devoir</button>
-        </div>
-      </div>
-    ` : `<div class="info-box">🎓 Vous voyez automatiquement les devoirs de votre classe.</div>`}
-    <div class="panel">
-      <h3>📚 Liste des devoirs</h3>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr><th>Titre</th><th>Filière</th><th>Classe</th><th>Matière</th><th>Date limite</th><th>Professeur</th><th>Actions</th></tr>
-          </thead>
-          <tbody id="devoirsTable"><tr><td colspan="7">Chargement...</td></tr></tbody>
-        </table>
-      </div>
-    </div>
-  `;
-  if(canManage){ await loadProfessorAssignmentSelects(); }
-  await refreshDevoirs();
+async function loadAssignments(){
+
+const page=$("page-devoirs");
+
+if(!page)return;
+
+page.innerHTML=`
+
+<div class="page-title">
+
+<div>
+<h2>📝 Devoirs</h2>
+<p>Gestion des devoirs et travaux à réaliser.</p>
+</div>
+
+${
+isAdmin() || isProfessor()
+?
+`
+<button
+class="btn btn-primary"
+onclick="openAssignmentForm()">
+➕ Nouveau devoir
+</button>
+`
+:""
 }
 
-async function loadProfessorAssignmentSelects(){
-  const classeSelect = document.getElementById("devClasse");
-  const matiereSelect = document.getElementById("devMatiere");
-  if(!classeSelect || !matiereSelect) return;
+</div>
 
-  classeSelect.innerHTML = `<option value="">-- Choisir --</option>`;
-  matiereSelect.innerHTML = `<option value="">-- Choisir --</option>`;
+<div class="panel">
 
-  let snap;
-  if(currentUserData?.isAdmin){
-    snap = await getDocs(collection(db, "affectations"));
-  } else {
-    snap = await getDocs(query(collection(db, "affectations"), where("professeurUid", "==", currentUser.uid)));
-  }
+<div class="panel-header">
 
-  const map = new Map();
-  snap.forEach(item => {
-    const d = item.data();
-    if(!map.has(d.classeId)){
-      map.set(d.classeId, { id: d.classeId, label: (d.filiereNom || "") + " — " + (d.classeNom || "") });
-    }
-  });
-  map.forEach(x => {
-    const o = document.createElement("option");
-    o.value = x.id;
-    o.textContent = x.label;
-    classeSelect.appendChild(o);
-  });
+<h3>Liste des devoirs</h3>
 
-  const subjectMap = new Map();
-  snap.forEach(item => {
-    const d = item.data();
-    const key = d.classeId + "|" + d.matiereId;
-    if(!subjectMap.has(key)){
-      subjectMap.set(key, { classeId: d.classeId, matiereId: d.matiereId, label: (d.matiereNom || "") + " — " + (d.classeNom || "") });
-    }
-  });
-  subjectMap.forEach((x, key) => {
-    const o = document.createElement("option");
-    o.value = key;
-    o.dataset.classe = x.classeId;
-    o.dataset.matiere = x.matiereId;
-    o.textContent = x.label;
-    matiereSelect.appendChild(o);
-  });
+<input
+class="search"
+placeholder="Rechercher..."
+oninput="filterTable(this)">
 
-  classeSelect.onchange = function(){
-    [...matiereSelect.options].forEach(o => {
-      if(!o.value) return;
-      o.hidden = o.dataset.classe !== classeSelect.value;
-    });
-    matiereSelect.value = "";
-  };
+</div>
+
+<div
+id="assignmentsTable"
+class="table-wrap">
+
+<div class="empty">
+⏳ Chargement...
+</div>
+
+</div>
+
+</div>
+`;
+
+
+try{
+
+let snap;
+
+if(isProfessor() && !isAdmin()){
+
+snap=await getDocs(
+query(
+collection(db,"devoirs"),
+where(
+"professeurUid",
+"==",
+currentUser.uid
+)
+)
+);
+
+}else{
+
+snap=await getDocs(
+collection(db,"devoirs")
+);
+
 }
 
-async function getSelectedAssignment(){
-  const classeId = document.getElementById("devClasse").value;
-  const combined = document.getElementById("devMatiere").value;
-  if(!classeId || !combined) return null;
-  const parts = combined.split("|");
-  if(parts.length < 2) return null;
-  const matiereId = parts[1];
 
-  const q = query(collection(db, "affectations"), where("classeId", "==", classeId), where("matiereId", "==", matiereId));
-  const snap = await getDocs(q);
-  if(snap.empty) return null;
+if(snap.empty){
 
-  if(currentUserData?.isAdmin){
-    return { ...snap.docs[0].data(), id: snap.docs[0].id };
-  }
-  const own = snap.docs.find(x => x.data().professeurUid === currentUser.uid);
-  if(!own) return null;
-  return { ...own.data(), id: own.id };
+$("assignmentsTable").innerHTML=`
+
+<div class="empty">
+
+<div style="font-size:35px">📝</div>
+
+<p>Aucun devoir enregistré.</p>
+
+${
+isAdmin() || isProfessor()
+?
+`
+<button
+class="btn btn-primary"
+style="margin-top:12px"
+onclick="openAssignmentForm()">
+➕ Créer un devoir
+</button>
+`
+:""
 }
 
-window.addDevoir = async function(){
-  if(!currentUserData?.isAdmin && currentUserData?.role !== "professeur"){
-    showToast("Vous n'avez pas le droit d'ajouter un devoir.");
-    return;
-  }
-  const titre = document.getElementById("devTitre").value.trim();
-  const dateLimite = document.getElementById("devDate").value;
-  const description = document.getElementById("devDescription").value.trim();
+</div>
+`;
 
-  if(!titre || !dateLimite){
-    showToast("Remplissez le titre et la date limite.");
-    return;
-  }
+return;
 
-  try {
-    const affectation = await getSelectedAssignment();
-    if(!affectation){
-      showToast("Choisissez une classe et une matière qui vous sont attribuées.");
-      return;
-    }
+}
 
-    const professorUid = currentUserData.isAdmin ? (affectation.professeurUid || currentUser.uid) : currentUser.uid;
-    const professorName = currentUserData.isAdmin ? (affectation.professeurNom || currentUserData.name) : (currentUserData.name || currentUser.email);
 
-    await addDoc(collection(db, "devoirs"), {
-      titre,
-      description,
-      dateLimite,
-      filiereId: affectation.filiereId || "",
-      filiereNom: affectation.filiereNom || "",
-      classeId: affectation.classeId || "",
-      classeNom: affectation.classeNom || "",
-      matiereId: affectation.matiereId || "",
-      matiereNom: affectation.matiereNom || "",
-      professeurUid: professorUid,
-      professeurNom: professorName,
-      createdBy: currentUser.uid,
-      createdAt: serverTimestamp()
-    });
+let rows="";
 
-    showToast("Devoir ajouté avec succès.");
-    document.getElementById("devTitre").value = "";
-    document.getElementById("devDate").value = "";
-    document.getElementById("devDescription").value = "";
-    document.getElementById("devClasse").value = "";
-    document.getElementById("devMatiere").value = "";
 
-    await refreshDevoirs();
-    loadDashboard();
-  } catch(error){
-    console.error(error);
-    showToast("Impossible d'ajouter le devoir.");
-  }
+snap.forEach(ds=>{
+
+const d=ds.data()||{};
+
+const date=d.dateLimite||d.deadline||"—";
+
+rows+=`
+
+<tr>
+
+<td>
+${esc(d.titre||d.nom||"—")}
+</td>
+
+<td>
+${esc(d.matiereNom||d.matiere||"—")}
+</td>
+
+<td>
+${esc(d.classeNom||d.classe||"—")}
+</td>
+
+<td>
+${esc(d.professeurNom||"—")}
+</td>
+
+<td>
+${esc(date)}
+</td>
+
+<td>
+
+<div class="actions">
+
+<button
+class="btn btn-light"
+onclick="viewAssignment('${ds.id}')">
+👁️ Voir
+</button>
+
+${
+isAdmin() ||
+(
+isProfessor() &&
+d.professeurUid===currentUser.uid
+)
+?
+`
+<button
+class="btn btn-danger"
+onclick="deleteAssignment('${ds.id}')">
+🗑️ Supprimer
+</button>
+`
+:""
+}
+
+</div>
+
+</td>
+
+</tr>
+`;
+
+});
+
+
+$("assignmentsTable").innerHTML=`
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Titre</th>
+<th>Matière</th>
+<th>Classe</th>
+<th>Professeur</th>
+<th>Date limite</th>
+<th>Actions</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+${rows}
+
+</tbody>
+
+</table>
+`;
+
+}catch(error){
+
+console.error(error);
+
+$("assignmentsTable").innerHTML=`
+
+<div class="empty">
+Impossible de charger les devoirs.
+</div>
+`;
+
+}
+
+}
+
+
+window.openAssignmentForm=
+async function(){
+
+if(!isAdmin() && !isProfessor()){
+
+toast(
+"Vous n'avez pas l'autorisation de créer un devoir."
+);
+
+return;
+
+}
+
+
+try{
+
+const [
+matiereSnap,
+classeSnap
+]=await Promise.all([
+
+getDocs(
+collection(db,"matieres")
+),
+
+getDocs(
+collection(db,"classes")
+)
+
+]);
+
+
+let matieres=`
+
+<option value="">
+-- Sélectionner une matière --
+</option>
+`;
+
+matiereSnap.forEach(ds=>{
+
+const d=ds.data()||{};
+
+matieres+=`
+
+<option value="${esc(ds.id)}">
+
+${esc(d.nom||"Matière")}
+
+</option>
+`;
+
+});
+
+
+let classes=`
+
+<option value="">
+-- Sélectionner une classe --
+</option>
+`;
+
+classeSnap.forEach(ds=>{
+
+const d=ds.data()||{};
+
+classes+=`
+
+<option value="${esc(ds.id)}">
+
+${esc(d.nom||"Classe")}
+
+</option>
+`;
+
+});
+
+
+openModal(
+"Nouveau devoir",
+`
+
+<form
+onsubmit="saveAssignment(event)">
+
+<div class="form-group">
+
+<label>Titre du devoir</label>
+
+<input
+id="assignmentTitle"
+required
+placeholder="Titre du devoir">
+
+</div>
+
+
+<div class="form-group">
+
+<label>Matière</label>
+
+<select
+id="assignmentSubject"
+required>
+
+${matieres}
+
+</select>
+
+</div>
+
+
+<div class="form-group">
+
+<label>Classe</label>
+
+<select
+id="assignmentClass"
+required>
+
+${classes}
+
+</select>
+
+</div>
+
+
+<div class="form-group">
+
+<label>Date limite</label>
+
+<input
+id="assignmentDeadline"
+type="date"
+required>
+
+</div>
+
+
+<div class="form-group">
+
+<label>Description / Consignes</label>
+
+<textarea
+id="assignmentDescription"
+rows="5"
+placeholder="Décrivez le travail demandé...">
+</textarea>
+
+</div>
+
+
+<button
+type="submit"
+class="btn btn-primary"
+style="width:100%">
+
+💾 Enregistrer le devoir
+
+</button>
+
+</form>
+`
+);
+
+}catch(error){
+
+console.error(error);
+
+toast(
+"Impossible de préparer le formulaire."
+);
+
+}
+
 };
 
-async function getVisibleDevoirs(){
-  if(currentUserData?.isAdmin){
-    return getCollectionData("devoirs");
-  }
-  if(currentUserData?.role === "professeur"){
-    const snap = await getDocs(query(collection(db, "devoirs"), where("professeurUid", "==", currentUser.uid)));
-    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
-  }
-  const ins = await getStudentInscription();
-  if(!ins) return [];
-  const snap = await getDocs(query(collection(db, "devoirs"), where("classeId", "==", ins.classeId)));
-  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+window.saveAssignment=
+async function(event){
+
+event.preventDefault();
+
+
+if(!isAdmin() && !isProfessor()){
+
+toast("Accès refusé.");
+
+return;
+
 }
 
-async function refreshDevoirs(){
-  const tbody = document.getElementById("devoirsTable");
-  if(!tbody) return;
-  try {
-    const rows = await getVisibleDevoirs();
-    if(!rows.length){
-      tbody.innerHTML = `<tr><td colspan="7">Aucun devoir disponible.</td></tr>`;
-      return;
-    }
-    tbody.innerHTML = "";
-    rows.forEach(d => {
-      const tr = document.createElement("tr");
-      [d.titre, d.filiereNom, d.classeNom, d.matiereNom, d.dateLimite, d.professeurNom].forEach(value => {
-        const td = document.createElement("td");
-        td.textContent = value || "";
-        tr.appendChild(td);
-      });
-      const td = document.createElement("td");
-      const group = document.createElement("div");
-      group.className = "action-group";
 
-      const canEdit = currentUserData?.isAdmin || (currentUserData?.role === "professeur" && d.professeurUid === currentUser.uid);
-      if(canEdit){
-        const edit = document.createElement("button");
-        edit.className = "btn";
-        edit.textContent = "Modifier";
-        edit.onclick = () => editDevoir(d.id, d);
-        group.appendChild(edit);
+const titre=
+$("assignmentTitle")?.value.trim()||"";
 
-        const del = document.createElement("button");
-        del.className = "btn btn-red";
-        del.textContent = "Supprimer";
-        del.onclick = () => deleteDevoir(d.id);
-        group.appendChild(del);
-      }
-      if(currentUserData?.role === "eleve"){
-        const remise = document.createElement("button");
-        remise.className = "btn btn-green";
-        remise.textContent = "📤 Remettre";
-        remise.onclick = () => openRemiseForDevoir(d.id, d);
-        group.appendChild(remise);
-      }
-      td.appendChild(group);
-      tr.appendChild(td);
-      tbody.appendChild(tr);
-    });
-  } catch(error){
-    console.error(error);
-    tbody.innerHTML = `<tr><td colspan="7">Impossible de charger les devoirs.</td></tr>`;
-  }
+const matiereId=
+$("assignmentSubject")?.value||"";
+
+const classeId=
+$("assignmentClass")?.value||"";
+
+const dateLimite=
+$("assignmentDeadline")?.value||"";
+
+const description=
+$("assignmentDescription")?.value.trim()||"";
+
+
+if(
+!titre||
+!matiereId||
+!classeId||
+!dateLimite
+){
+
+toast(
+"Veuillez remplir tous les champs obligatoires."
+);
+
+return;
+
 }
 
-window.editDevoir = async function(id, data){
-  const allowed = currentUserData?.isAdmin || (currentUserData?.role === "professeur" && data.professeurUid === currentUser.uid);
-  if(!allowed){
-    showToast("Vous n'avez pas le droit de modifier ce devoir.");
-    return;
-  }
-  const titre = prompt("Titre du devoir", data.titre || "");
-  if(titre === null) return;
-  const date = prompt("Date limite YYYY-MM-DD", data.dateLimite || "");
-  if(date === null) return;
-  const description = prompt("Description / Consignes", data.description || "");
-  if(description === null) return;
 
-  try {
-    await updateDoc(doc(db, "devoirs", id), {
-      titre: titre.trim(),
-      dateLimite: date.trim(),
-      description: description.trim(),
-      updatedAt: serverTimestamp()
-    });
-    showToast("Devoir modifié.");
-    await refreshDevoirs();
-  } catch(error){
-    console.error(error);
-    showToast("Modification impossible.");
-  }
+try{
+
+const [
+matiereSnap,
+classeSnap
+]=await Promise.all([
+
+getDoc(
+doc(db,"matieres",matiereId)
+),
+
+getDoc(
+doc(db,"classes",classeId)
+)
+
+]);
+
+
+if(!matiereSnap.exists()){
+
+toast("Matière introuvable.");
+
+return;
+
+}
+
+
+if(!classeSnap.exists()){
+
+toast("Classe introuvable.");
+
+return;
+
+}
+
+
+const matiere=
+matiereSnap.data()||{};
+
+const classe=
+classeSnap.data()||{};
+
+
+let professeurNom=
+currentProfile?.nom||
+currentUser.displayName||
+currentUser.email||
+"Professeur";
+
+
+if(isAdmin()){
+
+professeurNom=
+currentProfile?.nom||
+currentUser.displayName||
+currentUser.email||
+"Administrateur";
+
+}
+
+
+await addDoc(
+collection(db,"devoirs"),
+{
+
+titre,
+
+description,
+
+matiereId,
+
+matiereNom:
+matiere.nom||"",
+
+classeId,
+
+classeNom:
+classe.nom||"",
+
+professeurUid:
+currentUser.uid,
+
+professeurNom,
+
+professeurEmail:
+currentUser.email||"",
+
+dateLimite,
+
+createdBy:
+currentUser.uid,
+
+createdAt:
+serverTimestamp(),
+
+updatedAt:
+serverTimestamp()
+
+}
+);
+
+
+closeModal();
+
+toast(
+"Devoir créé avec succès."
+);
+
+await loadAssignments();
+
+}catch(error){
+
+console.error(error);
+
+toast(
+"Impossible de créer le devoir."
+);
+
+}
+
 };
 
-window.deleteDevoir = async function(id){
-  if(!confirm("Supprimer ce devoir ?")) return;
-  try {
-    const ref = doc(db, "devoirs", id);
-    const snap = await getDoc(ref);
-    if(!snap.exists()) return;
-    const d = snap.data();
-    const allowed = currentUserData?.isAdmin || (currentUserData?.role === "professeur" && d.professeurUid === currentUser.uid);
-    if(!allowed){
-      showToast("Vous n'avez pas le droit de supprimer ce devoir.");
-      return;
-    }
-    await deleteDoc(ref);
-    showToast("Devoir supprimé.");
-    await refreshDevoirs();
-    loadDashboard();
-  } catch(error){
-    console.error(error);
-    showToast("Suppression impossible.");
-  }
+
+window.viewAssignment=
+async function(id){
+
+try{
+
+const snap=
+await getDoc(
+doc(db,"devoirs",id)
+);
+
+if(!snap.exists()){
+
+toast("Devoir introuvable.");
+
+return;
+
+}
+
+const d=snap.data()||{};
+
+openModal(
+d.titre||"Devoir",
+`
+
+<div>
+
+<div class="role-box">
+
+<strong>
+Matière :
+</strong>
+
+${esc(d.matiereNom||"—")}
+
+<br>
+
+<strong>
+Classe :
+</strong>
+
+${esc(d.classeNom||"—")}
+
+<br>
+
+<strong>
+Professeur :
+</strong>
+
+${esc(d.professeurNom||"—")}
+
+<br>
+
+<strong>
+Date limite :
+</strong>
+
+${esc(d.dateLimite||"—")}
+
+</div>
+
+
+<h3>Description</h3>
+
+<p
+style="white-space:pre-wrap;line-height:1.7;margin-top:10px">
+
+${esc(d.description||"Aucune consigne.")}
+
+</p>
+
+
+${
+isStudent()
+?
+`
+<button
+class="btn btn-primary"
+style="width:100%;margin-top:20px"
+onclick="closeModal();openSubmissionForm('${id}')">
+
+📤 Remettre mon travail
+
+</button>
+`
+:""
+}
+
+</div>
+`
+);
+
+}catch(error){
+
+console.error(error);
+
+toast(
+"Impossible d'afficher le devoir."
+);
+
+}
+
 };
+
+
+window.deleteAssignment=
+async function(id){
+
+if(!isAdmin() && !isProfessor())return;
+
+if(!confirm(
+"Voulez-vous supprimer ce devoir ?"
+))return;
+
+
+try{
+
+await deleteDoc(
+doc(db,"devoirs",id)
+);
+
+toast("Devoir supprimé.");
+
+await loadAssignments();
+
+}catch(error){
+
+console.error(error);
+
+toast(
+"Impossible de supprimer le devoir."
+);
+
+}
+
+};
+
 
 /* =========================================================
    REMISES
    ========================================================= */
-async function renderRemises(){
-  const container = document.getElementById("page-remises");
-  const role = currentUserData?.role;
 
-  container.innerHTML = `
-    <div class="page-title">
-      <h2>📤 Remises de devoirs</h2>
-      <p>${role === "eleve" ? "Vos devoirs remis et vos corrections." : "Remises des élèves de vos classes."}</p>
-    </div>
-    ${role === "eleve" ? `
-      <div class="panel">
-        <h3>📤 Remettre un devoir</h3>
-        <div class="form-grid">
-          <div class="form-group"><label>Devoir</label><select id="remiseDevoir"></select></div>
-          <div class="form-group"><label>Lien du fichier / document</label><input id="remiseFichier" type="url" placeholder="Lien Google Drive, PDF, document..."></div>
-          <div class="form-group" style="grid-column:1/-1"><label>Commentaire</label><textarea id="remiseCommentaire"></textarea></div>
-        </div>
-        <div class="form-actions"><button class="btn btn-green" onclick="addRemiseEleve()">📤 Envoyer le devoir</button></div>
-      </div>
-    ` : `<div class="info-box">👨‍🏫 Vous voyez les remises des élèves. Vous pouvez les corriger et donner une note sur 100.</div>`}
-    <div class="panel">
-      <h3>📋 Devoirs remis</h3>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr><th>Devoir</th><th>Classe</th><th>Étudiant</th><th>Fichier</th><th>Note /100</th><th>Correction</th><th>Actions</th></tr>
-          </thead>
-          <tbody id="remisesTable"><tr><td colspan="7">Chargement...</td></tr></tbody>
-        </table>
-      </div>
-    </div>
-  `;
-  if(role === "eleve"){ await loadStudentDevoirSelect(); }
-  await refreshRemises();
+async function loadSubmissions(){
+
+const page=$("page-remises");
+
+if(!page)return;
+
+page.innerHTML=`
+
+<div class="page-title">
+
+<div>
+
+<h2>📤 Remises / Corrections</h2>
+
+<p>
+Travaux remis par les étudiants.
+</p>
+
+</div>
+
+</div>
+
+
+<div class="panel">
+
+<div class="panel-header">
+
+<h3>Travaux remis</h3>
+
+<input
+class="search"
+placeholder="Rechercher..."
+oninput="filterTable(this)">
+
+</div>
+
+<div
+id="submissionsTable"
+class="table-wrap">
+
+<div class="empty">
+⏳ Chargement...
+</div>
+
+</div>
+
+</div>
+`;
+
+
+try{
+
+let snap;
+
+if(isStudent()){
+
+snap=await getDocs(
+query(
+collection(db,"remises"),
+where(
+"etudiantUid",
+"==",
+currentUser.uid
+)
+)
+);
+
+}else{
+
+snap=await getDocs(
+collection(db,"remises")
+);
+
 }
 
-async function loadStudentDevoirSelect(){
-  const select = document.getElementById("remiseDevoir");
-  if(!select) return;
-  select.innerHTML = `<option value="">-- Choisir un devoir --</option>`;
-  const rows = await getVisibleDevoirs();
-  rows.forEach(d => {
-    const option = document.createElement("option");
-    option.value = d.id;
-    option.textContent = `${d.titre} — ${d.matiereNom} — ${d.classeNom}`;
-    select.appendChild(option);
-  });
+
+if(snap.empty){
+
+$("submissionsTable").innerHTML=`
+
+<div class="empty">
+
+<div style="font-size:35px">📤</div>
+
+<p>
+Aucune remise trouvée.
+</p>
+
+${
+isStudent()
+?
+`
+<button
+class="btn btn-primary"
+style="margin-top:12px"
+onclick="showPage('devoirs')">
+Voir les devoirs
+</button>
+`
+:""
 }
 
-window.addRemiseEleve = async function(){
-  if(currentUserData?.role !== "eleve"){
-    showToast("Seul un élève peut remettre un devoir.");
-    return;
-  }
-  const devoirId = document.getElementById("remiseDevoir").value;
-  const fichier = document.getElementById("remiseFichier").value.trim();
-  const commentaire = document.getElementById("remiseCommentaire").value.trim();
+</div>
+`;
 
-  if(!devoirId || !fichier){
-    showToast("Choisissez un devoir et ajoutez le lien du fichier.");
-    return;
-  }
+return;
 
-  try {
-    const devoirSnap = await getDoc(doc(db, "devoirs", devoirId));
-    if(!devoirSnap.exists()){
-      showToast("Devoir introuvable.");
-      return;
-    }
-    const d = devoirSnap.data();
-    const ins = await getStudentInscription();
-    if(!ins || ins.classeId !== d.classeId){
-      showToast("Ce devoir ne correspond pas à votre classe.");
-      return;
-    }
-
-    const existing = await getDocs(query(collection(db, "remises"), where("devoirId", "==", devoirId), where("etudiantUid", "==", currentUser.uid)));
-    if(!existing.empty){
-      showToast("Vous avez déjà remis ce devoir. Utilisez Modifier.");
-      return;
-    }
-
-    await addDoc(collection(db, "remises"), {
-      devoirId: devoirId,
-      devoirTitre: d.titre || "",
-      filiereId: d.filiereId || "",
-      filiereNom: d.filiereNom || "",
-      classeId: d.classeId || "",
-      classeNom: d.classeNom || "",
-      matiereId: d.matiereId || "",
-      matiereNom: d.matiereNom || "",
-      professeurUid: d.professeurUid || "",
-      professeurNom: d.professeurNom || "",
-      etudiantUid: currentUser.uid,
-      etudiantNom: currentUserData.name || currentUser.email,
-      fichier: fichier,
-      commentaire: commentaire,
-      note: null,
-      correctionCommentaire: "",
-      statut: "remis",
-      createdAt: serverTimestamp()
-    });
-
-    showToast("Devoir remis avec succès.");
-    document.getElementById("remiseFichier").value = "";
-    document.getElementById("remiseCommentaire").value = "";
-    await refreshRemises();
-  } catch(error){
-    console.error(error);
-    showToast("Impossible de remettre le devoir.");
-  }
-};
-
-window.openRemiseForDevoir = function(id, data){
-  showPage("remises", document.getElementById("remisesMenu"));
-  setTimeout(async () => {
-    const select = document.getElementById("remiseDevoir");
-    if(select) select.value = id;
-  }, 300);
-};
-
-async function getVisibleRemises(){
-  if(currentUserData?.isAdmin){
-    const snap = await getDocs(collection(db, "remises"));
-    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
-  }
-  if(currentUserData?.role === "eleve"){
-    const snap = await getDocs(query(collection(db, "remises"), where("etudiantUid", "==", currentUser.uid)));
-    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
-  }
-  const snap = await getDocs(query(collection(db, "remises"), where("professeurUid", "==", currentUser.uid)));
-  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
 }
 
-async function refreshRemises(){
-  const tbody = document.getElementById("remisesTable");
-  if(!tbody) return;
-  try {
-    const rows = await getVisibleRemises();
-    if(!rows.length){
-      tbody.innerHTML = `<tr><td colspan="7">Aucune remise.</td></tr>`;
-      return;
-    }
-    tbody.innerHTML = "";
-    rows.forEach(d => {
-      const tr = document.createElement("tr");
-      [d.devoirTitre, d.classeNom, d.etudiantNom].forEach(value => {
-        const td = document.createElement("td");
-        td.textContent = value || "";
-        tr.appendChild(td);
-      });
-      let td = document.createElement("td");
-      if(d.fichier){
-        const link = document.createElement("a");
-        link.href = d.fichier;
-        link.target = "_blank";
-        link.rel = "noopener";
-        link.textContent = "📎 Ouvrir";
-        td.appendChild(link);
-      } else {
-        td.textContent = "Aucun fichier";
-      }
-      tr.appendChild(td);
 
-      td = document.createElement("td");
-      td.textContent = d.note == null ? "Non noté" : `${d.note}/100`;
-      tr.appendChild(td);
+let rows="";
 
-      td = document.createElement("td");
-      td.textContent = d.correctionCommentaire || "Pas encore corrigé";
-      tr.appendChild(td);
 
-      td = document.createElement("td");
-      const group = document.createElement("div");
-      group.className = "action-group";
+snap.forEach(ds=>{
 
-      if(currentUserData?.isAdmin || (currentUserData?.role === "professeur" && d.professeurUid === currentUser.uid)){
-        const correct = document.createElement("button");
-        correct.className = "btn";
-        correct.textContent = "✏️ Corriger";
-        correct.onclick = () => correctRemise(d.id, d);
-        group.appendChild(correct);
-      }
+const d=ds.data()||{};
 
-      if(currentUserData?.isAdmin || (currentUserData?.role === "eleve" && d.etudiantUid === currentUser.uid)){
-        const edit = document.createElement("button");
-        edit.className = "btn btn-orange";
-        edit.textContent = "Modifier";
-        edit.onclick = () => editRemise(d.id, d);
-        group.appendChild(edit);
+rows+=`
 
-        const del = document.createElement("button");
-        del.className = "btn btn-red";
-        del.textContent = "Supprimer";
-        del.onclick = () => deleteRemise(d.id, d);
-        group.appendChild(del);
-      }
-      td.appendChild(group);
-      tr.appendChild(td);
-      tbody.appendChild(tr);
-    });
-  } catch(error){
-    console.error(error);
-    tbody.innerHTML = `<tr><td colspan="7">Impossible de charger les remises.</td></tr>`;
-  }
+<tr>
+
+<td>
+${esc(d.devoirTitre||"—")}
+</td>
+
+<td>
+${esc(d.etudiantNom||"—")}
+</td>
+
+<td>
+${esc(d.etudiantEmail||"—")}
+</td>
+
+<td>
+${esc(d.dateRemise||"—")}
+</td>
+
+<td>
+${
+d.statut==="corrige"
+?
+`<span class="badge badge-success">Corrigé</span>`
+:
+`<span class="badge badge-warning">À corriger</span>`
+}
+</td>
+
+<td>
+
+<div class="actions">
+
+<button
+class="btn btn-light"
+onclick="viewSubmission('${ds.id}')">
+👁️ Voir
+</button>
+
+${
+isAdmin() || isProfessor()
+?
+`
+<button
+class="btn btn-primary"
+onclick="openCorrectionForm('${ds.id}')">
+✏️ Corriger
+</button>
+`
+:""
 }
 
-window.editRemise = async function(id, data){
-  const allowed = currentUserData?.isAdmin || (currentUserData?.role === "eleve" && data.etudiantUid === currentUser.uid);
-  if(!allowed){
-    showToast("Vous n'avez pas le droit de modifier cette remise.");
-    return;
-  }
-  const fichier = prompt("Lien du fichier", data.fichier || "");
-  if(fichier === null) return;
-  const commentaire = prompt("Commentaire", data.commentaire || "");
-  if(commentaire === null) return;
+</div>
 
-  try {
-    await updateDoc(doc(db, "remises", id), {
-      fichier: fichier.trim(),
-      commentaire: commentaire.trim(),
-      updatedAt: serverTimestamp()
-    });
-    showToast("Remise modifiée.");
-    await refreshRemises();
-  } catch(error){
-    console.error(error);
-    showToast("Modification impossible.");
-  }
-};
+</td>
 
-window.deleteRemise = async function(id, data){
-  const allowed = currentUserData?.isAdmin || (currentUserData?.role === "eleve" && data.etudiantUid === currentUser.uid);
-  if(!allowed){
-    showToast("Vous n'avez pas le droit de supprimer cette remise.");
-    return;
-  }
-  if(!confirm("Supprimer cette remise ?")) return;
-  try {
-    await deleteDoc(doc(db, "remises", id));
-    showToast("Remise supprimée.");
-    await refreshRemises();
-  } catch(error){
-    console.error(error);
-    showToast("Suppression impossible.");
-  }
-};
+</tr>
+`;
+
+});
+
+
+$("submissionsTable").innerHTML=`
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Devoir</th>
+<th>Étudiant</th>
+<th>Email</th>
+<th>Date</th>
+<th>Statut</th>
+<th>Actions</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+${rows}
+
+</tbody>
+
+</table>
+`;
+
+}catch(error){
+
+console.error(error);
+
+$("submissionsTable").innerHTML=`
+
+<div class="empty">
+Impossible de charger les remises.
+</div>
+`;
+
+}
+
+}
+
 
 /* =========================================================
-   CORRECTIONS
+   FORMULAIRE REMISE ÉTUDIANT
    ========================================================= */
-async function renderCorrections(){
-  const container = document.getElementById("page-corrections");
-  if(currentUserData?.role !== "professeur" && !currentUserData?.isAdmin){
-    container.innerHTML = `
-      <div class="page-title"><h2>✏️ Corrections</h2><p>Correction des devoirs remis.</p></div>
-      <div class="info-box">Cette section est réservée aux professeurs et à l'administrateur.</div>
-    `;
-    return;
-  }
 
-  container.innerHTML = `
-    <div class="page-title">
-      <h2>✏️ Corrections</h2>
-      <p>Corriger les devoirs, commenter et donner une note sur 100.</p>
-    </div>
-    <div class="info-box">👨‍🏫 Chaque remise peut recevoir une note de 0 à 100, un commentaire et un statut corrigé.</div>
-    <div class="panel">
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr><th>Devoir</th><th>Classe</th><th>Étudiant</th><th>Fichier</th><th>Note /100</th><th>Commentaire</th><th>Action</th></tr>
-          </thead>
-          <tbody id="correctionsTable"><tr><td colspan="7">Chargement...</td></tr></tbody>
-        </table>
-      </div>
-    </div>
-  `;
-  await refreshCorrections();
+window.openSubmissionForm=
+async function(devoirId){
+
+if(!isStudent()){
+
+toast(
+"Seuls les étudiants acceptés peuvent remettre un travail."
+);
+
+return;
+
 }
 
-async function refreshCorrections(){
-  const tbody = document.getElementById("correctionsTable");
-  if(!tbody) return;
-  try {
-    const rows = await getVisibleRemises();
-    if(!rows.length){
-      tbody.innerHTML = `<tr><td colspan="7">Aucune remise à corriger.</td></tr>`;
-      return;
-    }
-    tbody.innerHTML = "";
-    rows.forEach(d => {
-      const tr = document.createElement("tr");
-      [d.devoirTitre, d.classeNom, d.etudiantNom].forEach(value => {
-        const td = document.createElement("td");
-        td.textContent = value || "";
-        tr.appendChild(td);
-      });
-      let td = document.createElement("td");
-      if(d.fichier){
-        const a = document.createElement("a");
-        a.href = d.fichier;
-        a.target = "_blank";
-        a.rel = "noopener";
-        a.textContent = "📎 Ouvrir";
-        td.appendChild(a);
-      } else {
-        td.textContent = "Aucun fichier";
-      }
-      tr.appendChild(td);
 
-      td = document.createElement("td");
-      const note = document.createElement("input");
-      note.className = "note-input";
-      note.type = "number";
-      note.min = "0";
-      note.max = "100";
-      note.step = "0.01";
-      note.value = d.note == null ? "" : d.note;
-      td.appendChild(note);
-      tr.appendChild(td);
+try{
 
-      td = document.createElement("td");
-      const comment = document.createElement("textarea");
-      comment.className = "comment-input";
-      comment.rows = 2;
-      comment.placeholder = "Commentaire";
-      comment.value = d.correctionCommentaire || "";
-      td.appendChild(comment);
-      tr.appendChild(td);
+const devoirSnap=
+await getDoc(
+doc(db,"devoirs",devoirId)
+);
 
-      td = document.createElement("td");
-      const save = document.createElement("button");
-      save.className = "btn btn-green";
-      save.textContent = "💾 Enregistrer";
-      save.onclick = async () => {
-        const value = note.value.trim();
-        if(value === ""){
-          showToast("Entrez une note entre 0 et 100.");
-          return;
-        }
-        const numeric = Number(value);
-        if(Number.isNaN(numeric) || numeric < 0 || numeric > 100){
-          showToast("La note doit être entre 0 et 100.");
-          return;
-        }
-        try {
-          const correctionCommentaire = comment.value.trim();
-          await updateDoc(doc(db, "remises", d.id), {
-            note: numeric,
-            correctionCommentaire,
-            statut: "corrige",
-            correcteurUid: currentUser.uid,
-            correctedAt: serverTimestamp(),
-            updatedAt: serverTimestamp()
-          });
 
-          const resultRef = doc(db, "resultats", d.id);
-          const resultData = {
-            etudiantUid: d.etudiantUid,
-            etudiantNom: d.etudiantNom || "",
-            devoirId: d.devoirId || "",
-            devoirTitre: d.devoirTitre || "",
-            filiereId: d.filiereId || "",
-            filiereNom: d.filiereNom || "",
-            classeId: d.classeId || "",
-            classeNom: d.classeNom || "",
-            matiereId: d.matiereId || "",
-            matiereNom: d.matiereNom || "",
-            professeurUid: d.professeurUid || currentUser.uid,
-            professeurNom: d.professeurNom || currentUserData.name || "",
-            note: numeric,
-            commentaire: correctionCommentaire,
-            remiseId: d.id,
-            updatedAt: serverTimestamp()
-          };
+if(!devoirSnap.exists()){
 
-          const resultSnap = await getDoc(resultRef);
-          if(resultSnap.exists()){
-            await updateDoc(resultRef, resultData);
-          } else {
-            await setDoc(resultRef, { ...resultData, createdAt: serverTimestamp() });
-          }
+toast("Devoir introuvable.");
 
-          showToast("Correction et note enregistrées.");
-          await refreshCorrections();
-          await loadDashboard();
-        } catch(error){
-          console.error(error);
-          showToast("Impossible d'enregistrer la correction.");
-        }
-      };
-      td.appendChild(save);
-      tr.appendChild(td);
-      tbody.appendChild(tr);
-    });
-  } catch(error){
-    console.error(error);
-    tbody.innerHTML = `<tr><td colspan="7">Impossible de charger les corrections.</td></tr>`;
-  }
+return;
+
 }
 
-window.correctRemise = function(id, data){
-  showPage("corrections", document.getElementById("correctionsMenu"));
+
+const d=
+devoirSnap.data()||{};
+
+
+openModal(
+"Remettre mon travail",
+`
+
+<form
+onsubmit="saveSubmission(event,'${devoirId}')">
+
+<div class="role-box">
+
+<strong>
+Devoir :
+</strong>
+
+${esc(d.titre||"—")}
+
+<br>
+
+<strong>
+Matière :
+</strong>
+
+${esc(d.matiereNom||"—")}
+
+<br>
+
+<strong>
+Date limite :
+</strong>
+
+${esc(d.dateLimite||"—")}
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+Votre réponse / travail
+</label>
+
+<textarea
+id="submissionText"
+rows="8"
+required
+placeholder="Écrivez votre réponse ou collez votre travail ici...">
+</textarea>
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+Lien du fichier (facultatif)
+</label>
+
+<input
+id="submissionFile"
+type="url"
+placeholder="https://...">
+
+</div>
+
+
+<button
+type="submit"
+class="btn btn-primary"
+style="width:100%">
+
+📤 Envoyer le travail
+
+</button>
+
+</form>
+`
+);
+
+}catch(error){
+
+console.error(error);
+
+toast(
+"Impossible de préparer la remise."
+);
+
+}
+
 };
+
+
+window.saveSubmission=
+async function(event,devoirId){
+
+event.preventDefault();
+
+
+if(!isStudent())return;
+
+
+const texte=
+$("submissionText")?.value.trim()||"";
+
+const fichier=
+$("submissionFile")?.value.trim()||"";
+
+
+if(!texte){
+
+toast(
+"Veuillez écrire votre travail."
+);
+
+return;
+
+}
+
+
+try{
+
+const devoirSnap=
+await getDoc(
+doc(db,"devoirs",devoirId)
+);
+
+
+if(!devoirSnap.exists()){
+
+toast("Devoir introuvable.");
+
+return;
+
+}
+
+
+const devoir=
+devoirSnap.data()||{};
+
+
+let studentName=
+currentProfile?.nom||
+currentUser.displayName||
+currentUser.email||
+"Étudiant";
+
+
+const existing=
+await getDocs(
+query(
+collection(db,"remises"),
+where(
+"devoirId",
+"==",
+devoirId
+),
+where(
+"etudiantUid",
+"==",
+currentUser.uid
+)
+)
+);
+
+
+if(!existing.empty){
+
+toast(
+"Vous avez déjà remis ce devoir."
+);
+
+return;
+
+}
+
+
+await addDoc(
+collection(db,"remises"),
+{
+
+devoirId,
+
+devoirTitre:
+devoir.titre||"",
+
+professeurUid:
+devoir.professeurUid||"",
+
+professeurNom:
+devoir.professeurNom||"",
+
+etudiantUid:
+currentUser.uid,
+
+etudiantNom:
+studentName,
+
+etudiantEmail:
+currentUser.email||"",
+
+texte,
+
+fichier,
+
+dateRemise:
+new Date().toISOString(),
+
+statut:
+"remis",
+
+createdAt:
+serverTimestamp(),
+
+updatedAt:
+serverTimestamp()
+
+}
+);
+
+
+closeModal();
+
+toast(
+"Travail remis avec succès."
+);
+
+await loadSubmissions();
+
+}catch(error){
+
+console.error(error);
+
+toast(
+"Impossible d'envoyer le travail."
+);
+
+}
+
+};
+
+
+/* =========================================================
+   VOIR UNE REMISE
+   ========================================================= */
+
+window.viewSubmission=
+async function(id){
+
+try{
+
+const snap=
+await getDoc(
+doc(db,"remises",id)
+);
+
+if(!snap.exists()){
+
+toast("Remise introuvable.");
+
+return;
+
+}
+
+
+const d=
+snap.data()||{};
+
+
+openModal(
+"Travail remis",
+`
+
+<div class="role-box">
+
+<strong>
+Devoir :
+</strong>
+
+${esc(d.devoirTitre||"—")}
+
+<br>
+
+<strong>
+Étudiant :
+</strong>
+
+${esc(d.etudiantNom||"—")}
+
+<br>
+
+<strong>
+Date :
+</strong>
+
+${esc(d.dateRemise||"—")}
+
+<br>
+
+<strong>
+Statut :
+</strong>
+
+${esc(d.statut||"—")}
+
+</div>
+
+
+<h3>Travail</h3>
+
+<p
+style="white-space:pre-wrap;line-height:1.7;margin-top:10px">
+
+${esc(d.texte||"Aucun texte.")}
+
+</p>
+
+
+${
+d.fichier
+?
+`
+<p style="margin-top:15px">
+
+<a
+href="${esc(d.fichier)}"
+target="_blank"
+rel="noopener"
+class="btn btn-primary">
+
+🔗 Ouvrir le fichier
+
+</a>
+
+</p>
+`
+:""
+}
+
+
+${
+d.note!==undefined
+?
+`
+<div
+style="margin-top:20px"
+class="role-box">
+
+<strong>Note :</strong>
+
+<span class="note20">
+
+${esc(d.note)}
+
+</span>
+
+/100
+
+${
+d.commentaire
+?
+`
+<br><br>
+<strong>Commentaire :</strong><br>
+${esc(d.commentaire)}
+`
+:""
+}
+
+</div>
+`
+:""
+}
+
+`
+);
+
+}catch(error){
+
+console.error(error);
+
+toast(
+"Impossible d'afficher la remise."
+);
+
+}
+
+};
+
+
+/* =========================================================
+   CORRECTION
+   ========================================================= */
+
+window.openCorrectionForm=
+async function(remiseId){
+
+if(!isAdmin() && !isProfessor()){
+
+toast("Accès refusé.");
+
+return;
+
+}
+
+
+try{
+
+const snap=
+await getDoc(
+doc(db,"remises",remiseId)
+);
+
+
+if(!snap.exists()){
+
+toast("Remise introuvable.");
+
+return;
+
+}
+
+
+const d=
+snap.data()||{};
+
+
+openModal(
+"Corriger le travail",
+`
+
+<form
+onsubmit="saveCorrection(event,'${remiseId}')">
+
+<div class="role-box">
+
+<strong>
+Étudiant :
+</strong>
+
+${esc(d.etudiantNom||"—")}
+
+<br>
+
+<strong>
+Devoir :
+</strong>
+
+${esc(d.devoirTitre||"—")}
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+Note / 100
+</label>
+
+<input
+id="correctionNote"
+type="number"
+min="0"
+max="100"
+step="0.01"
+required
+value="${esc(d.note??"")}">
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+Commentaire / appréciation
+</label>
+
+<textarea
+id="correctionComment"
+rows="6"
+placeholder="Commentaire du professeur...">${esc(d.commentaire||"")}</textarea>
+
+</div>
+
+
+<button
+type="submit"
+class="btn btn-primary"
+style="width:100%">
+
+💾 Enregistrer la correction
+
+</button>
+
+</form>
+`
+);
+
+}catch(error){
+
+console.error(error);
+
+toast(
+"Impossible de charger la remise."
+);
+
+}
+
+};
+
+
+window.saveCorrection=
+async function(event,remiseId){
+
+event.preventDefault();
+
+
+if(!isAdmin() && !isProfessor())return;
+
+
+const note=
+Number(
+$("correctionNote")?.value
+);
+
+
+const commentaire=
+$("correctionComment")?.value.trim()||"";
+
+
+if(
+Number.isNaN(note) ||
+note<0 ||
+note>100
+){
+
+toast(
+"La note doit être comprise entre 0 et 100."
+);
+
+return;
+
+}
+
+
+try{
+
+const remiseRef=
+doc(db,"remises",remiseId);
+
+const remiseSnap=
+await getDoc(remiseRef);
+
+
+if(!remiseSnap.exists()){
+
+toast("Remise introuvable.");
+
+return;
+
+}
+
+
+const remise=
+remiseSnap.data()||{};
+
+
+if(
+isProfessor() &&
+!isAdmin() &&
+remise.professeurUid!==currentUser.uid
+){
+
+toast(
+"Vous ne pouvez pas corriger ce travail."
+);
+
+return;
+
+}
+
+
+await updateDoc(
+remiseRef,
+{
+
+note,
+
+commentaire,
+
+statut:
+"corrige",
+
+corrigePar:
+currentUser.uid,
+
+corrigeLe:
+serverTimestamp(),
+
+updatedAt:
+serverTimestamp()
+
+}
+);
+
+
+/*
+ * Enregistrer également le résultat.
+ */
+
+await addDoc(
+collection(db,"resultats"),
+{
+
+devoirId:
+remise.devoirId||"",
+
+remiseId,
+
+devoirTitre:
+remise.devoirTitre||"",
+
+etudiantUid:
+remise.etudiantUid||"",
+
+etudiantNom:
+remise.etudiantNom||"",
+
+professeurUid:
+remise.professeurUid||
+currentUser.uid,
+
+professeurNom:
+remise.professeurNom||
+currentProfile?.nom||
+currentUser.email||
+"",
+
+note,
+
+commentaire,
+
+createdAt:
+serverTimestamp(),
+
+updatedAt:
+serverTimestamp()
+
+}
+);
+
+
+closeModal();
+
+toast(
+"Correction enregistrée avec succès."
+);
+
+await loadSubmissions();
+
+}catch(error){
+
+console.error(error);
+
+toast(
+"Impossible d'enregistrer la correction."
+);
+
+}
+
+};
+
 
 /* =========================================================
    RESULTATS
    ========================================================= */
-async function renderResultats(){
-  const container = document.getElementById("page-resultats");
-  const role = currentUserData?.role;
-  container.innerHTML = `
-    <div class="page-title">
-      <h2>📊 Résultats</h2>
-      <p>${role === "eleve" ? "Vos notes et résultats." : "Gestion des résultats et des notes sur 100."}</p>
-    </div>
-    <div class="panel">
-      <h3>📊 Liste des résultats</h3>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr><th>Étudiant</th><th>Filière</th><th>Classe</th><th>Devoir</th><th>Matière</th><th>Note</th><th>Commentaire</th></tr>
-          </thead>
-          <tbody id="resultatsTable"><tr><td colspan="7">Chargement...</td></tr></tbody>
-        </table>
-      </div>
-    </div>
-  `;
-  await refreshResultats();
+
+async function loadResults(){
+
+const page=$("page-resultats");
+
+if(!page)return;
+
+page.innerHTML=`
+
+<div class="page-title">
+
+<div>
+
+<h2>📊 Résultats</h2>
+
+<p>
+Notes et résultats des étudiants.
+</p>
+
+</div>
+
+</div>
+
+
+<div class="panel">
+
+<div class="panel-header">
+
+<h3>Résultats</h3>
+
+<input
+class="search"
+placeholder="Rechercher..."
+oninput="filterTable(this)">
+
+</div>
+
+
+<div
+id="resultsTable"
+class="table-wrap">
+
+<div class="empty">
+⏳ Chargement...
+</div>
+
+</div>
+
+</div>
+`;
+
+
+try{
+
+let snap;
+
+if(isStudent()){
+
+snap=await getDocs(
+query(
+collection(db,"resultats"),
+where(
+"etudiantUid",
+"==",
+currentUser.uid
+)
+)
+);
+
+}else{
+
+snap=await getDocs(
+collection(db,"resultats")
+);
+
 }
 
-async function getVisibleResults(){
-  if(currentUserData?.isAdmin){
-    const snap = await getDocs(collection(db, "resultats"));
-    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
-  }
-  if(currentUserData?.role === "eleve"){
-    const snap = await getDocs(query(collection(db, "resultats"), where("etudiantUid", "==", currentUser.uid)));
-    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
-  }
-  const snap = await getDocs(query(collection(db, "resultats"), where("professeurUid", "==", currentUser.uid)));
-  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+if(snap.empty){
+
+$("resultsTable").innerHTML=`
+
+<div class="empty">
+
+<div style="font-size:35px">📊</div>
+
+<p>
+Aucun résultat disponible.
+</p>
+
+</div>
+`;
+
+return;
+
 }
 
-async function refreshResultats(){
-  const tbody = document.getElementById("resultatsTable");
-  if(!tbody) return;
-  try {
-    const rows = await getVisibleResults();
-    if(!rows.length){
-      tbody.innerHTML = `<tr><td colspan="7">Aucun résultat disponible.</td></tr>`;
-      return;
-    }
-    tbody.innerHTML = "";
-    rows.forEach(d => {
-      const tr = document.createElement("tr");
-      [d.etudiantNom, d.filiereNom, d.classeNom, d.devoirTitre, d.matiereNom, d.note != null ? `${d.note}/100` : "Non noté", d.commentaire || "Aucun commentaire"].forEach(value => {
-        const td = document.createElement("td");
-        td.textContent = value ?? "";
-        tr.appendChild(td);
-      });
-      tbody.appendChild(tr);
-    });
-  } catch(error){
-    console.error(error);
-    tbody.innerHTML = `<tr><td colspan="7">Impossible de charger les résultats.</td></tr>`;
-  }
+
+let rows="";
+
+let total=0;
+let count=0;
+
+
+snap.forEach(ds=>{
+
+const d=ds.data()||{};
+
+const note=
+Number(d.note||0);
+
+total+=note;
+count++;
+
+
+rows+=`
+
+<tr>
+
+<td>
+${esc(d.etudiantNom||"—")}
+</td>
+
+<td>
+${esc(d.devoirTitre||"—")}
+</td>
+
+<td>
+
+<span class="note20">
+
+${esc(note)}
+
+</span>
+
+/100
+
+</td>
+
+<td>
+${esc(d.professeurNom||"—")}
+</td>
+
+<td>
+${esc(d.commentaire||"—")}
+</td>
+
+</tr>
+`;
+
+});
+
+
+const moyenne=
+count?
+(total/count).toFixed(2):
+"0";
+
+
+$("resultsTable").innerHTML=`
+
+<div
+class="role-box"
+style="margin-bottom:15px">
+
+<strong>
+Moyenne :
+</strong>
+
+<span class="note20">
+${esc(moyenne)}
+</span>
+
+/100
+
+</div>
+
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Étudiant</th>
+<th>Devoir</th>
+<th>Note</th>
+<th>Professeur</th>
+<th>Commentaire</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+${rows}
+
+</tbody>
+
+</table>
+`;
+
+}catch(error){
+
+console.error(error);
+
+$("resultsTable").innerHTML=`
+
+<div class="empty">
+Impossible de charger les résultats.
+</div>
+`;
+
 }
+
+}
+  /* =========================================================
+   BLOC 4/4 — STATISTIQUES, UTILISATEURS, CONFIGURATION,
+   AUTHENTIFICATION, LANGUE, PWA ET FINALISATION
+   ========================================================= */
+
 
 /* =========================================================
-   USERS
+   STATISTIQUES
    ========================================================= */
-async function renderUsers(){
-  const container = document.getElementById("page-utilisateurs");
-  container.innerHTML = `
-    <div class="page-title">
-      <h2>👥 Gestion des utilisateurs</h2>
-      <p>L'administrateur accepte les comptes et donne les rôles.</p>
-    </div>
-    <div class="panel">
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Nom</th><th>E-mail</th><th>Rôle</th><th>Statut</th><th>Actions</th></tr></thead>
-          <tbody id="usersTable"><tr><td colspan="5">Chargement...</td></tr></tbody>
-        </table>
-      </div>
-    </div>
-  `;
-  try {
-    const snap = await getDocs(collection(db, "users"));
-    const tbody = document.getElementById("usersTable");
-    tbody.innerHTML = "";
-    snap.forEach(item => {
-      const data = item.data();
-      const tr = document.createElement("tr");
 
-      let td = document.createElement("td");
-      td.textContent = data.name || "";
-      tr.appendChild(td);
+async function loadStatistics(){
 
-      td = document.createElement("td");
-      td.textContent = data.email || "";
-      tr.appendChild(td);
+const page=$("page-statistiques");
 
-      td = document.createElement("td");
-      td.textContent = data.role || "eleve";
-      tr.appendChild(td);
+if(!page)return;
 
-      td = document.createElement("td");
-      const badge = document.createElement("span");
-      badge.className = "badge " + (data.status === "accepted" ? "badge-green" : "badge-orange");
-      badge.textContent = data.status || "attente";
-      td.appendChild(badge);
-      tr.appendChild(td);
+page.innerHTML=`
 
-      td = document.createElement("td");
-      const actions = document.createElement("div");
-      actions.className = "action-group";
+<div class="page-title">
 
-      if(data.status !== "accepted"){
-        const accept = document.createElement("button");
-        accept.className = "btn btn-green";
-        accept.textContent = "Accepter";
-        accept.onclick = async () => {
-          try {
-            await updateDoc(doc(db, "users", item.id), { status: "accepted" });
-            showToast("Utilisateur accepté.");
-            await renderUsers();
-          } catch(error){
-            console.error(error);
-            showToast("Impossible d'accepter cet utilisateur.");
-          }
-        };
-        actions.appendChild(accept);
-      }
+<div>
 
-      const roleBtn = document.createElement("button");
-      roleBtn.className = "btn";
-      roleBtn.textContent = "Modifier rôle";
-      roleBtn.onclick = () => changeUserRole(item.id, data.role || "eleve");
-      actions.appendChild(roleBtn);
+<h2>📈 Statistiques</h2>
 
-      if(item.id !== currentUser.uid){
-        const del = document.createElement("button");
-        del.className = "btn btn-red";
-        del.textContent = "Supprimer";
-        del.onclick = async () => {
-          if(!confirm("Supprimer ce profil ?")) return;
-          try {
-            await deleteDoc(doc(db, "users", item.id));
-            showToast("Profil supprimé.");
-            await renderUsers();
-          } catch(error){
-            console.error(error);
-            showToast("Impossible de supprimer le profil.");
-          }
-        };
-        actions.appendChild(del);
-      }
+<p>
+Vue générale des données de la plateforme.
+</p>
 
-      td.appendChild(actions);
-      tr.appendChild(td);
-      tbody.appendChild(tr);
-    });
-  } catch(error){
-    console.error(error);
-    showToast("Impossible de charger les utilisateurs.");
-  }
+</div>
+
+</div>
+
+
+<div
+id="statisticsCards"
+class="stats">
+
+<div class="stat-card">
+<div class="stat-icon">👨‍🎓</div>
+<div
+id="statisticsStudents"
+class="number">
+0
+</div>
+<div class="label">
+Étudiants
+</div>
+</div>
+
+<div class="stat-card">
+<div class="stat-icon">👨‍🏫</div>
+<div
+id="statisticsProfessors"
+class="number">
+0
+</div>
+<div class="label">
+Professeurs
+</div>
+</div>
+
+<div class="stat-card">
+<div class="stat-icon">🏫</div>
+<div
+id="statisticsClasses"
+class="number">
+0
+</div>
+<div class="label">
+Classes
+</div>
+</div>
+
+<div class="stat-card">
+<div class="stat-icon">📚</div>
+<div
+id="statisticsSubjects"
+class="number">
+0
+</div>
+<div class="label">
+Matières
+</div>
+</div>
+
+<div class="stat-card">
+<div class="stat-icon">📝</div>
+<div
+id="statisticsAssignments"
+class="number">
+0
+</div>
+<div class="label">
+Devoirs
+</div>
+</div>
+
+<div class="stat-card">
+<div class="stat-icon">📤</div>
+<div
+id="statisticsSubmissions"
+class="number">
+0
+</div>
+<div class="label">
+Remises
+</div>
+</div>
+
+<div class="stat-card">
+<div class="stat-icon">📊</div>
+<div
+id="statisticsResults"
+class="number">
+0
+</div>
+<div class="label">
+Résultats
+</div>
+</div>
+
+<div class="stat-card">
+<div class="stat-icon">🔗</div>
+<div
+id="statisticsAffectations"
+class="number">
+0
+</div>
+<div class="label">
+Affectations
+</div>
+</div>
+
+</div>
+
+
+<div class="panel">
+
+<h3>
+Résumé académique
+</h3>
+
+<p
+id="statisticsSummary"
+style="margin-top:12px;color:var(--muted);line-height:1.7">
+
+Chargement des statistiques...
+
+</p>
+
+</div>
+`;
+
+
+try{
+
+const [
+students,
+professors,
+classes,
+subjects,
+assignments,
+submissions,
+results,
+affectations
+]=await Promise.all([
+
+getCount("etudiants"),
+getCount("professeurs"),
+getCount("classes"),
+getCount("matieres"),
+getCount("devoirs"),
+getCount("remises"),
+getCount("resultats"),
+getCount("affectations")
+
+]);
+
+
+$("statisticsStudents").textContent=
+students;
+
+$("statisticsProfessors").textContent=
+professors;
+
+$("statisticsClasses").textContent=
+classes;
+
+$("statisticsSubjects").textContent=
+subjects;
+
+$("statisticsAssignments").textContent=
+assignments;
+
+$("statisticsSubmissions").textContent=
+submissions;
+
+$("statisticsResults").textContent=
+results;
+
+$("statisticsAffectations").textContent=
+affectations;
+
+
+$("statisticsSummary").textContent=
+`La plateforme contient actuellement ${students} étudiant(s),
+${professors} professeur(s), ${classes} classe(s),
+${subjects} matière(s), ${assignments} devoir(s),
+${submissions} remise(s), ${results} résultat(s)
+et ${affectations} affectation(s).`;
+
+}catch(error){
+
+console.error(error);
+
+$("statisticsSummary").textContent=
+"Les statistiques ne sont pas disponibles pour le moment.";
+
 }
 
-async function changeUserRole(uid, oldRole){
-  const value = prompt("Élève / Professeur / Administrateur\n\nadministrateur\nprofesseur\neleve", oldRole);
-  if(value === null) return;
-  let role = value.trim().toLowerCase();
-  if(role === "prof") role = "professeur";
-  if(role === "élève") role = "eleve";
-
-  const validRoles = ["administrateur", "professeur", "eleve"];
-  if(!validRoles.includes(role)){
-    showToast("Rôle invalide.");
-    return;
-  }
-  try {
-    await updateDoc(doc(db, "users", uid), { role: role });
-    showToast("Rôle modifié.");
-    await renderUsers();
-  } catch(error){
-    console.error(error);
-    showToast("Impossible de modifier le rôle.");
-  }
 }
 
-async function countCollection(name){
-  try {
-    const snap = await getDocs(collection(db, name));
-    return snap.size;
-  } catch(error){
-    return 0;
-  }
+
+/* =========================================================
+   UTILISATEURS
+   ========================================================= */
+
+async function loadUsers(){
+
+const page=$("page-users");
+
+if(!page)return;
+
+
+if(!isAdmin()){
+
+page.innerHTML=`
+
+<div class="panel">
+
+<div class="empty">
+
+🔒
+
+<h3 style="margin-top:10px">
+Accès réservé à l'administrateur
+</h3>
+
+</div>
+
+</div>
+`;
+
+return;
+
 }
 
-async function loadDashboard(){
-  const [etudiants, professeurs, classes, matieres, devoirs, remises] = await Promise.all([
-    countCollection("etudiants"),
-    countCollection("professeurs"),
-    countCollection("classes"),
-    countCollection("matieres"),
-    countCollection("devoirs"),
-    countCollection("remises")
-  ]);
 
-  const elements = { statEtudiants: etudiants, statProfesseurs: professeurs, statClasses: classes, statMatieres: matieres, statDevoirs: devoirs, statRemises: remises };
-  Object.entries(elements).forEach(([id, value]) => {
-    const el = document.getElementById(id);
-    if(el) el.textContent = value;
-  });
-  await renderDashboardAssignment();
+page.innerHTML=`
+
+<div class="page-title">
+
+<div>
+
+<h2>👤 Utilisateurs</h2>
+
+<p>
+Gestion des comptes et validation des utilisateurs.
+</p>
+
+</div>
+
+</div>
+
+
+<div class="panel">
+
+<div class="panel-header">
+
+<h3>
+Comptes utilisateurs
+</h3>
+
+<input
+class="search"
+placeholder="Rechercher..."
+oninput="filterTable(this)">
+
+</div>
+
+
+<div
+id="usersTable"
+class="table-wrap">
+
+<div class="empty">
+⏳ Chargement...
+</div>
+
+</div>
+
+</div>
+`;
+
+
+try{
+
+const snap=
+await getDocs(
+collection(db,"users")
+);
+
+
+if(snap.empty){
+
+$("usersTable").innerHTML=`
+
+<div class="empty">
+
+Aucun utilisateur enregistré.
+
+</div>
+`;
+
+return;
+
 }
 
-async function renderDashboardAssignment(){
-  const box = document.getElementById("dashboardAssignmentInfo");
-  if(!box) return;
-  try {
-    if(currentUserData?.isAdmin){
-      box.innerHTML = `<div class="info-box">👑 Vous êtes administrateur.</div>`;
-      return;
-    }
-    if(currentUserData?.role === "professeur"){
-      const snap = await getDocs(query(collection(db, "affectations"), where("professeurUid", "==", currentUser.uid)));
-      if(snap.empty){
-        box.innerHTML = `<div class="warning-box">Vous n'avez encore aucune classe ou matière affectée.</div>`;
-        return;
-      }
-      box.innerHTML = `
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Filière</th><th>Classe</th><th>Matière</th></tr></thead>
-            <tbody>
-              ${snap.docs.map(x => { const d = x.data(); return `<tr><td>${escapeHtml(d.filiereNom)}</td><td>${escapeHtml(d.classeNom)}</td><td>${escapeHtml(d.matiereNom)}</td></tr>`; }).join("")}
-            </tbody>
-          </table>
-        </div>
-      `;
-      return;
-    }
-    if(currentUserData?.role === "eleve"){
-      const ins = await getStudentInscription();
-      if(!ins){
-        box.innerHTML = `<div class="warning-box">L'administrateur ne vous a pas encore affecté à une classe.</div>`;
-        return;
-      }
-      box.innerHTML = `<div class="info-box">🎓 <strong>Votre classe :</strong> ${escapeHtml(ins.classeNom)}</div>`;
-    }
-  } catch(error){
-    box.textContent = "Impossible de charger l'affectation.";
-  }
+
+let rows="";
+
+
+snap.forEach(ds=>{
+
+const d=
+ds.data()||{};
+
+const role=
+d.role||
+"eleve";
+
+const status=
+d.status||
+"attente";
+
+
+let badge="";
+
+if(status==="accepted"){
+
+badge=
+`<span class="badge badge-success">
+Accepté
+</span>`;
+
+}else if(status==="refuse" || status==="refusé"){
+
+badge=
+`<span class="badge badge-danger">
+Refusé
+</span>`;
+
+}else{
+
+badge=
+`<span class="badge badge-warning">
+En attente
+</span>`;
+
 }
 
-async function renderStatistics(){
-  const container = document.getElementById("page-statistiques");
-  container.innerHTML = `
-    <div class="page-title"><h2>📈 Statistiques</h2><p>Vue générale.</p></div>
-    <div class="stats">
-      <div class="stat"><div class="stat-icon">🎓</div><div class="stat-title">Étudiants</div><div id="s1" class="stat-number">0</div></div>
-      <div class="stat"><div class="stat-icon">👨‍🏫</div><div class="stat-title">Professeurs</div><div id="s2" class="stat-number">0</div></div>
-      <div class="stat"><div class="stat-icon">🏫</div><div class="stat-title">Classes</div><div id="s3" class="stat-number">0</div></div>
-      <div class="stat"><div class="stat-icon">🔗</div><div class="stat-title">Affectations</div><div id="s4" class="stat-number">0</div></div>
-      <div class="stat"><div class="stat-icon">📝</div><div class="stat-title">Devoirs</div><div id="s5" class="stat-number">0</div></div>
-      <div class="stat"><div class="stat-icon">📤</div><div class="stat-title">Remises</div><div id="s6" class="stat-number">0</div></div>
-    </div>
-  `;
-  document.getElementById("s1").textContent = await countCollection("etudiants");
-  document.getElementById("s2").textContent = await countCollection("professeurs");
-  document.getElementById("s3").textContent = await countCollection("classes");
-  document.getElementById("s4").textContent = await countCollection("affectations");
-  document.getElementById("s5").textContent = await countCollection("devoirs");
-  document.getElementById("s6").textContent = await countCollection("remises");
+
+rows+=`
+
+<tr>
+
+<td>
+${esc(d.nom||d.displayName||"—")}
+</td>
+
+<td>
+${esc(d.email||"—")}
+</td>
+
+<td>
+${esc(role)}
+</td>
+
+<td>
+${badge}
+</td>
+
+<td>
+<small>
+${esc(d.uid||ds.id)}
+</small>
+</td>
+
+<td>
+
+<div class="actions">
+
+${
+status!=="accepted"
+?
+`
+<button
+class="btn btn-success"
+onclick="acceptUser('${ds.id}')">
+✓ Accepter
+</button>
+`
+:
+""
 }
 
-function renderBackup(){
-  const container = document.getElementById("page-sauvegarde");
-  container.innerHTML = `
-    <div class="page-title"><h2>💾 Données / Sauvegarde</h2><p>Exporter les données.</p></div>
-    <div class="panel"><button class="btn btn-green" onclick="exportData()">💾 Télécharger la sauvegarde</button></div>
-  `;
+
+${
+status!=="refuse"
+?
+`
+<button
+class="btn btn-warning"
+onclick="refuseUser('${ds.id}')">
+✕ Refuser
+</button>
+`
+:
+""
 }
 
-window.exportData = async function(){
-  if(!currentUserData?.isAdmin) return;
-  const names = ["users","etudiants","professeurs","classes","departements","filieres","matieres","cours","affectations","inscriptions","devoirs","remises","resultats"];
-  const backup = {};
-  for(const name of names){
-    try {
-      const snap = await getDocs(collection(db, name));
-      backup[name] = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    } catch(error){
-      backup[name] = [];
-    }
-  }
-  const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "sauvegarde-centre-formation-le-pedagogue.json";
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
-  showToast("Sauvegarde téléchargée.");
+
+<button
+class="btn btn-light"
+onclick="changeUserRole('${ds.id}','${esc(role)}')">
+⚙️ Rôle
+</button>
+
+
+<button
+class="btn btn-danger"
+onclick="deleteUser('${ds.id}')">
+🗑️ Supprimer
+</button>
+
+</div>
+
+</td>
+
+</tr>
+`;
+
+});
+
+
+$("usersTable").innerHTML=`
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Nom</th>
+<th>Email</th>
+<th>Rôle</th>
+<th>Statut</th>
+<th>UID</th>
+<th>Actions</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+${rows}
+
+</tbody>
+
+</table>
+`;
+
+}catch(error){
+
+console.error(error);
+
+$("usersTable").innerHTML=`
+
+<div class="empty">
+
+Impossible de charger les utilisateurs.
+
+</div>
+`;
+
+}
+
+}
+
+
+/* =========================================================
+   ACCEPTER UTILISATEUR
+   ========================================================= */
+
+window.acceptUser=
+async function(id){
+
+if(!adminRequired())return;
+
+
+try{
+
+await updateDoc(
+doc(db,"users",id),
+{
+status:"accepted",
+updatedAt:serverTimestamp()
+}
+);
+
+
+toast(
+"Utilisateur accepté."
+);
+
+await loadUsers();
+await loadDashboard();
+
+}catch(error){
+
+console.error(error);
+
+toast(
+"Impossible d'accepter cet utilisateur."
+);
+
+}
+
 };
 
-window.changeLanguage = function(){
-  const value = document.getElementById("languageSelect").value;
-  localStorage.setItem("language", value);
-  const welcome = document.getElementById("welcomeText");
-  if(value === "ht"){
-    welcome.textContent = "Byenveni nan espas jesyon Centre de Formation Le Pédagogue.";
-  } else {
-    welcome.textContent = "Bienvenue dans votre espace de gestion.";
-  }
-};
 
-const savedLanguage = localStorage.getItem("language");
-if(savedLanguage){
-  document.getElementById("languageSelect").value = savedLanguage;
+/* =========================================================
+   REFUSER UTILISATEUR
+   ========================================================= */
+
+window.refuseUser=
+async function(id){
+
+if(!adminRequired())return;
+
+
+if(!confirm(
+"Voulez-vous vraiment refuser cet utilisateur ?"
+)){
+
+return;
+
 }
 
-window.toggleUserMenu = function(){
-  document.getElementById("userMenu").classList.remove("hidden");
-};
 
-window.closeUserMenu = function(){
-  document.getElementById("userMenu").classList.add("hidden");
-};
+try{
 
-function showToast(message){
-  const toast = document.getElementById("toast");
-  toast.textContent = message;
-  toast.classList.remove("hidden");
-  setTimeout(() => { toast.classList.add("hidden"); }, 3500);
+await updateDoc(
+doc(db,"users",id),
+{
+status:"refuse",
+updatedAt:serverTimestamp()
+}
+);
+
+
+toast(
+"Utilisateur refusé."
+);
+
+await loadUsers();
+await loadDashboard();
+
+}catch(error){
+
+console.error(error);
+
+toast(
+"Impossible de modifier le statut."
+);
+
 }
 
-function getFriendlyError(error){
-  const code = error?.code || "";
-  if(code.includes("email-already-in-use")) return "Cette adresse e-mail est déjà utilisée.";
-  if(code.includes("invalid-credential") || code.includes("wrong-password") || code.includes("user-not-found")) return "E-mail ou mot de passe incorrect.";
-  if(code.includes("permission-denied")) return "Accès refusé par les règles Firebase.";
-  return "Une erreur est survenue. Vérifiez les informations.";
+};
+
+
+/* =========================================================
+   MODIFIER ROLE
+   ========================================================= */
+
+window.changeUserRole=
+async function(id,currentRole){
+
+if(!adminRequired())return;
+
+
+const role=
+prompt(
+"Entrez le nouveau rôle :\nadministrateur / professeur / eleve",
+currentRole||"eleve"
+);
+
+
+if(role===null)return;
+
+
+const cleanRole=
+role.trim().toLowerCase();
+
+
+if(
+![
+"administrateur",
+"professeur",
+"eleve"
+].includes(cleanRole)
+){
+
+toast(
+"Rôle invalide."
+);
+
+return;
+
 }
+
+
+try{
+
+await updateDoc(
+doc(db,"users",id),
+{
+role:cleanRole,
+updatedAt:serverTimestamp()
+}
+);
+
+
+toast(
+"Rôle modifié avec succès."
+);
+
+await loadUsers();
+
+}catch(error){
+
+console.error(error);
+
+toast(
+"Impossible de modifier le rôle."
+);
+
+}
+
+};
+
+
+/* =========================================================
+   SUPPRIMER UTILISATEUR
+   ========================================================= */
+
+window.deleteUser=
+async function(id){
+
+if(!adminRequired())return;
+
+
+if(id===currentUser?.uid){
+
+toast(
+"Vous ne pouvez pas supprimer votre propre compte depuis cette page."
+);
+
+return;
+
+}
+
+
+if(!confirm(
+"Voulez-vous vraiment supprimer cet utilisateur ?"
+)){
+
+return;
+
+}
+
+
+try{
+
+await deleteDoc(
+doc(db,"users",id)
+);
+
+toast(
+"Utilisateur supprimé."
+);
+
+await loadUsers();
+await loadDashboard();
+
+}catch(error){
+
+console.error(error);
+
+toast(
+"Impossible de supprimer l'utilisateur."
+);
+
+}
+
+};
+
+
+/* =========================================================
+   CONFIGURATION / SAUVEGARDE
+   ========================================================= */
+
+function loadConfiguration(){
+
+const page=
+$("page-configuration");
+
+if(!page)return;
+
+
+if(!isAdmin()){
+
+page.innerHTML=`
+
+<div class="panel">
+
+<div class="empty">
+
+🔒
+
+<h3 style="margin-top:10px">
+Accès réservé à l'administrateur.
+</h3>
+
+</div>
+
+</div>
+`;
+
+return;
+
+}
+
+
+page.innerHTML=`
+
+<div class="page-title">
+
+<div>
+
+<h2>
+⚙️ Données / Sauvegarde
+</h2>
+
+<p>
+Outils de gestion et de sauvegarde des données.
+</p>
+
+</div>
+
+</div>
+
+
+<div class="card-grid">
+
+<div class="assignment-card">
+
+<h3>📊 Vérification des données</h3>
+
+<p>
+Consultez rapidement le nombre de documents
+présents dans les principales collections.
+</p>
+
+<button
+class="btn btn-primary"
+onclick="showPage('statistiques')">
+
+Voir les statistiques
+
+</button>
+
+</div>
+
+
+<div class="assignment-card">
+
+<h3>💾 Sauvegarde</h3>
+
+<p>
+Exporter une copie des données disponibles
+dans votre navigateur.
+</p>
+
+<button
+class="btn btn-primary"
+onclick="exportData()">
+
+⬇️ Exporter les données
+
+</button>
+
+</div>
+
+
+<div class="assignment-card">
+
+<h3>🔄 Actualiser</h3>
+
+<p>
+Actualiser les données affichées dans
+l'application.
+</p>
+
+<button
+class="btn btn-light"
+onclick="location.reload()">
+
+🔄 Actualiser l'application
+
+</button>
+
+</div>
+
+</div>
+`;
+
+}
+
+
+window.exportData=
+async function(){
+
+if(!adminRequired())return;
+
+
+const collections=[
+"users",
+"etudiants",
+"professeurs",
+"departements",
+"filieres",
+"classes",
+"matieres",
+"cours",
+"affectations",
+"inscriptions",
+"devoirs",
+"remises",
+"corrections",
+"resultats"
+];
+
+
+const backup={};
+
+try{
+
+for(const name of collections){
+
+const snap=
+await getDocs(
+collection(db,name)
+);
+
+backup[name]=
+snap.docs.map(
+d=>({
+id:d.id,
+...d.data()
+})
+);
+
+}
+
+
+const json=
+JSON.stringify(
+backup,
+null,
+2
+);
+
+
+const blob=
+new Blob(
+[json],
+{
+type:"application/json"
+}
+);
+
+
+const url=
+URL.createObjectURL(blob);
+
+
+const a=
+document.createElement("a");
+
+a.href=url;
+
+a.download=
+"centre-formation-le-pedagogue-sauvegarde.json";
+
+document.body.appendChild(a);
+
+a.click();
+
+a.remove();
+
+URL.revokeObjectURL(url);
+
+
+toast(
+"Sauvegarde générée avec succès."
+);
+
+}catch(error){
+
+console.error(error);
+
+toast(
+"Impossible de générer la sauvegarde."
+);
+
+}
+
+};
+
+
+/* =========================================================
+   LANGUE
+   ========================================================= */
+
+function changeLanguage(language){
+
+localStorage.setItem(
+"pedagogue_language",
+language
+);
+
+
+if(language==="ht"){
+
+toast(
+"Lang Kreyòl chwazi."
+);
+
+}else{
+
+toast(
+"Langue française sélectionnée."
+);
+
+}
+
+}
+
+
+window.changeLanguage=
+changeLanguage;
+
+
+function loadLanguage(){
+
+const saved=
+localStorage.getItem(
+"pedagogue_language"
+)||
+"fr";
+
+
+const selector=
+$("language");
+
+if(selector){
+
+selector.value=saved;
+
+}
+
+}
+
+
+/* =========================================================
+   INSTALLATION PWA
+   ========================================================= */
+
+window.addEventListener(
+"beforeinstallprompt",
+event=>{
+
+event.preventDefault();
+
+deferredPrompt=event;
+
+const btn=
+$("installBtn");
+
+if(btn){
+
+btn.classList.remove("hidden");
+
+}
+
+}
+);
+
+
+window.installApp=
+async function(){
+
+if(!deferredPrompt){
+
+toast(
+"L'installation n'est pas disponible pour le moment. Utilisez le menu du navigateur puis « Ajouter à l'écran d'accueil »."
+);
+
+return;
+
+}
+
+
+try{
+
+deferredPrompt.prompt();
+
+const result=
+await deferredPrompt.userChoice;
+
+if(result.outcome==="accepted"){
+
+toast(
+"Installation de l'application acceptée."
+);
+
+}else{
+
+toast(
+"Installation annulée."
+);
+
+}
+
+deferredPrompt=null;
+
+}catch(error){
+
+console.error(error);
+
+}
+
+};
+
+
+window.addEventListener(
+"appinstalled",
+()=>{
+
+deferredPrompt=null;
+
+const btn=
+$("installBtn");
+
+if(btn){
+
+btn.classList.add("hidden");
+
+}
+
+}
+);
+
+
+/* =========================================================
+   SERVICE WORKER
+   ========================================================= */
+
+if(
+"serviceWorker" in navigator
+){
+
+window.addEventListener(
+"load",
+()=>{
+
+navigator.serviceWorker
+.register("./service-worker.js")
+.then(
+()=>console.log(
+"Service Worker enregistré."
+)
+)
+.catch(
+error=>
+console.log(
+"Service Worker non disponible:",
+error
+)
+);
+
+}
+);
+
+}
+
+
+/* =========================================================
+   AUTHENTIFICATION
+   ========================================================= */
+
+onAuthStateChanged(
+auth,
+async user=>{
+
+if(!user){
+
+currentUser=null;
+currentProfile=null;
+
+$("authPage")
+.classList.remove("hidden");
+
+$("appPage")
+.classList.add("hidden");
+
+return;
+
+}
+
+
+try{
+
+currentUser=user;
+
+
+/*
+ * L'administrateur principal doit toujours
+ * être reconnu comme administrateur.
+ */
+
+if(
+user.email?.toLowerCase()===
+ADMIN_EMAIL
+){
+
+const adminRef=
+doc(db,"users",user.uid);
+
+const adminSnap=
+await getDoc(adminRef);
+
+
+if(adminSnap.exists()){
+
+await updateDoc(
+adminRef,
+{
+email:user.email,
+role:"administrateur",
+status:"accepted",
+uid:user.uid,
+updatedAt:serverTimestamp()
+}
+);
+
+currentProfile=
+await getUserProfile(user);
+
+}else{
+
+/*
+ * Création du profil administrateur.
+ *
+ * Le document est créé avec l'UID comme
+ * identifiant du document.
+ */
+
+try{
+
+await addDoc(
+collection(db,"users"),
+{
+uid:user.uid,
+email:user.email,
+nom:user.displayName||"Administrateur",
+role:"administrateur",
+status:"accepted",
+createdAt:serverTimestamp()
+}
+);
+
+}catch(createError){
+
+console.error(
+"Création profil admin:",
+createError
+);
+
+}
+
+currentProfile=
+await getUserProfile(user);
+
+}
+
+}else{
+
+currentProfile=
+await getUserProfile(user);
+
+}
+
+
+/*
+ * Si aucun profil n'existe, tenter de
+ * préparer le profil de l'utilisateur.
+ */
+
+if(!currentProfile){
+
+try{
+
+currentProfile=
+await ensureUserProfile(user);
+
+}catch(error){
+
+console.error(
+"Profil utilisateur:",
+error
+);
+
+}
+
+}
+
+
+/*
+ * Vérification du statut.
+ */
+
+if(
+!currentProfile
+){
+
+await signOut(auth);
+
+showAuthMessage(
+"Votre profil utilisateur n'est pas disponible. Veuillez contacter l'administrateur.",
+"error"
+);
+
+return;
+
+}
+
+
+if(
+!isAdmin() &&
+currentProfile.status!=="accepted"
+){
+
+$("authPage")
+.classList.remove("hidden");
+
+$("appPage")
+.classList.add("hidden");
+
+
+showAuthMessage(
+"Votre compte est encore en attente de validation par l'administrateur.",
+"info"
+);
+
+
+/*
+ * Ne pas laisser un utilisateur
+ * en attente entrer dans l'application.
+ */
+
+await signOut(auth);
+
+return;
+
+}
+
+
+/*
+ * Afficher l'application.
+ */
+
+$("authPage")
+.classList.add("hidden");
+
+$("appPage")
+.classList.remove("hidden");
+
+
+/*
+ * Nom utilisateur.
+ */
+
+const displayName=
+currentProfile.nom||
+user.displayName||
+user.email||
+"Utilisateur";
+
+
+$("userName").textContent=
+displayName;
+
+
+$("userAvatar").textContent=
+displayName
+.trim()
+.charAt(0)
+.toUpperCase()||
+"U";
+
+
+$("userRole").textContent=
+currentProfile.role||
+"Utilisateur";
+
+
+/*
+ * Menu administrateur.
+ */
+
+if(isAdmin()){
+
+$("adminNav")
+.classList.remove("hidden");
+
+}else{
+
+$("adminNav")
+.classList.add("hidden");
+
+}
+
+
+/*
+ * Charger la langue.
+ */
+
+loadLanguage();
+
+
+/*
+ * Charger le tableau de bord.
+ */
+
+await loadDashboard();
+
+
+}catch(error){
+
+console.error(
+"Erreur initialisation utilisateur:",
+error
+);
+
+$("authPage")
+.classList.remove("hidden");
+
+$("appPage")
+.classList.add("hidden");
+
+showAuthMessage(
+"Impossible de charger votre profil. Veuillez réessayer.",
+"error"
+);
+
+}
+
+}
+);
+
+
+/* =========================================================
+   INITIALISATION
+   ========================================================= */
+
+window.addEventListener(
+"DOMContentLoaded",
+()=>{
+
+loadLanguage();
+
+const installButton=
+$("installBtn");
+
+if(installButton){
+
+installButton.classList.add("hidden");
+
+}
+
+}
+);
+
+
+/* =========================================================
+   PROTECTION CONTRE LES ERREURS VISIBLES
+   ========================================================= */
+
+window.addEventListener(
+"error",
+event=>{
+
+console.error(
+"Erreur JavaScript:",
+event.error||event.message
+);
+
+});
+
+
+window.addEventListener(
+"unhandledrejection",
+event=>{
+
+console.error(
+"Erreur Promise:",
+event.reason
+);
+
+});
+
+
+/* =========================================================
+   FIN DU SCRIPT
+   ========================================================= */
+
 </script>
+
 </body>
 </html>
