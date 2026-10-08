@@ -3585,36 +3585,49 @@ async function changeUserRole(
   oldRole
 ){
 
-  const role =
+  const roleInput =
     prompt(
-      "Entrez le rôle : administrateur, professeur ou eleve",
-      oldRole
+      "Entrez le rôle :\n\n1 = administrateur\n2 = professeur\n3 = eleve\n\nOu ka ekri non rôle a tou.",
+      oldRole || "professeur"
     );
 
-
-  if(role === null)
+  if(roleInput === null)
     return;
 
+  const valeur =
+    roleInput
+      .trim()
+      .toLowerCase();
 
-  const allowed = [
-    "administrateur",
-    "professeur",
-    "eleve"
-  ];
+  const roleMap = {
+    "1": "administrateur",
+    "2": "professeur",
+    "3": "eleve",
 
+    "administrateur": "administrateur",
+    "admin": "administrateur",
 
-  if(
-    !allowed.includes(role)
-  ){
+    "professeur": "professeur",
+    "prof": "professeur",
+    "professeure": "professeur",
+
+    "eleve": "eleve",
+    "élève": "eleve",
+    "etudiant": "eleve",
+    "étudiant": "eleve"
+  };
+
+  const role =
+    roleMap[valeur];
+
+  if(!role){
 
     showToast(
-      "Rôle invalide."
+      "Rôle invalide. Chwazi administrateur, professeur oswa eleve."
     );
 
     return;
-
   }
-
 
   try{
 
@@ -3625,23 +3638,20 @@ async function changeUserRole(
         uid
       ),
       {
-        role:role
+        role: role,
+        status: "accepted"
       }
     );
 
-
     showToast(
-      "Rôle modifié."
+      "Rôle modifié avec succès."
     );
 
-
     await renderUsers();
-
 
   }catch(error){
 
     console.error(error);
-
 
     showToast(
       "Impossible de modifier le rôle."
