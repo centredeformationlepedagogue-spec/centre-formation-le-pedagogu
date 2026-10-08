@@ -686,21 +686,10 @@ Centre de Formation Le Pédagogue
 </div>
 
 <div class="top-actions">
-<div style="
-  display:block !important;
-  width:100% !important;
-  background:#ff0000 !important;
-  color:#ffffff !important;
-  padding:15px !important;
-  text-align:center !important;
-  position:relative !important;
-  z-index:999999 !important;
-">
-  🚨 TEST TOP ACTIONS
-</div>
+
 <button
 id="installBtn"
-class="install-btn"
+class="install-btn hidden"
 onclick="installApp()">
 📲 Installer
 </button>
@@ -744,7 +733,6 @@ Utilisateur
 
 <button
   type="button"
-  style="display:block !important; visibility:visible !important; opacity:1 !important; position:relative; z-index:9999;"
   class="btn btn-light"
   onclick="logoutUser()">
   🚪 Déconnexion
@@ -1634,23 +1622,37 @@ window.registerAccount=
 registerAccount;
 
 
-async function logoutUser(){
+window.logoutUser = async function(){
 
-try{
+  try{
 
-await signOut(auth);
+    await signOut(auth);
 
-}catch(error){
+    currentUser = null;
+    currentProfile = null;
 
-console.error(error);
+    $("appPage").classList.add("hidden");
+    $("authPage").classList.remove("hidden");
 
-}
+    showAuthMessage(
+      "Vous êtes déconnecté.",
+      "info"
+    );
 
-}
+  }catch(error){
 
+    console.error(
+      "Erreur déconnexion:",
+      error
+    );
 
-window.logoutUser=
-logoutUser;
+    toast(
+      "Impossible de vous déconnecter."
+    );
+
+  }
+
+};
 
 
 window.toggleSidebar=()=>{
@@ -2329,9 +2331,7 @@ toast(
 }
 
 };
-  /* =========================================================
-   BLOC 2/4 — MODULES ACADÉMIQUES
-   ========================================================= */
+
 
 async function loadStudents(){
 
@@ -2452,10 +2452,6 @@ await genericCollection(
 
 }
 
-
-/* =========================================================
-   AFFECTATIONS
-   ========================================================= */
 
 async function loadAffectationData(){
 
@@ -2745,10 +2741,6 @@ window.loadAffectations=
 loadAffectations;
 
 
-/* =========================================================
-   FORMULAIRE AFFECTATION
-   ========================================================= */
-
 window.openAffectationForm=
 async function(){
 
@@ -3012,18 +3004,9 @@ toast(
 };
 
 
-/* =========================================================
-   TROUVER LE COMPTE FIREBASE DU PROFESSEUR
-   ========================================================= */
-
 async function findProfessorFirebaseUser(
 professeur
 ){
-
-/*
- * 1. Chercher d'abord un UID déjà
- * présent dans le document professeur.
- */
 
 const possibleUid=
 professeur.uid||
@@ -3070,11 +3053,6 @@ error
 }
 
 
-/*
- * 2. Si aucun UID n'est trouvé,
- * utiliser l'email du professeur.
- */
-
 const email=
 (
 professeur.email||
@@ -3093,11 +3071,6 @@ return null;
 
 }
 
-
-/*
- * 3. Chercher l'utilisateur
- * Firebase avec son email.
- */
 
 try{
 
@@ -3138,13 +3111,6 @@ error
 
 }
 
-
-/*
- * 4. Fallback :
- * lire les utilisateurs disponibles
- * et comparer les emails sans tenir
- * compte des majuscules.
- */
 
 try{
 
@@ -3195,10 +3161,6 @@ return null;
 }
 
 
-/* =========================================================
-   CRÉER UNE AFFECTATION
-   ========================================================= */
-
 window.saveAffectation=
 async function(event){
 
@@ -3242,10 +3204,6 @@ return;
 
 
 try{
-
-/*
- * Charger les documents sélectionnés.
- */
 
 const [
 profSnap,
@@ -3330,10 +3288,6 @@ const matiere=
 matiereSnap.data()||{};
 
 
-/*
- * Trouver le compte Firebase du professeur.
- */
-
 const firebaseUser=
 await findProfessorFirebaseUser(prof);
 
@@ -3364,13 +3318,6 @@ return;
 }
 
 
-/*
- * Vérification du rôle.
- *
- * Si le document users contient un rôle,
- * il doit être professeur.
- */
-
 if(
 firebaseUser.role &&
 firebaseUser.role!=="professeur" &&
@@ -3386,14 +3333,6 @@ return;
 }
 
 
-/*
- * Le professeur doit être accepté.
- *
- * Un administrateur peut être utilisé
- * uniquement si le compte correspond
- * volontairement à un profil professeur.
- */
-
 if(
 firebaseUser.role==="professeur" &&
 firebaseUser.status &&
@@ -3408,10 +3347,6 @@ return;
 
 }
 
-
-/*
- * Récupérer les noms.
- */
 
 const professeurNom=
 [
@@ -3453,10 +3388,6 @@ matiere.nom||
 "";
 
 
-/*
- * Vérifier les doublons.
- */
-
 const duplicateQuery=
 query(
 collection(db,"affectations"),
@@ -3494,10 +3425,6 @@ return;
 
 }
 
-
-/*
- * Créer l'affectation.
- */
 
 await addDoc(
 collection(db,"affectations"),
@@ -3568,10 +3495,6 @@ toast(
 };
 
 
-/* =========================================================
-   SUPPRIMER AFFECTATION
-   ========================================================= */
-
 window.deleteAffectation=
 async function(id){
 
@@ -3611,10 +3534,6 @@ toast(
 
 };
 
-
-/* =========================================================
-   INSCRIPTIONS / ÉLÈVES - CLASSES
-   ========================================================= */
 
 async function loadInscriptions(){
 
@@ -4312,14 +4231,7 @@ toast(
 }
 
 };
-  /* =========================================================
-   BLOC 3/4 — DEVOIRS, REMISES, CORRECTIONS, RESULTATS
-   ========================================================= */
 
-
-/* =========================================================
-   DEVOIRS
-   ========================================================= */
 
 async function loadAssignments(){
 
@@ -5035,10 +4947,6 @@ toast(
 };
 
 
-/* =========================================================
-   REMISES
-   ========================================================= */
-
 async function loadSubmissions(){
 
 const page=$("page-remises");
@@ -5262,10 +5170,6 @@ Impossible de charger les remises.
 
 }
 
-
-/* =========================================================
-   FORMULAIRE REMISE ÉTUDIANT
-   ========================================================= */
 
 window.openSubmissionForm=
 async function(devoirId){
@@ -5541,10 +5445,6 @@ toast(
 };
 
 
-/* =========================================================
-   VOIR UNE REMISE
-   ========================================================= */
-
 window.viewSubmission=
 async function(id){
 
@@ -5688,10 +5588,6 @@ toast(
 
 };
 
-
-/* =========================================================
-   CORRECTION
-   ========================================================= */
 
 window.openCorrectionForm=
 async function(remiseId){
@@ -5905,10 +5801,6 @@ serverTimestamp()
 );
 
 
-/*
- * Enregistrer également le résultat.
- */
-
 await addDoc(
 collection(db,"resultats"),
 {
@@ -5971,10 +5863,6 @@ toast(
 
 };
 
-
-/* =========================================================
-   RESULTATS
-   ========================================================= */
 
 async function loadResults(){
 
@@ -6192,15 +6080,7 @@ Impossible de charger les résultats.
 }
 
 }
-  /* =========================================================
-   BLOC 4/4 — STATISTIQUES, UTILISATEURS, CONFIGURATION,
-   AUTHENTIFICATION, LANGUE, PWA ET FINALISATION
-   ========================================================= */
 
-
-/* =========================================================
-   STATISTIQUES
-   ========================================================= */
 
 async function loadStatistics(){
 
@@ -6414,10 +6294,6 @@ $("statisticsSummary").textContent=
 
 }
 
-
-/* =========================================================
-   UTILISATEURS
-   ========================================================= */
 
 async function loadUsers(){
 
@@ -6693,10 +6569,6 @@ Impossible de charger les utilisateurs.
 }
 
 
-/* =========================================================
-   ACCEPTER UTILISATEUR
-   ========================================================= */
-
 window.acceptUser=
 async function(id){
 
@@ -6733,10 +6605,6 @@ toast(
 
 };
 
-
-/* =========================================================
-   REFUSER UTILISATEUR
-   ========================================================= */
 
 window.refuseUser=
 async function(id){
@@ -6783,10 +6651,6 @@ toast(
 
 };
 
-
-/* =========================================================
-   MODIFIER ROLE
-   ========================================================= */
 
 window.changeUserRole=
 async function(id,currentRole){
@@ -6855,10 +6719,6 @@ toast(
 };
 
 
-/* =========================================================
-   SUPPRIMER UTILISATEUR
-   ========================================================= */
-
 window.deleteUser=
 async function(id){
 
@@ -6910,10 +6770,6 @@ toast(
 
 };
 
-
-/* =========================================================
-   CONFIGURATION / SAUVEGARDE
-   ========================================================= */
 
 function loadConfiguration(){
 
@@ -7134,10 +6990,6 @@ toast(
 };
 
 
-/* =========================================================
-   LANGUE
-   ========================================================= */
-
 function changeLanguage(language){
 
 localStorage.setItem(
@@ -7187,10 +7039,6 @@ selector.value=saved;
 
 }
 
-
-/* =========================================================
-   INSTALLATION PWA
-   ========================================================= */
 
 window.addEventListener(
 "beforeinstallprompt",
@@ -7278,10 +7126,6 @@ btn.classList.add("hidden");
 );
 
 
-/* =========================================================
-   SERVICE WORKER
-   ========================================================= */
-
 if(
 "serviceWorker" in navigator
 ){
@@ -7311,10 +7155,6 @@ error
 }
 
 
-/* =========================================================
-   AUTHENTIFICATION
-   ========================================================= */
-
 onAuthStateChanged(
 auth,
 async user=>{
@@ -7339,11 +7179,6 @@ try{
 
 currentUser=user;
 
-
-/*
- * L'administrateur principal doit toujours
- * être reconnu comme administrateur.
- */
 
 if(
 user.email?.toLowerCase()===
@@ -7374,13 +7209,6 @@ currentProfile=
 await getUserProfile(user);
 
 }else{
-
-/*
- * Création du profil administrateur.
- *
- * Le document est créé avec l'UID comme
- * identifiant du document.
- */
 
 try{
 
@@ -7418,11 +7246,6 @@ await getUserProfile(user);
 }
 
 
-/*
- * Si aucun profil n'existe, tenter de
- * préparer le profil de l'utilisateur.
- */
-
 if(!currentProfile){
 
 try{
@@ -7441,10 +7264,6 @@ error
 
 }
 
-
-/*
- * Vérification du statut.
- */
 
 if(
 !currentProfile
@@ -7480,11 +7299,6 @@ showAuthMessage(
 );
 
 
-/*
- * Ne pas laisser un utilisateur
- * en attente entrer dans l'application.
- */
-
 await signOut(auth);
 
 return;
@@ -7492,20 +7306,12 @@ return;
 }
 
 
-/*
- * Afficher l'application.
- */
-
 $("authPage")
 .classList.add("hidden");
 
 $("appPage")
 .classList.remove("hidden");
 
-
-/*
- * Nom utilisateur.
- */
 
 const displayName=
 currentProfile.nom||
@@ -7531,10 +7337,6 @@ currentProfile.role||
 "Utilisateur";
 
 
-/*
- * Menu administrateur.
- */
-
 if(isAdmin()){
 
 $("adminNav")
@@ -7548,16 +7350,8 @@ $("adminNav")
 }
 
 
-/*
- * Charger la langue.
- */
-
 loadLanguage();
 
-
-/*
- * Charger le tableau de bord.
- */
 
 await loadDashboard();
 
@@ -7586,10 +7380,6 @@ showAuthMessage(
 );
 
 
-/* =========================================================
-   INITIALISATION
-   ========================================================= */
-
 window.addEventListener(
 "DOMContentLoaded",
 ()=>{
@@ -7608,10 +7398,6 @@ installButton.classList.add("hidden");
 }
 );
 
-
-/* =========================================================
-   PROTECTION CONTRE LES ERREURS VISIBLES
-   ========================================================= */
 
 window.addEventListener(
 "error",
@@ -7635,48 +7421,6 @@ event.reason
 );
 
 });
-
-/* =========================================================
-   DÉCONNEXION
-   ========================================================= */
-
-window.logoutUser = async function(){
-
-  try{
-
-    await signOut(auth);
-
-    currentUser = null;
-    currentProfile = null;
-
-    $("appPage").classList.add("hidden");
-    $("authPage").classList.remove("hidden");
-
-    showAuthMessage(
-      "Vous êtes déconnecté.",
-      "info"
-    );
-
-  }catch(error){
-
-    console.error(
-      "Erreur déconnexion:",
-      error
-    );
-
-    toast(
-      "Impossible de vous déconnecter."
-    );
-
-  }
-
-};
-
-
-
-/* =========================================================
-   FIN DU SCRIPT
-   ========================================================= */
 
 </script>
 
