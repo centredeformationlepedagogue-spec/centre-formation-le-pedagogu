@@ -6165,7 +6165,8 @@ async function(){
 /* =====================================================
    PWA
    ===================================================== */
-
+let deferredInstallPrompt = null;
+  
 window.addEventListener(
   "beforeinstallprompt",
   event=>{
