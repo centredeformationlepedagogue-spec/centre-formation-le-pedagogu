@@ -7623,7 +7623,51 @@ event.reason
 
 });
 
+/* =========================================================
+   DÉCONNEXION
+   ========================================================= */
 
+window.logoutUser = async function(){
+
+  try{
+
+    await signOut(auth);
+
+    currentUser = null;
+    currentProfile = null;
+
+    $("appPage").classList.add("hidden");
+    $("authPage").classList.remove("hidden");
+
+    showAuthMessage(
+      "Vous êtes déconnecté.",
+      "info"
+    );
+
+  }catch(error){
+
+    console.error(
+      "Erreur déconnexion:",
+      error
+    );
+
+    toast(
+      "Impossible de vous déconnecter."
+    );
+
+  }
+
+};
+
+
+/* =========================================================
+   FIN DU SCRIPT
+   ========================================================= */
+
+</script>
+
+</body>
+</html>
 /* =========================================================
    FIN DU SCRIPT
    ========================================================= */
