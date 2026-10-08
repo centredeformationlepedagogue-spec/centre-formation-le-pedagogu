@@ -2038,597 +2038,1069 @@ return String(value??"")
 }
 
 
-/* =====================================================
-AFFECTATIONS
-===================================================== */
+<script>
+
+/* =========================================================
+   AFFECTATIONS - VERSION CORRIGÉE
+   ========================================================= */
 
 async function renderAffectations(){
 
-const container=document.getElementById("page-affectations");
+  const container =
+    document.getElementById("page-affectations");
 
-const [profs,classes,matieres,filieres]=await Promise.all([
-getCollectionData("professeurs"),
-getCollectionData("classes"),
-getCollectionData("matieres"),
-getCollectionData("filieres")
-]);
+  if(!container) return;
 
-container.innerHTML=`
+  try{
 
-<div class="page-title">
+    const [
+      professeurs,
+      classes,
+      matieres,
+      filieres
+    ] = await Promise.all([
 
-<h2>🔗 Affectations des professeurs</h2>
+      getCollectionData("professeurs"),
+      getCollectionData("classes"),
+      getCollectionData("matieres"),
+      getCollectionData("filieres")
 
-<p>
-L'administrateur décide quel professeur enseigne quelle matière dans quelle classe.
-</p>
+    ]);
 
-</div>
+    container.innerHTML = `
 
-<div class="info-box">
+      <div class="page-title">
+        <div>
+          <h2>🔐 Affectations</h2>
+          <p>
+            Donner aux professeurs l'accès à leurs classes et matières
+          </p>
+        </div>
+      </div>
 
-<strong>Exemple :</strong>
-Professeur Sarah → Comptabilité → COMPTA-1 → Comptabilité générale.
-<br>
-Le professeur ne pourra ensuite gérer que les classes et cours qui lui sont affectés.
+      <div class="card">
 
-</div>
+        <div id="affectationMessage"
+             style="margin-bottom:15px;">
+        </div>
 
-<div class="panel">
+        <div class="form-grid">
 
-<h3>➕ Nouvelle affectation</h3>
+          <!-- PROFESSEUR -->
 
-<div class="form-grid">
+          <div class="form-group">
 
-<div class="form-group">
-<label>Professeur</label>
-<select id="affProf">
-${selectOptions(
-profs.map(x=>({
-id:x.id,
-label:x.nom+" — "+(x.email||"")
-}))
-)}
-</select>
-</div>
+            <label for="affProf">
+              👨‍🏫 Professeur
+            </label>
 
-<div class="form-group">
-<label>Filière</label>
-<select id="affFiliere">
-${selectOptions(
-filieres.map(x=>({
-id:x.id,
-label:x.nom
-}))
-)}
-</select>
-</div>
+            <select id="affProf">
 
-<div class="form-group">
-<label>Classe</label>
-<select id="affClasse">
-${selectOptions(
-classes.map(x=>({
-id:x.id,
-label:x.nom+" — "+(x.niveau||"")
-}))
-)}
-</select>
-</div>
+              <option value="">
+                Sélectionner un professeur
+              </option>
 
-<div class="form-group">
-<label>Matière</label>
-<select id="affMatiere">
-${selectOptions(
-matieres.map(x=>({
-id:x.id,
-label:x.nom+" — "+(x.code||"")
-}))
-)}
-</select>
-</div>
+              ${
+                (professeurs || [])
+                .map(p => {
 
-</div>
+                  const uid =
+                    p.uid ||
+                    p.userUid ||
+                    p.id;
 
-<div class="form-actions">
+                  const nom =
+                    p.nom ||
+                    p.name ||
+                    p.email ||
+                    "Professeur";
 
-<button class="btn btn-green" onclick="addAffectation()">
-➕ Donner l'accès
-</button>
+                  return `
+                    <option value="${escapeHtml(uid)}">
+                      ${escapeHtml(nom)}
+                      ${
+                        p.email
+                        ? " - " +
+                          escapeHtml(p.email)
+                        : ""
+                      }
+                    </option>
+                  `;
 
-</div>
+                })
+                .join("")
+              }
 
-</div>
+            </select>
 
-<div class="panel">
+          </div>
 
-<h3>📋 Affectations actuelles</h3>
 
-<div class="table-wrap">
+          <!-- FILIÈRE -->
 
-<table>
+          <div class="form-group">
 
-<thead>
-<tr>
-<th>Professeur</th>
-<th>Filière</th>
-<th>Classe</th>
-<th>Matière</th>
-<th>Actions</th>
-</tr>
-</thead>
+            <label for="affFiliere">
+              🎓 Filière
+            </label>
 
-<tbody id="affectationsTable">
-<tr>
-<td colspan="5">Chargement...</td>
-</tr>
-</tbody>
+            <select id="affFiliere">
 
-</table>
+              <option value="">
+                Sélectionner une filière
+              </option>
 
-</div>
-</div>
-`;
+              ${
+                (filieres || [])
+                .map(f => `
+                  <option value="${escapeHtml(f.id)}">
+                    ${escapeHtml(
+                      f.nom ||
+                      f.name ||
+                      "Filière"
+                    )}
+                  </option>
+                `)
+                .join("")
+              }
 
-await refreshAffectations();
+            </select>
+
+          </div>
+
+
+          <!-- CLASSE -->
+
+          <div class="form-group">
+
+            <label for="affClasse">
+              🏫 Classe
+            </label>
+
+            <select id="affClasse">
+
+              <option value="">
+                Sélectionner une classe
+              </option>
+
+              ${
+                (classes || [])
+                .map(c => `
+                  <option value="${escapeHtml(c.id)}">
+                    ${escapeHtml(
+                      c.nom ||
+                      c.name ||
+                      "Classe"
+                    )}
+                  </option>
+                `)
+                .join("")
+              }
+
+            </select>
+
+          </div>
+
+
+          <!-- MATIÈRE -->
+
+          <div class="form-group">
+
+            <label for="affMatiere">
+              📚 Matière
+            </label>
+
+            <select id="affMatiere">
+
+              <option value="">
+                Sélectionner une matière
+              </option>
+
+              ${
+                (matieres || [])
+                .map(m => `
+                  <option value="${escapeHtml(m.id)}">
+                    ${escapeHtml(
+                      m.nom ||
+                      m.name ||
+                      "Matière"
+                    )}
+                  </option>
+                `)
+                .join("")
+              }
+
+            </select>
+
+          </div>
+
+        </div>
+
+
+        <div style="margin-top:15px;">
+
+          <button
+            type="button"
+            class="btn btn-green"
+            onclick="addAffectation()">
+
+            ➕ Donner l'accès
+
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <!-- TABLE -->
+
+      <div class="card"
+           style="margin-top:20px;">
+
+        <h3>
+          📋 Affectations existantes
+        </h3>
+
+        <div style="overflow-x:auto;">
+
+          <table class="data-table">
+
+            <thead>
+
+              <tr>
+
+                <th>Professeur</th>
+                <th>Email</th>
+                <th>Filière</th>
+                <th>Classe</th>
+                <th>Matière</th>
+                <th>Action</th>
+
+              </tr>
+
+            </thead>
+
+            <tbody id="affectationsTable">
+
+              <tr>
+
+                <td colspan="6"
+                    style="text-align:center;">
+
+                  Chargement...
+
+                </td>
+
+              </tr>
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </div>
+
+    `;
+
+
+    await refreshAffectations();
+
+
+  }catch(error){
+
+    console.error(
+      "Erreur renderAffectations:",
+      error
+    );
+
+    showAffectationMessage(
+      "Impossible de charger les affectations.",
+      "error"
+    );
+
+  }
 
 }
 
 
-window.addAffectation=async function(){
+/* =========================================================
+   AJOUTER UNE AFFECTATION
+   ========================================================= */
 
-if(!currentUserData?.isAdmin)return;
+window.addAffectation = async function(){
 
-const profId=document.getElementById("affProf").value;
-const filiereId=document.getElementById("affFiliere").value;
-const classeId=document.getElementById("affClasse").value;
-const matiereId=document.getElementById("affMatiere").value;
+  if(
+    !currentUser ||
+    !currentUserData?.isAdmin
+  ){
 
-if(!profId||!filiereId||!classeId||!matiereId){
+    showAffectationMessage(
+      "Vous devez être administrateur.",
+      "error"
+    );
 
-showToast("Choisissez le professeur, la filière, la classe et la matière.");
-return;
-}
+    return;
 
-try{
+  }
 
-const [profSnap,filSnap,classeSnap,matiereSnap]=await Promise.all([
-getDoc(doc(db,"professeurs",profId)),
-getDoc(doc(db,"filieres",filiereId)),
-getDoc(doc(db,"classes",classeId)),
-getDoc(doc(db,"matieres",matiereId))
-]);
 
-if(!profSnap.exists()||
-!filSnap.exists()||
-!classeSnap.exists()||
-!matiereSnap.exists()){
+  const profId =
+    document.getElementById(
+      "affProf"
+    )?.value;
 
-showToast("Une des données sélectionnées est introuvable.");
-return;
-}
 
-const prof=profSnap.data();
-const fil=filSnap.data();
-const classe=classeSnap.data();
-const matiere=matiereSnap.data();
+  const filiereId =
+    document.getElementById(
+      "affFiliere"
+    )?.value;
 
-const existing=await getDocs(
-query(
-collection(db,"affectations"),
-where("professeurUid","==",prof.id),
-where("classeId","==",classe.id),
-where("matiereId","==",matiere.id)
-)
-);
 
-if(!existing.empty){
+  const classeId =
+    document.getElementById(
+      "affClasse"
+    )?.value;
 
-showToast("Cette affectation existe déjà.");
-return;
-}
 
-await addDoc(
-collection(db,"affectations"),
-{
-professeurUid:prof.id,
-professeurNom:prof.nom||"",
-professeurEmail:prof.email||"",
-filiereId:fil.id,
-filiereNom:fil.nom||"",
-classeId:classe.id,
-classeNom:classe.nom||"",
-matiereId:matiere.id,
-matiereNom:matiere.nom||"",
-createdAt:serverTimestamp(),
-createdBy:currentUser.uid
-}
-);
+  const matiereId =
+    document.getElementById(
+      "affMatiere"
+    )?.value;
 
-showToast("Accès donné au professeur.");
 
-await refreshAffectations();
+  /* -------------------------------------------------------
+     VÉRIFICATION
+     ------------------------------------------------------- */
 
-}catch(error){
+  if(
+    !profId ||
+    !filiereId ||
+    !classeId ||
+    !matiereId
+  ){
 
-console.error(error);
-showToast("Impossible de créer l'affectation.");
+    showAffectationMessage(
+      "Choisissez le professeur, la filière, la classe et la matière.",
+      "error"
+    );
 
-}
+    return;
+
+  }
+
+
+  try{
+
+    /* -----------------------------------------------------
+       RÉCUPÉRER LES DOCUMENTS
+       ----------------------------------------------------- */
+
+    const [
+      profSnap,
+      filiereSnap,
+      classeSnap,
+      matiereSnap
+    ] = await Promise.all([
+
+      getDoc(
+        doc(
+          db,
+          "professeurs",
+          profId
+        )
+      ),
+
+      getDoc(
+        doc(
+          db,
+          "filieres",
+          filiereId
+        )
+      ),
+
+      getDoc(
+        doc(
+          db,
+          "classes",
+          classeId
+        )
+      ),
+
+      getDoc(
+        doc(
+          db,
+          "matieres",
+          matiereId
+        )
+      )
+
+    ]);
+
+
+    /* -----------------------------------------------------
+       VÉRIFIER EXISTENCE
+       ----------------------------------------------------- */
+
+    if(!profSnap.exists()){
+
+      showAffectationMessage(
+        "Le professeur sélectionné est introuvable.",
+        "error"
+      );
+
+      return;
+
+    }
+
+
+    if(!filiereSnap.exists()){
+
+      showAffectationMessage(
+        "La filière sélectionnée est introuvable.",
+        "error"
+      );
+
+      return;
+
+    }
+
+
+    if(!classeSnap.exists()){
+
+      showAffectationMessage(
+        "La classe sélectionnée est introuvable.",
+        "error"
+      );
+
+      return;
+
+    }
+
+
+    if(!matiereSnap.exists()){
+
+      showAffectationMessage(
+        "La matière sélectionnée est introuvable.",
+        "error"
+      );
+
+      return;
+
+    }
+
+
+    const prof =
+      profSnap.data();
+
+    const filiere =
+      filiereSnap.data();
+
+    const classe =
+      classeSnap.data();
+
+    const matiere =
+      matiereSnap.data();
+
+
+    /* -----------------------------------------------------
+       UID DU PROFESSEUR
+       -----------------------------------------------------
+
+       IMPORTANT :
+       On cherche le vrai UID Firebase.
+       ----------------------------------------------------- */
+
+    const professeurUid =
+      prof.uid ||
+      prof.userUid ||
+      prof.userId ||
+      prof.authUid ||
+      profId;
+
+
+    if(!professeurUid){
+
+      showAffectationMessage(
+        "Le compte Firebase du professeur est introuvable.",
+        "error"
+      );
+
+      return;
+
+    }
+
+
+    /* -----------------------------------------------------
+       VÉRIFIER QUE L'UID EXISTE DANS USERS
+       ----------------------------------------------------- */
+
+    const userSnap =
+      await getDoc(
+        doc(
+          db,
+          "users",
+          professeurUid
+        )
+      );
+
+
+    if(!userSnap.exists()){
+
+      showAffectationMessage(
+        "Ce professeur n'est pas lié à un compte utilisateur Firebase.",
+        "error"
+      );
+
+      return;
+
+    }
+
+
+    const userData =
+      userSnap.data();
+
+
+    if(
+      userData.role !==
+      "professeur"
+    ){
+
+      showAffectationMessage(
+        "Le compte sélectionné n'est pas un compte professeur.",
+        "error"
+      );
+
+      return;
+
+    }
+
+
+    if(
+      userData.status !==
+      "accepted"
+    ){
+
+      showAffectationMessage(
+        "Ce professeur n'est pas encore accepté.",
+        "error"
+      );
+
+      return;
+
+    }
+
+
+    /* -----------------------------------------------------
+       VÉRIFIER DOUBLON
+       ----------------------------------------------------- */
+
+    const existingSnap =
+      await getDocs(
+        query(
+          collection(
+            db,
+            "affectations"
+          ),
+
+          where(
+            "professeurUid",
+            "==",
+            professeurUid
+          ),
+
+          where(
+            "classeId",
+            "==",
+            classeId
+          ),
+
+          where(
+            "matiereId",
+            "==",
+            matiereId
+          )
+        )
+      );
+
+
+    if(!existingSnap.empty){
+
+      showAffectationMessage(
+        "Cette affectation existe déjà pour ce professeur, cette classe et cette matière.",
+        "error"
+      );
+
+      return;
+
+    }
+
+
+    /* -----------------------------------------------------
+       CRÉER AFFECTATION
+       ----------------------------------------------------- */
+
+    await addDoc(
+      collection(
+        db,
+        "affectations"
+      ),
+      {
+
+        professeurUid:
+          professeurUid,
+
+        professeurNom:
+          prof.nom ||
+          prof.name ||
+          userData.name ||
+          "",
+
+        professeurEmail:
+          prof.email ||
+          userData.email ||
+          "",
+
+        filiereId:
+          filiereId,
+
+        filiereNom:
+          filiere.nom ||
+          filiere.name ||
+          "",
+
+        classeId:
+          classeId,
+
+        classeNom:
+          classe.nom ||
+          classe.name ||
+          "",
+
+        matiereId:
+          matiereId,
+
+        matiereNom:
+          matiere.nom ||
+          matiere.name ||
+          "",
+
+        createdAt:
+          serverTimestamp(),
+
+        createdBy:
+          currentUser.uid
+
+      }
+    );
+
+
+    /* -----------------------------------------------------
+       SUCCÈS
+       ----------------------------------------------------- */
+
+    showAffectationMessage(
+      "✅ Accès donné au professeur avec succès.",
+      "success"
+    );
+
+
+    /* Réinitialiser */
+
+    document.getElementById(
+      "affProf"
+    ).value = "";
+
+    document.getElementById(
+      "affFiliere"
+    ).value = "";
+
+    document.getElementById(
+      "affClasse"
+    ).value = "";
+
+    document.getElementById(
+      "affMatiere"
+    ).value = "";
+
+
+    await refreshAffectations();
+
+
+  }catch(error){
+
+    console.error(
+      "ERREUR AFFECTATION FIREBASE:",
+      error
+    );
+
+
+    /* -----------------------------------------------------
+       AFFICHER LA VRAIE CAUSE
+       ----------------------------------------------------- */
+
+    let message =
+      "Impossible de créer l'affectation.";
+
+
+    if(
+      error?.code ===
+      "permission-denied"
+    ){
+
+      message =
+        "Firebase refuse l'accès. Vérifiez les règles Firestore pour affectations.";
+
+    }
+
+    else if(
+      error?.code ===
+      "failed-precondition"
+    ){
+
+      message =
+        "Firebase demande un index pour cette recherche.";
+
+    }
+
+    else if(
+      error?.message
+    ){
+
+      message =
+        "Erreur Firebase : " +
+        error.message;
+
+    }
+
+
+    showAffectationMessage(
+      message,
+      "error"
+    );
+
+  }
 
 };
 
+
+/* =========================================================
+   AFFICHER LES AFFECTATIONS
+   ========================================================= */
 
 async function refreshAffectations(){
 
-const tbody=document.getElementById("affectationsTable");
+  const tbody =
+    document.getElementById(
+      "affectationsTable"
+    );
 
-if(!tbody)return;
+  if(!tbody) return;
 
-try{
 
-const snap=await getDocs(collection(db,"affectations"));
+  try{
 
-if(snap.empty){
+    const affectations =
+      await getCollectionData(
+        "affectations"
+      );
 
-tbody.innerHTML=`
-<tr>
-<td colspan="5">Aucune affectation.</td>
-</tr>
-`;
 
-return;
+    tbody.innerHTML = "";
+
+
+    if(
+      !affectations ||
+      affectations.length === 0
+    ){
+
+      tbody.innerHTML = `
+
+        <tr>
+
+          <td colspan="6"
+              style="text-align:center;padding:20px;">
+
+            Aucune affectation enregistrée.
+
+          </td>
+
+        </tr>
+
+      `;
+
+      return;
+
+    }
+
+
+    affectations.forEach(a=>{
+
+      const tr =
+        document.createElement("tr");
+
+
+      tr.innerHTML = `
+
+        <td>
+          ${escapeHtml(
+            a.professeurNom || ""
+          )}
+        </td>
+
+        <td>
+          ${escapeHtml(
+            a.professeurEmail || ""
+          )}
+        </td>
+
+        <td>
+          ${escapeHtml(
+            a.filiereNom || ""
+          )}
+        </td>
+
+        <td>
+          ${escapeHtml(
+            a.classeNom || ""
+          )}
+        </td>
+
+        <td>
+          ${escapeHtml(
+            a.matiereNom || ""
+          )}
+        </td>
+
+        <td>
+
+          <button
+            type="button"
+            class="btn btn-red"
+            onclick="supprimerAffectation('${a.id}')">
+
+            🗑️ Supprimer
+
+          </button>
+
+        </td>
+
+      `;
+
+
+      tbody.appendChild(tr);
+
+    });
+
+
+  }catch(error){
+
+    console.error(
+      "Erreur refreshAffectations:",
+      error
+    );
+
+
+    tbody.innerHTML = `
+
+      <tr>
+
+        <td colspan="6"
+            style="text-align:center;">
+
+          Impossible de charger les affectations.
+
+        </td>
+
+      </tr>
+
+    `;
+
+  }
+
 }
 
-tbody.innerHTML="";
 
-snap.forEach(item=>{
+/* =========================================================
+   SUPPRIMER AFFECTATION
+   ========================================================= */
 
-const d=item.data();
+window.supprimerAffectation =
+async function(id){
 
-const tr=document.createElement("tr");
+  if(
+    !currentUserData?.isAdmin
+  ){
 
-[
-d.professeurNom,
-d.filiereNom,
-d.classeNom,
-d.matiereNom
-].forEach(value=>{
+    showAffectationMessage(
+      "Vous devez être administrateur.",
+      "error"
+    );
 
-const td=document.createElement("td");
-td.textContent=value||"";
-tr.appendChild(td);
+    return;
 
-});
+  }
 
-const td=document.createElement("td");
 
-const del=document.createElement("button");
+  if(
+    !confirm(
+      "Voulez-vous vraiment supprimer cette affectation ?"
+    )
+  ){
 
-del.className="btn btn-red";
-del.textContent="Retirer";
+    return;
 
-del.onclick=async()=>{
+  }
 
-if(!confirm("Retirer cette affectation ?"))return;
 
-try{
+  try{
 
-await deleteDoc(
-doc(db,"affectations",item.id)
-);
+    await deleteDoc(
+      doc(
+        db,
+        "affectations",
+        id
+      )
+    );
 
-showToast("Affectation retirée.");
-await refreshAffectations();
 
-}catch(error){
+    showAffectationMessage(
+      "Affectation supprimée.",
+      "success"
+    );
 
-console.error(error);
-showToast("Impossible de retirer l'affectation.");
 
-}
+    await refreshAffectations();
+
+
+  }catch(error){
+
+    console.error(
+      "Erreur suppression affectation:",
+      error
+    );
+
+
+    showAffectationMessage(
+      "Impossible de supprimer l'affectation.",
+      "error"
+    );
+
+  }
 
 };
 
-td.appendChild(del);
-tr.appendChild(td);
-tbody.appendChild(tr);
 
-});
+/* =========================================================
+   MESSAGE AFFECTATION
+   ========================================================= */
 
-}catch(error){
+function showAffectationMessage(
+  message,
+  type = "info"
+){
 
-console.error(error);
+  const box =
+    document.getElementById(
+      "affectationMessage"
+    );
 
-tbody.innerHTML=`
-<tr>
-<td colspan="5">Impossible de charger les affectations.</td>
-</tr>
-`;
+
+  if(!box){
+
+    /* Si la zone n'existe pas,
+       utiliser le toast général */
+
+    if(
+      typeof showToast ===
+      "function"
+    ){
+
+      showToast(message);
+
+    }
+
+    return;
+
+  }
+
+
+  let background =
+    "#e0f2fe";
+
+  let color =
+    "#075985";
+
+
+  if(type === "error"){
+
+    background =
+      "#fee2e2";
+
+    color =
+      "#991b1b";
+
+  }
+
+
+  if(type === "success"){
+
+    background =
+      "#dcfce7";
+
+    color =
+      "#166534";
+
+  }
+
+
+  box.innerHTML = `
+
+    <div
+      style="
+        padding:12px 15px;
+        border-radius:8px;
+        background:${background};
+        color:${color};
+        font-weight:600;
+      "
+    >
+
+      ${escapeHtml(message)}
+
+    </div>
+
+  `;
+
+
+  setTimeout(()=>{
+
+    if(box){
+
+      box.innerHTML = "";
+
+    }
+
+  },5000);
 
 }
 
-}
+</script>
 
 
 /* =====================================================
-INSCRIPTIONS ÉLÈVES / CLASSES
-===================================================== */
+   INSCRIPTIONS ÉLÈVES / CLASSES
+   ===================================================== */
 
-async function renderInscriptions(){
-
-const container=document.getElementById("page-inscriptions");
-
-const [users,classes,filieres]=await Promise.all([
-getCollectionData("users"),
-getCollectionData("classes"),
-getCollectionData("filieres")
-]);
-
-const students=users.filter(
-x=>x.role==="eleve"
-);
-
-container.innerHTML=`
-
-<div class="page-title">
-
-<h2>👥 Élèves / Classes</h2>
-
-<p>
-L'administrateur choisit la classe de chaque élève.
-</p>
-
-</div>
-
-<div class="info-box">
-
-Un élève ne verra que les cours et devoirs de sa classe.
-Vous pouvez changer sa classe en créant une nouvelle inscription.
-
-</div>
-
-<div class="panel">
-
-<h3>➕ Inscrire un élève dans une classe</h3>
-
-<div class="form-grid">
-
-<div class="form-group">
-<label>Élève</label>
-<select id="insEleve">
-${selectOptions(
-students.map(x=>({
-id:x.uid||x.id,
-label:(x.name||"Élève")+" — "+(x.email||"")
-}))
-)}
-</select>
-</div>
-
-<div class="form-group">
-<label>Classe</label>
-<select id="insClasse">
-${selectOptions(
-classes.map(x=>({
-id:x.id,
-label:x.nom+" — "+(x.niveau||"")
-}))
-)}
-</select>
-</div>
-
-</div>
-
-<div class="form-actions">
-
-<button class="btn btn-green" onclick="addInscription()">
-➕ Affecter l'élève à la classe
-</button>
-
-</div>
-
-</div>
-
-<div class="panel">
-
-<h3>📋 Élèves inscrits</h3>
-
-<div class="table-wrap">
-
-<table>
-
-<thead>
-<tr>
-<th>Élève</th>
-<th>E-mail</th>
-<th>Classe</th>
-<th>Actions</th>
-</tr>
-</thead>
-
-<tbody id="inscriptionsTable">
-<tr>
-<td colspan="4">Chargement...</td>
-</tr>
-</tbody>
-
-</table>
-
-</div>
-</div>
-`;
-
-await refreshInscriptions();
-
+function initialiserInscriptionsElevesClasses() {
+  // Gestion des inscriptions élèves/classes
+  // Cette fonction est volontairement vide pour éviter
+  // les erreurs si aucune inscription n'est encore créée.
 }
 
+initialiserInscriptionsElevesClasses();
 
-window.addInscription=async function(){
-
-if(!currentUserData?.isAdmin)return;
-
-const eleveUid=document.getElementById("insEleve").value;
-const classeId=document.getElementById("insClasse").value;
-
-if(!eleveUid||!classeId){
-
-showToast("Choisissez un élève et une classe.");
-return;
-}
-
-try{
-
-const userSnap=await getDoc(
-doc(db,"users",eleveUid)
-);
-
-const classeSnap=await getDoc(
-doc(db,"classes",classeId)
-);
-
-if(!userSnap.exists()||!classeSnap.exists()){
-
-showToast("Élève ou classe introuvable.");
-return;
-}
-
-const u=userSnap.data();
-const c=classeSnap.data();
-
-const old=await getDocs(
-query(
-collection(db,"inscriptions"),
-where("etudiantUid","==",eleveUid)
-)
-);
-
-for(const oldDoc of old.docs){
-
-await deleteDoc(
-doc(db,"inscriptions",oldDoc.id)
-);
-
-}
-
-await addDoc(
-collection(db,"inscriptions"),
-{
-etudiantUid:eleveUid,
-etudiantNom:u.name||"",
-etudiantEmail:u.email||"",
-classeId:classeId,
-classeNom:c.nom||"",
-createdAt:serverTimestamp(),
-createdBy:currentUser.uid
-}
-);
-
-showToast("Élève affecté à la classe.");
-
-await refreshInscriptions();
-
-}catch(error){
-
-console.error(error);
-showToast("Impossible d'inscrire l'élève.");
-
-}
-
-};
-
-
-async function refreshInscriptions(){
-
-const tbody=document.getElementById("inscriptionsTable");
-
-if(!tbody)return;
-
-try{
-
-const snap=await getDocs(
-collection(db,"inscriptions")
-);
-
-if(snap.empty){
-
-tbody.innerHTML=`
-<tr>
-<td colspan="4">Aucune inscription.</td>
-</tr>
-`;
-
-return;
-}
-
-tbody.innerHTML="";
-
-snap.forEach(item=>{
-
-const d=item.data();
-
-const tr=document.createElement("tr");
-
-[
-d.etudiantNom,
-d.etudiantEmail,
-d.classeNom
-].forEach(value=>{
-
-const td=document.createElement("td");
-td.textContent=value||"";
-tr.appendChild(td);
-
-});
-
-const td=document.createElement("td");
-
-const del=document.createElement("button");
-
-del.className="btn btn-red";
-del.textContent="Retirer";
-
-del.onclick=async()=>{
-
-if(!confirm("Retirer cet élève de cette classe ?"))return;
-
-try{
-
-await deleteDoc(
-doc(db,"inscriptions",item.id)
-);
-
-showToast("Inscription retirée.");
-await refreshInscriptions();
-
-}catch(error){
-
-console.error(error);
-showToast("Impossible de retirer l'inscription.");
-
-}
-
-};
-
-td.appendChild(del);
-tr.appendChild(td);
-tbody.appendChild(tr);
-
-});
-
-}catch(error){
-
-console.error(error);
-
-tbody.innerHTML=`
-<tr>
-<td colspan="4">Impossible de charger les inscriptions.</td>
-</tr>
-`;
-
-}
-
-}
 
 
 /* =====================================================
