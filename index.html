@@ -23,7 +23,6 @@
 --green:#16a34a;
 --red:#dc2626;
 --orange:#ea580c;
---purple:#7c3aed;
 --shadow:0 4px 18px rgba(15,61,145,.10)
 }
 
@@ -62,13 +61,11 @@ height:90px;
 object-fit:contain;
 border-radius:18px
 }
-
 .logo-box h1{
 color:var(--blue);
 margin-top:12px;
 font-size:23px
 }
-
 .logo-box p{
 color:var(--gray);
 margin-top:5px
@@ -83,7 +80,9 @@ border-radius:9px;
 outline:none
 }
 
-.auth-box input:focus{border-color:var(--blue2)}
+.auth-box input:focus{
+border-color:var(--blue2)
+}
 
 .btn{
 border:0;
@@ -98,7 +97,6 @@ background:var(--blue2)
 .btn-green{background:var(--green)}
 .btn-red{background:var(--red)}
 .btn-orange{background:var(--orange)}
-.btn-purple{background:var(--purple)}
 .btn-gray{background:#64748b}
 .full{width:100%}
 
@@ -247,6 +245,7 @@ border:1px solid var(--border)
 }
 
 .stat-icon{font-size:26px}
+
 .stat-title{
 color:var(--gray);
 font-size:13px;
@@ -305,40 +304,12 @@ th,td{
 padding:12px;
 border-bottom:1px solid var(--border);
 text-align:left;
-vertical-align:top
+white-space:nowrap
 }
 
 th{
 background:#f1f5f9;
 color:var(--blue)
-}
-
-.badge{
-display:inline-block;
-padding:5px 9px;
-border-radius:20px;
-font-size:12px;
-font-weight:bold
-}
-
-.badge-green{
-background:#dcfce7;
-color:#166534
-}
-
-.badge-orange{
-background:#ffedd5;
-color:#9a3412
-}
-
-.badge-red{
-background:#fee2e2;
-color:#991b1b
-}
-
-.badge-blue{
-background:#dbeafe;
-color:#1e40af
 }
 
 .form-grid{
@@ -379,31 +350,55 @@ gap:8px;
 flex-wrap:wrap
 }
 
-.admin-only-note{
-padding:12px 15px;
+.badge{
+display:inline-block;
+padding:5px 9px;
+border-radius:20px;
+font-size:12px;
+font-weight:bold
+}
+
+.badge-green{
+background:#dcfce7;
+color:#166534
+}
+
+.badge-orange{
+background:#ffedd5;
+color:#9a3412
+}
+
+.badge-red{
+background:#fee2e2;
+color:#991b1b
+}
+
+.badge-blue{
+background:#dbeafe;
+color:#1e40af
+}
+
+.info-box{
+padding:13px 15px;
 background:#eff6ff;
 border:1px solid #bfdbfe;
 border-radius:9px;
 color:#1e40af;
-margin-bottom:15px
+margin-bottom:15px;
+line-height:1.5
 }
 
-.teacher-note{
-padding:12px 15px;
-background:#f3e8ff;
-border:1px solid #ddd6fe;
-border-radius:9px;
-color:#6d28d9;
-margin-bottom:15px
+.student-box{
+padding:15px;
+background:#f8fafc;
+border:1px solid var(--border);
+border-radius:10px;
+margin-bottom:12px
 }
 
-.student-note{
-padding:12px 15px;
-background:#ecfdf5;
-border:1px solid #a7f3d0;
-border-radius:9px;
-color:#047857;
-margin-bottom:15px
+.student-box h4{
+color:var(--blue);
+margin-bottom:7px
 }
 
 #toast{
@@ -445,11 +440,6 @@ color:var(--blue);
 margin-bottom:15px
 }
 
-.modal-box p{
-line-height:1.6;
-margin-bottom:12px
-}
-
 .modal-close{
 float:right;
 border:0;
@@ -475,28 +465,18 @@ gap:5px;
 flex-wrap:wrap
 }
 
-.action-group .btn{
-padding:7px 10px;
-font-size:12px
-}
-
-.info-card{
-background:#f8fafc;
+.note-input{
+width:90px;
+padding:7px;
 border:1px solid var(--border);
-border-radius:10px;
-padding:15px;
-margin-bottom:12px
+border-radius:7px
 }
 
-.info-card h4{
-color:var(--blue);
-margin-bottom:7px
-}
-
-.grade{
-font-size:22px;
-font-weight:bold;
-color:var(--blue)
+.comment-input{
+min-width:180px;
+padding:7px;
+border:1px solid var(--border);
+border-radius:7px
 }
 
 @media(max-width:1100px){
@@ -519,11 +499,17 @@ margin-left:0;
 padding:85px 12px 25px
 }
 
-.mobile-menu{display:block}
+.mobile-menu{
+display:block
+}
 
-.header-title{display:none}
+.header-title{
+display:none
+}
 
-.header-right{gap:5px}
+.header-right{
+gap:5px
+}
 
 .install-btn{
 padding:8px;
@@ -541,7 +527,6 @@ grid-template-columns:repeat(2,1fr)
 .form-grid{
 grid-template-columns:1fr
 }
-
 }
 
 @media(max-width:480px){
@@ -567,16 +552,11 @@ max-width:110px;
 overflow:hidden;
 text-overflow:ellipsis
 }
-
 }
 </style>
 </head>
 
 <body>
-
-<!-- =====================================================
-AUTH
-===================================================== -->
 
 <section id="authPage">
 
@@ -598,15 +578,20 @@ Connexion
 id="loginEmail"
 type="email"
 placeholder="Adresse e-mail"
-autocomplete="email">
+autocomplete="email"
+>
 
 <input
 id="loginPassword"
 type="password"
 placeholder="Mot de passe"
-autocomplete="current-password">
+autocomplete="current-password"
+>
 
-<button class="btn full" onclick="loginEmailPassword()">
+<button
+class="btn full"
+onclick="loginEmailPassword()"
+>
 🔐 Se connecter
 </button>
 
@@ -615,10 +600,9 @@ autocomplete="current-password">
 <button
 id="googleLoginBtn"
 class="btn google-btn full"
-onclick="loginGoogle()">
-
+onclick="loginGoogle()"
+>
 🔵 Continuer avec Google
-
 </button>
 
 <p style="margin-top:18px;text-align:center">
@@ -627,15 +611,15 @@ Pas encore de compte ?
 
 <button
 style="border:0;background:none;color:#1d4ed8;font-weight:bold"
-onclick="showRegister()">
-
+onclick="showRegister()"
+>
 Créer un compte
-
 </button>
 
 </p>
 
 </div>
+
 
 <div id="registerBox" class="hidden">
 
@@ -646,25 +630,27 @@ Créer un compte
 <input
 id="registerName"
 type="text"
-placeholder="Nom complet">
+placeholder="Nom complet"
+>
 
 <input
 id="registerEmail"
 type="email"
-placeholder="Adresse e-mail">
+placeholder="Adresse e-mail"
+>
 
 <input
 id="registerPassword"
 type="password"
 placeholder="Mot de passe"
-autocomplete="new-password">
+autocomplete="new-password"
+>
 
 <button
 class="btn btn-green full"
-onclick="registerAccount()">
-
+onclick="registerAccount()"
+>
 📝 Créer mon compte
-
 </button>
 
 <p style="margin-top:18px;text-align:center">
@@ -673,10 +659,9 @@ Déjà un compte ?
 
 <button
 style="border:0;background:none;color:#1d4ed8;font-weight:bold"
-onclick="showLogin()">
-
+onclick="showLogin()"
+>
 Se connecter
-
 </button>
 
 </p>
@@ -687,10 +672,6 @@ Se connecter
 </section>
 
 
-<!-- =====================================================
-APPLICATION
-===================================================== -->
-
 <section id="appPage" class="hidden">
 
 <header class="header">
@@ -699,16 +680,16 @@ APPLICATION
 
 <button
 class="mobile-menu"
-onclick="toggleSidebar()">
-
+onclick="toggleSidebar()"
+>
 ☰
-
 </button>
 
 <img
 class="header-logo"
 src="./icon-192.png"
-alt="Logo">
+alt="Logo"
+>
 
 <div class="header-title">
 CENTRE DE FORMATION LE PÉDAGOGUE
@@ -716,12 +697,14 @@ CENTRE DE FORMATION LE PÉDAGOGUE
 
 </div>
 
+
 <div class="header-right">
 
 <select
 id="languageSelect"
 class="language"
-onchange="changeLanguage()">
+onchange="changeLanguage()"
+>
 
 <option value="fr">🇫🇷 Français</option>
 <option value="ht">🇭🇹 Kreyòl</option>
@@ -731,27 +714,22 @@ onchange="changeLanguage()">
 <button
 id="installBtn"
 class="install-btn"
-onclick="installApplication()">
-
-📲 Installer l'application
-
+onclick="installApplication()"
+>
+📲 Installer
 </button>
 
 <button
 class="user-btn"
-onclick="toggleUserMenu()">
-
+onclick="toggleUserMenu()"
+>
 👤 <span id="headerUserName">Utilisateur</span>
-
 </button>
 
 </div>
+
 </header>
 
-
-<!-- =====================================================
-SIDEBAR
-===================================================== -->
 
 <aside id="sidebar" class="sidebar">
 
@@ -759,71 +737,112 @@ SIDEBAR
 ACADÉMIQUE
 </div>
 
-<button class="menu-btn active"
-onclick="showPage('dashboard',this)">
+<div id="adminAcademic">
+
+<button
+class="menu-btn active"
+onclick="showPage('dashboard',this)"
+>
 🏠 <span>Tableau de bord</span>
 </button>
 
-<button class="menu-btn"
-onclick="showPage('etudiants',this)">
+<button
+class="menu-btn"
+onclick="showPage('etudiants',this)"
+>
 🎓 <span>Étudiants</span>
 </button>
 
-<button class="menu-btn"
-onclick="showPage('professeurs',this)">
+<button
+class="menu-btn"
+onclick="showPage('professeurs',this)"
+>
 👨‍🏫 <span>Professeurs</span>
 </button>
 
-<button class="menu-btn"
-onclick="showPage('classes',this)">
+<button
+class="menu-btn"
+onclick="showPage('classes',this)"
+>
 🏫 <span>Classes</span>
 </button>
 
-<button class="menu-btn"
-onclick="showPage('departements',this)">
+<button
+class="menu-btn"
+onclick="showPage('departements',this)"
+>
 🏛️ <span>Départements</span>
 </button>
 
-<button class="menu-btn"
-onclick="showPage('filieres',this)">
+<button
+class="menu-btn"
+onclick="showPage('filieres',this)"
+>
 📚 <span>Filières</span>
 </button>
 
-<button class="menu-btn"
-onclick="showPage('matieres',this)">
+<button
+class="menu-btn"
+onclick="showPage('matieres',this)"
+>
 📖 <span>Matières</span>
 </button>
 
-<button class="menu-btn"
-onclick="showPage('cours',this)">
+<button
+class="menu-btn"
+onclick="showPage('cours',this)"
+>
 📘 <span>Cours</span>
 </button>
+
+</div>
 
 
 <div class="sidebar-title">
 ÉVALUATION
 </div>
 
-<button class="menu-btn"
-onclick="showPage('devoirs',this)">
+
+<button
+id="devoirsMenu"
+class="menu-btn"
+onclick="showPage('devoirs',this)"
+>
 📝 <span>Devoirs</span>
 </button>
 
-<button class="menu-btn"
-onclick="showPage('remises',this)">
+
+<button
+id="remisesMenu"
+class="menu-btn"
+onclick="showPage('remises',this)"
+>
 📤 <span>Remises</span>
 </button>
 
-<button class="menu-btn"
-onclick="showPage('corrections',this)">
+
+<button
+id="correctionsMenu"
+class="menu-btn"
+onclick="showPage('corrections',this)"
+>
 ✏️ <span>Corrections</span>
 </button>
 
-<button class="menu-btn"
-onclick="showPage('resultats',this)">
+
+<button
+id="resultatsMenu"
+class="menu-btn"
+onclick="showPage('resultats',this)"
+>
 📊 <span>Résultats</span>
 </button>
 
+
+<div
+id="adminSection"
+class="hidden"
+>
 
 <div class="sidebar-title">
 ADMINISTRATION
@@ -832,55 +851,58 @@ ADMINISTRATION
 <button
 id="usersMenu"
 class="menu-btn"
-onclick="showPage('utilisateurs',this)">
-
+onclick="showPage('utilisateurs',this)"
+>
 👥 <span>Utilisateurs</span>
-
 </button>
 
 <button
 class="menu-btn"
-onclick="showPage('statistiques',this)">
-
+onclick="showPage('statistiques',this)"
+>
 📈 <span>Statistiques</span>
-
 </button>
 
 <button
 class="menu-btn"
-onclick="showPage('sauvegarde',this)">
-
+onclick="showPage('sauvegarde',this)"
+>
 💾 <span>Données / Sauvegarde</span>
-
 </button>
 
-<button class="menu-btn"
-onclick="logout()">
+</div>
 
+
+<button
+class="menu-btn"
+onclick="logout()"
+>
 🚪 <span>Déconnexion</span>
-
 </button>
 
 </aside>
 
 
-<!-- =====================================================
-MAIN
-===================================================== -->
-
 <main class="main">
 
-<section id="page-dashboard" class="page">
+
+<section
+id="page-dashboard"
+class="page"
+>
 
 <div class="page-title">
 
-<h2>Tableau de bord</h2>
+<h2>
+Tableau de bord
+</h2>
 
 <p id="welcomeText">
 Bienvenue dans votre espace de gestion.
 </p>
 
 </div>
+
 
 <div class="stats">
 
@@ -915,9 +937,9 @@ Bienvenue dans votre espace de gestion.
 </div>
 
 <div class="stat">
-<div class="stat-icon">⏳</div>
-<div class="stat-title">En attente</div>
-<div id="statPending" class="stat-number">0</div>
+<div class="stat-icon">📤</div>
+<div class="stat-title">Remises</div>
+<div id="statRemises" class="stat-number">0</div>
 </div>
 
 </div>
@@ -925,83 +947,57 @@ Bienvenue dans votre espace de gestion.
 
 <div class="panel">
 
-<h3>Accès rapide</h3>
+<h3>
+Accès rapide
+</h3>
 
-<div class="quick-grid">
+<div
+id="quickGrid"
+class="quick-grid"
+>
 
-<button class="quick"
-onclick="quickPage('etudiants')">
-
-<strong>🎓 Étudiants</strong>
-Gérer les étudiants
-
-</button>
-
-<button class="quick"
-onclick="quickPage('professeurs')">
-
-<strong>👨‍🏫 Professeurs</strong>
-Gérer les enseignants
-
-</button>
-
-<button class="quick"
-onclick="quickPage('classes')">
-
-<strong>🏫 Classes</strong>
-Gérer les classes
-
-</button>
-
-<button class="quick"
-onclick="quickPage('matieres')">
-
-<strong>📖 Matières</strong>
-Gérer les matières
-
-</button>
-
-<button class="quick"
-onclick="quickPage('devoirs')">
-
+<button
+class="quick"
+onclick="quickPage('devoirs')"
+>
 <strong>📝 Devoirs</strong>
-Gérer les devoirs
-
-</button>
-
-<button class="quick"
-onclick="quickPage('remises')">
-
-<strong>📤 Remises</strong>
-Voir les remises
-
-</button>
-
-<button class="quick"
-onclick="quickPage('resultats')">
-
-<strong>📊 Résultats</strong>
-Notes et résultats
-
+Ajouter et gérer les devoirs
 </button>
 
 <button
-id="quickUsers"
 class="quick"
-onclick="quickPage('utilisateurs')">
+onclick="quickPage('remises')"
+>
+<strong>📤 Remises</strong>
+Devoirs remis
+</button>
 
-<strong>👥 Utilisateurs</strong>
-Accepter les comptes
+<button
+class="quick"
+onclick="quickPage('corrections')"
+>
+<strong>✏️ Corrections</strong>
+Corriger et commenter
+</button>
 
+<button
+class="quick"
+onclick="quickPage('resultats')"
+>
+<strong>📊 Résultats</strong>
+Notes sur 100
 </button>
 
 </div>
+
 </div>
 
 
 <div class="panel">
 
-<h3>État du système</h3>
+<h3>
+État du système
+</h3>
 
 <p>
 <strong>Utilisateur :</strong>
@@ -1044,41 +1040,44 @@ Accepter les comptes
 <section id="page-sauvegarde" class="page hidden"></section>
 
 </main>
+
 </section>
 
 
-<!-- =====================================================
-USER MENU
-===================================================== -->
-
-<div id="userMenu" class="modal hidden">
+<div
+id="userMenu"
+class="modal hidden"
+>
 
 <div class="modal-box">
 
 <button
 class="modal-close"
-onclick="closeUserMenu()">
+onclick="closeUserMenu()"
+>
 ×
 </button>
 
-<h3>Mon compte</h3>
+<h3>
+Mon compte
+</h3>
 
 <p>
 <strong>Nom :</strong>
 <span id="menuName">-</span>
 </p>
 
-<p>
+<p style="margin-top:8px">
 <strong>E-mail :</strong>
 <span id="menuEmail">-</span>
 </p>
 
-<p>
+<p style="margin-top:8px">
 <strong>Rôle :</strong>
 <span id="menuRole">-</span>
 </p>
 
-<p>
+<p style="margin-top:8px">
 <strong>Statut :</strong>
 <span id="menuStatus">-</span>
 </p>
@@ -1087,59 +1086,52 @@ onclick="closeUserMenu()">
 
 <button
 class="btn btn-red full"
-onclick="logout()">
-
+onclick="logout()"
+>
 🚪 Déconnexion
-
 </button>
 
 </div>
 
 </div>
+
 </div>
 
 
-<!-- =====================================================
-INSTALL MODAL
-===================================================== -->
-
-<div id="installModal" class="modal hidden">
+<div
+id="installModal"
+class="modal hidden"
+>
 
 <div class="modal-box">
 
 <button
 class="modal-close"
-onclick="closeInstallModal()">
+onclick="closeInstallModal()"
+>
 ×
 </button>
 
-<h3>📲 Installer l'application</h3>
+<h3>
+📲 Installer l'application
+</h3>
 
 <p>
-L'installation automatique n'est pas toujours disponible
-dans Chrome Android.
-</p>
-
-<p>
-<strong>Sur Android :</strong>
-</p>
-
-<p>
-1. Ouvrez le menu <strong>⋮</strong> de Chrome.<br>
-2. Cherchez <strong>Installer l'application</strong>
-ou <strong>Ajouter à l'écran d'accueil</strong>.<br>
-3. Validez l'installation.
+Si l'installation automatique pa mache,
+ouvri meni <strong>⋮</strong> Chrome epi chwazi
+<strong>Installer l'application</strong> oswa
+<strong>Ajouter à l'écran d'accueil</strong>.
 </p>
 
 <button
 class="btn btn-green full"
-onclick="closeInstallModal()">
-
+onclick="closeInstallModal()"
+>
 Compris
-
 </button>
 
 </div>
+
 </div>
 
 
@@ -1147,10 +1139,6 @@ Compris
 
 
 <script type="module">
-
-/* =====================================================
-FIREBASE IMPORTS
-===================================================== */
 
 import {
 initializeApp
@@ -1180,13 +1168,15 @@ getDocs,
 addDoc,
 updateDoc,
 deleteDoc,
-serverTimestamp
+serverTimestamp,
+query,
+where
 }
 from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
 
 /* =====================================================
-FIREBASE CONFIG
+FIREBASE
 ===================================================== */
 
 const firebaseConfig={
@@ -1199,22 +1189,14 @@ appId:"1:11834103838:web:b82c994e78486cd313760f"
 };
 
 const app=initializeApp(firebaseConfig);
-
 const auth=getAuth(app);
-
 const db=getFirestore(app);
 
 setPersistence(
 auth,
 browserLocalPersistence
-).catch(error=>{
-console.error("Persistence:",error);
-});
+).catch(console.error);
 
-
-/* =====================================================
-VARIABLES
-===================================================== */
 
 const ADMIN_EMAIL=
 "centredeformationlepedagogue@gmail.com";
@@ -1222,37 +1204,6 @@ const ADMIN_EMAIL=
 let currentUser=null;
 let currentUserData=null;
 let deferredPrompt=null;
-
-
-/* =====================================================
-ROLE HELPERS
-===================================================== */
-
-function isAdmin(){
-
-return currentUserData?.isAdmin===true;
-
-}
-
-function isTeacher(){
-
-return currentUserData?.role==="professeur" &&
-currentUserData?.status==="accepted";
-
-}
-
-function isStudent(){
-
-return currentUserData?.role==="eleve" &&
-currentUserData?.status==="accepted";
-
-}
-
-function isTeacherOrAdmin(){
-
-return isAdmin()||isTeacher();
-
-}
 
 
 /* =====================================================
@@ -1264,21 +1215,16 @@ window.addEventListener(
 event=>{
 
 event.preventDefault();
-
 deferredPrompt=event;
 
-const btn=
-document.getElementById("installBtn");
+const btn=document.getElementById("installBtn");
 
 if(btn){
-
 btn.style.display="block";
-btn.textContent=
-"📲 Installer l'application";
-
 }
 
-});
+}
+);
 
 
 window.addEventListener(
@@ -1287,21 +1233,21 @@ window.addEventListener(
 
 deferredPrompt=null;
 
-const btn=
-document.getElementById("installBtn");
+const btn=document.getElementById("installBtn");
 
-if(btn)
-btn.textContent="✅ Application installée";
+if(btn){
+btn.textContent="✅ Installée";
+}
 
 showToast(
 "Application installée avec succès."
 );
 
-});
+}
+);
 
 
-window.installApplication=
-async function(){
+window.installApplication=async function(){
 
 if(
 window.matchMedia(
@@ -1314,7 +1260,6 @@ showToast(
 );
 
 return;
-
 }
 
 if(deferredPrompt){
@@ -1325,17 +1270,12 @@ const result=
 await deferredPrompt.userChoice;
 
 if(result.outcome==="accepted"){
-
-showToast(
-"Installation acceptée."
-);
-
+showToast("Installation acceptée.");
 }
 
 deferredPrompt=null;
 
 return;
-
 }
 
 document
@@ -1345,8 +1285,7 @@ document
 };
 
 
-window.closeInstallModal=
-function(){
+window.closeInstallModal=function(){
 
 document
 .getElementById("installModal")
@@ -1363,25 +1302,21 @@ window.addEventListener(
 
 navigator.serviceWorker
 .register("./sw.js")
-.then(()=>{
-console.log(
+.then(
+()=>console.log(
 "Service Worker enregistré."
-);
-})
-.catch(error=>{
-console.error(
-"Service Worker:",
-error
-);
-});
+)
+)
+.catch(console.error);
 
-});
+}
+);
 
 }
 
 
 /* =====================================================
-AUTH UI
+AUTH
 ===================================================== */
 
 window.showRegister=function(){
@@ -1411,11 +1346,10 @@ document
 
 
 /* =====================================================
-REGISTER
+INSCRIPTION
 ===================================================== */
 
-window.registerAccount=
-async function(){
+window.registerAccount=async function(){
 
 const name=
 document
@@ -1439,7 +1373,6 @@ showToast(
 );
 
 return;
-
 }
 
 if(password.length<6){
@@ -1449,7 +1382,6 @@ showToast(
 );
 
 return;
-
 }
 
 try{
@@ -1461,20 +1393,24 @@ email,
 password
 );
 
-const isAdminEmail=
+const isAdmin=
 email.toLowerCase()===
 ADMIN_EMAIL.toLowerCase();
 
 await setDoc(
-doc(db,"users",credential.user.uid),
+doc(
+db,
+"users",
+credential.user.uid
+),
 {
 uid:credential.user.uid,
 name:name,
 email:email,
-role:isAdminEmail
+role:isAdmin
 ?"administrateur"
 :"eleve",
-status:isAdminEmail
+status:isAdmin
 ?"accepted"
 :"attente",
 createdAt:serverTimestamp()
@@ -1484,7 +1420,7 @@ createdAt:serverTimestamp()
 await signOut(auth);
 
 showToast(
-isAdminEmail
+isAdmin
 ?
 "Compte administrateur créé."
 :
@@ -1510,8 +1446,7 @@ getFriendlyError(error)
 LOGIN EMAIL
 ===================================================== */
 
-window.loginEmailPassword=
-async function(){
+window.loginEmailPassword=async function(){
 
 const email=
 document
@@ -1530,7 +1465,6 @@ showToast(
 );
 
 return;
-
 }
 
 try{
@@ -1558,24 +1492,16 @@ getFriendlyError(error)
 GOOGLE
 ===================================================== */
 
-window.loginGoogle=
-async function(){
+window.loginGoogle=async function(){
 
 const button=
-document.getElementById(
-"googleLoginBtn"
-);
+document.getElementById("googleLoginBtn");
 
 try{
 
-if(button){
-
 button.disabled=true;
-
 button.textContent=
 "⏳ Ouverture de Google...";
-
-}
 
 const provider=
 new GoogleAuthProvider();
@@ -1600,7 +1526,7 @@ await getDoc(userRef);
 
 if(!snap.exists()){
 
-const isAdminEmail=
+const isAdmin=
 user.email?.toLowerCase()===
 ADMIN_EMAIL.toLowerCase();
 
@@ -1611,10 +1537,10 @@ uid:user.uid,
 name:user.displayName||
 "Utilisateur",
 email:user.email||"",
-role:isAdminEmail
+role:isAdmin
 ?"administrateur"
 :"eleve",
-status:isAdminEmail
+status:isAdmin
 ?"accepted"
 :"attente",
 createdAt:serverTimestamp()
@@ -1624,23 +1550,18 @@ createdAt:serverTimestamp()
 await signOut(auth);
 
 showToast(
-isAdminEmail
+isAdmin
 ?
-"Compte administrateur Google créé. Connectez-vous encore."
+"Compte administrateur créé. Connectez-vous encore."
 :
-"Compte Google créé. Attendez l'acceptation de l'administrateur."
+"Compte Google créé. Attendez l'acceptation."
 );
-
-return;
 
 }
 
 }catch(error){
 
-console.error(
-"Erreur Google:",
-error
-);
+console.error(error);
 
 showToast(
 getFriendlyError(error)
@@ -1648,14 +1569,9 @@ getFriendlyError(error)
 
 }finally{
 
-if(button){
-
 button.disabled=false;
-
 button.innerHTML=
 "🔵 Continuer avec Google";
-
-}
 
 }
 
@@ -1675,8 +1591,6 @@ await signOut(auth);
 document
 .getElementById("userMenu")
 .classList.add("hidden");
-
-showLogin();
 
 }catch(error){
 
@@ -1709,7 +1623,6 @@ document
 .classList.add("hidden");
 
 return;
-
 }
 
 try{
@@ -1724,7 +1637,7 @@ let data;
 
 if(!snap.exists()){
 
-const isAdminEmail=
+const isAdmin=
 user.email?.toLowerCase()===
 ADMIN_EMAIL.toLowerCase();
 
@@ -1733,10 +1646,10 @@ uid:user.uid,
 name:user.displayName||
 "Utilisateur",
 email:user.email||"",
-role:isAdminEmail
+role:isAdmin
 ?"administrateur"
 :"eleve",
-status:isAdminEmail
+status:isAdmin
 ?"accepted"
 :"attente",
 createdAt:serverTimestamp()
@@ -1751,11 +1664,7 @@ data=snap.data();
 }
 
 
-/* =====================================================
-ADMIN CHECK
-===================================================== */
-
-const adminAccess=
+const isAdmin=
 user.email?.toLowerCase()===
 ADMIN_EMAIL.toLowerCase()
 ||
@@ -1765,11 +1674,7 @@ data.status==="accepted"
 );
 
 
-/* =====================================================
-STATUS CHECK
-===================================================== */
-
-if(!adminAccess &&
+if(!isAdmin &&
 data.status!=="accepted"){
 
 await signOut(auth);
@@ -1779,30 +1684,6 @@ showToast(
 );
 
 return;
-
-}
-
-
-/* =====================================================
-VALID ROLES
-===================================================== */
-
-const validRoles=[
-"administrateur",
-"professeur",
-"eleve"
-];
-
-if(!validRoles.includes(data.role)){
-
-await signOut(auth);
-
-showToast(
-"Le rôle de ce compte est invalide. L'administrateur doit choisir administrateur, professeur ou eleve."
-);
-
-return;
-
 }
 
 
@@ -1810,7 +1691,7 @@ currentUser=user;
 
 currentUserData={
 ...data,
-isAdmin:adminAccess
+isAdmin:isAdmin
 };
 
 openApplication();
@@ -1827,7 +1708,8 @@ showToast(
 
 }
 
-});
+}
+);
 
 
 /* =====================================================
@@ -1844,11 +1726,17 @@ document
 .getElementById("appPage")
 .classList.remove("hidden");
 
+
+const role=
+currentUserData.role;
+
+
 const name=
 currentUserData.name||
 currentUser?.displayName||
 currentUser?.email||
 "Utilisateur";
+
 
 document
 .getElementById("headerUserName")
@@ -1862,7 +1750,7 @@ currentUser?.email||"-";
 document
 .getElementById("systemRole")
 .textContent=
-currentUserData.role||"-";
+role||"-";
 
 document
 .getElementById("systemStatus")
@@ -1876,6 +1764,7 @@ currentUserData.isAdmin
 ?"Oui"
 :"Non";
 
+
 document
 .getElementById("menuName")
 .textContent=name;
@@ -1888,7 +1777,7 @@ currentUser?.email||"-";
 document
 .getElementById("menuRole")
 .textContent=
-currentUserData.role||"-";
+role||"-";
 
 document
 .getElementById("menuStatus")
@@ -1896,24 +1785,53 @@ document
 currentUserData.status||"-";
 
 
-const usersMenu=
-document.getElementById("usersMenu");
+const adminSection=
+document.getElementById("adminSection");
 
-const quickUsers=
-document.getElementById("quickUsers");
+const academic=
+document.getElementById("adminAcademic");
 
 
-if(isAdmin()){
+if(currentUserData.isAdmin){
 
-usersMenu.classList.remove("hidden");
-quickUsers.classList.remove("hidden");
+adminSection
+.classList.remove("hidden");
+
+academic
+.classList.remove("hidden");
 
 }else{
 
-usersMenu.classList.add("hidden");
-quickUsers.classList.add("hidden");
+adminSection
+.classList.add("hidden");
+
+academic
+.classList.add("hidden");
 
 }
+
+
+/*
+Tout moun ki aksepte:
+Devoirs / Remises / Corrections / Résultats.
+*/
+
+document
+.getElementById("devoirsMenu")
+.classList.remove("hidden");
+
+document
+.getElementById("remisesMenu")
+.classList.remove("hidden");
+
+document
+.getElementById("correctionsMenu")
+.classList.remove("hidden");
+
+document
+.getElementById("resultatsMenu")
+.classList.remove("hidden");
+
 
 loadDashboard();
 
@@ -1933,14 +1851,14 @@ document
 };
 
 
-window.showPage=
-async function(page,button){
+window.showPage=async function(page,button){
 
 document
 .querySelectorAll(".page")
-.forEach(p=>{
-p.classList.add("hidden");
-});
+.forEach(
+p=>p.classList.add("hidden")
+);
+
 
 const target=
 document.getElementById(
@@ -1951,18 +1869,23 @@ if(!target)return;
 
 target.classList.remove("hidden");
 
+
 document
 .querySelectorAll(".menu-btn")
-.forEach(btn=>{
-btn.classList.remove("active");
-});
+.forEach(
+btn=>btn.classList.remove("active")
+);
 
-if(button)
+
+if(button){
 button.classList.add("active");
+}
+
 
 document
 .getElementById("sidebar")
 .classList.remove("open");
+
 
 if(page==="dashboard"){
 
@@ -1970,7 +1893,7 @@ loadDashboard();
 
 }else{
 
-loadModule(page);
+await loadModule(page);
 
 }
 
@@ -1994,10 +1917,10 @@ showPage(page,button);
 
 
 /* =====================================================
-GENERAL ADMIN MODULES
+ADMIN MODULES
 ===================================================== */
 
-const moduleInfo={
+const adminModules={
 
 etudiants:{
 title:"Gestion des étudiants",
@@ -2087,34 +2010,7 @@ LOAD MODULE
 
 async function loadModule(page){
 
-/* PROFESSIONAL MODULES */
-
 if(
-page==="devoirs"||
-page==="remises"||
-page==="corrections"||
-page==="resultats"
-){
-
-if(page==="devoirs")
-return renderDevoirs();
-
-if(page==="remises")
-return renderRemises();
-
-if(page==="corrections")
-return renderCorrections();
-
-if(page==="resultats")
-return renderResultats();
-
-}
-
-
-/* ADMIN MODULES */
-
-if(
-!isAdmin() &&
 [
 "etudiants",
 "professeurs",
@@ -2126,14 +2022,59 @@ if(
 ].includes(page)
 ){
 
-renderReadOnlyModule(page);
+if(!currentUserData?.isAdmin){
 
+showToast(
+"Accès réservé à l'administrateur."
+);
+
+return;
+}
+
+await renderAdminModule(page);
 return;
 
 }
 
 
+if(page==="devoirs"){
+
+await renderDevoirs();
+return;
+
+}
+
+if(page==="remises"){
+
+await renderRemises();
+return;
+
+}
+
+if(page==="corrections"){
+
+await renderCorrections();
+return;
+
+}
+
+if(page==="resultats"){
+
+await renderResultats();
+return;
+
+}
+
 if(page==="utilisateurs"){
+
+if(!currentUserData?.isAdmin){
+
+showToast(
+"Accès réservé à l'administrateur."
+);
+
+return;
+}
 
 await renderUsers();
 return;
@@ -2142,7 +2083,7 @@ return;
 
 if(page==="statistiques"){
 
-renderStatistics();
+await renderStatistics();
 return;
 
 }
@@ -2154,10 +2095,16 @@ return;
 
 }
 
+}
 
-const info=moduleInfo[page];
 
-if(!info)return;
+/* =====================================================
+ADMIN CRUD
+===================================================== */
+
+async function renderAdminModule(page){
+
+const info=adminModules[page];
 
 const container=
 document.getElementById(
@@ -2170,9 +2117,7 @@ container.innerHTML=`
 
 <h2>${info.icon} ${info.title}</h2>
 
-<p>
-Gestion des données du Centre de Formation Le Pédagogue.
-</p>
+<p>Gestion administrative.</p>
 
 </div>
 
@@ -2182,7 +2127,8 @@ Gestion des données du Centre de Formation Le Pédagogue.
 
 <div class="form-grid">
 
-${info.fields.map(f=>`
+${info.fields.map(
+f=>`
 
 <div class="form-group">
 
@@ -2196,7 +2142,8 @@ placeholder="${f[1]}"
 
 </div>
 
-`).join("")}
+`
+).join("")}
 
 </div>
 
@@ -2204,15 +2151,15 @@ placeholder="${f[1]}"
 
 <button
 class="btn btn-green"
-onclick="addRecord('${page}')">
-
+onclick="addAdminRecord('${page}')"
+>
 ➕ Ajouter
-
 </button>
 
 </div>
 
 </div>
+
 
 <div class="panel">
 
@@ -2237,13 +2184,11 @@ f=>`<th>${f[1]}</th>`
 </thead>
 
 <tbody id="table-${page}">
-
 <tr>
 <td colspan="${info.fields.length+1}">
 Chargement...
 </td>
 </tr>
-
 </tbody>
 
 </table>
@@ -2253,161 +2198,24 @@ Chargement...
 </div>
 `;
 
-await refreshTable(page);
+await refreshAdminTable(page);
 
 }
 
 
-/* =====================================================
-READ ONLY MODULE FOR TEACHER/STUDENT
-===================================================== */
+window.addAdminRecord=async function(page){
 
-async function renderReadOnlyModule(page){
-
-const info=moduleInfo[page];
-
-if(!info)return;
-
-const container=
-document.getElementById(
-"page-"+page
-);
-
-container.innerHTML=`
-
-<div class="page-title">
-
-<h2>${info.icon} ${info.title}</h2>
-
-<p>
-Informations académiques.
-</p>
-
-</div>
-
-<div class="student-note">
-
-🔒 Cette section est en lecture seule pour votre rôle.
-Seul l'administrateur peut ajouter, modifier ou supprimer ces données.
-
-</div>
-
-<div class="panel">
-
-<div class="table-wrap">
-
-<table>
-
-<thead>
-
-<tr>
-
-${info.fields.map(
-f=>`<th>${f[1]}</th>`
-).join("")}
-
-</tr>
-
-</thead>
-
-<tbody id="readonly-${page}">
-
-<tr>
-<td colspan="${info.fields.length}">
-Chargement...
-</td>
-</tr>
-
-</tbody>
-
-</table>
-
-</div>
-
-</div>
-`;
-
-try{
-
-const snap=
-await getDocs(
-collection(db,info.collection)
-);
-
-const tbody=
-document.getElementById(
-"readonly-"+page
-);
-
-if(snap.empty){
-
-tbody.innerHTML=`
-<tr>
-<td colspan="${info.fields.length}">
-Aucune donnée.
-</td>
-</tr>
-`;
-
-return;
-
-}
-
-tbody.innerHTML="";
-
-snap.forEach(item=>{
-
-const data=item.data();
-
-const tr=document.createElement("tr");
-
-info.fields.forEach(f=>{
-
-const td=document.createElement("td");
-
-td.textContent=
-data[f[0]]??"";
-
-tr.appendChild(td);
-
-});
-
-tbody.appendChild(tr);
-
-});
-
-}catch(error){
-
-console.error(error);
-
-}
-
-}
-
-
-/* =====================================================
-ADD GENERAL RECORD
-===================================================== */
-
-window.addRecord=
-async function(page){
-
-if(!isAdmin()){
+if(!currentUserData?.isAdmin){
 
 showToast(
-"Seul l'administrateur peut modifier cette section."
+"Seul l'administrateur peut modifier ces données."
 );
 
 return;
-
 }
 
-const info=moduleInfo[page];
-
-if(!info)return;
-
+const info=adminModules[page];
 const data={};
-
 let valid=true;
 
 info.fields.forEach(f=>{
@@ -2433,14 +2241,10 @@ showToast(
 );
 
 return;
-
 }
 
-data.createdAt=
-serverTimestamp();
-
-data.createdBy=
-currentUser.uid;
+data.createdAt=serverTimestamp();
+data.createdBy=currentUser.uid;
 
 try{
 
@@ -2460,13 +2264,11 @@ document.getElementById(
 `field-${page}-${f[0]}`
 );
 
-if(input)
-input.value="";
+if(input)input.value="";
 
 });
 
-await refreshTable(page);
-
+await refreshAdminTable(page);
 loadDashboard();
 
 }catch(error){
@@ -2482,15 +2284,9 @@ showToast(
 };
 
 
-/* =====================================================
-REFRESH GENERAL TABLE
-===================================================== */
+async function refreshAdminTable(page){
 
-async function refreshTable(page){
-
-const info=moduleInfo[page];
-
-if(!info)return;
+const info=adminModules[page];
 
 const tbody=
 document.getElementById(
@@ -2517,7 +2313,6 @@ Aucune donnée.
 `;
 
 return;
-
 }
 
 tbody.innerHTML="";
@@ -2539,7 +2334,8 @@ tr.appendChild(td);
 
 });
 
-const td=document.createElement("td");
+const td=
+document.createElement("td");
 
 const edit=
 document.createElement("button");
@@ -2548,7 +2344,7 @@ edit.className="btn";
 edit.textContent="Modifier";
 
 edit.onclick=()=>{
-editRecord(
+editAdminRecord(
 page,
 item.id,
 data
@@ -2556,6 +2352,7 @@ data
 };
 
 td.appendChild(edit);
+
 
 const del=
 document.createElement("button");
@@ -2565,10 +2362,11 @@ del.className=
 
 del.style.marginLeft="5px";
 
-del.textContent="Supprimer";
+del.textContent=
+"Supprimer";
 
 del.onclick=()=>{
-deleteRecord(
+deleteAdminRecord(
 page,
 item.id
 );
@@ -2589,7 +2387,7 @@ console.error(error);
 tbody.innerHTML=`
 <tr>
 <td colspan="${info.fields.length+1}">
-Impossible de charger les données.
+Impossible de charger.
 </td>
 </tr>
 `;
@@ -2599,43 +2397,36 @@ Impossible de charger les données.
 }
 
 
-/* =====================================================
-EDIT GENERAL
-===================================================== */
+window.editAdminRecord=async function(
+page,
+id,
+data
+){
 
-window.editRecord=
-async function(page,id,data){
+if(!currentUserData?.isAdmin)return;
 
-if(!isAdmin()){
-
-showToast(
-"Seul l'administrateur peut modifier cette donnée."
-);
-
-return;
-
-}
-
-const info=moduleInfo[page];
-
+const info=adminModules[page];
 const updates={};
 
 for(const f of info.fields){
 
-const oldValue=
-data[f[0]]??"";
-
-const newValue=
-prompt(
+const value=prompt(
 f[1],
-oldValue
+data[f[0]]??""
 );
 
-if(newValue===null)
-return;
+if(value===null)return;
 
-updates[f[0]]=
-newValue.trim();
+if(!value.trim()){
+
+showToast(
+"Valeur vide non autorisée."
+);
+
+return;
+}
+
+updates[f[0]]=value.trim();
 
 }
 
@@ -2650,7 +2441,7 @@ showToast(
 "Donnée modifiée."
 );
 
-await refreshTable(page);
+await refreshAdminTable(page);
 
 }catch(error){
 
@@ -2665,28 +2456,18 @@ showToast(
 };
 
 
-/* =====================================================
-DELETE GENERAL
-===================================================== */
+window.deleteAdminRecord=async function(
+page,
+id
+){
 
-window.deleteRecord=
-async function(page,id){
-
-if(!isAdmin()){
-
-showToast(
-"Seul l'administrateur peut supprimer."
-);
-
-return;
-
-}
+if(!currentUserData?.isAdmin)return;
 
 if(!confirm(
 "Voulez-vous vraiment supprimer cette donnée ?"
 ))return;
 
-const info=moduleInfo[page];
+const info=adminModules[page];
 
 try{
 
@@ -2698,8 +2479,7 @@ showToast(
 "Donnée supprimée."
 );
 
-await refreshTable(page);
-
+await refreshAdminTable(page);
 loadDashboard();
 
 }catch(error){
@@ -2726,86 +2506,13 @@ document.getElementById(
 "page-devoirs"
 );
 
-let form="";
+const role=
+currentUserData?.role;
 
-if(isTeacherOrAdmin()){
+const canManage=
+currentUserData?.isAdmin||
+role==="professeur";
 
-form=`
-
-<div class="panel">
-
-<h3>➕ Ajouter un devoir</h3>
-
-<div class="form-grid">
-
-<div class="form-group">
-<label>Titre du devoir</label>
-<input id="devTitre"
-placeholder="Ex: Exercice de mathématiques">
-</div>
-
-<div class="form-group">
-<label>Matière</label>
-<input id="devMatiere"
-placeholder="Ex: Mathématiques">
-</div>
-
-<div class="form-group">
-<label>Classe</label>
-<input id="devClasse"
-placeholder="Ex: 3ème A">
-</div>
-
-<div class="form-group">
-<label>Date limite</label>
-<input id="devDate" type="date">
-</div>
-
-<div class="form-group" style="grid-column:1/-1">
-<label>Description / consigne</label>
-<textarea id="devDescription"
-placeholder="Écrivez les consignes du devoir..."></textarea>
-</div>
-
-<div class="form-group">
-<label>Lien du document du devoir</label>
-<input id="devFichier"
-placeholder="https://...">
-</div>
-
-</div>
-
-<div class="form-actions">
-
-<button
-class="btn btn-green"
-onclick="addDevoir()">
-
-➕ Publier le devoir
-
-</button>
-
-</div>
-
-</div>
-`;
-
-}
-
-if(isStudent()){
-
-form=`
-
-<div class="student-note">
-
-📚 Ici vous pouvez voir les devoirs que les professeurs
-ont publiés pour vous.
-
-</div>
-
-`;
-
-}
 
 container.innerHTML=`
 
@@ -2814,19 +2521,84 @@ container.innerHTML=`
 <h2>📝 Devoirs</h2>
 
 <p>
-Devoirs donnés par les professeurs.
+${
+role==="eleve"
+?
+"Devoirs reçus par l'étudiant."
+:
+"Créer, modifier et gérer les devoirs."
+}
 </p>
 
 </div>
 
-${form}
+
+${
+canManage
+?
+`
+<div class="panel">
+
+<h3>
+➕ Ajouter un devoir
+</h3>
+
+<div class="form-grid">
+
+<div class="form-group">
+<label>Titre du devoir</label>
+<input id="devTitre" type="text">
+</div>
+
+<div class="form-group">
+<label>Matière</label>
+<input id="devMatiere" type="text">
+</div>
+
+<div class="form-group">
+<label>Classe / Groupe</label>
+<input id="devClasse" type="text">
+</div>
+
+<div class="form-group">
+<label>Date limite</label>
+<input id="devDate" type="date">
+</div>
+
+<div class="form-group" style="grid-column:1/-1">
+<label>Description / Consignes</label>
+<textarea id="devDescription"></textarea>
+</div>
+
+</div>
+
+<div class="form-actions">
+
+<button
+class="btn btn-green"
+onclick="addDevoir()"
+>
+➕ Ajouter le devoir
+</button>
+
+</div>
+
+</div>
+`
+:
+`
+<div class="info-box">
+🎓 Ou konekte kòm élève.
+Ou ka wè devwa yo epi remèt yo nan seksyon <strong>Remises</strong>.
+</div>
+`
+}
+
 
 <div class="panel">
 
 <h3>
-${isStudent()
-?"📚 Devoirs reçus"
-:"📝 Liste des devoirs"}
+📚 Liste des devoirs
 </h3>
 
 <div class="table-wrap">
@@ -2867,21 +2639,18 @@ await refreshDevoirs();
 }
 
 
-/* =====================================================
-ADD DEVOIR
-===================================================== */
+window.addDevoir=async function(){
 
-window.addDevoir=
-async function(){
-
-if(!isTeacherOrAdmin()){
+if(
+!currentUserData?.isAdmin &&
+currentUserData?.role!=="professeur"
+){
 
 showToast(
-"Seul un professeur ou l'administrateur peut ajouter un devoir."
+"Seul un professeur peut ajouter un devoir."
 );
 
 return;
-
 }
 
 const titre=
@@ -2904,24 +2673,13 @@ const description=
 document.getElementById("devDescription")
 .value.trim();
 
-const fichier=
-document.getElementById("devFichier")
-.value.trim();
-
-if(
-!titre||
-!matiere||
-!classe||
-!dateLimite||
-!description
-){
+if(!titre||!matiere||!classe||!dateLimite){
 
 showToast(
-"Remplissez les champs obligatoires."
+"Remplissez le titre, matière, classe et date limite."
 );
 
 return;
-
 }
 
 try{
@@ -2934,21 +2692,26 @@ matiere,
 classe,
 dateLimite,
 description,
-fichier,
-professeurId:currentUser.uid,
+professeurUid:currentUser.uid,
 professeurNom:
 currentUserData.name||
+currentUser.displayName||
 currentUser.email,
 createdAt:serverTimestamp()
 }
 );
 
 showToast(
-"Devoir publié avec succès."
+"Devoir ajouté avec succès."
 );
 
-await renderDevoirs();
+document.getElementById("devTitre").value="";
+document.getElementById("devMatiere").value="";
+document.getElementById("devClasse").value="";
+document.getElementById("devDate").value="";
+document.getElementById("devDescription").value="";
 
+await refreshDevoirs();
 loadDashboard();
 
 }catch(error){
@@ -2956,17 +2719,13 @@ loadDashboard();
 console.error(error);
 
 showToast(
-"Impossible de publier le devoir."
+"Impossible d'ajouter le devoir."
 );
 
 }
 
 };
 
-
-/* =====================================================
-REFRESH DEVOIRS
-===================================================== */
 
 async function refreshDevoirs(){
 
@@ -2984,8 +2743,6 @@ await getDocs(
 collection(db,"devoirs")
 );
 
-tbody.innerHTML="";
-
 if(snap.empty){
 
 tbody.innerHTML=`
@@ -2997,124 +2754,62 @@ Aucun devoir.
 `;
 
 return;
-
 }
+
+tbody.innerHTML="";
 
 snap.forEach(item=>{
 
 const d=item.data();
 
-if(
-isTeacher() &&
-d.professeurId!==currentUser.uid
-){
-
-return;
-
-}
-
 const tr=
 document.createElement("tr");
 
-tr.innerHTML=`
+[
+d.titre,
+d.matiere,
+d.classe,
+d.description,
+d.dateLimite,
+d.professeurNom
+].forEach(value=>{
 
-<td>
-<strong>${escapeHtml(d.titre||"")}</strong>
-</td>
+const td=
+document.createElement("td");
 
-<td>
-${escapeHtml(d.matiere||"")}
-</td>
+td.textContent=
+value??"";
 
-<td>
-${escapeHtml(d.classe||"")}
-</td>
+tr.appendChild(td);
 
-<td>
-${escapeHtml(d.description||"")}
-</td>
+});
 
-<td>
-${escapeHtml(d.dateLimite||"")}
-</td>
+const td=
+document.createElement("td");
 
-<td>
-${escapeHtml(d.professeurNom||"")}
-</td>
+const group=
+document.createElement("div");
 
-<td></td>
-`;
-
-const actions=
-tr.lastElementChild;
+group.className="action-group";
 
 
-/* LIEN DEVOIR */
-
-if(d.fichier){
-
-const link=
-document.createElement("a");
-
-link.href=d.fichier;
-link.target="_blank";
-link.rel="noopener";
-
-link.className="btn";
-
-link.textContent=
-"📄 Voir";
-
-actions.appendChild(link);
-
-}
-
-
-/* STUDENT REMETTRE */
-
-if(isStudent()){
-
-const remise=
-document.createElement("button");
-
-remise.className=
-"btn btn-green";
-
-remise.style.marginLeft="5px";
-
-remise.textContent=
-"📤 Remettre";
-
-remise.onclick=()=>{
-openSubmitModal(
-item.id,
-d
-);
-};
-
-actions.appendChild(remise);
-
-}
-
-
-/* TEACHER EDIT */
-
-if(
-isAdmin() ||
+const canEdit=
+currentUserData?.isAdmin||
 (
-isTeacher() &&
-d.professeurId===currentUser.uid
-)
-){
+currentUserData?.role==="professeur" &&
+d.professeurUid===currentUser.uid
+);
+
+
+if(canEdit){
 
 const edit=
 document.createElement("button");
 
 edit.className="btn";
 
-edit.style.marginLeft="5px";
-
-edit.textContent="✏️ Modifier";
+edit.textContent=
+"Modifier";
 
 edit.onclick=()=>{
 editDevoir(
@@ -3123,10 +2818,8 @@ d
 );
 };
 
-actions.appendChild(edit);
+group.appendChild(edit);
 
-
-/* TEACHER DELETE */
 
 const del=
 document.createElement("button");
@@ -3134,48 +2827,45 @@ document.createElement("button");
 del.className=
 "btn btn-red";
 
-del.style.marginLeft="5px";
-
 del.textContent=
-"🗑️ Supprimer";
+"Supprimer";
 
 del.onclick=()=>{
-deleteDevoir(
+deleteDevoir(item.id);
+};
+
+group.appendChild(del);
+
+}
+
+
+if(
+currentUserData?.role==="eleve"
+){
+
+const remise=
+document.createElement("button");
+
+remise.className=
+"btn btn-green";
+
+remise.textContent=
+"📤 Remettre";
+
+remise.onclick=()=>{
+openRemiseForDevoir(
 item.id,
 d
 );
 };
 
-actions.appendChild(del);
+group.appendChild(remise);
 
 }
 
 
-/* VIEW SUBMISSIONS */
-
-if(isTeacherOrAdmin()){
-
-const view=
-document.createElement("button");
-
-view.className=
-"btn btn-purple";
-
-view.style.marginLeft="5px";
-
-view.textContent=
-"📥 Remises";
-
-view.onclick=()=>{
-viewDevoirRemises(
-item.id
-);
-};
-
-actions.appendChild(view);
-
-}
-
+td.appendChild(group);
+tr.appendChild(td);
 tbody.appendChild(tr);
 
 });
@@ -3184,85 +2874,73 @@ tbody.appendChild(tr);
 
 console.error(error);
 
-showToast(
-"Impossible de charger les devoirs."
-);
+tbody.innerHTML=`
+<tr>
+<td colspan="7">
+Impossible de charger les devoirs.
+</td>
+</tr>
+`;
 
 }
 
 }
 
 
-/* =====================================================
-EDIT DEVOIR
-===================================================== */
-
-window.editDevoir=
-async function(id,data){
+window.editDevoir=async function(
+id,
+data
+){
 
 if(
-!isAdmin() &&
+!currentUserData?.isAdmin &&
 !(
-isTeacher() &&
-data.professeurId===currentUser.uid
+currentUserData?.role==="professeur" &&
+data.professeurUid===currentUser.uid
 )
 ){
 
 showToast(
-"Vous n'avez pas le droit de modifier ce devoir."
+"Ou pa gen dwa modifye devwa sa a."
 );
 
 return;
-
 }
 
-const titre=
-prompt(
+const titre=prompt(
 "Titre du devoir",
 data.titre||""
 );
 
 if(titre===null)return;
 
-const matiere=
-prompt(
+const matiere=prompt(
 "Matière",
 data.matiere||""
 );
 
 if(matiere===null)return;
 
-const classe=
-prompt(
-"Classe",
+const classe=prompt(
+"Classe / Groupe",
 data.classe||""
 );
 
 if(classe===null)return;
 
-const dateLimite=
-prompt(
-"Date limite AAAA-MM-JJ",
+const dateLimite=prompt(
+"Date limite YYYY-MM-DD",
 data.dateLimite||""
 );
 
 if(dateLimite===null)return;
 
-const description=
-prompt(
-"Description",
+const description=prompt(
+"Description / Consignes",
 data.description||""
 );
 
 if(description===null)return;
-
-const fichier=
-prompt(
-"Lien du document",
-data.fichier||""
-);
-
-if(fichier===null)return;
 
 try{
 
@@ -3274,12 +2952,12 @@ matiere:matiere.trim(),
 classe:classe.trim(),
 dateLimite:dateLimite.trim(),
 description:description.trim(),
-fichier:fichier.trim()
+updatedAt:serverTimestamp()
 }
 );
 
 showToast(
-"Devoir modifié avec succès."
+"Devoir modifié."
 );
 
 await refreshDevoirs();
@@ -3297,28 +2975,7 @@ showToast(
 };
 
 
-/* =====================================================
-DELETE DEVOIR
-===================================================== */
-
-window.deleteDevoir=
-async function(id,data){
-
-if(
-!isAdmin() &&
-!(
-isTeacher() &&
-data.professeurId===currentUser.uid
-)
-){
-
-showToast(
-"Vous n'avez pas le droit de supprimer ce devoir."
-);
-
-return;
-
-}
+window.deleteDevoir=async function(id){
 
 if(!confirm(
 "Supprimer ce devoir ?"
@@ -3326,16 +2983,39 @@ if(!confirm(
 
 try{
 
-await deleteDoc(
-doc(db,"devoirs",id)
+const ref=
+doc(db,"devoirs",id);
+
+const snap=
+await getDoc(ref);
+
+if(!snap.exists())return;
+
+const d=snap.data();
+
+const allowed=
+currentUserData?.isAdmin||
+(
+currentUserData?.role==="professeur" &&
+d.professeurUid===currentUser.uid
 );
+
+if(!allowed){
+
+showToast(
+"Ou pa gen dwa supprime devwa sa a."
+);
+
+return;
+}
+
+await deleteDoc(ref);
 
 showToast(
 "Devoir supprimé."
 );
 
 await refreshDevoirs();
-
 loadDashboard();
 
 }catch(error){
@@ -3344,162 +3024,6 @@ console.error(error);
 
 showToast(
 "Suppression impossible."
-);
-
-}
-
-};
-
-
-/* =====================================================
-SUBMIT MODAL
-===================================================== */
-
-window.openSubmitModal=
-function(devoirId,devoir){
-
-const modal=
-document.getElementById(
-"userMenu"
-);
-
-modal.classList.remove("hidden");
-
-modal.innerHTML=`
-
-<div class="modal-box">
-
-<button
-class="modal-close"
-onclick="closeUserMenu()">
-×
-</button>
-
-<h3>📤 Remettre le devoir</h3>
-
-<p>
-<strong>${escapeHtml(devoir.titre||"")}</strong>
-</p>
-
-<div class="form-group">
-
-<label>Lien du fichier</label>
-
-<input
-id="submitLien"
-placeholder="https://drive.google.com/...">
-
-</div>
-
-<div class="form-group"
-style="margin-top:12px">
-
-<label>Commentaire</label>
-
-<textarea
-id="submitCommentaire"
-placeholder="Votre commentaire..."></textarea>
-
-</div>
-
-<div class="form-actions">
-
-<button
-class="btn btn-green"
-onclick="submitDevoir('${devoirId}')">
-
-📤 Envoyer la remise
-
-</button>
-
-<button
-class="btn btn-gray"
-onclick="closeUserMenu()">
-
-Annuler
-
-</button>
-
-</div>
-
-</div>
-`;
-
-};
-
-
-/* =====================================================
-SUBMIT DEVOIR
-===================================================== */
-
-window.submitDevoir=
-async function(devoirId){
-
-if(!isStudent()){
-
-showToast(
-"Seul un élève peut remettre un devoir."
-);
-
-return;
-
-}
-
-const lien=
-document.getElementById(
-"submitLien"
-)?.value.trim();
-
-const commentaire=
-document.getElementById(
-"submitCommentaire"
-)?.value.trim();
-
-if(!lien){
-
-showToast(
-"Ajoutez le lien du fichier."
-);
-
-return;
-
-}
-
-try{
-
-await addDoc(
-collection(db,"remises"),
-{
-devoirId,
-etudiantId:currentUser.uid,
-etudiantNom:
-currentUserData.name||
-currentUser.email,
-fichier:lien,
-commentaire:commentaire||"",
-status:"remis",
-note:null,
-correction:"",
-commentaireProf:"",
-professeurId:null,
-createdAt:serverTimestamp()
-}
-);
-
-showToast(
-"Devoir remis avec succès."
-);
-
-closeUserMenu();
-
-await renderRemises();
-
-}catch(error){
-
-console.error(error);
-
-showToast(
-"Impossible de remettre le devoir."
 );
 
 }
@@ -3518,44 +3042,89 @@ document.getElementById(
 "page-remises"
 );
 
-let title=
-isTeacherOrAdmin()
-?
-"📥 Remises reçues"
-:
-"📤 Mes remises";
+const role=
+currentUserData?.role;
 
 container.innerHTML=`
 
 <div class="page-title">
 
-<h2>${title}</h2>
+<h2>📤 Remises de devoirs</h2>
 
 <p>
-Suivi des devoirs remis et des corrections.
+${
+role==="eleve"
+?
+"Remettez vos devoirs ici."
+:
+"Voir et gérer les devoirs remis par les étudiants."
+}
 </p>
 
 </div>
 
+
 ${
-isTeacherOrAdmin()
+role==="eleve"
 ?
 `
-<div class="teacher-note">
-👨‍🏫 Vous pouvez voir les remises des élèves,
-les corriger, commenter et attribuer une note sur 100.
+<div class="panel">
+
+<h3>📤 Remettre un devoir</h3>
+
+<div class="form-grid">
+
+<div class="form-group">
+<label>Devoir</label>
+<select id="remiseDevoir"></select>
+</div>
+
+<div class="form-group">
+<label>Lien du fichier / document</label>
+<input
+id="remiseFichier"
+type="text"
+placeholder="Lien Google Drive, PDF, document..."
+>
+</div>
+
+<div class="form-group" style="grid-column:1/-1">
+<label>Commentaire</label>
+<textarea
+id="remiseCommentaire"
+></textarea>
+</div>
+
+</div>
+
+<div class="form-actions">
+
+<button
+class="btn btn-green"
+onclick="addRemiseEleve()"
+>
+📤 Envoyer le devoir
+</button>
+
+</div>
+
 </div>
 `
 :
 `
-<div class="student-note">
-👨‍🎓 Vous pouvez voir vos remises, les notes,
-les corrections et les commentaires du professeur.
+<div class="info-box">
+👨‍🏫 Professeur la ka resevwa remises elèv yo,
+gade fichye yo, ajoute/modifier nòt sou 100 ak kòmantè.
 </div>
 `
 }
 
+
 <div class="panel">
+
+<h3>
+📋 Devoirs remis
+</h3>
 
 <div class="table-wrap">
 
@@ -3565,12 +3134,11 @@ les corrections et les commentaires du professeur.
 
 <tr>
 <th>Devoir</th>
-<th>Élève</th>
+<th>Étudiant</th>
 <th>Fichier</th>
-<th>Commentaire élève</th>
-<th>Statut</th>
+<th>Commentaire</th>
 <th>Note /100</th>
-<th>Commentaire professeur</th>
+<th>Correction</th>
 <th>Actions</th>
 </tr>
 
@@ -3579,7 +3147,7 @@ les corrections et les commentaires du professeur.
 <tbody id="remisesTable">
 
 <tr>
-<td colspan="8">
+<td colspan="7">
 Chargement...
 </td>
 </tr>
@@ -3593,14 +3161,185 @@ Chargement...
 </div>
 `;
 
+if(role==="eleve"){
+
+await loadDevoirSelect();
+
+}
+
 await refreshRemises();
 
 }
 
 
-/* =====================================================
-REFRESH REMISES
-===================================================== */
+async function loadDevoirSelect(){
+
+const select=
+document.getElementById(
+"remiseDevoir"
+);
+
+if(!select)return;
+
+select.innerHTML=
+`<option value="">-- Choisir un devoir --</option>`;
+
+const snap=
+await getDocs(
+collection(db,"devoirs")
+);
+
+snap.forEach(item=>{
+
+const d=item.data();
+
+const option=
+document.createElement("option");
+
+option.value=item.id;
+
+option.textContent=
+`${d.titre} — ${d.matiere}`;
+
+select.appendChild(option);
+
+});
+
+}
+
+
+window.addRemiseEleve=async function(){
+
+if(currentUserData?.role!=="eleve"){
+
+showToast(
+"Seul un élève peut remettre un devoir."
+);
+
+return;
+}
+
+const devoirId=
+document.getElementById(
+"remiseDevoir"
+).value;
+
+const fichier=
+document.getElementById(
+"remiseFichier"
+).value.trim();
+
+const commentaire=
+document.getElementById(
+"remiseCommentaire"
+).value.trim();
+
+if(!devoirId||!fichier){
+
+showToast(
+"Choisissez un devoir et ajoutez le lien du fichier."
+);
+
+return;
+}
+
+try{
+
+const devoirSnap=
+await getDoc(
+doc(db,"devoirs",devoirId)
+);
+
+if(!devoirSnap.exists()){
+
+showToast(
+"Devoir introuvable."
+);
+
+return;
+}
+
+const d=devoirSnap.data();
+
+
+await addDoc(
+collection(db,"remises"),
+{
+devoirId:devoirId,
+devoirTitre:d.titre||"",
+matiere:d.matiere||"",
+professeurUid:d.professeurUid||"",
+etudiantUid:currentUser.uid,
+etudiantNom:
+currentUserData.name||
+currentUser.displayName||
+currentUser.email,
+fichier:fichier,
+commentaire:commentaire,
+note:null,
+correctionCommentaire:"",
+statut:"remis",
+createdAt:serverTimestamp()
+}
+);
+
+showToast(
+"Devoir remis avec succès."
+);
+
+document.getElementById(
+"remiseFichier"
+).value="";
+
+document.getElementById(
+"remiseCommentaire"
+).value="";
+
+await refreshRemises();
+
+}catch(error){
+
+console.error(error);
+
+showToast(
+"Impossible de remettre le devoir."
+);
+
+}
+
+};
+
+
+window.openRemiseForDevoir=function(
+id,
+data
+){
+
+showPage(
+"remises",
+document.getElementById("remisesMenu")
+);
+
+setTimeout(
+async()=>{
+
+const select=
+document.getElementById(
+"remiseDevoir"
+);
+
+if(select){
+
+select.value=id;
+
+}
+
+},
+300
+);
+
+};
+
 
 async function refreshRemises(){
 
@@ -3613,202 +3352,167 @@ if(!tbody)return;
 
 try{
 
-const snap=
+let snap;
+
+if(currentUserData?.role==="eleve"){
+
+const q=
+query(
+collection(db,"remises"),
+where(
+"etudiantUid",
+"==",
+currentUser.uid
+)
+);
+
+snap=await getDocs(q);
+
+}else{
+
+snap=
 await getDocs(
 collection(db,"remises")
 );
 
+}
+
+
+if(snap.empty){
+
+tbody.innerHTML=`
+<tr>
+<td colspan="7">
+Aucune remise.
+</td>
+</tr>
+`;
+
+return;
+}
+
 tbody.innerHTML="";
 
-let count=0;
+snap.forEach(item=>{
 
-for(const item of snap.docs){
-
-const r=item.data();
-
-if(
-isStudent() &&
-r.etudiantId!==currentUser.uid
-){
-
-continue;
-
-}
-
-if(isTeacher()){
-
-/*
-Le professeur voit les remises
-des devoirs qu'il a créés.
-*/
-
-if(
-r.professeurId &&
-r.professeurId!==currentUser.uid
-){
-
-continue;
-
-}
-
-if(!r.professeurId){
-
-try{
-
-const devoirSnap=
-await getDoc(
-doc(db,"devoirs",r.devoirId)
-);
-
-if(
-devoirSnap.exists() &&
-devoirSnap.data().professeurId!==currentUser.uid
-){
-
-continue;
-
-}
-
-}catch(e){
-
-console.error(e);
-
-}
-
-}
-
-}
-
-count++;
-
-let devoirTitre=
-"Devoir";
-
-try{
-
-const devoirSnap=
-await getDoc(
-doc(db,"devoirs",r.devoirId)
-);
-
-if(devoirSnap.exists()){
-
-devoirTitre=
-devoirSnap.data().titre||
-"Devoir";
-
-}
-
-}catch(e){
-
-console.error(e);
-
-}
+const d=item.data();
 
 const tr=
 document.createElement("tr");
 
-tr.innerHTML=`
 
-<td>
-<strong>
-${escapeHtml(devoirTitre)}
-</strong>
-</td>
+[
+d.devoirTitre,
+d.etudiantNom,
+d.fichier,
+d.commentaire,
+d.note==null
+?"Non noté"
+:`${d.note}/100`,
+d.correctionCommentaire||"Pas encore corrigé"
+].forEach(
+(value,index)=>{
 
-<td>
-${escapeHtml(r.etudiantNom||"")}
-</td>
+const td=
+document.createElement("td");
 
-<td></td>
-
-<td>
-${escapeHtml(r.commentaire||"")}
-</td>
-
-<td>
-
-<span class="badge ${
-r.status==="corrige"
-?
-"badge-green"
-:
-"badge-orange"
-}">
-
-${escapeHtml(r.status||"remis")}
-
-</span>
-
-</td>
-
-<td>
-
-${
-r.note!==null &&
-r.note!==undefined &&
-r.note!==""
-?
-`<span class="grade">${escapeHtml(r.note)}/100</span>`
-:
-"Non noté"
-}
-
-</td>
-
-<td>
-${escapeHtml(r.commentaireProf||"")}
-</td>
-
-<td></td>
-
-`;
-
-const cells=
-tr.querySelectorAll("td");
-
-const fileCell=
-cells[2];
-
-if(r.fichier){
+if(index===2 && value){
 
 const link=
 document.createElement("a");
 
-link.href=r.fichier;
+link.href=value;
 link.target="_blank";
 link.rel="noopener";
+link.textContent=
+"📎 Ouvrir";
 
-link.className="btn";
+td.appendChild(link);
 
-link.textContent="📄 Ouvrir";
+}else{
 
-fileCell.appendChild(link);
+td.textContent=
+value??"";
 
 }
 
-const actions=
-cells[7];
+tr.appendChild(td);
+
+}
+);
 
 
-/* STUDENT */
+const td=
+document.createElement("td");
 
-if(isStudent()){
+const group=
+document.createElement("div");
+
+group.className=
+"action-group";
+
+
+if(
+currentUserData?.isAdmin||
+currentUserData?.role==="professeur"
+){
 
 const edit=
 document.createElement("button");
 
 edit.className="btn";
-edit.textContent="✏️ Modifier";
+
+edit.textContent=
+"✏️ Corriger";
+
+edit.onclick=()=>{
+correctRemise(
+item.id,
+d
+);
+};
+
+group.appendChild(edit);
+
+}
+
+
+if(
+currentUserData?.isAdmin||
+(
+currentUserData?.role==="eleve" &&
+d.etudiantUid===currentUser.uid
+)
+){
+
+const edit=
+document.createElement("button");
+
+edit.className=
+"btn btn-orange";
+
+edit.textContent=
+"Modifier";
 
 edit.onclick=()=>{
 editRemise(
 item.id,
-r
+d
 );
 };
 
-actions.appendChild(edit);
+group.appendChild(edit);
+
+}
+
+
+if(
+currentUserData?.isAdmin||
+(
+currentUserData?.role==="eleve" &&
+d.etudiantUid===currentUser.uid
+)
+){
 
 const del=
 document.createElement("button");
@@ -3816,69 +3520,36 @@ document.createElement("button");
 del.className=
 "btn btn-red";
 
-del.style.marginLeft="5px";
-
-del.textContent="🗑️ Supprimer";
+del.textContent=
+"Supprimer";
 
 del.onclick=()=>{
-deleteRemise(
-item.id
-);
+deleteRemise(item.id,d);
 };
 
-actions.appendChild(del);
+group.appendChild(del);
 
 }
 
 
-/* TEACHER */
-
-if(isTeacherOrAdmin()){
-
-const correct=
-document.createElement("button");
-
-correct.className=
-"btn btn-purple";
-
-correct.textContent=
-"✏️ Corriger";
-
-correct.onclick=()=>{
-correctRemise(
-item.id,
-r,
-devoirTitre
-);
-};
-
-actions.appendChild(correct);
-
-}
+td.appendChild(group);
+tr.appendChild(td);
 
 tbody.appendChild(tr);
 
-}
-
-if(count===0){
-
-tbody.innerHTML=`
-<tr>
-<td colspan="8">
-Aucune remise trouvée.
-</td>
-</tr>
-`;
-
-}
+});
 
 }catch(error){
 
 console.error(error);
 
-showToast(
-"Impossible de charger les remises."
-);
+tbody.innerHTML=`
+<tr>
+<td colspan="7">
+Impossible de charger les remises.
+</td>
+</tr>
+`;
 
 }
 
@@ -3886,35 +3557,38 @@ showToast(
 
 
 /* =====================================================
-EDIT REMISE — STUDENT
+MODIFIER REMISE
 ===================================================== */
 
-window.editRemise=
-async function(id,data){
-
-if(
-!isStudent() ||
-data.etudiantId!==currentUser.uid
+window.editRemise=async function(
+id,
+data
 ){
 
+const allowed=
+currentUserData?.isAdmin||
+(
+currentUserData?.role==="eleve" &&
+data.etudiantUid===currentUser.uid
+);
+
+if(!allowed){
+
 showToast(
-"Vous ne pouvez modifier que votre propre remise."
+"Ou pa gen dwa modifye remise sa a."
 );
 
 return;
-
 }
 
-const fichier=
-prompt(
+const fichier=prompt(
 "Lien du fichier",
 data.fichier||""
 );
 
 if(fichier===null)return;
 
-const commentaire=
-prompt(
+const commentaire=prompt(
 "Commentaire",
 data.commentaire||""
 );
@@ -3928,7 +3602,7 @@ doc(db,"remises",id),
 {
 fichier:fichier.trim(),
 commentaire:commentaire.trim(),
-status:"remis"
+updatedAt:serverTimestamp()
 }
 );
 
@@ -3952,20 +3626,28 @@ showToast(
 
 
 /* =====================================================
-DELETE REMISE
+SUPPRIMER REMISE
 ===================================================== */
 
-window.deleteRemise=
-async function(id){
+window.deleteRemise=async function(
+id,
+data
+){
 
-if(!isStudent()){
+const allowed=
+currentUserData?.isAdmin||
+(
+currentUserData?.role==="eleve" &&
+data.etudiantUid===currentUser.uid
+);
+
+if(!allowed){
 
 showToast(
-"Seul l'élève peut supprimer sa remise."
+"Ou pa gen dwa supprime remise sa a."
 );
 
 return;
-
 }
 
 if(!confirm(
@@ -3998,101 +3680,7 @@ showToast(
 
 
 /* =====================================================
-CORRIGER REMISE
-===================================================== */
-
-window.correctRemise=
-async function(id,data,devoirTitre){
-
-if(!isTeacherOrAdmin()){
-
-showToast(
-"Accès réservé au professeur."
-);
-
-return;
-
-}
-
-const noteInput=
-prompt(
-"Donnez la note sur 100 :",
-data.note??""
-);
-
-if(noteInput===null)return;
-
-const note=Number(noteInput);
-
-if(
-isNaN(note)||
-note<0||
-note>100
-){
-
-showToast(
-"La note doit être comprise entre 0 et 100."
-);
-
-return;
-
-}
-
-const commentaire=
-prompt(
-"Commentaire du professeur :",
-data.commentaireProf||""
-);
-
-if(commentaire===null)return;
-
-const correction=
-prompt(
-"Correction / observation :",
-data.correction||""
-);
-
-if(correction===null)return;
-
-try{
-
-await updateDoc(
-doc(db,"remises",id),
-{
-note:note,
-commentaireProf:
-commentaire.trim(),
-correction:
-correction.trim(),
-status:"corrige",
-professeurId:
-currentUser.uid,
-correctedAt:
-serverTimestamp()
-}
-);
-
-showToast(
-"Devoir corrigé. Note enregistrée sur 100."
-);
-
-await refreshRemises();
-
-}catch(error){
-
-console.error(error);
-
-showToast(
-"Impossible d'enregistrer la correction."
-);
-
-}
-
-};
-
-
-/* =====================================================
-CORRECTIONS
+CORRECTION
 ===================================================== */
 
 async function renderCorrections(){
@@ -4102,6 +3690,26 @@ document.getElementById(
 "page-corrections"
 );
 
+if(
+currentUserData?.role!=="professeur" &&
+!currentUserData?.isAdmin
+){
+
+container.innerHTML=`
+
+<div class="page-title">
+<h2>✏️ Corrections</h2>
+<p>Correction des devoirs remis.</p>
+</div>
+
+<div class="info-box">
+Cette section est réservée aux professeurs et à l'administrateur.
+</div>
+`;
+
+return;
+}
+
 container.innerHTML=`
 
 <div class="page-title">
@@ -4109,30 +3717,24 @@ container.innerHTML=`
 <h2>✏️ Corrections</h2>
 
 <p>
-Corrections, commentaires et notes sur 100.
+Corriger les devoirs, commenter et donner une note sur 100.
 </p>
 
 </div>
 
-<div class="${
-isStudent()
-?
-"student-note"
-:
-"teacher-note"
-}">
-
-${
-isStudent()
-?
-"👨‍🎓 Voici les corrections et commentaires reçus du professeur."
-:
-"👨‍🏫 Ici vous pouvez corriger les devoirs remis par les élèves et donner une note sur 100."
-}
-
-</div>
-
 <div class="panel">
+
+<div class="info-box">
+👨‍🏫 Pou chak remise ou ka:
+<br>
+• Louvri fichye elèv la
+<br>
+• Bay yon nòt ant 0 ak 100
+<br>
+• Ekri yon kòmantè
+<br>
+• Sove koreksyon an
+</div>
 
 <div class="table-wrap">
 
@@ -4142,11 +3744,10 @@ isStudent()
 
 <tr>
 <th>Devoir</th>
-<th>Élève</th>
+<th>Étudiant</th>
+<th>Fichier</th>
 <th>Note /100</th>
-<th>Correction</th>
-<th>Commentaire professeur</th>
-<th>Statut</th>
+<th>Commentaire</th>
 <th>Action</th>
 </tr>
 
@@ -4155,7 +3756,7 @@ isStudent()
 <tbody id="correctionsTable">
 
 <tr>
-<td colspan="7">
+<td colspan="6">
 Chargement...
 </td>
 </tr>
@@ -4174,10 +3775,6 @@ await refreshCorrections();
 }
 
 
-/* =====================================================
-REFRESH CORRECTIONS
-===================================================== */
-
 async function refreshCorrections(){
 
 const tbody=
@@ -4194,162 +3791,268 @@ await getDocs(
 collection(db,"remises")
 );
 
-tbody.innerHTML="";
-
-let count=0;
-
-for(const item of snap.docs){
-
-const r=item.data();
-
-if(
-isStudent() &&
-r.etudiantId!==currentUser.uid
-){
-
-continue;
-
-}
-
-if(
-r.status!=="corrige" &&
-isStudent()
-){
-
-continue;
-
-}
-
-if(isTeacher()){
-
-if(
-r.professeurId &&
-r.professeurId!==currentUser.uid
-){
-
-continue;
-
-}
-
-}
-
-let devoirTitre="Devoir";
-
-try{
-
-const devoirSnap=
-await getDoc(
-doc(db,"devoirs",r.devoirId)
-);
-
-if(devoirSnap.exists()){
-
-devoirTitre=
-devoirSnap.data().titre||
-"Devoir";
-
-}
-
-}catch(e){
-
-console.error(e);
-
-}
-
-count++;
-
-const tr=
-document.createElement("tr");
-
-tr.innerHTML=`
-
-<td>
-${escapeHtml(devoirTitre)}
-</td>
-
-<td>
-${escapeHtml(r.etudiantNom||"")}
-</td>
-
-<td>
-${
-r.note!==null &&
-r.note!==undefined
-?
-`<span class="grade">${escapeHtml(r.note)}/100</span>`
-:
-"Non noté"
-}
-</td>
-
-<td>
-${escapeHtml(r.correction||"")}
-</td>
-
-<td>
-${escapeHtml(r.commentaireProf||"")}
-</td>
-
-<td>
-<span class="badge badge-green">
-Corrigé
-</span>
-</td>
-
-<td></td>
-`;
-
-const action=
-tr.lastElementChild;
-
-if(isTeacherOrAdmin()){
-
-const btn=
-document.createElement("button");
-
-btn.className=
-"btn btn-purple";
-
-btn.textContent=
-"✏️ Modifier correction";
-
-btn.onclick=()=>{
-correctRemise(
-item.id,
-r,
-devoirTitre
-);
-};
-
-action.appendChild(btn);
-
-}
-
-tbody.appendChild(tr);
-
-}
-
-if(count===0){
+if(snap.empty){
 
 tbody.innerHTML=`
 <tr>
-<td colspan="7">
-Aucune correction disponible.
+<td colspan="6">
+Aucune remise à corriger.
 </td>
 </tr>
 `;
 
+return;
 }
+
+tbody.innerHTML="";
+
+snap.forEach(item=>{
+
+const d=item.data();
+
+const tr=
+document.createElement("tr");
+
+
+let td=
+document.createElement("td");
+
+td.textContent=
+d.devoirTitre||"";
+
+tr.appendChild(td);
+
+
+td=document.createElement("td");
+
+td.textContent=
+d.etudiantNom||"";
+
+tr.appendChild(td);
+
+
+td=document.createElement("td");
+
+if(d.fichier){
+
+const a=
+document.createElement("a");
+
+a.href=d.fichier;
+a.target="_blank";
+a.rel="noopener";
+a.textContent="📎 Ouvrir";
+
+td.appendChild(a);
+
+}else{
+
+td.textContent="Aucun fichier";
+
+}
+
+tr.appendChild(td);
+
+
+td=document.createElement("td");
+
+const note=
+document.createElement("input");
+
+note.className="note-input";
+note.type="number";
+note.min="0";
+note.max="100";
+note.step="0.01";
+
+if(d.note!==null &&
+d.note!==undefined
+){
+
+note.value=d.note;
+
+}
+
+td.appendChild(note);
+
+tr.appendChild(td);
+
+
+td=document.createElement("td");
+
+const comment=
+document.createElement("textarea");
+
+comment.className=
+"comment-input";
+
+comment.rows=2;
+
+comment.placeholder=
+"Commentaire du professeur";
+
+comment.value=
+d.correctionCommentaire||"";
+
+td.appendChild(comment);
+
+tr.appendChild(td);
+
+
+td=document.createElement("td");
+
+const save=
+document.createElement("button");
+
+save.className=
+"btn btn-green";
+
+save.textContent=
+"💾 Enregistrer";
+
+save.onclick=async()=>{
+
+const value=
+note.value.trim();
+
+if(value===""){
+
+showToast(
+"Entrez une note entre 0 et 100."
+);
+
+return;
+}
+
+const numeric=
+Number(value);
+
+if(
+Number.isNaN(numeric)||
+numeric<0||
+numeric>100
+){
+
+showToast(
+"La note doit être entre 0 et 100."
+);
+
+return;
+}
+
+try{
+
+await updateDoc(
+doc(db,"remises",item.id),
+{
+note:numeric,
+correctionCommentaire:
+comment.value.trim(),
+statut:"corrige",
+correcteurUid:
+currentUser.uid,
+correctedAt:
+serverTimestamp()
+}
+);
+
+
+/*
+Nou mete menm rezilta a nan
+collection resultats.
+*/
+
+const existing=
+await findResultForRemise(
+d
+);
+
+const resultData={
+etudiantUid:d.etudiantUid,
+etudiantNom:d.etudiantNom||"",
+devoirId:d.devoirId||"",
+devoirTitre:d.devoirTitre||"",
+matiere:d.matiere||"",
+professeurUid:d.professeurUid||currentUser.uid,
+note:numeric,
+commentaire:
+comment.value.trim(),
+updatedAt:serverTimestamp()
+};
+
+if(existing){
+
+await updateDoc(
+doc(
+db,
+"resultats",
+existing.id
+),
+resultData
+);
+
+}else{
+
+await addDoc(
+collection(db,"resultats"),
+{
+...resultData,
+createdAt:serverTimestamp()
+}
+);
+
+}
+
+showToast(
+"Correction et note enregistrées."
+);
+
+await refreshCorrections();
 
 }catch(error){
 
 console.error(error);
 
 showToast(
-"Impossible de charger les corrections."
+"Impossible d'enregistrer la correction."
 );
 
 }
+
+};
+
+td.appendChild(save);
+tr.appendChild(td);
+
+tbody.appendChild(tr);
+
+});
+
+}catch(error){
+
+console.error(error);
+
+tbody.innerHTML=`
+<tr>
+<td colspan="6">
+Impossible de charger les corrections.
+</td>
+</tr>
+`;
+
+}
+
+}
+
+
+async function correctRemise(id,data){
+
+showPage(
+"corrections",
+document.getElementById(
+"correctionsMenu"
+)
+);
 
 }
 
@@ -4365,6 +4068,10 @@ document.getElementById(
 "page-resultats"
 );
 
+const role=
+currentUserData?.role;
+
+
 container.innerHTML=`
 
 <div class="page-title">
@@ -4372,30 +4079,43 @@ container.innerHTML=`
 <h2>📊 Résultats</h2>
 
 <p>
-Résultats et notes des étudiants.
+${
+role==="eleve"
+?
+"Vos notes et résultats."
+:
+"Gestion des résultats et des notes sur 100."
+}
 </p>
 
 </div>
 
-<div class="${
-isStudent()
-?
-"student-note"
-:
-"teacher-note"
-}">
 
 ${
-isStudent()
+role==="professeur"||
+currentUserData?.isAdmin
 ?
-"👨‍🎓 Vous pouvez voir vos notes et résultats."
+`
+<div class="info-box">
+👨‍🏫 Les notes sont données dans la section
+<strong>Corrections</strong>.
+Chaque note est enregistrée sur <strong>100</strong>.
+</div>
+`
 :
-"👨‍🏫 Vous pouvez voir les résultats liés aux devoirs corrigés."
+`
+<div class="info-box">
+🎓 Ou ka wè nòt ou yo ak rezilta devwa ou yo isit la.
+</div>
+`
 }
 
-</div>
 
 <div class="panel">
+
+<h3>
+📊 Liste des résultats
+</h3>
 
 <div class="table-wrap">
 
@@ -4404,12 +4124,12 @@ isStudent()
 <thead>
 
 <tr>
+<th>Étudiant</th>
 <th>Devoir</th>
-<th>Élève</th>
 <th>Matière</th>
-<th>Note /100</th>
+<th>Note</th>
 <th>Commentaire</th>
-<th>Statut</th>
+<th>Dernière modification</th>
 </tr>
 
 </thead>
@@ -4436,10 +4156,6 @@ await refreshResultats();
 }
 
 
-/* =====================================================
-REFRESH RESULTATS
-===================================================== */
-
 async function refreshResultats(){
 
 const tbody=
@@ -4451,121 +4167,33 @@ if(!tbody)return;
 
 try{
 
-const snap=
+let snap;
+
+if(currentUserData?.role==="eleve"){
+
+const q=
+query(
+collection(db,"resultats"),
+where(
+"etudiantUid",
+"==",
+currentUser.uid
+)
+);
+
+snap=await getDocs(q);
+
+}else{
+
+snap=
 await getDocs(
-collection(db,"remises")
+collection(db,"resultats")
 );
 
-tbody.innerHTML="";
-
-let count=0;
-
-for(const item of snap.docs){
-
-const r=item.data();
-
-if(r.note===null||
-r.note===undefined||
-r.note===""){
-
-continue;
-
 }
 
-if(
-isStudent() &&
-r.etudiantId!==currentUser.uid
-){
 
-continue;
-
-}
-
-if(isTeacher()){
-
-if(
-r.professeurId &&
-r.professeurId!==currentUser.uid
-){
-
-continue;
-
-}
-
-}
-
-let devoirTitre="Devoir";
-let matiere="";
-
-try{
-
-const devoirSnap=
-await getDoc(
-doc(db,"devoirs",r.devoirId)
-);
-
-if(devoirSnap.exists()){
-
-const d=
-devoirSnap.data();
-
-devoirTitre=
-d.titre||"Devoir";
-
-matiere=
-d.matiere||"";
-
-}
-
-}catch(e){
-
-console.error(e);
-
-}
-
-count++;
-
-const tr=
-document.createElement("tr");
-
-tr.innerHTML=`
-
-<td>
-${escapeHtml(devoirTitre)}
-</td>
-
-<td>
-${escapeHtml(r.etudiantNom||"")}
-</td>
-
-<td>
-${escapeHtml(matiere)}
-</td>
-
-<td>
-<span class="grade">
-${escapeHtml(r.note)}/100
-</span>
-</td>
-
-<td>
-${escapeHtml(r.commentaireProf||"")}
-</td>
-
-<td>
-
-<span class="badge badge-green">
-Corrigé
-</span>
-
-</td>
-`;
-
-tbody.appendChild(tr);
-
-}
-
-if(count===0){
+if(snap.empty){
 
 tbody.innerHTML=`
 <tr>
@@ -4575,15 +4203,55 @@ Aucun résultat disponible.
 </tr>
 `;
 
+return;
 }
+
+tbody.innerHTML="";
+
+snap.forEach(item=>{
+
+const d=item.data();
+
+const tr=
+document.createElement("tr");
+
+
+[
+d.etudiantNom,
+d.devoirTitre,
+d.matiere,
+d.note!=null
+?`${d.note}/100`
+:"Non noté",
+d.commentaire||"Aucun commentaire",
+""
+].forEach(value=>{
+
+const td=
+document.createElement("td");
+
+td.textContent=
+value??"";
+
+tr.appendChild(td);
+
+});
+
+tbody.appendChild(tr);
+
+});
 
 }catch(error){
 
 console.error(error);
 
-showToast(
-"Impossible de charger les résultats."
-);
+tbody.innerHTML=`
+<tr>
+<td colspan="6">
+Impossible de charger les résultats.
+</td>
+</tr>
+`;
 
 }
 
@@ -4591,178 +4259,45 @@ showToast(
 
 
 /* =====================================================
-VIEW DEVOIR REMISES
+CHERCHE RESULTAT EXISTANT
 ===================================================== */
 
-window.viewDevoirRemises=
-async function(devoirId){
+async function findResultForRemise(data){
 
-if(!isTeacherOrAdmin()){
+if(!data.etudiantUid||
+!data.devoirId){
 
-showToast(
-"Accès réservé au professeur."
-);
-
-return;
-
+return null;
 }
 
-document
-.getElementById("userMenu")
-.classList.remove("hidden");
-
-document
-.getElementById("userMenu")
-.innerHTML=`
-
-<div class="modal-box">
-
-<button
-class="modal-close"
-onclick="closeUserMenu()">
-×
-</button>
-
-<h3>📥 Remises des élèves</h3>
-
-<div id="devoirRemisesContent">
-Chargement...
-</div>
-
-</div>
-`;
-
-try{
+const q=
+query(
+collection(db,"resultats"),
+where(
+"etudiantUid",
+"==",
+data.etudiantUid
+),
+where(
+"devoirId",
+"==",
+data.devoirId
+)
+);
 
 const snap=
-await getDocs(
-collection(db,"remises")
-);
+await getDocs(q);
 
-const box=
-document.getElementById(
-"devoirRemisesContent"
-);
+if(snap.empty){
 
-box.innerHTML="";
-
-let found=0;
-
-for(const item of snap.docs){
-
-const r=item.data();
-
-if(r.devoirId!==devoirId)
-continue;
-
-if(
-isTeacher() &&
-r.professeurId &&
-r.professeurId!==currentUser.uid
-)
-continue;
-
-found++;
-
-const div=
-document.createElement("div");
-
-div.className="info-card";
-
-div.innerHTML=`
-
-<h4>
-👨‍🎓 ${escapeHtml(r.etudiantNom||"")}
-</h4>
-
-<p>
-<strong>Commentaire :</strong>
-${escapeHtml(r.commentaire||"")}
-</p>
-
-<p>
-<strong>Note :</strong>
-${
-r.note!==null &&
-r.note!==undefined
-?
-`<span class="grade">${escapeHtml(r.note)}/100</span>`
-:
-"Non corrigé"
-}
-</p>
-
-<p>
-<strong>Commentaire professeur :</strong>
-${escapeHtml(r.commentaireProf||"")}
-</p>
-
-<div style="margin-top:10px"></div>
-
-`;
-
-if(r.fichier){
-
-const link=
-document.createElement("a");
-
-link.href=r.fichier;
-link.target="_blank";
-link.rel="noopener";
-
-link.className="btn";
-
-link.textContent=
-"📄 Ouvrir la remise";
-
-div.appendChild(link);
-
+return null;
 }
 
-const btn=
-document.createElement("button");
-
-btn.className=
-"btn btn-purple";
-
-btn.style.marginLeft="5px";
-
-btn.textContent=
-"✏️ Corriger";
-
-btn.onclick=()=>{
-closeUserMenu();
-correctRemise(
-item.id,
-r,
-"Devoir"
-);
+return{
+id:snap.docs[0].id
 };
 
-div.appendChild(btn);
-
-box.appendChild(div);
-
 }
-
-if(found===0){
-
-box.innerHTML=
-"<p>Aucune remise pour ce devoir.</p>";
-
-}
-
-}catch(error){
-
-console.error(error);
-
-showToast(
-"Impossible de charger les remises."
-);
-
-}
-
-};
 
 
 /* =====================================================
@@ -4770,16 +4305,6 @@ USERS ADMIN
 ===================================================== */
 
 async function renderUsers(){
-
-if(!isAdmin()){
-
-showToast(
-"Accès réservé à l'administrateur."
-);
-
-return;
-
-}
 
 const container=
 document.getElementById(
@@ -4793,15 +4318,26 @@ container.innerHTML=`
 <h2>👥 Gestion des utilisateurs</h2>
 
 <p>
-L'administrateur contrôle les comptes,
-les rôles et les statuts.
+L'administrateur accepte les comptes et donne les rôles.
 </p>
 
 </div>
 
-<div class="panel">
+<div class="info-box">
+Pour créer un professeur:
+<br>
+1. L'utilisateur crée son compte.
+<br>
+2. Son statut est <strong>attente</strong>.
+<br>
+3. L'administrateur choisit le rôle
+<strong>professeur</strong>.
+<br>
+4. L'administrateur clique sur
+<strong>Accepter</strong>.
+</div>
 
-<h3>Utilisateurs enregistrés</h3>
+<div class="panel">
 
 <div class="table-wrap">
 
@@ -4814,7 +4350,6 @@ les rôles et les statuts.
 <th>E-mail</th>
 <th>Rôle</th>
 <th>Statut</th>
-<th>UID</th>
 <th>Actions</th>
 </tr>
 
@@ -4823,7 +4358,7 @@ les rôles et les statuts.
 <tbody id="usersTable">
 
 <tr>
-<td colspan="6">
+<td colspan="5">
 Chargement...
 </td>
 </tr>
@@ -4858,48 +4393,63 @@ const data=item.data();
 const tr=
 document.createElement("tr");
 
-tr.innerHTML=`
 
-<td>
-${escapeHtml(data.name||"")}
-</td>
+let td=
+document.createElement("td");
 
-<td>
-${escapeHtml(data.email||"")}
-</td>
+td.textContent=
+data.name||"";
 
-<td>
-${escapeHtml(data.role||"")}
-</td>
+tr.appendChild(td);
 
-<td>
 
-<span class="badge ${
+td=document.createElement("td");
+
+td.textContent=
+data.email||"";
+
+tr.appendChild(td);
+
+
+td=document.createElement("td");
+
+td.textContent=
+data.role||"eleve";
+
+tr.appendChild(td);
+
+
+td=document.createElement("td");
+
+const badge=
+document.createElement("span");
+
+badge.className=
+"badge "+
+(
 data.status==="accepted"
 ?
 "badge-green"
 :
 "badge-orange"
-}">
+);
 
-${escapeHtml(data.status||"")}
+badge.textContent=
+data.status||"attente";
 
-</span>
+td.appendChild(badge);
 
-</td>
+tr.appendChild(td);
 
-<td>
-${escapeHtml(data.uid||item.id)}
-</td>
 
-<td></td>
-`;
+td=document.createElement("td");
 
 const actions=
-tr.lastElementChild;
+document.createElement("div");
 
+actions.className=
+"action-group";
 
-/* ACCEPT */
 
 if(data.status!=="accepted"){
 
@@ -4912,11 +4462,21 @@ accept.className=
 accept.textContent=
 "Accepter";
 
-accept.onclick=()=>{
-updateUserStatus(
-item.id,
-"accepted"
+accept.onclick=async()=>{
+
+await updateDoc(
+doc(db,"users",item.id),
+{
+status:"accepted"
+}
 );
+
+showToast(
+"Utilisateur accepté."
+);
+
+await renderUsers();
+
 };
 
 actions.appendChild(accept);
@@ -4924,29 +4484,21 @@ actions.appendChild(accept);
 }
 
 
-/* ROLE */
-
 const role=
 document.createElement("button");
 
 role.className="btn";
 
-role.style.marginLeft="5px";
-
 role.textContent=
 "Modifier rôle";
 
-role.onclick=()=>{
-changeUserRole(
+role.onclick=()=>changeUserRole(
 item.id,
 data.role||"eleve"
 );
-};
 
 actions.appendChild(role);
 
-
-/* DELETE */
 
 if(item.id!==currentUser.uid){
 
@@ -4956,20 +4508,34 @@ document.createElement("button");
 del.className=
 "btn btn-red";
 
-del.style.marginLeft="5px";
-
 del.textContent=
 "Supprimer";
 
-del.onclick=()=>{
-deleteUserProfile(
-item.id
+del.onclick=async()=>{
+
+if(!confirm(
+"Supprimer ce profil ?"
+))return;
+
+await deleteDoc(
+doc(db,"users",item.id)
 );
+
+showToast(
+"Profil supprimé."
+);
+
+await renderUsers();
+
 };
 
 actions.appendChild(del);
 
 }
+
+
+td.appendChild(actions);
+tr.appendChild(td);
 
 tbody.appendChild(tr);
 
@@ -4989,55 +4555,6 @@ showToast(
 
 
 /* =====================================================
-UPDATE USER STATUS
-===================================================== */
-
-async function updateUserStatus(
-uid,
-status
-){
-
-if(!isAdmin()){
-
-showToast(
-"Seul l'administrateur peut modifier le statut."
-);
-
-return;
-
-}
-
-try{
-
-await updateDoc(
-doc(db,"users",uid),
-{
-status:status
-}
-);
-
-showToast(
-"Utilisateur accepté."
-);
-
-await renderUsers();
-
-loadDashboard();
-
-}catch(error){
-
-console.error(error);
-
-showToast(
-"Impossible de modifier le statut."
-);
-
-}
-
-}
-
-
-/* =====================================================
 CHANGE ROLE
 ===================================================== */
 
@@ -5046,58 +4563,31 @@ uid,
 oldRole
 ){
 
-if(!isAdmin()){
-
-showToast(
-"Seul l'administrateur peut modifier les rôles."
+const value=prompt(
+"Écrire le rôle:\n\nadministrateur\nprofesseur\neleve",
+oldRole
 );
 
-return;
+if(value===null)return;
 
-}
+const role=value
+.trim()
+.toLowerCase();
 
-const roleInput=
-prompt(
-"Entrez le rôle :\n\n1 = administrateur\n2 = professeur\n3 = eleve",
-oldRole||"eleve"
-);
 
-if(roleInput===null)return;
+const validRoles=[
+"administrateur",
+"professeur",
+"eleve"
+];
 
-const valeur=
-roleInput.trim().toLowerCase();
-
-const roleMap={
-
-"1":"administrateur",
-"2":"professeur",
-"3":"eleve",
-
-"administrateur":"administrateur",
-"admin":"administrateur",
-
-"professeur":"professeur",
-"prof":"professeur",
-"professeure":"professeur",
-
-"eleve":"eleve",
-"élève":"eleve",
-"etudiant":"eleve",
-"étudiant":"eleve"
-
-};
-
-const role=
-roleMap[valeur];
-
-if(!role){
+if(!validRoles.includes(role)){
 
 showToast(
 "Rôle invalide."
 );
 
 return;
-
 }
 
 try{
@@ -5110,7 +4600,7 @@ role:role
 );
 
 showToast(
-"Rôle modifié avec succès."
+"Rôle modifié."
 );
 
 await renderUsers();
@@ -5121,57 +4611,6 @@ console.error(error);
 
 showToast(
 "Impossible de modifier le rôle."
-);
-
-}
-
-}
-
-
-/* =====================================================
-DELETE USER
-===================================================== */
-
-async function deleteUserProfile(uid){
-
-if(!isAdmin()){
-
-showToast(
-"Seul l'administrateur peut supprimer un utilisateur."
-);
-
-return;
-
-}
-
-if(!confirm(
-"Supprimer le profil Firestore de cet utilisateur ?"
-)){
-
-return;
-
-}
-
-try{
-
-await deleteDoc(
-doc(db,"users",uid)
-);
-
-showToast(
-"Profil supprimé."
-);
-
-await renderUsers();
-
-loadDashboard();
-
-}catch(error){
-
-console.error(error);
-
-showToast(
-"Suppression impossible."
 );
 
 }
@@ -5212,85 +4651,49 @@ etudiants,
 professeurs,
 classes,
 matieres,
-devoirs
+devoirs,
+remises
 ]=await Promise.all([
 
 countCollection("etudiants"),
 countCollection("professeurs"),
 countCollection("classes"),
 countCollection("matieres"),
-countCollection("devoirs")
+countCollection("devoirs"),
+countCollection("remises")
 
 ]);
 
-document
-.getElementById("statEtudiants")
-.textContent=etudiants;
 
-document
-.getElementById("statProfesseurs")
-.textContent=professeurs;
+document.getElementById(
+"statEtudiants"
+).textContent=etudiants;
 
-document
-.getElementById("statClasses")
-.textContent=classes;
+document.getElementById(
+"statProfesseurs"
+).textContent=professeurs;
 
-document
-.getElementById("statMatieres")
-.textContent=matieres;
+document.getElementById(
+"statClasses"
+).textContent=classes;
 
-document
-.getElementById("statDevoirs")
-.textContent=devoirs;
+document.getElementById(
+"statMatieres"
+).textContent=matieres;
 
+document.getElementById(
+"statDevoirs"
+).textContent=devoirs;
 
-if(isAdmin()){
-
-try{
-
-const users=
-await getDocs(
-collection(db,"users")
-);
-
-let pending=0;
-
-users.forEach(d=>{
-
-if(
-d.data().status==="attente"
-){
-
-pending++;
-
-}
-
-});
-
-document
-.getElementById("statPending")
-.textContent=
-pending;
-
-}catch(error){
-
-console.error(error);
-
-}
-
-}else{
-
-document
-.getElementById("statPending")
-.textContent="0";
-
-}
+document.getElementById(
+"statRemises"
+).textContent=remises;
 
 }
 
 
 /* =====================================================
-STATISTICS
+STATISTIQUES
 ===================================================== */
 
 async function renderStatistics(){
@@ -5307,7 +4710,7 @@ container.innerHTML=`
 <h2>📈 Statistiques</h2>
 
 <p>
-Vue générale des données académiques.
+Vue générale.
 </p>
 
 </div>
@@ -5327,35 +4730,31 @@ Vue générale des données académiques.
 </div>
 
 <div class="stat">
-<div class="stat-icon">🏫</div>
-<div class="stat-title">Classes</div>
+<div class="stat-icon">📝</div>
+<div class="stat-title">Devoirs</div>
 <div id="s3" class="stat-number">0</div>
 </div>
 
 <div class="stat">
-<div class="stat-icon">📚</div>
-<div class="stat-title">Matières</div>
+<div class="stat-icon">📤</div>
+<div class="stat-title">Remises</div>
 <div id="s4" class="stat-number">0</div>
 </div>
 
 </div>
 `;
 
-document.getElementById("s1")
-.textContent=
+document.getElementById("s1").textContent=
 await countCollection("etudiants");
 
-document.getElementById("s2")
-.textContent=
+document.getElementById("s2").textContent=
 await countCollection("professeurs");
 
-document.getElementById("s3")
-.textContent=
-await countCollection("classes");
+document.getElementById("s3").textContent=
+await countCollection("devoirs");
 
-document.getElementById("s4")
-.textContent=
-await countCollection("matieres");
+document.getElementById("s4").textContent=
+await countCollection("remises");
 
 }
 
@@ -5378,44 +4777,19 @@ container.innerHTML=`
 <h2>💾 Données / Sauvegarde</h2>
 
 <p>
-Exportez les données de votre établissement.
+Exporter les données.
 </p>
 
 </div>
 
 <div class="panel">
 
-<h3>Exporter les données</h3>
-
-<p style="margin-bottom:15px">
-
-L'export crée un fichier JSON contenant
-les collections accessibles.
-
-</p>
-
-${
-isAdmin()
-?
-`
 <button
 class="btn btn-green"
-onclick="exportData()">
-
+onclick="exportData()"
+>
 💾 Télécharger la sauvegarde
-
 </button>
-`
-:
-`
-<div class="admin-only-note">
-
-🔒 Seul l'administrateur peut effectuer
-une sauvegarde.
-
-</div>
-`
-}
 
 </div>
 `;
@@ -5423,21 +4797,18 @@ une sauvegarde.
 }
 
 
-window.exportData=
-async function(){
+window.exportData=async function(){
 
-if(!isAdmin()){
+if(!currentUserData?.isAdmin){
 
 showToast(
-"Seul l'administrateur peut exporter les données."
+"Accès administrateur uniquement."
 );
 
 return;
-
 }
 
-const collections=[
-
+const names=[
 "users",
 "etudiants",
 "professeurs",
@@ -5447,13 +4818,13 @@ const collections=[
 "matieres",
 "cours",
 "devoirs",
-"remises"
-
+"remises",
+"resultats"
 ];
 
 const backup={};
 
-for(const name of collections){
+for(const name of names){
 
 try{
 
@@ -5521,41 +4892,45 @@ LANGUAGE
 window.changeLanguage=function(){
 
 const value=
-document
-.getElementById("languageSelect")
-.value;
+document.getElementById(
+"languageSelect"
+).value;
 
 localStorage.setItem(
 "language",
 value
 );
 
+const welcome=
+document.getElementById(
+"welcomeText"
+);
+
 if(value==="ht"){
 
-document
-.getElementById("welcomeText")
-.textContent=
+welcome.textContent=
 "Byenveni nan espas jesyon Centre de Formation Le Pédagogue.";
 
 }else{
 
-document
-.getElementById("welcomeText")
-.textContent=
+welcome.textContent=
 "Bienvenue dans votre espace de gestion.";
 
 }
 
 };
 
+
 const savedLanguage=
-localStorage.getItem("language");
+localStorage.getItem(
+"language"
+);
 
 if(savedLanguage){
 
-document
-.getElementById("languageSelect")
-.value=
+document.getElementById(
+"languageSelect"
+).value=
 savedLanguage;
 
 }
@@ -5596,15 +4971,18 @@ toast.textContent=message;
 
 toast.classList.remove("hidden");
 
-setTimeout(()=>{
+setTimeout(
+()=>{
 toast.classList.add("hidden");
-},3500);
+},
+3500
+);
 
 }
 
 
 /* =====================================================
-FIREBASE FRIENDLY ERRORS
+ERREURS
 ===================================================== */
 
 function getFriendlyError(error){
@@ -5612,10 +4990,9 @@ function getFriendlyError(error){
 const code=
 error?.code||"";
 
+
 if(
-code.includes(
-"email-already-in-use"
-)
+code.includes("email-already-in-use")
 ){
 
 return "Cette adresse e-mail est déjà utilisée.";
@@ -5668,7 +5045,7 @@ if(
 code.includes("operation-not-allowed")
 ){
 
-return "La connexion Google n'est pas activée dans Firebase Authentication.";
+return "La connexion Google n'est pas activée dans Firebase.";
 
 }
 
@@ -5688,23 +5065,7 @@ return "Accès refusé par les règles Firebase.";
 
 }
 
-return "Une erreur est survenue. Vérifiez les informations saisies.";
-
-}
-
-
-/* =====================================================
-ESCAPE HTML
-===================================================== */
-
-function escapeHtml(value){
-
-return String(value)
-.replaceAll("&","&amp;")
-.replaceAll("<","&lt;")
-.replaceAll(">","&gt;")
-.replaceAll('"',"&quot;")
-.replaceAll("'","&#039;");
+return "Une erreur est survenue. Vérifiez les informations.";
 
 }
 
