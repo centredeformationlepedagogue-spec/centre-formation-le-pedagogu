@@ -23,6 +23,7 @@
 --green:#16a34a;
 --red:#dc2626;
 --orange:#ea580c;
+--purple:#7c3aed;
 --shadow:0 4px 18px rgba(15,61,145,.10)
 }
 
@@ -55,17 +56,20 @@ box-shadow:0 20px 60px rgba(0,0,0,.25)
 }
 
 .logo-box{text-align:center;margin-bottom:25px}
+
 .logo-box img{
 width:90px;
 height:90px;
 object-fit:contain;
 border-radius:18px
 }
+
 .logo-box h1{
 color:var(--blue);
 margin-top:12px;
 font-size:23px
 }
+
 .logo-box p{
 color:var(--gray);
 margin-top:5px
@@ -80,9 +84,7 @@ border-radius:9px;
 outline:none
 }
 
-.auth-box input:focus{
-border-color:var(--blue2)
-}
+.auth-box input:focus{border-color:var(--blue2)}
 
 .btn{
 border:0;
@@ -98,6 +100,7 @@ background:var(--blue2)
 .btn-red{background:var(--red)}
 .btn-orange{background:var(--orange)}
 .btn-gray{background:#64748b}
+.btn-purple{background:var(--purple)}
 .full{width:100%}
 
 .google-btn{
@@ -184,7 +187,7 @@ position:fixed;
 left:0;
 top:68px;
 bottom:0;
-width:255px;
+width:270px;
 background:#0f3d91;
 color:white;
 overflow-y:auto;
@@ -218,7 +221,7 @@ background:rgba(255,255,255,.15)
 }
 
 .main{
-margin-left:255px;
+margin-left:270px;
 padding:92px 25px 30px
 }
 
@@ -335,7 +338,8 @@ font-weight:bold
 padding:11px;
 border:1px solid var(--border);
 border-radius:8px;
-outline:none
+outline:none;
+background:white
 }
 
 .form-group textarea{
@@ -388,17 +392,34 @@ margin-bottom:15px;
 line-height:1.5
 }
 
-.student-box{
-padding:15px;
-background:#f8fafc;
-border:1px solid var(--border);
-border-radius:10px;
-margin-bottom:12px
+.warning-box{
+padding:13px 15px;
+background:#fff7ed;
+border:1px solid #fed7aa;
+border-radius:9px;
+color:#9a3412;
+margin-bottom:15px;
+line-height:1.5
 }
 
-.student-box h4{
-color:var(--blue);
-margin-bottom:7px
+.action-group{
+display:flex;
+gap:5px;
+flex-wrap:wrap
+}
+
+.note-input{
+width:90px;
+padding:7px;
+border:1px solid var(--border);
+border-radius:7px
+}
+
+.comment-input{
+min-width:180px;
+padding:7px;
+border:1px solid var(--border);
+border-radius:7px
 }
 
 #toast{
@@ -427,7 +448,7 @@ padding:20px
 
 .modal-box{
 background:white;
-max-width:500px;
+max-width:600px;
 width:100%;
 max-height:90vh;
 overflow-y:auto;
@@ -459,24 +480,15 @@ border-radius:8px;
 font-size:20px
 }
 
-.action-group{
-display:flex;
-gap:5px;
-flex-wrap:wrap
+.small-text{
+font-size:12px;
+color:var(--gray)
 }
 
-.note-input{
-width:90px;
-padding:7px;
-border:1px solid var(--border);
-border-radius:7px
-}
-
-.comment-input{
-min-width:180px;
-padding:7px;
-border:1px solid var(--border);
-border-radius:7px
+.empty{
+padding:25px;
+text-align:center;
+color:var(--gray)
 }
 
 @media(max-width:1100px){
@@ -570,100 +582,50 @@ text-overflow:ellipsis
 
 <div id="loginBox">
 
-<h2 style="margin-bottom:15px;color:#0f3d91">
-Connexion
-</h2>
+<h2 style="margin-bottom:15px;color:#0f3d91">Connexion</h2>
 
-<input
-id="loginEmail"
-type="email"
-placeholder="Adresse e-mail"
-autocomplete="email"
->
+<input id="loginEmail" type="email" placeholder="Adresse e-mail" autocomplete="email">
 
-<input
-id="loginPassword"
-type="password"
-placeholder="Mot de passe"
-autocomplete="current-password"
->
+<input id="loginPassword" type="password" placeholder="Mot de passe" autocomplete="current-password">
 
-<button
-class="btn full"
-onclick="loginEmailPassword()"
->
+<button class="btn full" onclick="loginEmailPassword()">
 🔐 Se connecter
 </button>
 
 <div class="auth-separator">OU</div>
 
-<button
-id="googleLoginBtn"
-class="btn google-btn full"
-onclick="loginGoogle()"
->
+<button id="googleLoginBtn" class="btn google-btn full" onclick="loginGoogle()">
 🔵 Continuer avec Google
 </button>
 
 <p style="margin-top:18px;text-align:center">
-
 Pas encore de compte ?
-
-<button
-style="border:0;background:none;color:#1d4ed8;font-weight:bold"
-onclick="showRegister()"
->
+<button style="border:0;background:none;color:#1d4ed8;font-weight:bold" onclick="showRegister()">
 Créer un compte
 </button>
-
 </p>
 
 </div>
 
-
 <div id="registerBox" class="hidden">
 
-<h2 style="margin-bottom:15px;color:#0f3d91">
-Créer un compte
-</h2>
+<h2 style="margin-bottom:15px;color:#0f3d91">Créer un compte</h2>
 
-<input
-id="registerName"
-type="text"
-placeholder="Nom complet"
->
+<input id="registerName" type="text" placeholder="Nom complet">
 
-<input
-id="registerEmail"
-type="email"
-placeholder="Adresse e-mail"
->
+<input id="registerEmail" type="email" placeholder="Adresse e-mail">
 
-<input
-id="registerPassword"
-type="password"
-placeholder="Mot de passe"
-autocomplete="new-password"
->
+<input id="registerPassword" type="password" placeholder="Mot de passe" autocomplete="new-password">
 
-<button
-class="btn btn-green full"
-onclick="registerAccount()"
->
+<button class="btn btn-green full" onclick="registerAccount()">
 📝 Créer mon compte
 </button>
 
 <p style="margin-top:18px;text-align:center">
-
 Déjà un compte ?
-
-<button
-style="border:0;background:none;color:#1d4ed8;font-weight:bold"
-onclick="showLogin()"
->
+<button style="border:0;background:none;color:#1d4ed8;font-weight:bold" onclick="showLogin()">
 Se connecter
 </button>
-
 </p>
 
 </div>
@@ -678,18 +640,9 @@ Se connecter
 
 <div class="header-left">
 
-<button
-class="mobile-menu"
-onclick="toggleSidebar()"
->
-☰
-</button>
+<button class="mobile-menu" onclick="toggleSidebar()">☰</button>
 
-<img
-class="header-logo"
-src="./icon-192.png"
-alt="Logo"
->
+<img class="header-logo" src="./icon-192.png" alt="Logo">
 
 <div class="header-title">
 CENTRE DE FORMATION LE PÉDAGOGUE
@@ -697,186 +650,138 @@ CENTRE DE FORMATION LE PÉDAGOGUE
 
 </div>
 
-
 <div class="header-right">
 
-<select
-id="languageSelect"
-class="language"
-onchange="changeLanguage()"
->
-
+<select id="languageSelect" class="language" onchange="changeLanguage()">
 <option value="fr">🇫🇷 Français</option>
 <option value="ht">🇭🇹 Kreyòl</option>
-
 </select>
 
-<button
-id="installBtn"
-class="install-btn"
-onclick="installApplication()"
->
+<button id="installBtn" class="install-btn" onclick="installApplication">
 📲 Installer
 </button>
 
-<button
-class="user-btn"
-onclick="toggleUserMenu()"
->
+<button class="user-btn" onclick="toggleUserMenu()">
 👤 <span id="headerUserName">Utilisateur</span>
 </button>
 
 </div>
-
 </header>
 
 
 <aside id="sidebar" class="sidebar">
 
-<div class="sidebar-title">
-ACADÉMIQUE
-</div>
+<div class="sidebar-title">ACADÉMIQUE</div>
 
 <div id="adminAcademic">
 
-<button
-class="menu-btn active"
-onclick="showPage('dashboard',this)"
->
+<button class="menu-btn active" onclick="showPage('dashboard',this)">
 🏠 <span>Tableau de bord</span>
 </button>
 
-<button
-class="menu-btn"
-onclick="showPage('etudiants',this)"
->
+<button class="menu-btn" onclick="showPage('etudiants',this)">
 🎓 <span>Étudiants</span>
 </button>
 
-<button
-class="menu-btn"
-onclick="showPage('professeurs',this)"
->
+<button class="menu-btn" onclick="showPage('professeurs',this)">
 👨‍🏫 <span>Professeurs</span>
 </button>
 
-<button
-class="menu-btn"
-onclick="showPage('classes',this)"
->
+<button class="menu-btn" onclick="showPage('classes',this)">
 🏫 <span>Classes</span>
 </button>
 
-<button
-class="menu-btn"
-onclick="showPage('departements',this)"
->
+<button class="menu-btn" onclick="showPage('departements',this)">
 🏛️ <span>Départements</span>
 </button>
 
-<button
-class="menu-btn"
-onclick="showPage('filieres',this)"
->
+<button class="menu-btn" onclick="showPage('filieres',this)">
 📚 <span>Filières</span>
 </button>
 
-<button
-class="menu-btn"
-onclick="showPage('matieres',this)"
->
+<button class="menu-btn" onclick="showPage('matieres',this)">
 📖 <span>Matières</span>
 </button>
 
-<button
-class="menu-btn"
-onclick="showPage('cours',this)"
->
+<button class="menu-btn" onclick="showPage('cours',this)">
 📘 <span>Cours</span>
 </button>
 
+<button class="menu-btn" onclick="showPage('affectations',this)">
+🔗 <span>Affectations</span>
+</button>
+
+<button class="menu-btn" onclick="showPage('inscriptions',this)">
+👥 <span>Élèves / Classes</span>
+</button>
+
 </div>
 
 
-<div class="sidebar-title">
-ÉVALUATION
+<div id="profAcademic" class="hidden">
+
+<button class="menu-btn" onclick="showPage('mesclasses',this)">
+🏫 <span>Mes classes</span>
+</button>
+
+<button class="menu-btn" onclick="showPage('mescours',this)">
+📘 <span>Mes cours</span>
+</button>
+
 </div>
 
 
-<button
-id="devoirsMenu"
-class="menu-btn"
-onclick="showPage('devoirs',this)"
->
+<div id="studentAcademic" class="hidden">
+
+<button class="menu-btn" onclick="showPage('maclasse',this)">
+🏫 <span>Ma classe</span>
+</button>
+
+<button class="menu-btn" onclick="showPage('mescours',this)">
+📘 <span>Mes cours</span>
+</button>
+
+</div>
+
+
+<div class="sidebar-title">ÉVALUATION</div>
+
+<button id="devoirsMenu" class="menu-btn" onclick="showPage('devoirs',this)">
 📝 <span>Devoirs</span>
 </button>
 
-
-<button
-id="remisesMenu"
-class="menu-btn"
-onclick="showPage('remises',this)"
->
+<button id="remisesMenu" class="menu-btn" onclick="showPage('remises',this)">
 📤 <span>Remises</span>
 </button>
 
-
-<button
-id="correctionsMenu"
-class="menu-btn"
-onclick="showPage('corrections',this)"
->
+<button id="correctionsMenu" class="menu-btn" onclick="showPage('corrections',this)">
 ✏️ <span>Corrections</span>
 </button>
 
-
-<button
-id="resultatsMenu"
-class="menu-btn"
-onclick="showPage('resultats',this)"
->
+<button id="resultatsMenu" class="menu-btn" onclick="showPage('resultats',this)">
 📊 <span>Résultats</span>
 </button>
 
 
-<div
-id="adminSection"
-class="hidden"
->
+<div id="adminSection" class="hidden">
 
-<div class="sidebar-title">
-ADMINISTRATION
-</div>
+<div class="sidebar-title">ADMINISTRATION</div>
 
-<button
-id="usersMenu"
-class="menu-btn"
-onclick="showPage('utilisateurs',this)"
->
+<button id="usersMenu" class="menu-btn" onclick="showPage('utilisateurs',this)">
 👥 <span>Utilisateurs</span>
 </button>
 
-<button
-class="menu-btn"
-onclick="showPage('statistiques',this)"
->
+<button class="menu-btn" onclick="showPage('statistiques',this)">
 📈 <span>Statistiques</span>
 </button>
 
-<button
-class="menu-btn"
-onclick="showPage('sauvegarde',this)"
->
+<button class="menu-btn" onclick="showPage('sauvegarde',this)">
 💾 <span>Données / Sauvegarde</span>
 </button>
 
 </div>
 
-
-<button
-class="menu-btn"
-onclick="logout()"
->
+<button class="menu-btn" onclick="logout()">
 🚪 <span>Déconnexion</span>
 </button>
 
@@ -885,24 +790,12 @@ onclick="logout()"
 
 <main class="main">
 
-
-<section
-id="page-dashboard"
-class="page"
->
+<section id="page-dashboard" class="page">
 
 <div class="page-title">
-
-<h2>
-Tableau de bord
-</h2>
-
-<p id="welcomeText">
-Bienvenue dans votre espace de gestion.
-</p>
-
+<h2>Tableau de bord</h2>
+<p id="welcomeText">Bienvenue dans votre espace de gestion.</p>
 </div>
-
 
 <div class="stats">
 
@@ -947,47 +840,40 @@ Bienvenue dans votre espace de gestion.
 
 <div class="panel">
 
-<h3>
-Accès rapide
-</h3>
+<h3>Accès rapide</h3>
 
-<div
-id="quickGrid"
-class="quick-grid"
->
+<div id="quickGrid" class="quick-grid">
 
-<button
-class="quick"
-onclick="quickPage('devoirs')"
->
+<button class="quick" onclick="quickPage('devoirs')">
 <strong>📝 Devoirs</strong>
-Ajouter et gérer les devoirs
+Gérer les devoirs
 </button>
 
-<button
-class="quick"
-onclick="quickPage('remises')"
->
+<button class="quick" onclick="quickPage('remises')">
 <strong>📤 Remises</strong>
 Devoirs remis
 </button>
 
-<button
-class="quick"
-onclick="quickPage('corrections')"
->
+<button class="quick" onclick="quickPage('corrections')">
 <strong>✏️ Corrections</strong>
 Corriger et commenter
 </button>
 
-<button
-class="quick"
-onclick="quickPage('resultats')"
->
+<button class="quick" onclick="quickPage('resultats')">
 <strong>📊 Résultats</strong>
 Notes sur 100
 </button>
 
+</div>
+</div>
+
+
+<div class="panel">
+
+<h3>Mon affectation</h3>
+
+<div id="dashboardAssignmentInfo">
+Chargement...
 </div>
 
 </div>
@@ -995,28 +881,20 @@ Notes sur 100
 
 <div class="panel">
 
-<h3>
-État du système
-</h3>
+<h3>État du système</h3>
 
-<p>
-<strong>Utilisateur :</strong>
-<span id="systemUser">-</span>
+<p><strong>Utilisateur :</strong> <span id="systemUser">-</span></p>
+
+<p style="margin-top:8px">
+<strong>Rôle :</strong> <span id="systemRole">-</span>
 </p>
 
 <p style="margin-top:8px">
-<strong>Rôle :</strong>
-<span id="systemRole">-</span>
+<strong>Statut :</strong> <span id="systemStatus">-</span>
 </p>
 
 <p style="margin-top:8px">
-<strong>Statut :</strong>
-<span id="systemStatus">-</span>
-</p>
-
-<p style="margin-top:8px">
-<strong>Accès administrateur :</strong>
-<span id="systemAdmin">Non</span>
+<strong>Accès administrateur :</strong> <span id="systemAdmin">Non</span>
 </p>
 
 </div>
@@ -1031,6 +909,11 @@ Notes sur 100
 <section id="page-filieres" class="page hidden"></section>
 <section id="page-matieres" class="page hidden"></section>
 <section id="page-cours" class="page hidden"></section>
+<section id="page-affectations" class="page hidden"></section>
+<section id="page-inscriptions" class="page hidden"></section>
+<section id="page-mesclasses" class="page hidden"></section>
+<section id="page-mescours" class="page hidden"></section>
+<section id="page-maclasse" class="page hidden"></section>
 <section id="page-devoirs" class="page hidden"></section>
 <section id="page-remises" class="page hidden"></section>
 <section id="page-corrections" class="page hidden"></section>
@@ -1040,98 +923,56 @@ Notes sur 100
 <section id="page-sauvegarde" class="page hidden"></section>
 
 </main>
-
 </section>
 
 
-<div
-id="userMenu"
-class="modal hidden"
->
+<div id="userMenu" class="modal hidden">
 
 <div class="modal-box">
 
-<button
-class="modal-close"
-onclick="closeUserMenu()"
->
-×
-</button>
+<button class="modal-close" onclick="closeUserMenu()">×</button>
 
-<h3>
-Mon compte
-</h3>
+<h3>Mon compte</h3>
 
-<p>
-<strong>Nom :</strong>
-<span id="menuName">-</span>
-</p>
+<p><strong>Nom :</strong> <span id="menuName">-</span></p>
 
-<p style="margin-top:8px">
-<strong>E-mail :</strong>
-<span id="menuEmail">-</span>
-</p>
+<p style="margin-top:8px"><strong>E-mail :</strong> <span id="menuEmail">-</span></p>
 
-<p style="margin-top:8px">
-<strong>Rôle :</strong>
-<span id="menuRole">-</span>
-</p>
+<p style="margin-top:8px"><strong>Rôle :</strong> <span id="menuRole">-</span></p>
 
-<p style="margin-top:8px">
-<strong>Statut :</strong>
-<span id="menuStatus">-</span>
-</p>
+<p style="margin-top:8px"><strong>Statut :</strong> <span id="menuStatus">-</span></p>
 
 <div style="margin-top:20px">
 
-<button
-class="btn btn-red full"
-onclick="logout()"
->
+<button class="btn btn-red full" onclick="logout()">
 🚪 Déconnexion
 </button>
 
 </div>
-
+</div>
 </div>
 
-</div>
 
-
-<div
-id="installModal"
-class="modal hidden"
->
+<div id="installModal" class="modal hidden">
 
 <div class="modal-box">
 
-<button
-class="modal-close"
-onclick="closeInstallModal()"
->
-×
-</button>
+<button class="modal-close" onclick="closeInstallModal()">×</button>
 
-<h3>
-📲 Installer l'application
-</h3>
+<h3>📲 Installer l'application</h3>
 
 <p>
-Si l'installation automatique pa mache,
-ouvri meni <strong>⋮</strong> Chrome epi chwazi
-<strong>Installer l'application</strong> oswa
+Si l'installation automatique ne fonctionne pas,
+ouvrez le menu <strong>⋮</strong> de Chrome et choisissez
+<strong>Installer l'application</strong> ou
 <strong>Ajouter à l'écran d'accueil</strong>.
 </p>
 
-<button
-class="btn btn-green full"
-onclick="closeInstallModal()"
->
+<button class="btn btn-green full" style="margin-top:15px" onclick="closeInstallModal()">
 Compris
 </button>
 
 </div>
-
 </div>
 
 
@@ -1192,14 +1033,9 @@ const app=initializeApp(firebaseConfig);
 const auth=getAuth(app);
 const db=getFirestore(app);
 
-setPersistence(
-auth,
-browserLocalPersistence
-).catch(console.error);
+setPersistence(auth,browserLocalPersistence).catch(console.error);
 
-
-const ADMIN_EMAIL=
-"centredeformationlepedagogue@gmail.com";
+const ADMIN_EMAIL="centredeformationlepedagogue@gmail.com";
 
 let currentUser=null;
 let currentUserData=null;
@@ -1210,27 +1046,16 @@ let deferredPrompt=null;
 PWA
 ===================================================== */
 
-window.addEventListener(
-"beforeinstallprompt",
-event=>{
-
+window.addEventListener("beforeinstallprompt",event=>{
 event.preventDefault();
 deferredPrompt=event;
 
 const btn=document.getElementById("installBtn");
 
-if(btn){
-btn.style.display="block";
-}
+if(btn)btn.style.display="block";
+});
 
-}
-);
-
-
-window.addEventListener(
-"appinstalled",
-()=>{
-
+window.addEventListener("appinstalled",()=>{
 deferredPrompt=null;
 
 const btn=document.getElementById("installBtn");
@@ -1239,26 +1064,14 @@ if(btn){
 btn.textContent="✅ Installée";
 }
 
-showToast(
-"Application installée avec succès."
-);
-
-}
-);
-
+showToast("Application installée avec succès.");
+});
 
 window.installApplication=async function(){
 
-if(
-window.matchMedia(
-"(display-mode: standalone)"
-).matches
-){
+if(window.matchMedia("(display-mode: standalone)").matches){
 
-showToast(
-"L'application est déjà installée."
-);
-
+showToast("L'application est déjà installée.");
 return;
 }
 
@@ -1266,51 +1079,30 @@ if(deferredPrompt){
 
 deferredPrompt.prompt();
 
-const result=
-await deferredPrompt.userChoice;
+const result=await deferredPrompt.userChoice;
 
 if(result.outcome==="accepted"){
 showToast("Installation acceptée.");
 }
 
 deferredPrompt=null;
-
 return;
 }
 
-document
-.getElementById("installModal")
-.classList.remove("hidden");
-
+document.getElementById("installModal").classList.remove("hidden");
 };
-
 
 window.closeInstallModal=function(){
-
-document
-.getElementById("installModal")
-.classList.add("hidden");
-
+document.getElementById("installModal").classList.add("hidden");
 };
-
 
 if("serviceWorker" in navigator){
 
-window.addEventListener(
-"load",
-()=>{
-
-navigator.serviceWorker
-.register("./sw.js")
-.then(
-()=>console.log(
-"Service Worker enregistré."
-)
-)
+window.addEventListener("load",()=>{
+navigator.serviceWorker.register("./sw.js")
+.then(()=>console.log("Service Worker enregistré."))
 .catch(console.error);
-
-}
-);
+});
 
 }
 
@@ -1321,26 +1113,15 @@ AUTH
 
 window.showRegister=function(){
 
-document
-.getElementById("loginBox")
-.classList.add("hidden");
-
-document
-.getElementById("registerBox")
-.classList.remove("hidden");
+document.getElementById("loginBox").classList.add("hidden");
+document.getElementById("registerBox").classList.remove("hidden");
 
 };
 
-
 window.showLogin=function(){
 
-document
-.getElementById("registerBox")
-.classList.add("hidden");
-
-document
-.getElementById("loginBox")
-.classList.remove("hidden");
+document.getElementById("registerBox").classList.add("hidden");
+document.getElementById("loginBox").classList.remove("hidden");
 
 };
 
@@ -1351,68 +1132,39 @@ INSCRIPTION
 
 window.registerAccount=async function(){
 
-const name=
-document
-.getElementById("registerName")
-.value.trim();
-
-const email=
-document
-.getElementById("registerEmail")
-.value.trim();
-
-const password=
-document
-.getElementById("registerPassword")
-.value;
+const name=document.getElementById("registerName").value.trim();
+const email=document.getElementById("registerEmail").value.trim();
+const password=document.getElementById("registerPassword").value;
 
 if(!name||!email||!password){
 
-showToast(
-"Veuillez remplir tous les champs."
-);
-
+showToast("Veuillez remplir tous les champs.");
 return;
 }
 
 if(password.length<6){
 
-showToast(
-"Le mot de passe doit contenir au moins 6 caractères."
-);
-
+showToast("Le mot de passe doit contenir au moins 6 caractères.");
 return;
 }
 
 try{
 
-const credential=
-await createUserWithEmailAndPassword(
-auth,
-email,
-password
+const credential=await createUserWithEmailAndPassword(
+auth,email,password
 );
 
 const isAdmin=
-email.toLowerCase()===
-ADMIN_EMAIL.toLowerCase();
+email.toLowerCase()===ADMIN_EMAIL.toLowerCase();
 
 await setDoc(
-doc(
-db,
-"users",
-credential.user.uid
-),
+doc(db,"users",credential.user.uid),
 {
 uid:credential.user.uid,
 name:name,
 email:email,
-role:isAdmin
-?"administrateur"
-:"eleve",
-status:isAdmin
-?"accepted"
-:"attente",
+role:isAdmin?"administrateur":"eleve",
+status:isAdmin?"accepted":"attente",
 createdAt:serverTimestamp()
 }
 );
@@ -1421,10 +1173,8 @@ await signOut(auth);
 
 showToast(
 isAdmin
-?
-"Compte administrateur créé."
-:
-"Compte créé. Attendez l'acceptation de l'administrateur."
+?"Compte administrateur créé."
+:"Compte créé. Attendez l'acceptation de l'administrateur."
 );
 
 showLogin();
@@ -1432,10 +1182,7 @@ showLogin();
 }catch(error){
 
 console.error(error);
-
-showToast(
-getFriendlyError(error)
-);
+showToast(getFriendlyError(error));
 
 }
 
@@ -1443,45 +1190,28 @@ getFriendlyError(error)
 
 
 /* =====================================================
-LOGIN EMAIL
+LOGIN
 ===================================================== */
 
 window.loginEmailPassword=async function(){
 
-const email=
-document
-.getElementById("loginEmail")
-.value.trim();
-
-const password=
-document
-.getElementById("loginPassword")
-.value;
+const email=document.getElementById("loginEmail").value.trim();
+const password=document.getElementById("loginPassword").value;
 
 if(!email||!password){
 
-showToast(
-"Entrez votre e-mail et votre mot de passe."
-);
-
+showToast("Entrez votre e-mail et votre mot de passe.");
 return;
 }
 
 try{
 
-await signInWithEmailAndPassword(
-auth,
-email,
-password
-);
+await signInWithEmailAndPassword(auth,email,password);
 
 }catch(error){
 
 console.error(error);
-
-showToast(
-getFriendlyError(error)
-);
+showToast(getFriendlyError(error));
 
 }
 
@@ -1494,55 +1224,38 @@ GOOGLE
 
 window.loginGoogle=async function(){
 
-const button=
-document.getElementById("googleLoginBtn");
+const button=document.getElementById("googleLoginBtn");
 
 try{
 
 button.disabled=true;
-button.textContent=
-"⏳ Ouverture de Google...";
+button.textContent="⏳ Ouverture de Google...";
 
-const provider=
-new GoogleAuthProvider();
+const provider=new GoogleAuthProvider();
 
 provider.setCustomParameters({
 prompt:"select_account"
 });
 
-const result=
-await signInWithPopup(
-auth,
-provider
-);
-
+const result=await signInWithPopup(auth,provider);
 const user=result.user;
 
-const userRef=
-doc(db,"users",user.uid);
-
-const snap=
-await getDoc(userRef);
+const userRef=doc(db,"users",user.uid);
+const snap=await getDoc(userRef);
 
 if(!snap.exists()){
 
 const isAdmin=
-user.email?.toLowerCase()===
-ADMIN_EMAIL.toLowerCase();
+user.email?.toLowerCase()===ADMIN_EMAIL.toLowerCase();
 
 await setDoc(
 userRef,
 {
 uid:user.uid,
-name:user.displayName||
-"Utilisateur",
+name:user.displayName||"Utilisateur",
 email:user.email||"",
-role:isAdmin
-?"administrateur"
-:"eleve",
-status:isAdmin
-?"accepted"
-:"attente",
+role:isAdmin?"administrateur":"eleve",
+status:isAdmin?"accepted":"attente",
 createdAt:serverTimestamp()
 }
 );
@@ -1551,27 +1264,20 @@ await signOut(auth);
 
 showToast(
 isAdmin
-?
-"Compte administrateur créé. Connectez-vous encore."
-:
-"Compte Google créé. Attendez l'acceptation."
+?"Compte administrateur créé. Connectez-vous encore."
+:"Compte Google créé. Attendez l'acceptation."
 );
-
 }
 
 }catch(error){
 
 console.error(error);
-
-showToast(
-getFriendlyError(error)
-);
+showToast(getFriendlyError(error));
 
 }finally{
 
 button.disabled=false;
-button.innerHTML=
-"🔵 Continuer avec Google";
+button.innerHTML="🔵 Continuer avec Google";
 
 }
 
@@ -1588,9 +1294,7 @@ try{
 
 await signOut(auth);
 
-document
-.getElementById("userMenu")
-.classList.add("hidden");
+document.getElementById("userMenu").classList.add("hidden");
 
 }catch(error){
 
@@ -1605,53 +1309,37 @@ console.error(error);
 AUTH STATE
 ===================================================== */
 
-onAuthStateChanged(
-auth,
-async user=>{
+onAuthStateChanged(auth,async user=>{
 
 if(!user){
 
 currentUser=null;
 currentUserData=null;
 
-document
-.getElementById("authPage")
-.classList.remove("hidden");
-
-document
-.getElementById("appPage")
-.classList.add("hidden");
+document.getElementById("authPage").classList.remove("hidden");
+document.getElementById("appPage").classList.add("hidden");
 
 return;
 }
 
 try{
 
-const ref=
-doc(db,"users",user.uid);
-
-const snap=
-await getDoc(ref);
+const ref=doc(db,"users",user.uid);
+const snap=await getDoc(ref);
 
 let data;
 
 if(!snap.exists()){
 
 const isAdmin=
-user.email?.toLowerCase()===
-ADMIN_EMAIL.toLowerCase();
+user.email?.toLowerCase()===ADMIN_EMAIL.toLowerCase();
 
 data={
 uid:user.uid,
-name:user.displayName||
-"Utilisateur",
+name:user.displayName||"Utilisateur",
 email:user.email||"",
-role:isAdmin
-?"administrateur"
-:"eleve",
-status:isAdmin
-?"accepted"
-:"attente",
+role:isAdmin?"administrateur":"eleve",
+status:isAdmin?"accepted":"attente",
 createdAt:serverTimestamp()
 };
 
@@ -1663,29 +1351,22 @@ data=snap.data();
 
 }
 
-
 const isAdmin=
-user.email?.toLowerCase()===
-ADMIN_EMAIL.toLowerCase()
+user.email?.toLowerCase()===ADMIN_EMAIL.toLowerCase()
 ||
 (
 data.role==="administrateur" &&
 data.status==="accepted"
 );
 
-
-if(!isAdmin &&
-data.status!=="accepted"){
+if(!isAdmin&&data.status!=="accepted"){
 
 await signOut(auth);
 
-showToast(
-"Votre compte est en attente d'acceptation par l'administrateur."
-);
+showToast("Votre compte est en attente d'acceptation par l'administrateur.");
 
 return;
 }
-
 
 currentUser=user;
 
@@ -1702,14 +1383,11 @@ console.error(error);
 
 await signOut(auth);
 
-showToast(
-"Impossible de charger votre profil. Vérifiez les règles Firebase."
-);
+showToast("Impossible de charger votre profil. Vérifiez les règles Firebase.");
 
 }
 
-}
-);
+});
 
 
 /* =====================================================
@@ -1718,18 +1396,10 @@ OPEN APPLICATION
 
 function openApplication(){
 
-document
-.getElementById("authPage")
-.classList.add("hidden");
+document.getElementById("authPage").classList.add("hidden");
+document.getElementById("appPage").classList.remove("hidden");
 
-document
-.getElementById("appPage")
-.classList.remove("hidden");
-
-
-const role=
-currentUserData.role;
-
+const role=currentUserData.role;
 
 const name=
 currentUserData.name||
@@ -1737,101 +1407,46 @@ currentUser?.displayName||
 currentUser?.email||
 "Utilisateur";
 
+document.getElementById("headerUserName").textContent=name;
+document.getElementById("systemUser").textContent=currentUser?.email||"-";
+document.getElementById("systemRole").textContent=role||"-";
+document.getElementById("systemStatus").textContent=currentUserData.status||"-";
+document.getElementById("systemAdmin").textContent=currentUserData.isAdmin?"Oui":"Non";
 
-document
-.getElementById("headerUserName")
-.textContent=name;
+document.getElementById("menuName").textContent=name;
+document.getElementById("menuEmail").textContent=currentUser?.email||"-";
+document.getElementById("menuRole").textContent=role||"-";
+document.getElementById("menuStatus").textContent=currentUserData.status||"-";
 
-document
-.getElementById("systemUser")
-.textContent=
-currentUser?.email||"-";
+const adminSection=document.getElementById("adminSection");
+const academic=document.getElementById("adminAcademic");
+const profAcademic=document.getElementById("profAcademic");
+const studentAcademic=document.getElementById("studentAcademic");
 
-document
-.getElementById("systemRole")
-.textContent=
-role||"-";
-
-document
-.getElementById("systemStatus")
-.textContent=
-currentUserData.status||"-";
-
-document
-.getElementById("systemAdmin")
-.textContent=
-currentUserData.isAdmin
-?"Oui"
-:"Non";
-
-
-document
-.getElementById("menuName")
-.textContent=name;
-
-document
-.getElementById("menuEmail")
-.textContent=
-currentUser?.email||"-";
-
-document
-.getElementById("menuRole")
-.textContent=
-role||"-";
-
-document
-.getElementById("menuStatus")
-.textContent=
-currentUserData.status||"-";
-
-
-const adminSection=
-document.getElementById("adminSection");
-
-const academic=
-document.getElementById("adminAcademic");
-
+adminSection.classList.add("hidden");
+academic.classList.add("hidden");
+profAcademic.classList.add("hidden");
+studentAcademic.classList.add("hidden");
 
 if(currentUserData.isAdmin){
 
-adminSection
-.classList.remove("hidden");
+adminSection.classList.remove("hidden");
+academic.classList.remove("hidden");
 
-academic
-.classList.remove("hidden");
+}else if(role==="professeur"){
 
-}else{
+profAcademic.classList.remove("hidden");
 
-adminSection
-.classList.add("hidden");
+}else if(role==="eleve"){
 
-academic
-.classList.add("hidden");
+studentAcademic.classList.remove("hidden");
 
 }
 
-
-/*
-Tout moun ki aksepte:
-Devoirs / Remises / Corrections / Résultats.
-*/
-
-document
-.getElementById("devoirsMenu")
-.classList.remove("hidden");
-
-document
-.getElementById("remisesMenu")
-.classList.remove("hidden");
-
-document
-.getElementById("correctionsMenu")
-.classList.remove("hidden");
-
-document
-.getElementById("resultatsMenu")
-.classList.remove("hidden");
-
+document.getElementById("correctionsMenu").classList.toggle(
+"hidden",
+!(currentUserData.isAdmin||role==="professeur")
+);
 
 loadDashboard();
 
@@ -1843,72 +1458,44 @@ NAVIGATION
 ===================================================== */
 
 window.toggleSidebar=function(){
-
-document
-.getElementById("sidebar")
-.classList.toggle("open");
-
+document.getElementById("sidebar").classList.toggle("open");
 };
-
 
 window.showPage=async function(page,button){
 
-document
-.querySelectorAll(".page")
-.forEach(
+document.querySelectorAll(".page").forEach(
 p=>p.classList.add("hidden")
 );
 
-
-const target=
-document.getElementById(
-"page-"+page
-);
+const target=document.getElementById("page-"+page);
 
 if(!target)return;
 
 target.classList.remove("hidden");
 
-
-document
-.querySelectorAll(".menu-btn")
-.forEach(
+document.querySelectorAll(".menu-btn").forEach(
 btn=>btn.classList.remove("active")
 );
 
+if(button)button.classList.add("active");
 
-if(button){
-button.classList.add("active");
-}
-
-
-document
-.getElementById("sidebar")
-.classList.remove("open");
-
+document.getElementById("sidebar").classList.remove("open");
 
 if(page==="dashboard"){
-
-loadDashboard();
-
+await loadDashboard();
 }else{
-
 await loadModule(page);
-
 }
 
 };
-
 
 window.quickPage=function(page){
 
 const button=[
 ...document.querySelectorAll(".menu-btn")
 ].find(
-b=>
-b.getAttribute("onclick")&&
-b.getAttribute("onclick")
-.includes("'"+page+"'")
+b=>b.getAttribute("onclick")&&
+b.getAttribute("onclick").includes("'"+page+"'")
 );
 
 showPage(page,button);
@@ -1929,8 +1516,7 @@ icon:"🎓",
 fields:[
 ["nom","Nom complet","text"],
 ["email","E-mail","email"],
-["telephone","Téléphone","text"],
-["classe","Classe","text"]
+["telephone","Téléphone","text"]
 ]
 },
 
@@ -2010,89 +1596,106 @@ LOAD MODULE
 
 async function loadModule(page){
 
-if(
-[
-"etudiants",
-"professeurs",
-"classes",
-"departements",
-"filieres",
-"matieres",
-"cours"
-].includes(page)
-){
+if(Object.keys(adminModules).includes(page)){
 
 if(!currentUserData?.isAdmin){
 
-showToast(
-"Accès réservé à l'administrateur."
-);
-
+showToast("Accès réservé à l'administrateur.");
 return;
 }
 
 await renderAdminModule(page);
 return;
-
 }
 
+if(page==="affectations"){
+
+if(!currentUserData?.isAdmin){
+showToast("Accès réservé à l'administrateur.");
+return;
+}
+
+await renderAffectations();
+return;
+}
+
+if(page==="inscriptions"){
+
+if(!currentUserData?.isAdmin){
+showToast("Accès réservé à l'administrateur.");
+return;
+}
+
+await renderInscriptions();
+return;
+}
+
+if(page==="mesclasses"){
+await renderMesClasses();
+return;
+}
+
+if(page==="mescours"){
+await renderMesCours();
+return;
+}
+
+if(page==="maclasse"){
+await renderMaClasse();
+return;
+}
 
 if(page==="devoirs"){
-
 await renderDevoirs();
 return;
-
 }
 
 if(page==="remises"){
-
 await renderRemises();
 return;
-
 }
 
 if(page==="corrections"){
-
 await renderCorrections();
 return;
-
 }
 
 if(page==="resultats"){
-
 await renderResultats();
 return;
-
 }
 
 if(page==="utilisateurs"){
 
 if(!currentUserData?.isAdmin){
-
-showToast(
-"Accès réservé à l'administrateur."
-);
-
+showToast("Accès réservé à l'administrateur.");
 return;
 }
 
 await renderUsers();
 return;
-
 }
 
 if(page==="statistiques"){
 
+if(!currentUserData?.isAdmin){
+showToast("Accès réservé à l'administrateur.");
+return;
+}
+
 await renderStatistics();
 return;
-
 }
 
 if(page==="sauvegarde"){
 
+if(!currentUserData?.isAdmin){
+showToast("Accès réservé à l'administrateur.");
+return;
+}
+
 renderBackup();
 return;
-
 }
 
 }
@@ -2106,19 +1709,13 @@ async function renderAdminModule(page){
 
 const info=adminModules[page];
 
-const container=
-document.getElementById(
-"page-"+page
-);
+const container=document.getElementById("page-"+page);
 
 container.innerHTML=`
 
 <div class="page-title">
-
 <h2>${info.icon} ${info.title}</h2>
-
 <p>Gestion administrative.</p>
-
 </div>
 
 <div class="panel">
@@ -2127,37 +1724,24 @@ container.innerHTML=`
 
 <div class="form-grid">
 
-${info.fields.map(
-f=>`
+${info.fields.map(f=>`
 
 <div class="form-group">
-
 <label>${f[1]}</label>
-
-<input
-id="field-${page}-${f[0]}"
-type="${f[2]}"
-placeholder="${f[1]}"
->
-
+<input id="field-${page}-${f[0]}" type="${f[2]}" placeholder="${f[1]}">
 </div>
 
-`
-).join("")}
+`).join("")}
 
 </div>
 
 <div class="form-actions">
 
-<button
-class="btn btn-green"
-onclick="addAdminRecord('${page}')"
->
+<button class="btn btn-green" onclick="addAdminRecord('${page}')">
 ➕ Ajouter
 </button>
 
 </div>
-
 </div>
 
 
@@ -2170,31 +1754,21 @@ onclick="addAdminRecord('${page}')"
 <table>
 
 <thead>
-
 <tr>
-
-${info.fields.map(
-f=>`<th>${f[1]}</th>`
-).join("")}
-
+${info.fields.map(f=>`<th>${f[1]}</th>`).join("")}
 <th>Actions</th>
-
 </tr>
-
 </thead>
 
 <tbody id="table-${page}">
 <tr>
-<td colspan="${info.fields.length+1}">
-Chargement...
-</td>
+<td colspan="${info.fields.length+1}">Chargement...</td>
 </tr>
 </tbody>
 
 </table>
 
 </div>
-
 </div>
 `;
 
@@ -2207,10 +1781,7 @@ window.addAdminRecord=async function(page){
 
 if(!currentUserData?.isAdmin){
 
-showToast(
-"Seul l'administrateur peut modifier ces données."
-);
-
+showToast("Seul l'administrateur peut modifier ces données.");
 return;
 }
 
@@ -2220,13 +1791,11 @@ let valid=true;
 
 info.fields.forEach(f=>{
 
-const input=
-document.getElementById(
+const input=document.getElementById(
 `field-${page}-${f[0]}`
 );
 
-const value=
-input?.value.trim()||"";
+const value=input?.value.trim()||"";
 
 if(!value)valid=false;
 
@@ -2236,10 +1805,7 @@ data[f[0]]=value;
 
 if(!valid){
 
-showToast(
-"Veuillez remplir tous les champs."
-);
-
+showToast("Veuillez remplir tous les champs.");
 return;
 }
 
@@ -2248,19 +1814,13 @@ data.createdBy=currentUser.uid;
 
 try{
 
-await addDoc(
-collection(db,info.collection),
-data
-);
+await addDoc(collection(db,info.collection),data);
 
-showToast(
-"Donnée ajoutée avec succès."
-);
+showToast("Donnée ajoutée avec succès.");
 
 info.fields.forEach(f=>{
 
-const input=
-document.getElementById(
+const input=document.getElementById(
 `field-${page}-${f[0]}`
 );
 
@@ -2274,10 +1834,7 @@ loadDashboard();
 }catch(error){
 
 console.error(error);
-
-showToast(
-"Impossible d'ajouter cette donnée."
-);
+showToast("Impossible d'ajouter cette donnée.");
 
 }
 
@@ -2288,27 +1845,19 @@ async function refreshAdminTable(page){
 
 const info=adminModules[page];
 
-const tbody=
-document.getElementById(
-"table-"+page
-);
+const tbody=document.getElementById("table-"+page);
 
 if(!tbody)return;
 
 try{
 
-const snap=
-await getDocs(
-collection(db,info.collection)
-);
+const snap=await getDocs(collection(db,info.collection));
 
 if(snap.empty){
 
 tbody.innerHTML=`
 <tr>
-<td colspan="${info.fields.length+1}">
-Aucune donnée.
-</td>
+<td colspan="${info.fields.length+1}">Aucune donnée.</td>
 </tr>
 `;
 
@@ -2320,62 +1869,42 @@ tbody.innerHTML="";
 snap.forEach(item=>{
 
 const data=item.data();
-
 const tr=document.createElement("tr");
 
 info.fields.forEach(f=>{
 
 const td=document.createElement("td");
-
-td.textContent=
-data[f[0]]??"";
-
+td.textContent=data[f[0]]??"";
 tr.appendChild(td);
 
 });
 
-const td=
-document.createElement("td");
+const td=document.createElement("td");
 
-const edit=
-document.createElement("button");
+const edit=document.createElement("button");
 
 edit.className="btn";
 edit.textContent="Modifier";
 
 edit.onclick=()=>{
-editAdminRecord(
-page,
-item.id,
-data
-);
+editAdminRecord(page,item.id,data);
 };
 
 td.appendChild(edit);
 
+const del=document.createElement("button");
 
-const del=
-document.createElement("button");
-
-del.className=
-"btn btn-red";
-
+del.className="btn btn-red";
 del.style.marginLeft="5px";
-
-del.textContent=
-"Supprimer";
+del.textContent="Supprimer";
 
 del.onclick=()=>{
-deleteAdminRecord(
-page,
-item.id
-);
+deleteAdminRecord(page,item.id);
 };
 
 td.appendChild(del);
 
 tr.appendChild(td);
-
 tbody.appendChild(tr);
 
 });
@@ -2397,11 +1926,7 @@ Impossible de charger.
 }
 
 
-window.editAdminRecord=async function(
-page,
-id,
-data
-){
+window.editAdminRecord=async function(page,id,data){
 
 if(!currentUserData?.isAdmin)return;
 
@@ -2410,19 +1935,13 @@ const updates={};
 
 for(const f of info.fields){
 
-const value=prompt(
-f[1],
-data[f[0]]??""
-);
+const value=prompt(f[1],data[f[0]]??"");
 
 if(value===null)return;
 
 if(!value.trim()){
 
-showToast(
-"Valeur vide non autorisée."
-);
-
+showToast("Valeur vide non autorisée.");
 return;
 }
 
@@ -2437,47 +1956,32 @@ doc(db,info.collection,id),
 updates
 );
 
-showToast(
-"Donnée modifiée."
-);
-
+showToast("Donnée modifiée.");
 await refreshAdminTable(page);
 
 }catch(error){
 
 console.error(error);
-
-showToast(
-"Modification impossible."
-);
+showToast("Modification impossible.");
 
 }
 
 };
 
 
-window.deleteAdminRecord=async function(
-page,
-id
-){
+window.deleteAdminRecord=async function(page,id){
 
 if(!currentUserData?.isAdmin)return;
 
-if(!confirm(
-"Voulez-vous vraiment supprimer cette donnée ?"
-))return;
+if(!confirm("Voulez-vous vraiment supprimer cette donnée ?"))return;
 
 const info=adminModules[page];
 
 try{
 
-await deleteDoc(
-doc(db,info.collection,id)
-);
+await deleteDoc(doc(db,info.collection,id));
 
-showToast(
-"Donnée supprimée."
-);
+showToast("Donnée supprimée.");
 
 await refreshAdminTable(page);
 loadDashboard();
@@ -2485,10 +1989,7 @@ loadDashboard();
 }catch(error){
 
 console.error(error);
-
-showToast(
-"Suppression impossible."
-);
+showToast("Suppression impossible.");
 
 }
 
@@ -2496,260 +1997,283 @@ showToast(
 
 
 /* =====================================================
-DEVOIRS
+HELPERS
 ===================================================== */
 
-async function renderDevoirs(){
+async function getCollectionData(name){
 
-const container=
-document.getElementById(
-"page-devoirs"
-);
+const snap=await getDocs(collection(db,name));
 
-const role=
-currentUserData?.role;
+return snap.docs.map(d=>({
+id:d.id,
+...d.data()
+}));
 
-const canManage=
-currentUserData?.isAdmin||
-role==="professeur";
+}
 
+function selectOptions(items,placeholder="-- Choisir --"){
+
+return `
+<option value="">${placeholder}</option>
+${
+items.map(x=>`
+<option value="${escapeHtml(x.id)}">
+${escapeHtml(x.label)}
+</option>
+`).join("")
+}
+`;
+
+}
+
+function escapeHtml(value){
+
+return String(value??"")
+.replaceAll("&","&amp;")
+.replaceAll("<","&lt;")
+.replaceAll(">","&gt;")
+.replaceAll('"',"&quot;")
+.replaceAll("'","&#039;");
+
+}
+
+
+/* =====================================================
+AFFECTATIONS
+===================================================== */
+
+async function renderAffectations(){
+
+const container=document.getElementById("page-affectations");
+
+const [profs,classes,matieres,filieres]=await Promise.all([
+getCollectionData("professeurs"),
+getCollectionData("classes"),
+getCollectionData("matieres"),
+getCollectionData("filieres")
+]);
 
 container.innerHTML=`
 
 <div class="page-title">
 
-<h2>📝 Devoirs</h2>
+<h2>🔗 Affectations des professeurs</h2>
 
 <p>
-${
-role==="eleve"
-?
-"Devoirs reçus par l'étudiant."
-:
-"Créer, modifier et gérer les devoirs."
-}
+L'administrateur décide quel professeur enseigne quelle matière dans quelle classe.
 </p>
 
 </div>
 
+<div class="info-box">
 
-${
-canManage
-?
-`
+<strong>Exemple :</strong>
+Professeur Sarah → Comptabilité → COMPTA-1 → Comptabilité générale.
+<br>
+Le professeur ne pourra ensuite gérer que les classes et cours qui lui sont affectés.
+
+</div>
+
 <div class="panel">
 
-<h3>
-➕ Ajouter un devoir
-</h3>
+<h3>➕ Nouvelle affectation</h3>
 
 <div class="form-grid">
 
 <div class="form-group">
-<label>Titre du devoir</label>
-<input id="devTitre" type="text">
+<label>Professeur</label>
+<select id="affProf">
+${selectOptions(
+profs.map(x=>({
+id:x.id,
+label:x.nom+" — "+(x.email||"")
+}))
+)}
+</select>
+</div>
+
+<div class="form-group">
+<label>Filière</label>
+<select id="affFiliere">
+${selectOptions(
+filieres.map(x=>({
+id:x.id,
+label:x.nom
+}))
+)}
+</select>
+</div>
+
+<div class="form-group">
+<label>Classe</label>
+<select id="affClasse">
+${selectOptions(
+classes.map(x=>({
+id:x.id,
+label:x.nom+" — "+(x.niveau||"")
+}))
+)}
+</select>
 </div>
 
 <div class="form-group">
 <label>Matière</label>
-<input id="devMatiere" type="text">
-</div>
-
-<div class="form-group">
-<label>Classe / Groupe</label>
-<input id="devClasse" type="text">
-</div>
-
-<div class="form-group">
-<label>Date limite</label>
-<input id="devDate" type="date">
-</div>
-
-<div class="form-group" style="grid-column:1/-1">
-<label>Description / Consignes</label>
-<textarea id="devDescription"></textarea>
+<select id="affMatiere">
+${selectOptions(
+matieres.map(x=>({
+id:x.id,
+label:x.nom+" — "+(x.code||"")
+}))
+)}
+</select>
 </div>
 
 </div>
 
 <div class="form-actions">
 
-<button
-class="btn btn-green"
-onclick="addDevoir()"
->
-➕ Ajouter le devoir
+<button class="btn btn-green" onclick="addAffectation()">
+➕ Donner l'accès
 </button>
 
 </div>
 
 </div>
-`
-:
-`
-<div class="info-box">
-🎓 Ou konekte kòm élève.
-Ou ka wè devwa yo epi remèt yo nan seksyon <strong>Remises</strong>.
-</div>
-`
-}
-
 
 <div class="panel">
 
-<h3>
-📚 Liste des devoirs
-</h3>
+<h3>📋 Affectations actuelles</h3>
 
 <div class="table-wrap">
 
 <table>
 
 <thead>
-
 <tr>
-<th>Titre</th>
-<th>Matière</th>
-<th>Classe</th>
-<th>Description</th>
-<th>Date limite</th>
 <th>Professeur</th>
+<th>Filière</th>
+<th>Classe</th>
+<th>Matière</th>
 <th>Actions</th>
 </tr>
-
 </thead>
 
-<tbody id="devoirsTable">
-
+<tbody id="affectationsTable">
 <tr>
-<td colspan="7">Chargement...</td>
+<td colspan="5">Chargement...</td>
 </tr>
-
 </tbody>
 
 </table>
 
 </div>
-
 </div>
 `;
 
-await refreshDevoirs();
+await refreshAffectations();
 
 }
 
 
-window.addDevoir=async function(){
+window.addAffectation=async function(){
 
-if(
-!currentUserData?.isAdmin &&
-currentUserData?.role!=="professeur"
-){
+if(!currentUserData?.isAdmin)return;
 
-showToast(
-"Seul un professeur peut ajouter un devoir."
-);
+const profId=document.getElementById("affProf").value;
+const filiereId=document.getElementById("affFiliere").value;
+const classeId=document.getElementById("affClasse").value;
+const matiereId=document.getElementById("affMatiere").value;
 
-return;
-}
+if(!profId||!filiereId||!classeId||!matiereId){
 
-const titre=
-document.getElementById("devTitre")
-.value.trim();
-
-const matiere=
-document.getElementById("devMatiere")
-.value.trim();
-
-const classe=
-document.getElementById("devClasse")
-.value.trim();
-
-const dateLimite=
-document.getElementById("devDate")
-.value;
-
-const description=
-document.getElementById("devDescription")
-.value.trim();
-
-if(!titre||!matiere||!classe||!dateLimite){
-
-showToast(
-"Remplissez le titre, matière, classe et date limite."
-);
-
+showToast("Choisissez le professeur, la filière, la classe et la matière.");
 return;
 }
 
 try{
 
+const [profSnap,filSnap,classeSnap,matiereSnap]=await Promise.all([
+getDoc(doc(db,"professeurs",profId)),
+getDoc(doc(db,"filieres",filiereId)),
+getDoc(doc(db,"classes",classeId)),
+getDoc(doc(db,"matieres",matiereId))
+]);
+
+if(!profSnap.exists()||
+!filSnap.exists()||
+!classeSnap.exists()||
+!matiereSnap.exists()){
+
+showToast("Une des données sélectionnées est introuvable.");
+return;
+}
+
+const prof=profSnap.data();
+const fil=filSnap.data();
+const classe=classeSnap.data();
+const matiere=matiereSnap.data();
+
+const existing=await getDocs(
+query(
+collection(db,"affectations"),
+where("professeurUid","==",prof.id),
+where("classeId","==",classe.id),
+where("matiereId","==",matiere.id)
+)
+);
+
+if(!existing.empty){
+
+showToast("Cette affectation existe déjà.");
+return;
+}
+
 await addDoc(
-collection(db,"devoirs"),
+collection(db,"affectations"),
 {
-titre,
-matiere,
-classe,
-dateLimite,
-description,
-professeurUid:currentUser.uid,
-professeurNom:
-currentUserData.name||
-currentUser.displayName||
-currentUser.email,
-createdAt:serverTimestamp()
+professeurUid:prof.id,
+professeurNom:prof.nom||"",
+professeurEmail:prof.email||"",
+filiereId:fil.id,
+filiereNom:fil.nom||"",
+classeId:classe.id,
+classeNom:classe.nom||"",
+matiereId:matiere.id,
+matiereNom:matiere.nom||"",
+createdAt:serverTimestamp(),
+createdBy:currentUser.uid
 }
 );
 
-showToast(
-"Devoir ajouté avec succès."
-);
+showToast("Accès donné au professeur.");
 
-document.getElementById("devTitre").value="";
-document.getElementById("devMatiere").value="";
-document.getElementById("devClasse").value="";
-document.getElementById("devDate").value="";
-document.getElementById("devDescription").value="";
-
-await refreshDevoirs();
-loadDashboard();
+await refreshAffectations();
 
 }catch(error){
 
 console.error(error);
-
-showToast(
-"Impossible d'ajouter le devoir."
-);
+showToast("Impossible de créer l'affectation.");
 
 }
 
 };
 
 
-async function refreshDevoirs(){
+async function refreshAffectations(){
 
-const tbody=
-document.getElementById(
-"devoirsTable"
-);
+const tbody=document.getElementById("affectationsTable");
 
 if(!tbody)return;
 
 try{
 
-const snap=
-await getDocs(
-collection(db,"devoirs")
-);
+const snap=await getDocs(collection(db,"affectations"));
 
 if(snap.empty){
 
 tbody.innerHTML=`
 <tr>
-<td colspan="7">
-Aucun devoir.
-</td>
+<td colspan="5">Aucune affectation.</td>
 </tr>
 `;
 
@@ -2762,109 +2286,51 @@ snap.forEach(item=>{
 
 const d=item.data();
 
-const tr=
-document.createElement("tr");
+const tr=document.createElement("tr");
 
 [
-d.titre,
-d.matiere,
-d.classe,
-d.description,
-d.dateLimite,
-d.professeurNom
+d.professeurNom,
+d.filiereNom,
+d.classeNom,
+d.matiereNom
 ].forEach(value=>{
 
-const td=
-document.createElement("td");
-
-td.textContent=
-value??"";
-
+const td=document.createElement("td");
+td.textContent=value||"";
 tr.appendChild(td);
 
 });
 
-const td=
-document.createElement("td");
+const td=document.createElement("td");
 
-const group=
-document.createElement("div");
+const del=document.createElement("button");
 
-group.className="action-group";
+del.className="btn btn-red";
+del.textContent="Retirer";
 
+del.onclick=async()=>{
 
-const canEdit=
-currentUserData?.isAdmin||
-(
-currentUserData?.role==="professeur" &&
-d.professeurUid===currentUser.uid
+if(!confirm("Retirer cette affectation ?"))return;
+
+try{
+
+await deleteDoc(
+doc(db,"affectations",item.id)
 );
 
+showToast("Affectation retirée.");
+await refreshAffectations();
 
-if(canEdit){
+}catch(error){
 
-const edit=
-document.createElement("button");
-
-edit.className="btn";
-
-edit.textContent=
-"Modifier";
-
-edit.onclick=()=>{
-editDevoir(
-item.id,
-d
-);
-};
-
-group.appendChild(edit);
-
-
-const del=
-document.createElement("button");
-
-del.className=
-"btn btn-red";
-
-del.textContent=
-"Supprimer";
-
-del.onclick=()=>{
-deleteDevoir(item.id);
-};
-
-group.appendChild(del);
+console.error(error);
+showToast("Impossible de retirer l'affectation.");
 
 }
 
-
-if(
-currentUserData?.role==="eleve"
-){
-
-const remise=
-document.createElement("button");
-
-remise.className=
-"btn btn-green";
-
-remise.textContent=
-"📤 Remettre";
-
-remise.onclick=()=>{
-openRemiseForDevoir(
-item.id,
-d
-);
 };
 
-group.appendChild(remise);
-
-}
-
-
-td.appendChild(group);
+td.appendChild(del);
 tr.appendChild(td);
 tbody.appendChild(tr);
 
@@ -2876,9 +2342,7 @@ console.error(error);
 
 tbody.innerHTML=`
 <tr>
-<td colspan="7">
-Impossible de charger les devoirs.
-</td>
+<td colspan="5">Impossible de charger les affectations.</td>
 </tr>
 `;
 
@@ -2887,53 +2351,1201 @@ Impossible de charger les devoirs.
 }
 
 
-window.editDevoir=async function(
-id,
-data
-){
+/* =====================================================
+INSCRIPTIONS ÉLÈVES / CLASSES
+===================================================== */
 
-if(
-!currentUserData?.isAdmin &&
-!(
-currentUserData?.role==="professeur" &&
-data.professeurUid===currentUser.uid
-)
-){
+async function renderInscriptions(){
 
-showToast(
-"Ou pa gen dwa modifye devwa sa a."
+const container=document.getElementById("page-inscriptions");
+
+const [users,classes,filieres]=await Promise.all([
+getCollectionData("users"),
+getCollectionData("classes"),
+getCollectionData("filieres")
+]);
+
+const students=users.filter(
+x=>x.role==="eleve"
 );
+
+container.innerHTML=`
+
+<div class="page-title">
+
+<h2>👥 Élèves / Classes</h2>
+
+<p>
+L'administrateur choisit la classe de chaque élève.
+</p>
+
+</div>
+
+<div class="info-box">
+
+Un élève ne verra que les cours et devoirs de sa classe.
+Vous pouvez changer sa classe en créant une nouvelle inscription.
+
+</div>
+
+<div class="panel">
+
+<h3>➕ Inscrire un élève dans une classe</h3>
+
+<div class="form-grid">
+
+<div class="form-group">
+<label>Élève</label>
+<select id="insEleve">
+${selectOptions(
+students.map(x=>({
+id:x.uid||x.id,
+label:(x.name||"Élève")+" — "+(x.email||"")
+}))
+)}
+</select>
+</div>
+
+<div class="form-group">
+<label>Classe</label>
+<select id="insClasse">
+${selectOptions(
+classes.map(x=>({
+id:x.id,
+label:x.nom+" — "+(x.niveau||"")
+}))
+)}
+</select>
+</div>
+
+</div>
+
+<div class="form-actions">
+
+<button class="btn btn-green" onclick="addInscription()">
+➕ Affecter l'élève à la classe
+</button>
+
+</div>
+
+</div>
+
+<div class="panel">
+
+<h3>📋 Élèves inscrits</h3>
+
+<div class="table-wrap">
+
+<table>
+
+<thead>
+<tr>
+<th>Élève</th>
+<th>E-mail</th>
+<th>Classe</th>
+<th>Actions</th>
+</tr>
+</thead>
+
+<tbody id="inscriptionsTable">
+<tr>
+<td colspan="4">Chargement...</td>
+</tr>
+</tbody>
+
+</table>
+
+</div>
+</div>
+`;
+
+await refreshInscriptions();
+
+}
+
+
+window.addInscription=async function(){
+
+if(!currentUserData?.isAdmin)return;
+
+const eleveUid=document.getElementById("insEleve").value;
+const classeId=document.getElementById("insClasse").value;
+
+if(!eleveUid||!classeId){
+
+showToast("Choisissez un élève et une classe.");
+return;
+}
+
+try{
+
+const userSnap=await getDoc(
+doc(db,"users",eleveUid)
+);
+
+const classeSnap=await getDoc(
+doc(db,"classes",classeId)
+);
+
+if(!userSnap.exists()||!classeSnap.exists()){
+
+showToast("Élève ou classe introuvable.");
+return;
+}
+
+const u=userSnap.data();
+const c=classeSnap.data();
+
+const old=await getDocs(
+query(
+collection(db,"inscriptions"),
+where("etudiantUid","==",eleveUid)
+)
+);
+
+for(const oldDoc of old.docs){
+
+await deleteDoc(
+doc(db,"inscriptions",oldDoc.id)
+);
+
+}
+
+await addDoc(
+collection(db,"inscriptions"),
+{
+etudiantUid:eleveUid,
+etudiantNom:u.name||"",
+etudiantEmail:u.email||"",
+classeId:classeId,
+classeNom:c.nom||"",
+createdAt:serverTimestamp(),
+createdBy:currentUser.uid
+}
+);
+
+showToast("Élève affecté à la classe.");
+
+await refreshInscriptions();
+
+}catch(error){
+
+console.error(error);
+showToast("Impossible d'inscrire l'élève.");
+
+}
+
+};
+
+
+async function refreshInscriptions(){
+
+const tbody=document.getElementById("inscriptionsTable");
+
+if(!tbody)return;
+
+try{
+
+const snap=await getDocs(
+collection(db,"inscriptions")
+);
+
+if(snap.empty){
+
+tbody.innerHTML=`
+<tr>
+<td colspan="4">Aucune inscription.</td>
+</tr>
+`;
 
 return;
 }
 
-const titre=prompt(
-"Titre du devoir",
-data.titre||""
+tbody.innerHTML="";
+
+snap.forEach(item=>{
+
+const d=item.data();
+
+const tr=document.createElement("tr");
+
+[
+d.etudiantNom,
+d.etudiantEmail,
+d.classeNom
+].forEach(value=>{
+
+const td=document.createElement("td");
+td.textContent=value||"";
+tr.appendChild(td);
+
+});
+
+const td=document.createElement("td");
+
+const del=document.createElement("button");
+
+del.className="btn btn-red";
+del.textContent="Retirer";
+
+del.onclick=async()=>{
+
+if(!confirm("Retirer cet élève de cette classe ?"))return;
+
+try{
+
+await deleteDoc(
+doc(db,"inscriptions",item.id)
 );
 
+showToast("Inscription retirée.");
+await refreshInscriptions();
+
+}catch(error){
+
+console.error(error);
+showToast("Impossible de retirer l'inscription.");
+
+}
+
+};
+
+td.appendChild(del);
+tr.appendChild(td);
+tbody.appendChild(tr);
+
+});
+
+}catch(error){
+
+console.error(error);
+
+tbody.innerHTML=`
+<tr>
+<td colspan="4">Impossible de charger les inscriptions.</td>
+</tr>
+`;
+
+}
+
+}
+
+
+/* =====================================================
+PROFESSEUR : MES CLASSES
+===================================================== */
+
+async function renderMesClasses(){
+
+const container=document.getElementById("page-mesclasses");
+
+container.innerHTML=`
+
+<div class="page-title">
+
+<h2>🏫 Mes classes</h2>
+
+<p>Classes et matières qui vous ont été attribuées par l'administrateur.</p>
+
+</div>
+
+<div class="panel">
+
+<div class="table-wrap">
+
+<table>
+
+<thead>
+<tr>
+<th>Filière</th>
+<th>Classe</th>
+<th>Matière</th>
+</tr>
+</thead>
+
+<tbody id="mesClassesTable">
+<tr>
+<td colspan="3">Chargement...</td>
+</tr>
+</tbody>
+
+</table>
+
+</div>
+</div>
+`;
+
+try{
+
+const q=query(
+collection(db,"affectations"),
+where("professeurUid","==",currentUser.uid)
+);
+
+const snap=await getDocs(q);
+const tbody=document.getElementById("mesClassesTable");
+
+if(snap.empty){
+
+tbody.innerHTML=`
+<tr>
+<td colspan="3">Aucune classe ne vous a encore été attribuée.</td>
+</tr>
+`;
+
+return;
+}
+
+tbody.innerHTML="";
+
+snap.forEach(item=>{
+
+const d=item.data();
+const tr=document.createElement("tr");
+
+[d.filiereNom,d.classeNom,d.matiereNom].forEach(v=>{
+
+const td=document.createElement("td");
+td.textContent=v||"";
+tr.appendChild(td);
+
+});
+
+tbody.appendChild(tr);
+
+});
+
+}catch(error){
+
+console.error(error);
+showToast("Impossible de charger vos classes.");
+
+}
+
+}
+
+
+/* =====================================================
+MES COURS
+===================================================== */
+
+async function renderMesCours(){
+
+const container=document.getElementById("page-mescours");
+
+const role=currentUserData?.role;
+
+container.innerHTML=`
+
+<div class="page-title">
+
+<h2>📘 ${role==="professeur"?"Mes cours":"Mes cours"}</h2>
+
+<p>
+${
+role==="professeur"
+?"Cours et classes attribués par l'administrateur."
+:"Cours disponibles dans votre classe."
+}
+</p>
+
+</div>
+
+<div class="panel">
+
+<div class="table-wrap">
+
+<table>
+
+<thead>
+<tr>
+<th>Filière</th>
+<th>Classe</th>
+<th>Matière</th>
+<th>Professeur</th>
+</tr>
+</thead>
+
+<tbody id="mesCoursTable">
+<tr>
+<td colspan="4">Chargement...</td>
+</tr>
+</tbody>
+
+</table>
+
+</div>
+</div>
+`;
+
+try{
+
+let snap;
+
+if(role==="professeur"){
+
+snap=await getDocs(
+query(
+collection(db,"affectations"),
+where("professeurUid","==",currentUser.uid)
+)
+);
+
+}else{
+
+const ins=await getStudentInscription();
+
+if(!ins){
+
+document.getElementById("mesCoursTable").innerHTML=`
+<tr>
+<td colspan="4">Vous n'avez pas encore de classe.</td>
+</tr>
+`;
+return;
+}
+
+snap=await getDocs(
+query(
+collection(db,"affectations"),
+where("classeId","==",ins.classeId)
+)
+);
+
+}
+
+const tbody=document.getElementById("mesCoursTable");
+
+if(snap.empty){
+
+tbody.innerHTML=`
+<tr>
+<td colspan="4">Aucun cours disponible.</td>
+</tr>
+`;
+
+return;
+}
+
+tbody.innerHTML="";
+
+snap.forEach(item=>{
+
+const d=item.data();
+const tr=document.createElement("tr");
+
+[
+d.filiereNom,
+d.classeNom,
+d.matiereNom,
+d.professeurNom
+].forEach(v=>{
+
+const td=document.createElement("td");
+td.textContent=v||"";
+tr.appendChild(td);
+
+});
+
+tbody.appendChild(tr);
+
+});
+
+}catch(error){
+
+console.error(error);
+showToast("Impossible de charger les cours.");
+
+}
+
+}
+
+
+/* =====================================================
+ÉLÈVE : MA CLASSE
+===================================================== */
+
+async function renderMaClasse(){
+
+const container=document.getElementById("page-maclasse");
+
+container.innerHTML=`
+
+<div class="page-title">
+
+<h2>🏫 Ma classe</h2>
+
+<p>Votre inscription et les cours de votre classe.</p>
+
+</div>
+
+<div id="studentClassContent">
+Chargement...
+</div>
+`;
+
+const ins=await getStudentInscription();
+
+if(!ins){
+
+document.getElementById("studentClassContent").innerHTML=`
+<div class="warning-box">
+⚠️ L'administrateur ne vous a pas encore affecté à une classe.
+</div>
+`;
+return;
+}
+
+let courses=[];
+
+try{
+
+const snap=await getDocs(
+query(
+collection(db,"affectations"),
+where("classeId","==",ins.classeId)
+)
+);
+
+courses=snap.docs.map(x=>x.data());
+
+}catch(error){
+
+console.error(error);
+
+}
+
+document.getElementById("studentClassContent").innerHTML=`
+
+<div class="panel">
+
+<h3>🏫 Votre classe</h3>
+
+<p><strong>Classe :</strong> ${escapeHtml(ins.classeNom)}</p>
+
+<p style="margin-top:8px">
+<strong>Élève :</strong> ${escapeHtml(ins.etudiantNom)}
+</p>
+
+</div>
+
+<div class="panel">
+
+<h3>📘 Cours de la classe</h3>
+
+${
+courses.length
+?
+`
+<div class="table-wrap">
+
+<table>
+
+<thead>
+<tr>
+<th>Filière</th>
+<th>Matière</th>
+<th>Professeur</th>
+</tr>
+</thead>
+
+<tbody>
+${courses.map(d=>`
+<tr>
+<td>${escapeHtml(d.filiereNom)}</td>
+<td>${escapeHtml(d.matiereNom)}</td>
+<td>${escapeHtml(d.professeurNom)}</td>
+</tr>
+`).join("")}
+</tbody>
+
+</table>
+
+</div>
+`
+:
+`<div class="empty">Aucun cours n'est encore affecté à cette classe.</div>`
+}
+
+</div>
+`;
+
+}
+
+
+/* =====================================================
+STUDENT INSCRIPTION
+===================================================== */
+
+async function getStudentInscription(){
+
+if(!currentUser)return null;
+
+const q=query(
+collection(db,"inscriptions"),
+where("etudiantUid","==",currentUser.uid)
+);
+
+const snap=await getDocs(q);
+
+if(snap.empty)return null;
+
+return{
+id:snap.docs[0].id,
+...snap.docs[0].data()
+};
+
+}
+
+
+/* =====================================================
+DEVOIRS
+===================================================== */
+
+async function renderDevoirs(){
+
+const container=document.getElementById("page-devoirs");
+
+const role=currentUserData?.role;
+
+const canManage=
+currentUserData?.isAdmin||
+role==="professeur";
+
+container.innerHTML=`
+
+<div class="page-title">
+
+<h2>📝 Devoirs</h2>
+
+<p>
+${
+role==="eleve"
+?"Devoirs de votre classe."
+:"Créer et gérer les devoirs des classes qui vous sont attribuées."
+}
+</p>
+
+</div>
+
+${
+canManage
+?
+`
+<div class="panel">
+
+<h3>➕ Ajouter un devoir</h3>
+
+<div class="form-grid">
+
+<div class="form-group">
+<label>Titre</label>
+<input id="devTitre" type="text">
+</div>
+
+<div class="form-group">
+<label>Date limite</label>
+<input id="devDate" type="date">
+</div>
+
+<div class="form-group">
+<label>Classe</label>
+<select id="devClasse"></select>
+</div>
+
+<div class="form-group">
+<label>Matière / Cours</label>
+<select id="devMatiere"></select>
+</div>
+
+<div class="form-group" style="grid-column:1/-1">
+<label>Description / Consignes</label>
+<textarea id="devDescription"></textarea>
+</div>
+
+</div>
+
+<div class="form-actions">
+
+<button class="btn btn-green" onclick="addDevoir()">
+➕ Ajouter le devoir
+</button>
+
+</div>
+
+</div>
+`
+:
+`
+<div class="info-box">
+🎓 Vous voyez automatiquement les devoirs de votre classe.
+</div>
+`
+}
+
+<div class="panel">
+
+<h3>📚 Liste des devoirs</h3>
+
+<div class="table-wrap">
+
+<table>
+
+<thead>
+
+<tr>
+<th>Titre</th>
+<th>Filière</th>
+<th>Classe</th>
+<th>Matière</th>
+<th>Date limite</th>
+<th>Professeur</th>
+<th>Actions</th>
+</tr>
+
+</thead>
+
+<tbody id="devoirsTable">
+<tr>
+<td colspan="7">Chargement...</td>
+</tr>
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+`;
+
+if(canManage){
+
+await loadProfessorAssignmentSelects();
+
+}
+
+await refreshDevoirs();
+
+}
+
+
+async function loadProfessorAssignmentSelects(){
+
+const classeSelect=document.getElementById("devClasse");
+const matiereSelect=document.getElementById("devMatiere");
+
+if(!classeSelect||!matiereSelect)return;
+
+classeSelect.innerHTML=`<option value="">-- Choisir --</option>`;
+matiereSelect.innerHTML=`<option value="">-- Choisir --</option>`;
+
+let snap;
+
+if(currentUserData?.isAdmin){
+
+snap=await getDocs(collection(db,"affectations"));
+
+}else{
+
+snap=await getDocs(
+query(
+collection(db,"affectations"),
+where("professeurUid","==",currentUser.uid)
+)
+);
+
+}
+
+const map=new Map();
+
+snap.forEach(item=>{
+
+const d=item.data();
+
+const key=d.classeId;
+
+if(!map.has(key)){
+
+map.set(key,{
+id:key,
+label:d.filiereNom+" — "+d.classeNom
+});
+
+}
+
+});
+
+map.forEach(x=>{
+
+const o=document.createElement("option");
+o.value=x.id;
+o.textContent=x.label;
+classeSelect.appendChild(o);
+
+});
+
+const subjectMap=new Map();
+
+snap.forEach(item=>{
+
+const d=item.data();
+
+const key=
+d.classeId+"|"+d.matiereId;
+
+if(!subjectMap.has(key)){
+
+subjectMap.set(key,{
+id:key,
+classeId:d.classeId,
+matiereId:d.matiereId,
+label:d.matiereNom+" — "+d.classeNom
+});
+
+}
+
+});
+
+subjectMap.forEach(x=>{
+
+const o=document.createElement("option");
+
+o.value=x.key||(
+x.classeId+"|"+x.matiereId
+);
+
+o.dataset.classe=x.classeId;
+o.dataset.matiere=x.matiereId;
+o.textContent=x.label;
+
+matiereSelect.appendChild(o);
+
+});
+
+classeSelect.onchange=function(){
+
+[...matiereSelect.options].forEach(o=>{
+
+if(!o.value)return;
+
+o.hidden=
+o.dataset.classe!==classeSelect.value;
+
+});
+
+matiereSelect.value="";
+
+};
+
+}
+
+
+async function getSelectedAssignment(){
+
+const classeId=document.getElementById("devClasse").value;
+const combined=document.getElementById("devMatiere").value;
+
+if(!classeId||!combined)return null;
+
+const parts=combined.split("|");
+
+if(parts.length<2)return null;
+
+const matiereId=parts[1];
+
+const q=query(
+collection(db,"affectations"),
+where("classeId","==",classeId),
+where("matiereId","==",matiereId)
+);
+
+const snap=await getDocs(q);
+
+if(snap.empty)return null;
+
+if(currentUserData?.isAdmin){
+
+return{
+...snap.docs[0].data(),
+id:snap.docs[0].id
+};
+
+}
+
+const own=snap.docs.find(
+x=>x.data().professeurUid===currentUser.uid
+);
+
+if(!own)return null;
+
+return{
+...own.data(),
+id:own.id
+};
+
+}
+
+
+window.addDevoir=async function(){
+
+if(!currentUserData?.isAdmin&&currentUserData?.role!=="professeur"){
+
+showToast("Vous n'avez pas le droit d'ajouter un devoir.");
+return;
+}
+
+const titre=document.getElementById("devTitre").value.trim();
+const dateLimite=document.getElementById("devDate").value;
+const description=document.getElementById("devDescription").value.trim();
+
+if(!titre||!dateLimite){
+
+showToast("Remplissez le titre et la date limite.");
+return;
+}
+
+try{
+
+const affectation=await getSelectedAssignment();
+
+if(!affectation){
+
+showToast("Choisissez une classe et une matière qui vous sont attribuées.");
+return;
+}
+
+const professorUid=
+currentUserData.isAdmin
+?
+(affectation.professeurUid||currentUser.uid)
+:
+currentUser.uid;
+
+const professorName=
+currentUserData.isAdmin
+?
+(affectation.professeurNom||currentUserData.name)
+:
+(currentUserData.name||currentUser.email);
+
+await addDoc(
+collection(db,"devoirs"),
+{
+titre,
+description,
+dateLimite,
+
+filiereId:affectation.filiereId||"",
+filiereNom:affectation.filiereNom||"",
+
+classeId:affectation.classeId||"",
+classeNom:affectation.classeNom||"",
+
+matiereId:affectation.matiereId||"",
+matiereNom:affectation.matiereNom||"",
+
+professeurUid:professorUid,
+professeurNom:professorName,
+
+createdBy:currentUser.uid,
+createdAt:serverTimestamp()
+}
+);
+
+showToast("Devoir ajouté avec succès.");
+
+document.getElementById("devTitre").value="";
+document.getElementById("devDate").value="";
+document.getElementById("devDescription").value="";
+document.getElementById("devClasse").value="";
+document.getElementById("devMatiere").value="";
+
+await refreshDevoirs();
+loadDashboard();
+
+}catch(error){
+
+console.error(error);
+showToast("Impossible d'ajouter le devoir.");
+
+}
+
+};
+
+
+async function getVisibleDevoirs(){
+
+if(currentUserData?.isAdmin){
+
+return getCollectionData("devoirs");
+}
+
+if(currentUserData?.role==="professeur"){
+
+const snap=await getDocs(
+query(
+collection(db,"devoirs"),
+where("professeurUid","==",currentUser.uid)
+)
+);
+
+return snap.docs.map(d=>({
+id:d.id,
+...d.data()
+}));
+
+}
+
+const ins=await getStudentInscription();
+
+if(!ins)return[];
+
+const snap=await getDocs(
+query(
+collection(db,"devoirs"),
+where("classeId","==",ins.classeId)
+)
+);
+
+return snap.docs.map(d=>({
+id:d.id,
+...d.data()
+}));
+
+}
+
+
+async function refreshDevoirs(){
+
+const tbody=document.getElementById("devoirsTable");
+
+if(!tbody)return;
+
+try{
+
+const rows=await getVisibleDevoirs();
+
+if(!rows.length){
+
+tbody.innerHTML=`
+<tr>
+<td colspan="7">Aucun devoir disponible.</td>
+</tr>
+`;
+
+return;
+}
+
+tbody.innerHTML="";
+
+rows.forEach(d=>{
+
+const tr=document.createElement("tr");
+
+[
+d.titre,
+d.filiereNom,
+d.classeNom,
+d.matiereNom,
+d.dateLimite,
+d.professeurNom
+].forEach(value=>{
+
+const td=document.createElement("td");
+td.textContent=value||"";
+tr.appendChild(td);
+
+});
+
+const td=document.createElement("td");
+const group=document.createElement("div");
+
+group.className="action-group";
+
+const canEdit=
+currentUserData?.isAdmin||
+(
+currentUserData?.role==="professeur"&&
+d.professeurUid===currentUser.uid
+);
+
+if(canEdit){
+
+const edit=document.createElement("button");
+
+edit.className="btn";
+edit.textContent="Modifier";
+
+edit.onclick=()=>editDevoir(d.id,d);
+
+group.appendChild(edit);
+
+const del=document.createElement("button");
+
+del.className="btn btn-red";
+del.textContent="Supprimer";
+
+del.onclick=()=>deleteDevoir(d.id);
+
+group.appendChild(del);
+
+}
+
+if(currentUserData?.role==="eleve"){
+
+const remise=document.createElement("button");
+
+remise.className="btn btn-green";
+remise.textContent="📤 Remettre";
+
+remise.onclick=()=>openRemiseForDevoir(d.id,d);
+
+group.appendChild(remise);
+
+}
+
+td.appendChild(group);
+tr.appendChild(td);
+
+tbody.appendChild(tr);
+
+});
+
+}catch(error){
+
+console.error(error);
+
+tbody.innerHTML=`
+<tr>
+<td colspan="7">Impossible de charger les devoirs.</td>
+</tr>
+`;
+
+}
+
+}
+
+
+window.editDevoir=async function(id,data){
+
+const allowed=
+currentUserData?.isAdmin||
+(
+currentUserData?.role==="professeur"&&
+data.professeurUid===currentUser.uid
+);
+
+if(!allowed){
+
+showToast("Vous n'avez pas le droit de modifier ce devoir.");
+return;
+}
+
+const titre=prompt("Titre du devoir",data.titre||"");
 if(titre===null)return;
 
-const matiere=prompt(
-"Matière",
-data.matiere||""
-);
-
-if(matiere===null)return;
-
-const classe=prompt(
-"Classe / Groupe",
-data.classe||""
-);
-
-if(classe===null)return;
-
-const dateLimite=prompt(
-"Date limite YYYY-MM-DD",
-data.dateLimite||""
-);
-
-if(dateLimite===null)return;
+const date=prompt("Date limite YYYY-MM-DD",data.dateLimite||"");
+if(date===null)return;
 
 const description=prompt(
 "Description / Consignes",
@@ -2948,27 +3560,19 @@ await updateDoc(
 doc(db,"devoirs",id),
 {
 titre:titre.trim(),
-matiere:matiere.trim(),
-classe:classe.trim(),
-dateLimite:dateLimite.trim(),
+dateLimite:date.trim(),
 description:description.trim(),
 updatedAt:serverTimestamp()
 }
 );
 
-showToast(
-"Devoir modifié."
-);
-
+showToast("Devoir modifié.");
 await refreshDevoirs();
 
 }catch(error){
 
 console.error(error);
-
-showToast(
-"Modification impossible."
-);
+showToast("Modification impossible.");
 
 }
 
@@ -2977,17 +3581,12 @@ showToast(
 
 window.deleteDevoir=async function(id){
 
-if(!confirm(
-"Supprimer ce devoir ?"
-))return;
+if(!confirm("Supprimer ce devoir ?"))return;
 
 try{
 
-const ref=
-doc(db,"devoirs",id);
-
-const snap=
-await getDoc(ref);
+const ref=doc(db,"devoirs",id);
+const snap=await getDoc(ref);
 
 if(!snap.exists())return;
 
@@ -2996,24 +3595,19 @@ const d=snap.data();
 const allowed=
 currentUserData?.isAdmin||
 (
-currentUserData?.role==="professeur" &&
+currentUserData?.role==="professeur"&&
 d.professeurUid===currentUser.uid
 );
 
 if(!allowed){
 
-showToast(
-"Ou pa gen dwa supprime devwa sa a."
-);
-
+showToast("Vous n'avez pas le droit de supprimer ce devoir.");
 return;
 }
 
 await deleteDoc(ref);
 
-showToast(
-"Devoir supprimé."
-);
+showToast("Devoir supprimé.");
 
 await refreshDevoirs();
 loadDashboard();
@@ -3021,10 +3615,7 @@ loadDashboard();
 }catch(error){
 
 console.error(error);
-
-showToast(
-"Suppression impossible."
-);
+showToast("Suppression impossible.");
 
 }
 
@@ -3037,13 +3628,8 @@ REMISES
 
 async function renderRemises(){
 
-const container=
-document.getElementById(
-"page-remises"
-);
-
-const role=
-currentUserData?.role;
+const container=document.getElementById("page-remises");
+const role=currentUserData?.role;
 
 container.innerHTML=`
 
@@ -3054,15 +3640,12 @@ container.innerHTML=`
 <p>
 ${
 role==="eleve"
-?
-"Remettez vos devoirs ici."
-:
-"Voir et gérer les devoirs remis par les étudiants."
+?"Vos devoirs remis et vos corrections."
+:"Remises des élèves de vos classes."
 }
 </p>
 
 </div>
-
 
 ${
 role==="eleve"
@@ -3081,28 +3664,19 @@ role==="eleve"
 
 <div class="form-group">
 <label>Lien du fichier / document</label>
-<input
-id="remiseFichier"
-type="text"
-placeholder="Lien Google Drive, PDF, document..."
->
+<input id="remiseFichier" type="url" placeholder="Lien Google Drive, PDF, document...">
 </div>
 
 <div class="form-group" style="grid-column:1/-1">
 <label>Commentaire</label>
-<textarea
-id="remiseCommentaire"
-></textarea>
+<textarea id="remiseCommentaire"></textarea>
 </div>
 
 </div>
 
 <div class="form-actions">
 
-<button
-class="btn btn-green"
-onclick="addRemiseEleve()"
->
+<button class="btn btn-green" onclick="addRemiseEleve()">
 📤 Envoyer le devoir
 </button>
 
@@ -3113,18 +3687,15 @@ onclick="addRemiseEleve()"
 :
 `
 <div class="info-box">
-👨‍🏫 Professeur la ka resevwa remises elèv yo,
-gade fichye yo, ajoute/modifier nòt sou 100 ak kòmantè.
+👨‍🏫 Vous voyez les remises des élèves des classes qui vous sont attribuées.
+Vous pouvez les corriger et donner une note sur 100.
 </div>
 `
 }
 
-
 <div class="panel">
 
-<h3>
-📋 Devoirs remis
-</h3>
+<h3>📋 Devoirs remis</h3>
 
 <div class="table-wrap">
 
@@ -3134,9 +3705,9 @@ gade fichye yo, ajoute/modifier nòt sou 100 ak kòmantè.
 
 <tr>
 <th>Devoir</th>
+<th>Classe</th>
 <th>Étudiant</th>
 <th>Fichier</th>
-<th>Commentaire</th>
 <th>Note /100</th>
 <th>Correction</th>
 <th>Actions</th>
@@ -3145,25 +3716,20 @@ gade fichye yo, ajoute/modifier nòt sou 100 ak kòmantè.
 </thead>
 
 <tbody id="remisesTable">
-
 <tr>
-<td colspan="7">
-Chargement...
-</td>
+<td colspan="7">Chargement...</td>
 </tr>
-
 </tbody>
 
 </table>
 
 </div>
-
 </div>
 `;
 
 if(role==="eleve"){
 
-await loadDevoirSelect();
+await loadStudentDevoirSelect();
 
 }
 
@@ -3172,34 +3738,24 @@ await refreshRemises();
 }
 
 
-async function loadDevoirSelect(){
+async function loadStudentDevoirSelect(){
 
-const select=
-document.getElementById(
-"remiseDevoir"
-);
+const select=document.getElementById("remiseDevoir");
 
 if(!select)return;
 
-select.innerHTML=
-`<option value="">-- Choisir un devoir --</option>`;
+select.innerHTML=`<option value="">-- Choisir un devoir --</option>`;
 
-const snap=
-await getDocs(
-collection(db,"devoirs")
-);
+const rows=await getVisibleDevoirs();
 
-snap.forEach(item=>{
+rows.forEach(d=>{
 
-const d=item.data();
+const option=document.createElement("option");
 
-const option=
-document.createElement("option");
-
-option.value=item.id;
+option.value=d.id;
 
 option.textContent=
-`${d.titre} — ${d.matiere}`;
+`${d.titre} — ${d.matiereNom} — ${d.classeNom}`;
 
 select.appendChild(option);
 
@@ -3212,68 +3768,71 @@ window.addRemiseEleve=async function(){
 
 if(currentUserData?.role!=="eleve"){
 
-showToast(
-"Seul un élève peut remettre un devoir."
-);
-
+showToast("Seul un élève peut remettre un devoir.");
 return;
 }
 
-const devoirId=
-document.getElementById(
-"remiseDevoir"
-).value;
-
-const fichier=
-document.getElementById(
-"remiseFichier"
-).value.trim();
-
-const commentaire=
-document.getElementById(
-"remiseCommentaire"
-).value.trim();
+const devoirId=document.getElementById("remiseDevoir").value;
+const fichier=document.getElementById("remiseFichier").value.trim();
+const commentaire=document.getElementById("remiseCommentaire").value.trim();
 
 if(!devoirId||!fichier){
 
-showToast(
-"Choisissez un devoir et ajoutez le lien du fichier."
-);
-
+showToast("Choisissez un devoir et ajoutez le lien du fichier.");
 return;
 }
 
 try{
 
-const devoirSnap=
-await getDoc(
+const devoirSnap=await getDoc(
 doc(db,"devoirs",devoirId)
 );
 
 if(!devoirSnap.exists()){
 
-showToast(
-"Devoir introuvable."
-);
-
+showToast("Devoir introuvable.");
 return;
 }
 
 const d=devoirSnap.data();
 
+const ins=await getStudentInscription();
+
+if(!ins||ins.classeId!==d.classeId){
+
+showToast("Ce devoir ne correspond pas à votre classe.");
+return;
+}
+
+const existing=await getDocs(
+query(
+collection(db,"remises"),
+where("devoirId","==",devoirId),
+where("etudiantUid","==",currentUser.uid)
+)
+);
+
+if(!existing.empty){
+
+showToast("Vous avez déjà remis ce devoir. Utilisez Modifier.");
+return;
+}
 
 await addDoc(
 collection(db,"remises"),
 {
 devoirId:devoirId,
 devoirTitre:d.titre||"",
-matiere:d.matiere||"",
+filiereId:d.filiereId||"",
+filiereNom:d.filiereNom||"",
+classeId:d.classeId||"",
+classeNom:d.classeNom||"",
+matiereId:d.matiereId||"",
+matiereNom:d.matiereNom||"",
 professeurUid:d.professeurUid||"",
+professeurNom:d.professeurNom||"",
 etudiantUid:currentUser.uid,
-etudiantNom:
-currentUserData.name||
-currentUser.displayName||
-currentUser.email,
+etudiantNom:currentUserData.name||currentUser.email,
 fichier:fichier,
 commentaire:commentaire,
 note:null,
@@ -3283,108 +3842,102 @@ createdAt:serverTimestamp()
 }
 );
 
-showToast(
-"Devoir remis avec succès."
-);
+showToast("Devoir remis avec succès.");
 
-document.getElementById(
-"remiseFichier"
-).value="";
-
-document.getElementById(
-"remiseCommentaire"
-).value="";
+document.getElementById("remiseFichier").value="";
+document.getElementById("remiseCommentaire").value="";
 
 await refreshRemises();
 
 }catch(error){
 
 console.error(error);
-
-showToast(
-"Impossible de remettre le devoir."
-);
+showToast("Impossible de remettre le devoir.");
 
 }
 
 };
 
 
-window.openRemiseForDevoir=function(
-id,
-data
-){
+window.openRemiseForDevoir=function(id,data){
 
 showPage(
 "remises",
 document.getElementById("remisesMenu")
 );
 
-setTimeout(
-async()=>{
+setTimeout(async()=>{
 
-const select=
-document.getElementById(
-"remiseDevoir"
-);
+const select=document.getElementById("remiseDevoir");
 
 if(select){
-
 select.value=id;
-
 }
 
-},
-300
-);
+},300);
 
 };
 
 
+async function getVisibleRemises(){
+
+if(currentUserData?.isAdmin){
+
+const snap=await getDocs(collection(db,"remises"));
+
+return snap.docs.map(d=>({
+id:d.id,
+...d.data()
+}));
+
+}
+
+if(currentUserData?.role==="eleve"){
+
+const snap=await getDocs(
+query(
+collection(db,"remises"),
+where("etudiantUid","==",currentUser.uid)
+)
+);
+
+return snap.docs.map(d=>({
+id:d.id,
+...d.data()
+}));
+
+}
+
+const snap=await getDocs(
+query(
+collection(db,"remises"),
+where("professeurUid","==",currentUser.uid)
+)
+);
+
+return snap.docs.map(d=>({
+id:d.id,
+...d.data()
+}));
+
+}
+
+
 async function refreshRemises(){
 
-const tbody=
-document.getElementById(
-"remisesTable"
-);
+const tbody=document.getElementById("remisesTable");
 
 if(!tbody)return;
 
 try{
 
-let snap;
+const rows=await getVisibleRemises();
 
-if(currentUserData?.role==="eleve"){
-
-const q=
-query(
-collection(db,"remises"),
-where(
-"etudiantUid",
-"==",
-currentUser.uid
-)
-);
-
-snap=await getDocs(q);
-
-}else{
-
-snap=
-await getDocs(
-collection(db,"remises")
-);
-
-}
-
-
-if(snap.empty){
+if(!rows.length){
 
 tbody.innerHTML=`
 <tr>
-<td colspan="7">
-Aucune remise.
-</td>
+<td colspan="7">Aucune remise.</td>
 </tr>
 `;
 
@@ -3393,144 +3946,117 @@ return;
 
 tbody.innerHTML="";
 
-snap.forEach(item=>{
+rows.forEach(d=>{
 
-const d=item.data();
-
-const tr=
-document.createElement("tr");
-
+const tr=document.createElement("tr");
 
 [
 d.devoirTitre,
-d.etudiantNom,
-d.fichier,
-d.commentaire,
-d.note==null
-?"Non noté"
-:`${d.note}/100`,
-d.correctionCommentaire||"Pas encore corrigé"
-].forEach(
-(value,index)=>{
+d.classeNom,
+d.etudiantNom
+].forEach(value=>{
 
-const td=
-document.createElement("td");
+const td=document.createElement("td");
+td.textContent=value||"";
+tr.appendChild(td);
 
-if(index===2 && value){
+});
 
-const link=
-document.createElement("a");
+let td=document.createElement("td");
 
-link.href=value;
+if(d.fichier){
+
+const link=document.createElement("a");
+
+link.href=d.fichier;
 link.target="_blank";
 link.rel="noopener";
-link.textContent=
-"📎 Ouvrir";
+link.textContent="📎 Ouvrir";
 
 td.appendChild(link);
 
 }else{
 
-td.textContent=
-value??"";
+td.textContent="Aucun fichier";
 
 }
 
 tr.appendChild(td);
 
-}
-);
+td=document.createElement("td");
 
+td.textContent=
+d.note==null
+?"Non noté"
+:`${d.note}/100`;
 
-const td=
-document.createElement("td");
+tr.appendChild(td);
 
-const group=
-document.createElement("div");
+td=document.createElement("td");
 
-group.className=
-"action-group";
+td.textContent=
+d.correctionCommentaire||
+"Pas encore corrigé";
 
+tr.appendChild(td);
 
-if(
-currentUserData?.isAdmin||
-currentUserData?.role==="professeur"
-){
+td=document.createElement("td");
 
-const edit=
-document.createElement("button");
-
-edit.className="btn";
-
-edit.textContent=
-"✏️ Corriger";
-
-edit.onclick=()=>{
-correctRemise(
-item.id,
-d
-);
-};
-
-group.appendChild(edit);
-
-}
-
+const group=document.createElement("div");
+group.className="action-group";
 
 if(
 currentUserData?.isAdmin||
 (
-currentUserData?.role==="eleve" &&
-d.etudiantUid===currentUser.uid
+currentUserData?.role==="professeur"&&
+d.professeurUid===currentUser.uid
 )
 ){
 
-const edit=
-document.createElement("button");
+const correct=document.createElement("button");
 
-edit.className=
-"btn btn-orange";
+correct.className="btn";
+correct.textContent="✏️ Corriger";
 
-edit.textContent=
-"Modifier";
-
-edit.onclick=()=>{
-editRemise(
-item.id,
-d
-);
+correct.onclick=()=>{
+correctRemise(d.id,d);
 };
 
-group.appendChild(edit);
+group.appendChild(correct);
 
 }
-
 
 if(
 currentUserData?.isAdmin||
 (
-currentUserData?.role==="eleve" &&
+currentUserData?.role==="eleve"&&
 d.etudiantUid===currentUser.uid
 )
 ){
 
-const del=
-document.createElement("button");
+const edit=document.createElement("button");
 
-del.className=
-"btn btn-red";
+edit.className="btn btn-orange";
+edit.textContent="Modifier";
 
-del.textContent=
-"Supprimer";
+edit.onclick=()=>{
+editRemise(d.id,d);
+};
+
+group.appendChild(edit);
+
+const del=document.createElement("button");
+
+del.className="btn btn-red";
+del.textContent="Supprimer";
 
 del.onclick=()=>{
-deleteRemise(item.id,d);
+deleteRemise(d.id,d);
 };
 
 group.appendChild(del);
 
 }
-
 
 td.appendChild(group);
 tr.appendChild(td);
@@ -3545,9 +4071,7 @@ console.error(error);
 
 tbody.innerHTML=`
 <tr>
-<td colspan="7">
-Impossible de charger les remises.
-</td>
+<td colspan="7">Impossible de charger les remises.</td>
 </tr>
 `;
 
@@ -3556,35 +4080,22 @@ Impossible de charger les remises.
 }
 
 
-/* =====================================================
-MODIFIER REMISE
-===================================================== */
-
-window.editRemise=async function(
-id,
-data
-){
+window.editRemise=async function(id,data){
 
 const allowed=
 currentUserData?.isAdmin||
 (
-currentUserData?.role==="eleve" &&
+currentUserData?.role==="eleve"&&
 data.etudiantUid===currentUser.uid
 );
 
 if(!allowed){
 
-showToast(
-"Ou pa gen dwa modifye remise sa a."
-);
-
+showToast("Vous n'avez pas le droit de modifier cette remise.");
 return;
 }
 
-const fichier=prompt(
-"Lien du fichier",
-data.fichier||""
-);
+const fichier=prompt("Lien du fichier",data.fichier||"");
 
 if(fichier===null)return;
 
@@ -3606,53 +4117,35 @@ updatedAt:serverTimestamp()
 }
 );
 
-showToast(
-"Remise modifiée."
-);
-
+showToast("Remise modifiée.");
 await refreshRemises();
 
 }catch(error){
 
 console.error(error);
-
-showToast(
-"Modification impossible."
-);
+showToast("Modification impossible.");
 
 }
 
 };
 
 
-/* =====================================================
-SUPPRIMER REMISE
-===================================================== */
-
-window.deleteRemise=async function(
-id,
-data
-){
+window.deleteRemise=async function(id,data){
 
 const allowed=
 currentUserData?.isAdmin||
 (
-currentUserData?.role==="eleve" &&
+currentUserData?.role==="eleve"&&
 data.etudiantUid===currentUser.uid
 );
 
 if(!allowed){
 
-showToast(
-"Ou pa gen dwa supprime remise sa a."
-);
-
+showToast("Vous n'avez pas le droit de supprimer cette remise.");
 return;
 }
 
-if(!confirm(
-"Supprimer cette remise ?"
-))return;
+if(!confirm("Supprimer cette remise ?"))return;
 
 try{
 
@@ -3660,19 +4153,13 @@ await deleteDoc(
 doc(db,"remises",id)
 );
 
-showToast(
-"Remise supprimée."
-);
-
+showToast("Remise supprimée.");
 await refreshRemises();
 
 }catch(error){
 
 console.error(error);
-
-showToast(
-"Suppression impossible."
-);
+showToast("Suppression impossible.");
 
 }
 
@@ -3680,23 +4167,19 @@ showToast(
 
 
 /* =====================================================
-CORRECTION
+CORRECTIONS
 ===================================================== */
 
 async function renderCorrections(){
 
-const container=
-document.getElementById(
-"page-corrections"
-);
+const container=document.getElementById("page-corrections");
 
 if(
-currentUserData?.role!=="professeur" &&
+currentUserData?.role!=="professeur"&&
 !currentUserData?.isAdmin
 ){
 
 container.innerHTML=`
-
 <div class="page-title">
 <h2>✏️ Corrections</h2>
 <p>Correction des devoirs remis.</p>
@@ -3716,25 +4199,21 @@ container.innerHTML=`
 
 <h2>✏️ Corrections</h2>
 
-<p>
-Corriger les devoirs, commenter et donner une note sur 100.
-</p>
+<p>Corriger les devoirs, commenter et donner une note sur 100.</p>
+
+</div>
+
+<div class="info-box">
+
+👨‍🏫 Chaque remise peut recevoir:
+<br>• une note de 0 à 100
+<br>• un commentaire
+<br>• un statut corrigé
+<br>• un résultat visible par l'élève
 
 </div>
 
 <div class="panel">
-
-<div class="info-box">
-👨‍🏫 Pou chak remise ou ka:
-<br>
-• Louvri fichye elèv la
-<br>
-• Bay yon nòt ant 0 ak 100
-<br>
-• Ekri yon kòmantè
-<br>
-• Sove koreksyon an
-</div>
 
 <div class="table-wrap">
 
@@ -3744,6 +4223,7 @@ Corriger les devoirs, commenter et donner une note sur 100.
 
 <tr>
 <th>Devoir</th>
+<th>Classe</th>
 <th>Étudiant</th>
 <th>Fichier</th>
 <th>Note /100</th>
@@ -3754,13 +4234,9 @@ Corriger les devoirs, commenter et donner une note sur 100.
 </thead>
 
 <tbody id="correctionsTable">
-
 <tr>
-<td colspan="6">
-Chargement...
-</td>
+<td colspan="7">Chargement...</td>
 </tr>
-
 </tbody>
 
 </table>
@@ -3777,27 +4253,19 @@ await refreshCorrections();
 
 async function refreshCorrections(){
 
-const tbody=
-document.getElementById(
-"correctionsTable"
-);
+const tbody=document.getElementById("correctionsTable");
 
 if(!tbody)return;
 
 try{
 
-const snap=
-await getDocs(
-collection(db,"remises")
-);
+const rows=await getVisibleRemises();
 
-if(snap.empty){
+if(!rows.length){
 
 tbody.innerHTML=`
 <tr>
-<td colspan="6">
-Aucune remise à corriger.
-</td>
+<td colspan="7">Aucune remise à corriger.</td>
 </tr>
 `;
 
@@ -3806,37 +4274,27 @@ return;
 
 tbody.innerHTML="";
 
-snap.forEach(item=>{
+rows.forEach(d=>{
 
-const d=item.data();
+const tr=document.createElement("tr");
 
-const tr=
-document.createElement("tr");
+[
+d.devoirTitre,
+d.classeNom,
+d.etudiantNom
+].forEach(value=>{
 
-
-let td=
-document.createElement("td");
-
-td.textContent=
-d.devoirTitre||"";
-
+const td=document.createElement("td");
+td.textContent=value||"";
 tr.appendChild(td);
 
+});
 
-td=document.createElement("td");
-
-td.textContent=
-d.etudiantNom||"";
-
-tr.appendChild(td);
-
-
-td=document.createElement("td");
+let td=document.createElement("td");
 
 if(d.fichier){
 
-const a=
-document.createElement("a");
+const a=document.createElement("a");
 
 a.href=d.fichier;
 a.target="_blank";
@@ -3853,148 +4311,104 @@ td.textContent="Aucun fichier";
 
 tr.appendChild(td);
 
-
 td=document.createElement("td");
 
-const note=
-document.createElement("input");
+const note=document.createElement("input");
 
 note.className="note-input";
 note.type="number";
 note.min="0";
 note.max="100";
 note.step="0.01";
-
-if(d.note!==null &&
-d.note!==undefined
-){
-
-note.value=d.note;
-
-}
+note.value=d.note==null?"":d.note;
 
 td.appendChild(note);
-
 tr.appendChild(td);
-
 
 td=document.createElement("td");
 
-const comment=
-document.createElement("textarea");
+const comment=document.createElement("textarea");
 
-comment.className=
-"comment-input";
-
+comment.className="comment-input";
 comment.rows=2;
-
-comment.placeholder=
-"Commentaire du professeur";
-
-comment.value=
-d.correctionCommentaire||"";
+comment.placeholder="Commentaire";
+comment.value=d.correctionCommentaire||"";
 
 td.appendChild(comment);
-
 tr.appendChild(td);
-
 
 td=document.createElement("td");
 
-const save=
-document.createElement("button");
+const save=document.createElement("button");
 
-save.className=
-"btn btn-green";
-
-save.textContent=
-"💾 Enregistrer";
+save.className="btn btn-green";
+save.textContent="💾 Enregistrer";
 
 save.onclick=async()=>{
 
-const value=
-note.value.trim();
+const value=note.value.trim();
 
 if(value===""){
 
-showToast(
-"Entrez une note entre 0 et 100."
-);
-
+showToast("Entrez une note entre 0 et 100.");
 return;
 }
 
-const numeric=
-Number(value);
+const numeric=Number(value);
 
-if(
-Number.isNaN(numeric)||
-numeric<0||
-numeric>100
-){
+if(Number.isNaN(numeric)||numeric<0||numeric>100){
 
-showToast(
-"La note doit être entre 0 et 100."
-);
-
+showToast("La note doit être entre 0 et 100.");
 return;
 }
 
 try{
 
+const correctionCommentaire=comment.value.trim();
+
 await updateDoc(
-doc(db,"remises",item.id),
+doc(db,"remises",d.id),
 {
 note:numeric,
-correctionCommentaire:
-comment.value.trim(),
+correctionCommentaire,
 statut:"corrige",
-correcteurUid:
-currentUser.uid,
-correctedAt:
-serverTimestamp()
+correcteurUid:currentUser.uid,
+correctedAt:serverTimestamp(),
+updatedAt:serverTimestamp()
 }
 );
 
-
-/*
-Nou mete menm rezilta a nan
-collection resultats.
-*/
-
-const existing=
-await findResultForRemise(
-d
-);
+const resultRef=doc(db,"resultats",d.id);
 
 const resultData={
 etudiantUid:d.etudiantUid,
 etudiantNom:d.etudiantNom||"",
 devoirId:d.devoirId||"",
 devoirTitre:d.devoirTitre||"",
-matiere:d.matiere||"",
+filiereId:d.filiereId||"",
+filiereNom:d.filiereNom||"",
+classeId:d.classeId||"",
+classeNom:d.classeNom||"",
+matiereId:d.matiereId||"",
+matiereNom:d.matiereNom||"",
 professeurUid:d.professeurUid||currentUser.uid,
+professeurNom:d.professeurNom||currentUserData.name||"",
 note:numeric,
-commentaire:
-comment.value.trim(),
+commentaire:correctionCommentaire,
+remiseId:d.id,
 updatedAt:serverTimestamp()
 };
 
-if(existing){
+const resultSnap=await getDoc(resultRef);
 
-await updateDoc(
-doc(
-db,
-"resultats",
-existing.id
-),
-resultData
-);
+if(resultSnap.exists()){
+
+await updateDoc(resultRef,resultData);
 
 }else{
 
-await addDoc(
-collection(db,"resultats"),
+await setDoc(
+resultRef,
 {
 ...resultData,
 createdAt:serverTimestamp()
@@ -4003,19 +4417,15 @@ createdAt:serverTimestamp()
 
 }
 
-showToast(
-"Correction et note enregistrées."
-);
+showToast("Correction et note enregistrées.");
 
 await refreshCorrections();
+await loadDashboard();
 
 }catch(error){
 
 console.error(error);
-
-showToast(
-"Impossible d'enregistrer la correction."
-);
+showToast("Impossible d'enregistrer la correction.");
 
 }
 
@@ -4034,9 +4444,7 @@ console.error(error);
 
 tbody.innerHTML=`
 <tr>
-<td colspan="6">
-Impossible de charger les corrections.
-</td>
+<td colspan="7">Impossible de charger les corrections.</td>
 </tr>
 `;
 
@@ -4049,9 +4457,7 @@ async function correctRemise(id,data){
 
 showPage(
 "corrections",
-document.getElementById(
-"correctionsMenu"
-)
+document.getElementById("correctionsMenu")
 );
 
 }
@@ -4063,14 +4469,8 @@ RESULTATS
 
 async function renderResultats(){
 
-const container=
-document.getElementById(
-"page-resultats"
-);
-
-const role=
-currentUserData?.role;
-
+const container=document.getElementById("page-resultats");
+const role=currentUserData?.role;
 
 container.innerHTML=`
 
@@ -4081,41 +4481,28 @@ container.innerHTML=`
 <p>
 ${
 role==="eleve"
-?
-"Vos notes et résultats."
-:
-"Gestion des résultats et des notes sur 100."
+?"Vos notes et résultats."
+:"Gestion des résultats et des notes sur 100."
 }
 </p>
 
 </div>
 
+<div class="info-box">
 
 ${
-role==="professeur"||
-currentUserData?.isAdmin
+role==="eleve"
 ?
-`
-<div class="info-box">
-👨‍🏫 Les notes sont données dans la section
-<strong>Corrections</strong>.
-Chaque note est enregistrée sur <strong>100</strong>.
-</div>
-`
+"🎓 Vous voyez uniquement vos propres résultats."
 :
-`
-<div class="info-box">
-🎓 Ou ka wè nòt ou yo ak rezilta devwa ou yo isit la.
-</div>
-`
+"👨‍🏫 Vous voyez les résultats liés aux classes et devoirs que vous gérez."
 }
 
+</div>
 
 <div class="panel">
 
-<h3>
-📊 Liste des résultats
-</h3>
+<h3>📊 Liste des résultats</h3>
 
 <div class="table-wrap">
 
@@ -4125,29 +4512,25 @@ Chaque note est enregistrée sur <strong>100</strong>.
 
 <tr>
 <th>Étudiant</th>
+<th>Filière</th>
+<th>Classe</th>
 <th>Devoir</th>
 <th>Matière</th>
 <th>Note</th>
 <th>Commentaire</th>
-<th>Dernière modification</th>
 </tr>
 
 </thead>
 
 <tbody id="resultatsTable">
-
 <tr>
-<td colspan="6">
-Chargement...
-</td>
+<td colspan="7">Chargement...</td>
 </tr>
-
 </tbody>
 
 </table>
 
 </div>
-
 </div>
 `;
 
@@ -4156,50 +4539,67 @@ await refreshResultats();
 }
 
 
+async function getVisibleResults(){
+
+if(currentUserData?.isAdmin){
+
+const snap=await getDocs(
+collection(db,"resultats")
+);
+
+return snap.docs.map(d=>({
+id:d.id,
+...d.data()
+}));
+
+}
+
+if(currentUserData?.role==="eleve"){
+
+const snap=await getDocs(
+query(
+collection(db,"resultats"),
+where("etudiantUid","==",currentUser.uid)
+)
+);
+
+return snap.docs.map(d=>({
+id:d.id,
+...d.data()
+}));
+
+}
+
+const snap=await getDocs(
+query(
+collection(db,"resultats"),
+where("professeurUid","==",currentUser.uid)
+)
+);
+
+return snap.docs.map(d=>({
+id:d.id,
+...d.data()
+}));
+
+}
+
+
 async function refreshResultats(){
 
-const tbody=
-document.getElementById(
-"resultatsTable"
-);
+const tbody=document.getElementById("resultatsTable");
 
 if(!tbody)return;
 
 try{
 
-let snap;
+const rows=await getVisibleResults();
 
-if(currentUserData?.role==="eleve"){
-
-const q=
-query(
-collection(db,"resultats"),
-where(
-"etudiantUid",
-"==",
-currentUser.uid
-)
-);
-
-snap=await getDocs(q);
-
-}else{
-
-snap=
-await getDocs(
-collection(db,"resultats")
-);
-
-}
-
-
-if(snap.empty){
+if(!rows.length){
 
 tbody.innerHTML=`
 <tr>
-<td colspan="6">
-Aucun résultat disponible.
-</td>
+<td colspan="7">Aucun résultat disponible.</td>
 </tr>
 `;
 
@@ -4208,31 +4608,22 @@ return;
 
 tbody.innerHTML="";
 
-snap.forEach(item=>{
+rows.forEach(d=>{
 
-const d=item.data();
-
-const tr=
-document.createElement("tr");
-
+const tr=document.createElement("tr");
 
 [
 d.etudiantNom,
+d.filiereNom,
+d.classeNom,
 d.devoirTitre,
-d.matiere,
-d.note!=null
-?`${d.note}/100`
-:"Non noté",
-d.commentaire||"Aucun commentaire",
-""
+d.matiereNom,
+d.note!=null?`${d.note}/100`:"Non noté",
+d.commentaire||"Aucun commentaire"
 ].forEach(value=>{
 
-const td=
-document.createElement("td");
-
-td.textContent=
-value??"";
-
+const td=document.createElement("td");
+td.textContent=value??"";
 tr.appendChild(td);
 
 });
@@ -4247,9 +4638,7 @@ console.error(error);
 
 tbody.innerHTML=`
 <tr>
-<td colspan="6">
-Impossible de charger les résultats.
-</td>
+<td colspan="7">Impossible de charger les résultats.</td>
 </tr>
 `;
 
@@ -4259,57 +4648,12 @@ Impossible de charger les résultats.
 
 
 /* =====================================================
-CHERCHE RESULTAT EXISTANT
-===================================================== */
-
-async function findResultForRemise(data){
-
-if(!data.etudiantUid||
-!data.devoirId){
-
-return null;
-}
-
-const q=
-query(
-collection(db,"resultats"),
-where(
-"etudiantUid",
-"==",
-data.etudiantUid
-),
-where(
-"devoirId",
-"==",
-data.devoirId
-)
-);
-
-const snap=
-await getDocs(q);
-
-if(snap.empty){
-
-return null;
-}
-
-return{
-id:snap.docs[0].id
-};
-
-}
-
-
-/* =====================================================
-USERS ADMIN
+USERS
 ===================================================== */
 
 async function renderUsers(){
 
-const container=
-document.getElementById(
-"page-utilisateurs"
-);
+const container=document.getElementById("page-utilisateurs");
 
 container.innerHTML=`
 
@@ -4317,24 +4661,24 @@ container.innerHTML=`
 
 <h2>👥 Gestion des utilisateurs</h2>
 
-<p>
-L'administrateur accepte les comptes et donne les rôles.
-</p>
+<p>L'administrateur accepte les comptes et donne les rôles.</p>
 
 </div>
 
 <div class="info-box">
+
 Pour créer un professeur:
 <br>
-1. L'utilisateur crée son compte.
+1. La personne crée son compte.
 <br>
 2. Son statut est <strong>attente</strong>.
 <br>
-3. L'administrateur choisit le rôle
-<strong>professeur</strong>.
+3. L'administrateur choisit <strong>professeur</strong>.
 <br>
-4. L'administrateur clique sur
-<strong>Accepter</strong>.
+4. L'administrateur clique sur <strong>Accepter</strong>.
+<br>
+5. Ensuite, l'administrateur lui donne ses classes et matières dans <strong>Affectations</strong>.
+
 </div>
 
 <div class="panel">
@@ -4356,126 +4700,88 @@ Pour créer un professeur:
 </thead>
 
 <tbody id="usersTable">
-
 <tr>
-<td colspan="5">
-Chargement...
-</td>
+<td colspan="5">Chargement...</td>
 </tr>
-
 </tbody>
 
 </table>
 
 </div>
-
 </div>
 `;
 
 try{
 
-const snap=
-await getDocs(
-collection(db,"users")
-);
-
-const tbody=
-document.getElementById(
-"usersTable"
-);
+const snap=await getDocs(collection(db,"users"));
+const tbody=document.getElementById("usersTable");
 
 tbody.innerHTML="";
 
 snap.forEach(item=>{
 
 const data=item.data();
+const tr=document.createElement("tr");
 
-const tr=
-document.createElement("tr");
-
-
-let td=
-document.createElement("td");
-
-td.textContent=
-data.name||"";
-
+let td=document.createElement("td");
+td.textContent=data.name||"";
 tr.appendChild(td);
 
+td=document.createElement("td");
+td.textContent=data.email||"";
+tr.appendChild(td);
+
+td=document.createElement("td");
+td.textContent=data.role||"eleve";
+tr.appendChild(td);
 
 td=document.createElement("td");
 
-td.textContent=
-data.email||"";
-
-tr.appendChild(td);
-
-
-td=document.createElement("td");
-
-td.textContent=
-data.role||"eleve";
-
-tr.appendChild(td);
-
-
-td=document.createElement("td");
-
-const badge=
-document.createElement("span");
+const badge=document.createElement("span");
 
 badge.className=
 "badge "+
 (
 data.status==="accepted"
-?
-"badge-green"
-:
-"badge-orange"
+?"badge-green"
+:"badge-orange"
 );
 
-badge.textContent=
-data.status||"attente";
+badge.textContent=data.status||"attente";
 
 td.appendChild(badge);
-
 tr.appendChild(td);
-
 
 td=document.createElement("td");
 
-const actions=
-document.createElement("div");
-
-actions.className=
-"action-group";
-
+const actions=document.createElement("div");
+actions.className="action-group";
 
 if(data.status!=="accepted"){
 
-const accept=
-document.createElement("button");
+const accept=document.createElement("button");
 
-accept.className=
-"btn btn-green";
-
-accept.textContent=
-"Accepter";
+accept.className="btn btn-green";
+accept.textContent="Accepter";
 
 accept.onclick=async()=>{
 
+try{
+
 await updateDoc(
 doc(db,"users",item.id),
-{
-status:"accepted"
-}
+{status:"accepted"}
 );
 
-showToast(
-"Utilisateur accepté."
-);
-
+showToast("Utilisateur accepté.");
 await renderUsers();
+
+}catch(error){
+
+console.error(error);
+showToast("Impossible d'accepter cet utilisateur.");
+
+}
 
 };
 
@@ -4483,14 +4789,10 @@ actions.appendChild(accept);
 
 }
 
-
-const role=
-document.createElement("button");
+const role=document.createElement("button");
 
 role.className="btn";
-
-role.textContent=
-"Modifier rôle";
+role.textContent="Modifier rôle";
 
 role.onclick=()=>changeUserRole(
 item.id,
@@ -4499,40 +4801,38 @@ data.role||"eleve"
 
 actions.appendChild(role);
 
-
 if(item.id!==currentUser.uid){
 
-const del=
-document.createElement("button");
+const del=document.createElement("button");
 
-del.className=
-"btn btn-red";
-
-del.textContent=
-"Supprimer";
+del.className="btn btn-red";
+del.textContent="Supprimer";
 
 del.onclick=async()=>{
 
-if(!confirm(
-"Supprimer ce profil ?"
-))return;
+if(!confirm("Supprimer ce profil ?"))return;
+
+try{
 
 await deleteDoc(
 doc(db,"users",item.id)
 );
 
-showToast(
-"Profil supprimé."
-);
-
+showToast("Profil supprimé.");
 await renderUsers();
+
+}catch(error){
+
+console.error(error);
+showToast("Impossible de supprimer le profil.");
+
+}
 
 };
 
 actions.appendChild(del);
 
 }
-
 
 td.appendChild(actions);
 tr.appendChild(td);
@@ -4544,10 +4844,7 @@ tbody.appendChild(tr);
 }catch(error){
 
 console.error(error);
-
-showToast(
-"Impossible de charger les utilisateurs."
-);
+showToast("Impossible de charger les utilisateurs.");
 
 }
 
@@ -4558,10 +4855,7 @@ showToast(
 CHANGE ROLE
 ===================================================== */
 
-async function changeUserRole(
-uid,
-oldRole
-){
+async function changeUserRole(uid,oldRole){
 
 const value=prompt(
 "Écrire le rôle:\n\nadministrateur\nprofesseur\neleve",
@@ -4570,10 +4864,15 @@ oldRole
 
 if(value===null)return;
 
-const role=value
-.trim()
-.toLowerCase();
+let role=value.trim().toLowerCase();
 
+if(role==="prof"||role==="professeure"){
+role="professeur";
+}
+
+if(role==="élève"){
+role="eleve";
+}
 
 const validRoles=[
 "administrateur",
@@ -4583,10 +4882,7 @@ const validRoles=[
 
 if(!validRoles.includes(role)){
 
-showToast(
-"Rôle invalide."
-);
-
+showToast("Rôle invalide. Utilisez administrateur, professeur ou eleve.");
 return;
 }
 
@@ -4599,19 +4895,13 @@ role:role
 }
 );
 
-showToast(
-"Rôle modifié."
-);
-
+showToast("Rôle modifié.");
 await renderUsers();
 
 }catch(error){
 
 console.error(error);
-
-showToast(
-"Impossible de modifier le rôle."
-);
+showToast("Impossible de modifier le rôle.");
 
 }
 
@@ -4626,17 +4916,12 @@ async function countCollection(name){
 
 try{
 
-const snap=
-await getDocs(
-collection(db,name)
-);
-
+const snap=await getDocs(collection(db,name));
 return snap.size;
 
 }catch(error){
 
 console.error(error);
-
 return 0;
 
 }
@@ -4664,30 +4949,126 @@ countCollection("remises")
 
 ]);
 
+const elements={
+statEtudiants:etudiants,
+statProfesseurs:professeurs,
+statClasses:classes,
+statMatieres:matieres,
+statDevoirs:devoirs,
+statRemises:remises
+};
 
-document.getElementById(
-"statEtudiants"
-).textContent=etudiants;
+Object.entries(elements).forEach(([id,value])=>{
 
-document.getElementById(
-"statProfesseurs"
-).textContent=professeurs;
+const el=document.getElementById(id);
 
-document.getElementById(
-"statClasses"
-).textContent=classes;
+if(el)el.textContent=value;
 
-document.getElementById(
-"statMatieres"
-).textContent=matieres;
+});
 
-document.getElementById(
-"statDevoirs"
-).textContent=devoirs;
+await renderDashboardAssignment();
 
-document.getElementById(
-"statRemises"
-).textContent=remises;
+}
+
+
+async function renderDashboardAssignment(){
+
+const box=document.getElementById("dashboardAssignmentInfo");
+
+if(!box)return;
+
+try{
+
+if(currentUserData?.isAdmin){
+
+box.innerHTML=`
+<div class="info-box">
+👑 Vous êtes administrateur.
+<br>
+Vous pouvez créer les filières, classes, matières, affectations des professeurs et inscriptions des élèves.
+</div>
+`;
+return;
+}
+
+if(currentUserData?.role==="professeur"){
+
+const snap=await getDocs(
+query(
+collection(db,"affectations"),
+where("professeurUid","==",currentUser.uid)
+)
+);
+
+if(snap.empty){
+
+box.innerHTML=`
+<div class="warning-box">
+Vous n'avez encore aucune classe ou matière affectée par l'administrateur.
+</div>
+`;
+
+return;
+}
+
+box.innerHTML=`
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>Filière</th>
+<th>Classe</th>
+<th>Matière</th>
+</tr>
+</thead>
+<tbody>
+${snap.docs.map(x=>{
+const d=x.data();
+return`
+<tr>
+<td>${escapeHtml(d.filiereNom)}</td>
+<td>${escapeHtml(d.classeNom)}</td>
+<td>${escapeHtml(d.matiereNom)}</td>
+</tr>
+`;
+}).join("")}
+</tbody>
+</table>
+</div>
+`;
+
+return;
+}
+
+if(currentUserData?.role==="eleve"){
+
+const ins=await getStudentInscription();
+
+if(!ins){
+
+box.innerHTML=`
+<div class="warning-box">
+L'administrateur ne vous a pas encore affecté à une classe.
+</div>
+`;
+
+return;
+}
+
+box.innerHTML=`
+<div class="info-box">
+🎓 <strong>Votre classe :</strong> ${escapeHtml(ins.classeNom)}
+</div>
+`;
+
+}
+
+}catch(error){
+
+console.error(error);
+box.textContent="Impossible de charger l'affectation.";
+
+}
 
 }
 
@@ -4698,20 +5079,14 @@ STATISTIQUES
 
 async function renderStatistics(){
 
-const container=
-document.getElementById(
-"page-statistiques"
-);
+const container=document.getElementById("page-statistiques");
 
 container.innerHTML=`
 
 <div class="page-title">
 
 <h2>📈 Statistiques</h2>
-
-<p>
-Vue générale.
-</p>
+<p>Vue générale.</p>
 
 </div>
 
@@ -4730,15 +5105,27 @@ Vue générale.
 </div>
 
 <div class="stat">
+<div class="stat-icon">🏫</div>
+<div class="stat-title">Classes</div>
+<div id="s3" class="stat-number">0</div>
+</div>
+
+<div class="stat">
+<div class="stat-icon">🔗</div>
+<div class="stat-title">Affectations</div>
+<div id="s4" class="stat-number">0</div>
+</div>
+
+<div class="stat">
 <div class="stat-icon">📝</div>
 <div class="stat-title">Devoirs</div>
-<div id="s3" class="stat-number">0</div>
+<div id="s5" class="stat-number">0</div>
 </div>
 
 <div class="stat">
 <div class="stat-icon">📤</div>
 <div class="stat-title">Remises</div>
-<div id="s4" class="stat-number">0</div>
+<div id="s6" class="stat-number">0</div>
 </div>
 
 </div>
@@ -4751,9 +5138,15 @@ document.getElementById("s2").textContent=
 await countCollection("professeurs");
 
 document.getElementById("s3").textContent=
-await countCollection("devoirs");
+await countCollection("classes");
 
 document.getElementById("s4").textContent=
+await countCollection("affectations");
+
+document.getElementById("s5").textContent=
+await countCollection("devoirs");
+
+document.getElementById("s6").textContent=
 await countCollection("remises");
 
 }
@@ -4765,10 +5158,7 @@ BACKUP
 
 function renderBackup(){
 
-const container=
-document.getElementById(
-"page-sauvegarde"
-);
+const container=document.getElementById("page-sauvegarde");
 
 container.innerHTML=`
 
@@ -4776,18 +5166,13 @@ container.innerHTML=`
 
 <h2>💾 Données / Sauvegarde</h2>
 
-<p>
-Exporter les données.
-</p>
+<p>Exporter les données.</p>
 
 </div>
 
 <div class="panel">
 
-<button
-class="btn btn-green"
-onclick="exportData()"
->
+<button class="btn btn-green" onclick="exportData()">
 💾 Télécharger la sauvegarde
 </button>
 
@@ -4801,10 +5186,7 @@ window.exportData=async function(){
 
 if(!currentUserData?.isAdmin){
 
-showToast(
-"Accès administrateur uniquement."
-);
-
+showToast("Accès administrateur uniquement.");
 return;
 }
 
@@ -4817,6 +5199,8 @@ const names=[
 "filieres",
 "matieres",
 "cours",
+"affectations",
+"inscriptions",
 "devoirs",
 "remises",
 "resultats"
@@ -4828,13 +5212,9 @@ for(const name of names){
 
 try{
 
-const snap=
-await getDocs(
-collection(db,name)
-);
+const snap=await getDocs(collection(db,name));
 
-backup[name]=
-snap.docs.map(
+backup[name]=snap.docs.map(
 d=>({
 id:d.id,
 ...d.data()
@@ -4843,44 +5223,36 @@ id:d.id,
 
 }catch(error){
 
+console.error(error);
 backup[name]=[];
 
 }
 
 }
 
-const blob=
-new Blob(
+const blob=new Blob(
 [
-JSON.stringify(
-backup,
-null,
-2
-)
+JSON.stringify(backup,null,2)
 ],
 {
 type:"application/json"
 }
 );
 
-const url=
-URL.createObjectURL(blob);
+const url=URL.createObjectURL(blob);
 
-const a=
-document.createElement("a");
+const a=document.createElement("a");
 
 a.href=url;
+a.download="sauvegarde-centre-formation-le-pedagogue.json";
 
-a.download=
-"sauvegarde-centre-formation-le-pedagogue.json";
-
+document.body.appendChild(a);
 a.click();
+a.remove();
 
 URL.revokeObjectURL(url);
 
-showToast(
-"Sauvegarde téléchargée."
-);
+showToast("Sauvegarde téléchargée.");
 
 };
 
@@ -4891,20 +5263,11 @@ LANGUAGE
 
 window.changeLanguage=function(){
 
-const value=
-document.getElementById(
-"languageSelect"
-).value;
+const value=document.getElementById("languageSelect").value;
 
-localStorage.setItem(
-"language",
-value
-);
+localStorage.setItem("language",value);
 
-const welcome=
-document.getElementById(
-"welcomeText"
-);
+const welcome=document.getElementById("welcomeText");
 
 if(value==="ht"){
 
@@ -4920,18 +5283,11 @@ welcome.textContent=
 
 };
 
-
-const savedLanguage=
-localStorage.getItem(
-"language"
-);
+const savedLanguage=localStorage.getItem("language");
 
 if(savedLanguage){
 
-document.getElementById(
-"languageSelect"
-).value=
-savedLanguage;
+document.getElementById("languageSelect").value=savedLanguage;
 
 }
 
@@ -4942,18 +5298,13 @@ USER MENU
 
 window.toggleUserMenu=function(){
 
-document
-.getElementById("userMenu")
-.classList.remove("hidden");
+document.getElementById("userMenu").classList.remove("hidden");
 
 };
 
-
 window.closeUserMenu=function(){
 
-document
-.getElementById("userMenu")
-.classList.add("hidden");
+document.getElementById("userMenu").classList.add("hidden");
 
 };
 
@@ -4964,19 +5315,15 @@ TOAST
 
 function showToast(message){
 
-const toast=
-document.getElementById("toast");
+const toast=document.getElementById("toast");
 
 toast.textContent=message;
 
 toast.classList.remove("hidden");
 
-setTimeout(
-()=>{
+setTimeout(()=>{
 toast.classList.add("hidden");
-},
-3500
-);
+},3500);
 
 }
 
@@ -4987,16 +5334,10 @@ ERREURS
 
 function getFriendlyError(error){
 
-const code=
-error?.code||"";
+const code=error?.code||"";
 
-
-if(
-code.includes("email-already-in-use")
-){
-
+if(code.includes("email-already-in-use")){
 return "Cette adresse e-mail est déjà utilisée.";
-
 }
 
 if(
@@ -5004,65 +5345,39 @@ code.includes("invalid-credential")||
 code.includes("wrong-password")||
 code.includes("user-not-found")
 ){
-
 return "E-mail ou mot de passe incorrect.";
-
 }
 
-if(
-code.includes("invalid-email")
-){
-
+if(code.includes("invalid-email")){
 return "Adresse e-mail invalide.";
-
 }
 
-if(
-code.includes("weak-password")
-){
-
+if(code.includes("weak-password")){
 return "Le mot de passe est trop faible.";
-
 }
 
-if(
-code.includes("popup-closed-by-user")
-){
-
+if(code.includes("popup-closed-by-user")){
 return "La fenêtre Google a été fermée.";
-
 }
 
-if(
-code.includes("popup-blocked")
-){
-
+if(code.includes("popup-blocked")){
 return "Chrome a bloqué la fenêtre Google.";
-
 }
 
-if(
-code.includes("operation-not-allowed")
-){
-
+if(code.includes("operation-not-allowed")){
 return "La connexion Google n'est pas activée dans Firebase.";
-
 }
 
-if(
-code.includes("unauthorized-domain")
-){
-
+if(code.includes("unauthorized-domain")){
 return "Ce domaine n'est pas autorisé dans Firebase Authentication.";
-
 }
 
-if(
-code.includes("permission-denied")
-){
-
+if(code.includes("permission-denied")){
 return "Accès refusé par les règles Firebase.";
+}
 
+if(code.includes("failed-precondition")){
+return "Firebase demande une configuration supplémentaire.";
 }
 
 return "Une erreur est survenue. Vérifiez les informations.";
