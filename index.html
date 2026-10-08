@@ -1064,4 +1064,4651 @@ onclick="closeUserMenu()">
 <h3>Mon compte</h3>
 
 <p>
-<strong>Nom
+<strong>Nom :</strong>
+<span id="menuName">-</span>
+</p>
+
+<p>
+<strong>E-mail :</strong>
+<span id="menuEmail">-</span>
+</p>
+
+<p>
+<strong>Rôle :</strong>
+<span id="menuRole">-</span>
+</p>
+
+<p>
+<strong>Statut :</strong>
+<span id="menuStatus">-</span>
+</p>
+
+<div style="margin-top:20px">
+
+<button
+class="btn btn-red full"
+onclick="logout()">
+
+🚪 Déconnexion
+
+</button>
+
+</div>
+
+</div>
+</div>
+
+
+<!-- =====================================================
+INSTALL MODAL
+===================================================== -->
+
+<div id="installModal" class="modal hidden">
+
+<div class="modal-box">
+
+<button
+class="modal-close"
+onclick="closeInstallModal()">
+×
+</button>
+
+<h3>📲 Installer l'application</h3>
+
+<p>
+L'installation automatique n'est pas toujours disponible
+dans Chrome Android.
+</p>
+
+<p>
+<strong>Sur Android :</strong>
+</p>
+
+<p>
+1. Ouvrez le menu <strong>⋮</strong> de Chrome.<br>
+2. Cherchez <strong>Installer l'application</strong>
+ou <strong>Ajouter à l'écran d'accueil</strong>.<br>
+3. Validez l'installation.
+</p>
+
+<button
+class="btn btn-green full"
+onclick="closeInstallModal()">
+
+Compris
+
+</button>
+
+</div>
+</div>
+
+
+<div id="toast" class="hidden"></div>
+
+
+<script type="module">
+
+/* =====================================================
+FIREBASE IMPORTS
+===================================================== */
+
+import {
+initializeApp
+}
+from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+
+import {
+getAuth,
+createUserWithEmailAndPassword,
+signInWithEmailAndPassword,
+GoogleAuthProvider,
+signInWithPopup,
+onAuthStateChanged,
+signOut,
+setPersistence,
+browserLocalPersistence
+}
+from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+
+import {
+getFirestore,
+doc,
+setDoc,
+getDoc,
+collection,
+getDocs,
+addDoc,
+updateDoc,
+deleteDoc,
+serverTimestamp
+}
+from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+
+
+/* =====================================================
+FIREBASE CONFIG
+===================================================== */
+
+const firebaseConfig={
+apiKey:"AIzaSyAhrtcVaEZ7oU-p4Ihzl0APX2ccXKi4jBU",
+authDomain:"centre-de-formation-le-pe.firebaseapp.com",
+projectId:"centre-de-formation-le-pe",
+storageBucket:"centre-de-formation-le-pe.firebasestorage.app",
+messagingSenderId:"11834103838",
+appId:"1:11834103838:web:b82c994e78486cd313760f"
+};
+
+const app=initializeApp(firebaseConfig);
+
+const auth=getAuth(app);
+
+const db=getFirestore(app);
+
+setPersistence(
+auth,
+browserLocalPersistence
+).catch(error=>{
+console.error("Persistence:",error);
+});
+
+
+/* =====================================================
+VARIABLES
+===================================================== */
+
+const ADMIN_EMAIL=
+"centredeformationlepedagogue@gmail.com";
+
+let currentUser=null;
+let currentUserData=null;
+let deferredPrompt=null;
+
+
+/* =====================================================
+ROLE HELPERS
+===================================================== */
+
+function isAdmin(){
+
+return currentUserData?.isAdmin===true;
+
+}
+
+function isTeacher(){
+
+return currentUserData?.role==="professeur" &&
+currentUserData?.status==="accepted";
+
+}
+
+function isStudent(){
+
+return currentUserData?.role==="eleve" &&
+currentUserData?.status==="accepted";
+
+}
+
+function isTeacherOrAdmin(){
+
+return isAdmin()||isTeacher();
+
+}
+
+
+/* =====================================================
+PWA
+===================================================== */
+
+window.addEventListener(
+"beforeinstallprompt",
+event=>{
+
+event.preventDefault();
+
+deferredPrompt=event;
+
+const btn=
+document.getElementById("installBtn");
+
+if(btn){
+
+btn.style.display="block";
+btn.textContent=
+"📲 Installer l'application";
+
+}
+
+});
+
+
+window.addEventListener(
+"appinstalled",
+()=>{
+
+deferredPrompt=null;
+
+const btn=
+document.getElementById("installBtn");
+
+if(btn)
+btn.textContent="✅ Application installée";
+
+showToast(
+"Application installée avec succès."
+);
+
+});
+
+
+window.installApplication=
+async function(){
+
+if(
+window.matchMedia(
+"(display-mode: standalone)"
+).matches
+){
+
+showToast(
+"L'application est déjà installée."
+);
+
+return;
+
+}
+
+if(deferredPrompt){
+
+deferredPrompt.prompt();
+
+const result=
+await deferredPrompt.userChoice;
+
+if(result.outcome==="accepted"){
+
+showToast(
+"Installation acceptée."
+);
+
+}
+
+deferredPrompt=null;
+
+return;
+
+}
+
+document
+.getElementById("installModal")
+.classList.remove("hidden");
+
+};
+
+
+window.closeInstallModal=
+function(){
+
+document
+.getElementById("installModal")
+.classList.add("hidden");
+
+};
+
+
+if("serviceWorker" in navigator){
+
+window.addEventListener(
+"load",
+()=>{
+
+navigator.serviceWorker
+.register("./sw.js")
+.then(()=>{
+console.log(
+"Service Worker enregistré."
+);
+})
+.catch(error=>{
+console.error(
+"Service Worker:",
+error
+);
+});
+
+});
+
+}
+
+
+/* =====================================================
+AUTH UI
+===================================================== */
+
+window.showRegister=function(){
+
+document
+.getElementById("loginBox")
+.classList.add("hidden");
+
+document
+.getElementById("registerBox")
+.classList.remove("hidden");
+
+};
+
+
+window.showLogin=function(){
+
+document
+.getElementById("registerBox")
+.classList.add("hidden");
+
+document
+.getElementById("loginBox")
+.classList.remove("hidden");
+
+};
+
+
+/* =====================================================
+REGISTER
+===================================================== */
+
+window.registerAccount=
+async function(){
+
+const name=
+document
+.getElementById("registerName")
+.value.trim();
+
+const email=
+document
+.getElementById("registerEmail")
+.value.trim();
+
+const password=
+document
+.getElementById("registerPassword")
+.value;
+
+if(!name||!email||!password){
+
+showToast(
+"Veuillez remplir tous les champs."
+);
+
+return;
+
+}
+
+if(password.length<6){
+
+showToast(
+"Le mot de passe doit contenir au moins 6 caractères."
+);
+
+return;
+
+}
+
+try{
+
+const credential=
+await createUserWithEmailAndPassword(
+auth,
+email,
+password
+);
+
+const isAdminEmail=
+email.toLowerCase()===
+ADMIN_EMAIL.toLowerCase();
+
+await setDoc(
+doc(db,"users",credential.user.uid),
+{
+uid:credential.user.uid,
+name:name,
+email:email,
+role:isAdminEmail
+?"administrateur"
+:"eleve",
+status:isAdminEmail
+?"accepted"
+:"attente",
+createdAt:serverTimestamp()
+}
+);
+
+await signOut(auth);
+
+showToast(
+isAdminEmail
+?
+"Compte administrateur créé."
+:
+"Compte créé. Attendez l'acceptation de l'administrateur."
+);
+
+showLogin();
+
+}catch(error){
+
+console.error(error);
+
+showToast(
+getFriendlyError(error)
+);
+
+}
+
+};
+
+
+/* =====================================================
+LOGIN EMAIL
+===================================================== */
+
+window.loginEmailPassword=
+async function(){
+
+const email=
+document
+.getElementById("loginEmail")
+.value.trim();
+
+const password=
+document
+.getElementById("loginPassword")
+.value;
+
+if(!email||!password){
+
+showToast(
+"Entrez votre e-mail et votre mot de passe."
+);
+
+return;
+
+}
+
+try{
+
+await signInWithEmailAndPassword(
+auth,
+email,
+password
+);
+
+}catch(error){
+
+console.error(error);
+
+showToast(
+getFriendlyError(error)
+);
+
+}
+
+};
+
+
+/* =====================================================
+GOOGLE
+===================================================== */
+
+window.loginGoogle=
+async function(){
+
+const button=
+document.getElementById(
+"googleLoginBtn"
+);
+
+try{
+
+if(button){
+
+button.disabled=true;
+
+button.textContent=
+"⏳ Ouverture de Google...";
+
+}
+
+const provider=
+new GoogleAuthProvider();
+
+provider.setCustomParameters({
+prompt:"select_account"
+});
+
+const result=
+await signInWithPopup(
+auth,
+provider
+);
+
+const user=result.user;
+
+const userRef=
+doc(db,"users",user.uid);
+
+const snap=
+await getDoc(userRef);
+
+if(!snap.exists()){
+
+const isAdminEmail=
+user.email?.toLowerCase()===
+ADMIN_EMAIL.toLowerCase();
+
+await setDoc(
+userRef,
+{
+uid:user.uid,
+name:user.displayName||
+"Utilisateur",
+email:user.email||"",
+role:isAdminEmail
+?"administrateur"
+:"eleve",
+status:isAdminEmail
+?"accepted"
+:"attente",
+createdAt:serverTimestamp()
+}
+);
+
+await signOut(auth);
+
+showToast(
+isAdminEmail
+?
+"Compte administrateur Google créé. Connectez-vous encore."
+:
+"Compte Google créé. Attendez l'acceptation de l'administrateur."
+);
+
+return;
+
+}
+
+}catch(error){
+
+console.error(
+"Erreur Google:",
+error
+);
+
+showToast(
+getFriendlyError(error)
+);
+
+}finally{
+
+if(button){
+
+button.disabled=false;
+
+button.innerHTML=
+"🔵 Continuer avec Google";
+
+}
+
+}
+
+};
+
+
+/* =====================================================
+LOGOUT
+===================================================== */
+
+window.logout=async function(){
+
+try{
+
+await signOut(auth);
+
+document
+.getElementById("userMenu")
+.classList.add("hidden");
+
+showLogin();
+
+}catch(error){
+
+console.error(error);
+
+}
+
+};
+
+
+/* =====================================================
+AUTH STATE
+===================================================== */
+
+onAuthStateChanged(
+auth,
+async user=>{
+
+if(!user){
+
+currentUser=null;
+currentUserData=null;
+
+document
+.getElementById("authPage")
+.classList.remove("hidden");
+
+document
+.getElementById("appPage")
+.classList.add("hidden");
+
+return;
+
+}
+
+try{
+
+const ref=
+doc(db,"users",user.uid);
+
+const snap=
+await getDoc(ref);
+
+let data;
+
+if(!snap.exists()){
+
+const isAdminEmail=
+user.email?.toLowerCase()===
+ADMIN_EMAIL.toLowerCase();
+
+data={
+uid:user.uid,
+name:user.displayName||
+"Utilisateur",
+email:user.email||"",
+role:isAdminEmail
+?"administrateur"
+:"eleve",
+status:isAdminEmail
+?"accepted"
+:"attente",
+createdAt:serverTimestamp()
+};
+
+await setDoc(ref,data);
+
+}else{
+
+data=snap.data();
+
+}
+
+
+/* =====================================================
+ADMIN CHECK
+===================================================== */
+
+const adminAccess=
+user.email?.toLowerCase()===
+ADMIN_EMAIL.toLowerCase()
+||
+(
+data.role==="administrateur" &&
+data.status==="accepted"
+);
+
+
+/* =====================================================
+STATUS CHECK
+===================================================== */
+
+if(!adminAccess &&
+data.status!=="accepted"){
+
+await signOut(auth);
+
+showToast(
+"Votre compte est en attente d'acceptation par l'administrateur."
+);
+
+return;
+
+}
+
+
+/* =====================================================
+VALID ROLES
+===================================================== */
+
+const validRoles=[
+"administrateur",
+"professeur",
+"eleve"
+];
+
+if(!validRoles.includes(data.role)){
+
+await signOut(auth);
+
+showToast(
+"Le rôle de ce compte est invalide. L'administrateur doit choisir administrateur, professeur ou eleve."
+);
+
+return;
+
+}
+
+
+currentUser=user;
+
+currentUserData={
+...data,
+isAdmin:adminAccess
+};
+
+openApplication();
+
+}catch(error){
+
+console.error(error);
+
+await signOut(auth);
+
+showToast(
+"Impossible de charger votre profil. Vérifiez les règles Firebase."
+);
+
+}
+
+});
+
+
+/* =====================================================
+OPEN APPLICATION
+===================================================== */
+
+function openApplication(){
+
+document
+.getElementById("authPage")
+.classList.add("hidden");
+
+document
+.getElementById("appPage")
+.classList.remove("hidden");
+
+const name=
+currentUserData.name||
+currentUser?.displayName||
+currentUser?.email||
+"Utilisateur";
+
+document
+.getElementById("headerUserName")
+.textContent=name;
+
+document
+.getElementById("systemUser")
+.textContent=
+currentUser?.email||"-";
+
+document
+.getElementById("systemRole")
+.textContent=
+currentUserData.role||"-";
+
+document
+.getElementById("systemStatus")
+.textContent=
+currentUserData.status||"-";
+
+document
+.getElementById("systemAdmin")
+.textContent=
+currentUserData.isAdmin
+?"Oui"
+:"Non";
+
+document
+.getElementById("menuName")
+.textContent=name;
+
+document
+.getElementById("menuEmail")
+.textContent=
+currentUser?.email||"-";
+
+document
+.getElementById("menuRole")
+.textContent=
+currentUserData.role||"-";
+
+document
+.getElementById("menuStatus")
+.textContent=
+currentUserData.status||"-";
+
+
+const usersMenu=
+document.getElementById("usersMenu");
+
+const quickUsers=
+document.getElementById("quickUsers");
+
+
+if(isAdmin()){
+
+usersMenu.classList.remove("hidden");
+quickUsers.classList.remove("hidden");
+
+}else{
+
+usersMenu.classList.add("hidden");
+quickUsers.classList.add("hidden");
+
+}
+
+loadDashboard();
+
+}
+
+
+/* =====================================================
+NAVIGATION
+===================================================== */
+
+window.toggleSidebar=function(){
+
+document
+.getElementById("sidebar")
+.classList.toggle("open");
+
+};
+
+
+window.showPage=
+async function(page,button){
+
+document
+.querySelectorAll(".page")
+.forEach(p=>{
+p.classList.add("hidden");
+});
+
+const target=
+document.getElementById(
+"page-"+page
+);
+
+if(!target)return;
+
+target.classList.remove("hidden");
+
+document
+.querySelectorAll(".menu-btn")
+.forEach(btn=>{
+btn.classList.remove("active");
+});
+
+if(button)
+button.classList.add("active");
+
+document
+.getElementById("sidebar")
+.classList.remove("open");
+
+if(page==="dashboard"){
+
+loadDashboard();
+
+}else{
+
+loadModule(page);
+
+}
+
+};
+
+
+window.quickPage=function(page){
+
+const button=[
+...document.querySelectorAll(".menu-btn")
+].find(
+b=>
+b.getAttribute("onclick")&&
+b.getAttribute("onclick")
+.includes("'"+page+"'")
+);
+
+showPage(page,button);
+
+};
+
+
+/* =====================================================
+GENERAL ADMIN MODULES
+===================================================== */
+
+const moduleInfo={
+
+etudiants:{
+title:"Gestion des étudiants",
+collection:"etudiants",
+icon:"🎓",
+fields:[
+["nom","Nom complet","text"],
+["email","E-mail","email"],
+["telephone","Téléphone","text"],
+["classe","Classe","text"]
+]
+},
+
+professeurs:{
+title:"Gestion des professeurs",
+collection:"professeurs",
+icon:"👨‍🏫",
+fields:[
+["nom","Nom complet","text"],
+["email","E-mail","email"],
+["telephone","Téléphone","text"],
+["specialite","Spécialité","text"]
+]
+},
+
+classes:{
+title:"Gestion des classes",
+collection:"classes",
+icon:"🏫",
+fields:[
+["nom","Nom de la classe","text"],
+["niveau","Niveau","text"],
+["annee","Année académique","text"]
+]
+},
+
+departements:{
+title:"Gestion des départements",
+collection:"departements",
+icon:"🏛️",
+fields:[
+["nom","Nom du département","text"],
+["description","Description","text"]
+]
+},
+
+filieres:{
+title:"Gestion des filières",
+collection:"filieres",
+icon:"📚",
+fields:[
+["nom","Nom de la filière","text"],
+["departement","Département","text"],
+["niveau","Niveau","text"]
+]
+},
+
+matieres:{
+title:"Gestion des matières",
+collection:"matieres",
+icon:"📖",
+fields:[
+["nom","Nom de la matière","text"],
+["code","Code","text"],
+["credits","Crédits","number"]
+]
+},
+
+cours:{
+title:"Gestion des cours",
+collection:"cours",
+icon:"📘",
+fields:[
+["nom","Nom du cours","text"],
+["matiere","Matière","text"],
+["professeur","Professeur","text"],
+["classe","Classe","text"]
+]
+}
+
+};
+
+
+/* =====================================================
+LOAD MODULE
+===================================================== */
+
+async function loadModule(page){
+
+/* PROFESSIONAL MODULES */
+
+if(
+page==="devoirs"||
+page==="remises"||
+page==="corrections"||
+page==="resultats"
+){
+
+if(page==="devoirs")
+return renderDevoirs();
+
+if(page==="remises")
+return renderRemises();
+
+if(page==="corrections")
+return renderCorrections();
+
+if(page==="resultats")
+return renderResultats();
+
+}
+
+
+/* ADMIN MODULES */
+
+if(
+!isAdmin() &&
+[
+"etudiants",
+"professeurs",
+"classes",
+"departements",
+"filieres",
+"matieres",
+"cours"
+].includes(page)
+){
+
+renderReadOnlyModule(page);
+
+return;
+
+}
+
+
+if(page==="utilisateurs"){
+
+await renderUsers();
+return;
+
+}
+
+if(page==="statistiques"){
+
+renderStatistics();
+return;
+
+}
+
+if(page==="sauvegarde"){
+
+renderBackup();
+return;
+
+}
+
+
+const info=moduleInfo[page];
+
+if(!info)return;
+
+const container=
+document.getElementById(
+"page-"+page
+);
+
+container.innerHTML=`
+
+<div class="page-title">
+
+<h2>${info.icon} ${info.title}</h2>
+
+<p>
+Gestion des données du Centre de Formation Le Pédagogue.
+</p>
+
+</div>
+
+<div class="panel">
+
+<h3>Ajouter</h3>
+
+<div class="form-grid">
+
+${info.fields.map(f=>`
+
+<div class="form-group">
+
+<label>${f[1]}</label>
+
+<input
+id="field-${page}-${f[0]}"
+type="${f[2]}"
+placeholder="${f[1]}"
+>
+
+</div>
+
+`).join("")}
+
+</div>
+
+<div class="form-actions">
+
+<button
+class="btn btn-green"
+onclick="addRecord('${page}')">
+
+➕ Ajouter
+
+</button>
+
+</div>
+
+</div>
+
+<div class="panel">
+
+<h3>Liste</h3>
+
+<div class="table-wrap">
+
+<table>
+
+<thead>
+
+<tr>
+
+${info.fields.map(
+f=>`<th>${f[1]}</th>`
+).join("")}
+
+<th>Actions</th>
+
+</tr>
+
+</thead>
+
+<tbody id="table-${page}">
+
+<tr>
+<td colspan="${info.fields.length+1}">
+Chargement...
+</td>
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+`;
+
+await refreshTable(page);
+
+}
+
+
+/* =====================================================
+READ ONLY MODULE FOR TEACHER/STUDENT
+===================================================== */
+
+async function renderReadOnlyModule(page){
+
+const info=moduleInfo[page];
+
+if(!info)return;
+
+const container=
+document.getElementById(
+"page-"+page
+);
+
+container.innerHTML=`
+
+<div class="page-title">
+
+<h2>${info.icon} ${info.title}</h2>
+
+<p>
+Informations académiques.
+</p>
+
+</div>
+
+<div class="student-note">
+
+🔒 Cette section est en lecture seule pour votre rôle.
+Seul l'administrateur peut ajouter, modifier ou supprimer ces données.
+
+</div>
+
+<div class="panel">
+
+<div class="table-wrap">
+
+<table>
+
+<thead>
+
+<tr>
+
+${info.fields.map(
+f=>`<th>${f[1]}</th>`
+).join("")}
+
+</tr>
+
+</thead>
+
+<tbody id="readonly-${page}">
+
+<tr>
+<td colspan="${info.fields.length}">
+Chargement...
+</td>
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+`;
+
+try{
+
+const snap=
+await getDocs(
+collection(db,info.collection)
+);
+
+const tbody=
+document.getElementById(
+"readonly-"+page
+);
+
+if(snap.empty){
+
+tbody.innerHTML=`
+<tr>
+<td colspan="${info.fields.length}">
+Aucune donnée.
+</td>
+</tr>
+`;
+
+return;
+
+}
+
+tbody.innerHTML="";
+
+snap.forEach(item=>{
+
+const data=item.data();
+
+const tr=document.createElement("tr");
+
+info.fields.forEach(f=>{
+
+const td=document.createElement("td");
+
+td.textContent=
+data[f[0]]??"";
+
+tr.appendChild(td);
+
+});
+
+tbody.appendChild(tr);
+
+});
+
+}catch(error){
+
+console.error(error);
+
+}
+
+}
+
+
+/* =====================================================
+ADD GENERAL RECORD
+===================================================== */
+
+window.addRecord=
+async function(page){
+
+if(!isAdmin()){
+
+showToast(
+"Seul l'administrateur peut modifier cette section."
+);
+
+return;
+
+}
+
+const info=moduleInfo[page];
+
+if(!info)return;
+
+const data={};
+
+let valid=true;
+
+info.fields.forEach(f=>{
+
+const input=
+document.getElementById(
+`field-${page}-${f[0]}`
+);
+
+const value=
+input?.value.trim()||"";
+
+if(!value)valid=false;
+
+data[f[0]]=value;
+
+});
+
+if(!valid){
+
+showToast(
+"Veuillez remplir tous les champs."
+);
+
+return;
+
+}
+
+data.createdAt=
+serverTimestamp();
+
+data.createdBy=
+currentUser.uid;
+
+try{
+
+await addDoc(
+collection(db,info.collection),
+data
+);
+
+showToast(
+"Donnée ajoutée avec succès."
+);
+
+info.fields.forEach(f=>{
+
+const input=
+document.getElementById(
+`field-${page}-${f[0]}`
+);
+
+if(input)
+input.value="";
+
+});
+
+await refreshTable(page);
+
+loadDashboard();
+
+}catch(error){
+
+console.error(error);
+
+showToast(
+"Impossible d'ajouter cette donnée."
+);
+
+}
+
+};
+
+
+/* =====================================================
+REFRESH GENERAL TABLE
+===================================================== */
+
+async function refreshTable(page){
+
+const info=moduleInfo[page];
+
+if(!info)return;
+
+const tbody=
+document.getElementById(
+"table-"+page
+);
+
+if(!tbody)return;
+
+try{
+
+const snap=
+await getDocs(
+collection(db,info.collection)
+);
+
+if(snap.empty){
+
+tbody.innerHTML=`
+<tr>
+<td colspan="${info.fields.length+1}">
+Aucune donnée.
+</td>
+</tr>
+`;
+
+return;
+
+}
+
+tbody.innerHTML="";
+
+snap.forEach(item=>{
+
+const data=item.data();
+
+const tr=document.createElement("tr");
+
+info.fields.forEach(f=>{
+
+const td=document.createElement("td");
+
+td.textContent=
+data[f[0]]??"";
+
+tr.appendChild(td);
+
+});
+
+const td=document.createElement("td");
+
+const edit=
+document.createElement("button");
+
+edit.className="btn";
+edit.textContent="Modifier";
+
+edit.onclick=()=>{
+editRecord(
+page,
+item.id,
+data
+);
+};
+
+td.appendChild(edit);
+
+const del=
+document.createElement("button");
+
+del.className=
+"btn btn-red";
+
+del.style.marginLeft="5px";
+
+del.textContent="Supprimer";
+
+del.onclick=()=>{
+deleteRecord(
+page,
+item.id
+);
+};
+
+td.appendChild(del);
+
+tr.appendChild(td);
+
+tbody.appendChild(tr);
+
+});
+
+}catch(error){
+
+console.error(error);
+
+tbody.innerHTML=`
+<tr>
+<td colspan="${info.fields.length+1}">
+Impossible de charger les données.
+</td>
+</tr>
+`;
+
+}
+
+}
+
+
+/* =====================================================
+EDIT GENERAL
+===================================================== */
+
+window.editRecord=
+async function(page,id,data){
+
+if(!isAdmin()){
+
+showToast(
+"Seul l'administrateur peut modifier cette donnée."
+);
+
+return;
+
+}
+
+const info=moduleInfo[page];
+
+const updates={};
+
+for(const f of info.fields){
+
+const oldValue=
+data[f[0]]??"";
+
+const newValue=
+prompt(
+f[1],
+oldValue
+);
+
+if(newValue===null)
+return;
+
+updates[f[0]]=
+newValue.trim();
+
+}
+
+try{
+
+await updateDoc(
+doc(db,info.collection,id),
+updates
+);
+
+showToast(
+"Donnée modifiée."
+);
+
+await refreshTable(page);
+
+}catch(error){
+
+console.error(error);
+
+showToast(
+"Modification impossible."
+);
+
+}
+
+};
+
+
+/* =====================================================
+DELETE GENERAL
+===================================================== */
+
+window.deleteRecord=
+async function(page,id){
+
+if(!isAdmin()){
+
+showToast(
+"Seul l'administrateur peut supprimer."
+);
+
+return;
+
+}
+
+if(!confirm(
+"Voulez-vous vraiment supprimer cette donnée ?"
+))return;
+
+const info=moduleInfo[page];
+
+try{
+
+await deleteDoc(
+doc(db,info.collection,id)
+);
+
+showToast(
+"Donnée supprimée."
+);
+
+await refreshTable(page);
+
+loadDashboard();
+
+}catch(error){
+
+console.error(error);
+
+showToast(
+"Suppression impossible."
+);
+
+}
+
+};
+
+
+/* =====================================================
+DEVOIRS
+===================================================== */
+
+async function renderDevoirs(){
+
+const container=
+document.getElementById(
+"page-devoirs"
+);
+
+let form="";
+
+if(isTeacherOrAdmin()){
+
+form=`
+
+<div class="panel">
+
+<h3>➕ Ajouter un devoir</h3>
+
+<div class="form-grid">
+
+<div class="form-group">
+<label>Titre du devoir</label>
+<input id="devTitre"
+placeholder="Ex: Exercice de mathématiques">
+</div>
+
+<div class="form-group">
+<label>Matière</label>
+<input id="devMatiere"
+placeholder="Ex: Mathématiques">
+</div>
+
+<div class="form-group">
+<label>Classe</label>
+<input id="devClasse"
+placeholder="Ex: 3ème A">
+</div>
+
+<div class="form-group">
+<label>Date limite</label>
+<input id="devDate" type="date">
+</div>
+
+<div class="form-group" style="grid-column:1/-1">
+<label>Description / consigne</label>
+<textarea id="devDescription"
+placeholder="Écrivez les consignes du devoir..."></textarea>
+</div>
+
+<div class="form-group">
+<label>Lien du document du devoir</label>
+<input id="devFichier"
+placeholder="https://...">
+</div>
+
+</div>
+
+<div class="form-actions">
+
+<button
+class="btn btn-green"
+onclick="addDevoir()">
+
+➕ Publier le devoir
+
+</button>
+
+</div>
+
+</div>
+`;
+
+}
+
+if(isStudent()){
+
+form=`
+
+<div class="student-note">
+
+📚 Ici vous pouvez voir les devoirs que les professeurs
+ont publiés pour vous.
+
+</div>
+
+`;
+
+}
+
+container.innerHTML=`
+
+<div class="page-title">
+
+<h2>📝 Devoirs</h2>
+
+<p>
+Devoirs donnés par les professeurs.
+</p>
+
+</div>
+
+${form}
+
+<div class="panel">
+
+<h3>
+${isStudent()
+?"📚 Devoirs reçus"
+:"📝 Liste des devoirs"}
+</h3>
+
+<div class="table-wrap">
+
+<table>
+
+<thead>
+
+<tr>
+<th>Titre</th>
+<th>Matière</th>
+<th>Classe</th>
+<th>Description</th>
+<th>Date limite</th>
+<th>Professeur</th>
+<th>Actions</th>
+</tr>
+
+</thead>
+
+<tbody id="devoirsTable">
+
+<tr>
+<td colspan="7">Chargement...</td>
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+`;
+
+await refreshDevoirs();
+
+}
+
+
+/* =====================================================
+ADD DEVOIR
+===================================================== */
+
+window.addDevoir=
+async function(){
+
+if(!isTeacherOrAdmin()){
+
+showToast(
+"Seul un professeur ou l'administrateur peut ajouter un devoir."
+);
+
+return;
+
+}
+
+const titre=
+document.getElementById("devTitre")
+.value.trim();
+
+const matiere=
+document.getElementById("devMatiere")
+.value.trim();
+
+const classe=
+document.getElementById("devClasse")
+.value.trim();
+
+const dateLimite=
+document.getElementById("devDate")
+.value;
+
+const description=
+document.getElementById("devDescription")
+.value.trim();
+
+const fichier=
+document.getElementById("devFichier")
+.value.trim();
+
+if(
+!titre||
+!matiere||
+!classe||
+!dateLimite||
+!description
+){
+
+showToast(
+"Remplissez les champs obligatoires."
+);
+
+return;
+
+}
+
+try{
+
+await addDoc(
+collection(db,"devoirs"),
+{
+titre,
+matiere,
+classe,
+dateLimite,
+description,
+fichier,
+professeurId:currentUser.uid,
+professeurNom:
+currentUserData.name||
+currentUser.email,
+createdAt:serverTimestamp()
+}
+);
+
+showToast(
+"Devoir publié avec succès."
+);
+
+await renderDevoirs();
+
+loadDashboard();
+
+}catch(error){
+
+console.error(error);
+
+showToast(
+"Impossible de publier le devoir."
+);
+
+}
+
+};
+
+
+/* =====================================================
+REFRESH DEVOIRS
+===================================================== */
+
+async function refreshDevoirs(){
+
+const tbody=
+document.getElementById(
+"devoirsTable"
+);
+
+if(!tbody)return;
+
+try{
+
+const snap=
+await getDocs(
+collection(db,"devoirs")
+);
+
+tbody.innerHTML="";
+
+if(snap.empty){
+
+tbody.innerHTML=`
+<tr>
+<td colspan="7">
+Aucun devoir.
+</td>
+</tr>
+`;
+
+return;
+
+}
+
+snap.forEach(item=>{
+
+const d=item.data();
+
+if(
+isTeacher() &&
+d.professeurId!==currentUser.uid
+){
+
+return;
+
+}
+
+const tr=
+document.createElement("tr");
+
+tr.innerHTML=`
+
+<td>
+<strong>${escapeHtml(d.titre||"")}</strong>
+</td>
+
+<td>
+${escapeHtml(d.matiere||"")}
+</td>
+
+<td>
+${escapeHtml(d.classe||"")}
+</td>
+
+<td>
+${escapeHtml(d.description||"")}
+</td>
+
+<td>
+${escapeHtml(d.dateLimite||"")}
+</td>
+
+<td>
+${escapeHtml(d.professeurNom||"")}
+</td>
+
+<td></td>
+`;
+
+const actions=
+tr.lastElementChild;
+
+
+/* LIEN DEVOIR */
+
+if(d.fichier){
+
+const link=
+document.createElement("a");
+
+link.href=d.fichier;
+link.target="_blank";
+link.rel="noopener";
+
+link.className="btn";
+
+link.textContent=
+"📄 Voir";
+
+actions.appendChild(link);
+
+}
+
+
+/* STUDENT REMETTRE */
+
+if(isStudent()){
+
+const remise=
+document.createElement("button");
+
+remise.className=
+"btn btn-green";
+
+remise.style.marginLeft="5px";
+
+remise.textContent=
+"📤 Remettre";
+
+remise.onclick=()=>{
+openSubmitModal(
+item.id,
+d
+);
+};
+
+actions.appendChild(remise);
+
+}
+
+
+/* TEACHER EDIT */
+
+if(
+isAdmin() ||
+(
+isTeacher() &&
+d.professeurId===currentUser.uid
+)
+){
+
+const edit=
+document.createElement("button");
+
+edit.className="btn";
+
+edit.style.marginLeft="5px";
+
+edit.textContent="✏️ Modifier";
+
+edit.onclick=()=>{
+editDevoir(
+item.id,
+d
+);
+};
+
+actions.appendChild(edit);
+
+
+/* TEACHER DELETE */
+
+const del=
+document.createElement("button");
+
+del.className=
+"btn btn-red";
+
+del.style.marginLeft="5px";
+
+del.textContent=
+"🗑️ Supprimer";
+
+del.onclick=()=>{
+deleteDevoir(
+item.id,
+d
+);
+};
+
+actions.appendChild(del);
+
+}
+
+
+/* VIEW SUBMISSIONS */
+
+if(isTeacherOrAdmin()){
+
+const view=
+document.createElement("button");
+
+view.className=
+"btn btn-purple";
+
+view.style.marginLeft="5px";
+
+view.textContent=
+"📥 Remises";
+
+view.onclick=()=>{
+viewDevoirRemises(
+item.id
+);
+};
+
+actions.appendChild(view);
+
+}
+
+tbody.appendChild(tr);
+
+});
+
+}catch(error){
+
+console.error(error);
+
+showToast(
+"Impossible de charger les devoirs."
+);
+
+}
+
+}
+
+
+/* =====================================================
+EDIT DEVOIR
+===================================================== */
+
+window.editDevoir=
+async function(id,data){
+
+if(
+!isAdmin() &&
+!(
+isTeacher() &&
+data.professeurId===currentUser.uid
+)
+){
+
+showToast(
+"Vous n'avez pas le droit de modifier ce devoir."
+);
+
+return;
+
+}
+
+const titre=
+prompt(
+"Titre du devoir",
+data.titre||""
+);
+
+if(titre===null)return;
+
+const matiere=
+prompt(
+"Matière",
+data.matiere||""
+);
+
+if(matiere===null)return;
+
+const classe=
+prompt(
+"Classe",
+data.classe||""
+);
+
+if(classe===null)return;
+
+const dateLimite=
+prompt(
+"Date limite AAAA-MM-JJ",
+data.dateLimite||""
+);
+
+if(dateLimite===null)return;
+
+const description=
+prompt(
+"Description",
+data.description||""
+);
+
+if(description===null)return;
+
+const fichier=
+prompt(
+"Lien du document",
+data.fichier||""
+);
+
+if(fichier===null)return;
+
+try{
+
+await updateDoc(
+doc(db,"devoirs",id),
+{
+titre:titre.trim(),
+matiere:matiere.trim(),
+classe:classe.trim(),
+dateLimite:dateLimite.trim(),
+description:description.trim(),
+fichier:fichier.trim()
+}
+);
+
+showToast(
+"Devoir modifié avec succès."
+);
+
+await refreshDevoirs();
+
+}catch(error){
+
+console.error(error);
+
+showToast(
+"Modification impossible."
+);
+
+}
+
+};
+
+
+/* =====================================================
+DELETE DEVOIR
+===================================================== */
+
+window.deleteDevoir=
+async function(id,data){
+
+if(
+!isAdmin() &&
+!(
+isTeacher() &&
+data.professeurId===currentUser.uid
+)
+){
+
+showToast(
+"Vous n'avez pas le droit de supprimer ce devoir."
+);
+
+return;
+
+}
+
+if(!confirm(
+"Supprimer ce devoir ?"
+))return;
+
+try{
+
+await deleteDoc(
+doc(db,"devoirs",id)
+);
+
+showToast(
+"Devoir supprimé."
+);
+
+await refreshDevoirs();
+
+loadDashboard();
+
+}catch(error){
+
+console.error(error);
+
+showToast(
+"Suppression impossible."
+);
+
+}
+
+};
+
+
+/* =====================================================
+SUBMIT MODAL
+===================================================== */
+
+window.openSubmitModal=
+function(devoirId,devoir){
+
+const modal=
+document.getElementById(
+"userMenu"
+);
+
+modal.classList.remove("hidden");
+
+modal.innerHTML=`
+
+<div class="modal-box">
+
+<button
+class="modal-close"
+onclick="closeUserMenu()">
+×
+</button>
+
+<h3>📤 Remettre le devoir</h3>
+
+<p>
+<strong>${escapeHtml(devoir.titre||"")}</strong>
+</p>
+
+<div class="form-group">
+
+<label>Lien du fichier</label>
+
+<input
+id="submitLien"
+placeholder="https://drive.google.com/...">
+
+</div>
+
+<div class="form-group"
+style="margin-top:12px">
+
+<label>Commentaire</label>
+
+<textarea
+id="submitCommentaire"
+placeholder="Votre commentaire..."></textarea>
+
+</div>
+
+<div class="form-actions">
+
+<button
+class="btn btn-green"
+onclick="submitDevoir('${devoirId}')">
+
+📤 Envoyer la remise
+
+</button>
+
+<button
+class="btn btn-gray"
+onclick="closeUserMenu()">
+
+Annuler
+
+</button>
+
+</div>
+
+</div>
+`;
+
+};
+
+
+/* =====================================================
+SUBMIT DEVOIR
+===================================================== */
+
+window.submitDevoir=
+async function(devoirId){
+
+if(!isStudent()){
+
+showToast(
+"Seul un élève peut remettre un devoir."
+);
+
+return;
+
+}
+
+const lien=
+document.getElementById(
+"submitLien"
+)?.value.trim();
+
+const commentaire=
+document.getElementById(
+"submitCommentaire"
+)?.value.trim();
+
+if(!lien){
+
+showToast(
+"Ajoutez le lien du fichier."
+);
+
+return;
+
+}
+
+try{
+
+await addDoc(
+collection(db,"remises"),
+{
+devoirId,
+etudiantId:currentUser.uid,
+etudiantNom:
+currentUserData.name||
+currentUser.email,
+fichier:lien,
+commentaire:commentaire||"",
+status:"remis",
+note:null,
+correction:"",
+commentaireProf:"",
+professeurId:null,
+createdAt:serverTimestamp()
+}
+);
+
+showToast(
+"Devoir remis avec succès."
+);
+
+closeUserMenu();
+
+await renderRemises();
+
+}catch(error){
+
+console.error(error);
+
+showToast(
+"Impossible de remettre le devoir."
+);
+
+}
+
+};
+
+
+/* =====================================================
+REMISES
+===================================================== */
+
+async function renderRemises(){
+
+const container=
+document.getElementById(
+"page-remises"
+);
+
+let title=
+isTeacherOrAdmin()
+?
+"📥 Remises reçues"
+:
+"📤 Mes remises";
+
+container.innerHTML=`
+
+<div class="page-title">
+
+<h2>${title}</h2>
+
+<p>
+Suivi des devoirs remis et des corrections.
+</p>
+
+</div>
+
+${
+isTeacherOrAdmin()
+?
+`
+<div class="teacher-note">
+👨‍🏫 Vous pouvez voir les remises des élèves,
+les corriger, commenter et attribuer une note sur 100.
+</div>
+`
+:
+`
+<div class="student-note">
+👨‍🎓 Vous pouvez voir vos remises, les notes,
+les corrections et les commentaires du professeur.
+</div>
+`
+}
+
+<div class="panel">
+
+<div class="table-wrap">
+
+<table>
+
+<thead>
+
+<tr>
+<th>Devoir</th>
+<th>Élève</th>
+<th>Fichier</th>
+<th>Commentaire élève</th>
+<th>Statut</th>
+<th>Note /100</th>
+<th>Commentaire professeur</th>
+<th>Actions</th>
+</tr>
+
+</thead>
+
+<tbody id="remisesTable">
+
+<tr>
+<td colspan="8">
+Chargement...
+</td>
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+`;
+
+await refreshRemises();
+
+}
+
+
+/* =====================================================
+REFRESH REMISES
+===================================================== */
+
+async function refreshRemises(){
+
+const tbody=
+document.getElementById(
+"remisesTable"
+);
+
+if(!tbody)return;
+
+try{
+
+const snap=
+await getDocs(
+collection(db,"remises")
+);
+
+tbody.innerHTML="";
+
+let count=0;
+
+for(const item of snap.docs){
+
+const r=item.data();
+
+if(
+isStudent() &&
+r.etudiantId!==currentUser.uid
+){
+
+continue;
+
+}
+
+if(isTeacher()){
+
+/*
+Le professeur voit les remises
+des devoirs qu'il a créés.
+*/
+
+if(
+r.professeurId &&
+r.professeurId!==currentUser.uid
+){
+
+continue;
+
+}
+
+if(!r.professeurId){
+
+try{
+
+const devoirSnap=
+await getDoc(
+doc(db,"devoirs",r.devoirId)
+);
+
+if(
+devoirSnap.exists() &&
+devoirSnap.data().professeurId!==currentUser.uid
+){
+
+continue;
+
+}
+
+}catch(e){
+
+console.error(e);
+
+}
+
+}
+
+}
+
+count++;
+
+let devoirTitre=
+"Devoir";
+
+try{
+
+const devoirSnap=
+await getDoc(
+doc(db,"devoirs",r.devoirId)
+);
+
+if(devoirSnap.exists()){
+
+devoirTitre=
+devoirSnap.data().titre||
+"Devoir";
+
+}
+
+}catch(e){
+
+console.error(e);
+
+}
+
+const tr=
+document.createElement("tr");
+
+tr.innerHTML=`
+
+<td>
+<strong>
+${escapeHtml(devoirTitre)}
+</strong>
+</td>
+
+<td>
+${escapeHtml(r.etudiantNom||"")}
+</td>
+
+<td></td>
+
+<td>
+${escapeHtml(r.commentaire||"")}
+</td>
+
+<td>
+
+<span class="badge ${
+r.status==="corrige"
+?
+"badge-green"
+:
+"badge-orange"
+}">
+
+${escapeHtml(r.status||"remis")}
+
+</span>
+
+</td>
+
+<td>
+
+${
+r.note!==null &&
+r.note!==undefined &&
+r.note!==""
+?
+`<span class="grade">${escapeHtml(r.note)}/100</span>`
+:
+"Non noté"
+}
+
+</td>
+
+<td>
+${escapeHtml(r.commentaireProf||"")}
+</td>
+
+<td></td>
+
+`;
+
+const cells=
+tr.querySelectorAll("td");
+
+const fileCell=
+cells[2];
+
+if(r.fichier){
+
+const link=
+document.createElement("a");
+
+link.href=r.fichier;
+link.target="_blank";
+link.rel="noopener";
+
+link.className="btn";
+
+link.textContent="📄 Ouvrir";
+
+fileCell.appendChild(link);
+
+}
+
+const actions=
+cells[7];
+
+
+/* STUDENT */
+
+if(isStudent()){
+
+const edit=
+document.createElement("button");
+
+edit.className="btn";
+edit.textContent="✏️ Modifier";
+
+edit.onclick=()=>{
+editRemise(
+item.id,
+r
+);
+};
+
+actions.appendChild(edit);
+
+const del=
+document.createElement("button");
+
+del.className=
+"btn btn-red";
+
+del.style.marginLeft="5px";
+
+del.textContent="🗑️ Supprimer";
+
+del.onclick=()=>{
+deleteRemise(
+item.id
+);
+};
+
+actions.appendChild(del);
+
+}
+
+
+/* TEACHER */
+
+if(isTeacherOrAdmin()){
+
+const correct=
+document.createElement("button");
+
+correct.className=
+"btn btn-purple";
+
+correct.textContent=
+"✏️ Corriger";
+
+correct.onclick=()=>{
+correctRemise(
+item.id,
+r,
+devoirTitre
+);
+};
+
+actions.appendChild(correct);
+
+}
+
+tbody.appendChild(tr);
+
+}
+
+if(count===0){
+
+tbody.innerHTML=`
+<tr>
+<td colspan="8">
+Aucune remise trouvée.
+</td>
+</tr>
+`;
+
+}
+
+}catch(error){
+
+console.error(error);
+
+showToast(
+"Impossible de charger les remises."
+);
+
+}
+
+}
+
+
+/* =====================================================
+EDIT REMISE — STUDENT
+===================================================== */
+
+window.editRemise=
+async function(id,data){
+
+if(
+!isStudent() ||
+data.etudiantId!==currentUser.uid
+){
+
+showToast(
+"Vous ne pouvez modifier que votre propre remise."
+);
+
+return;
+
+}
+
+const fichier=
+prompt(
+"Lien du fichier",
+data.fichier||""
+);
+
+if(fichier===null)return;
+
+const commentaire=
+prompt(
+"Commentaire",
+data.commentaire||""
+);
+
+if(commentaire===null)return;
+
+try{
+
+await updateDoc(
+doc(db,"remises",id),
+{
+fichier:fichier.trim(),
+commentaire:commentaire.trim(),
+status:"remis"
+}
+);
+
+showToast(
+"Remise modifiée."
+);
+
+await refreshRemises();
+
+}catch(error){
+
+console.error(error);
+
+showToast(
+"Modification impossible."
+);
+
+}
+
+};
+
+
+/* =====================================================
+DELETE REMISE
+===================================================== */
+
+window.deleteRemise=
+async function(id){
+
+if(!isStudent()){
+
+showToast(
+"Seul l'élève peut supprimer sa remise."
+);
+
+return;
+
+}
+
+if(!confirm(
+"Supprimer cette remise ?"
+))return;
+
+try{
+
+await deleteDoc(
+doc(db,"remises",id)
+);
+
+showToast(
+"Remise supprimée."
+);
+
+await refreshRemises();
+
+}catch(error){
+
+console.error(error);
+
+showToast(
+"Suppression impossible."
+);
+
+}
+
+};
+
+
+/* =====================================================
+CORRIGER REMISE
+===================================================== */
+
+window.correctRemise=
+async function(id,data,devoirTitre){
+
+if(!isTeacherOrAdmin()){
+
+showToast(
+"Accès réservé au professeur."
+);
+
+return;
+
+}
+
+const noteInput=
+prompt(
+"Donnez la note sur 100 :",
+data.note??""
+);
+
+if(noteInput===null)return;
+
+const note=Number(noteInput);
+
+if(
+isNaN(note)||
+note<0||
+note>100
+){
+
+showToast(
+"La note doit être comprise entre 0 et 100."
+);
+
+return;
+
+}
+
+const commentaire=
+prompt(
+"Commentaire du professeur :",
+data.commentaireProf||""
+);
+
+if(commentaire===null)return;
+
+const correction=
+prompt(
+"Correction / observation :",
+data.correction||""
+);
+
+if(correction===null)return;
+
+try{
+
+await updateDoc(
+doc(db,"remises",id),
+{
+note:note,
+commentaireProf:
+commentaire.trim(),
+correction:
+correction.trim(),
+status:"corrige",
+professeurId:
+currentUser.uid,
+correctedAt:
+serverTimestamp()
+}
+);
+
+showToast(
+"Devoir corrigé. Note enregistrée sur 100."
+);
+
+await refreshRemises();
+
+}catch(error){
+
+console.error(error);
+
+showToast(
+"Impossible d'enregistrer la correction."
+);
+
+}
+
+};
+
+
+/* =====================================================
+CORRECTIONS
+===================================================== */
+
+async function renderCorrections(){
+
+const container=
+document.getElementById(
+"page-corrections"
+);
+
+container.innerHTML=`
+
+<div class="page-title">
+
+<h2>✏️ Corrections</h2>
+
+<p>
+Corrections, commentaires et notes sur 100.
+</p>
+
+</div>
+
+<div class="${
+isStudent()
+?
+"student-note"
+:
+"teacher-note"
+}">
+
+${
+isStudent()
+?
+"👨‍🎓 Voici les corrections et commentaires reçus du professeur."
+:
+"👨‍🏫 Ici vous pouvez corriger les devoirs remis par les élèves et donner une note sur 100."
+}
+
+</div>
+
+<div class="panel">
+
+<div class="table-wrap">
+
+<table>
+
+<thead>
+
+<tr>
+<th>Devoir</th>
+<th>Élève</th>
+<th>Note /100</th>
+<th>Correction</th>
+<th>Commentaire professeur</th>
+<th>Statut</th>
+<th>Action</th>
+</tr>
+
+</thead>
+
+<tbody id="correctionsTable">
+
+<tr>
+<td colspan="7">
+Chargement...
+</td>
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+`;
+
+await refreshCorrections();
+
+}
+
+
+/* =====================================================
+REFRESH CORRECTIONS
+===================================================== */
+
+async function refreshCorrections(){
+
+const tbody=
+document.getElementById(
+"correctionsTable"
+);
+
+if(!tbody)return;
+
+try{
+
+const snap=
+await getDocs(
+collection(db,"remises")
+);
+
+tbody.innerHTML="";
+
+let count=0;
+
+for(const item of snap.docs){
+
+const r=item.data();
+
+if(
+isStudent() &&
+r.etudiantId!==currentUser.uid
+){
+
+continue;
+
+}
+
+if(
+r.status!=="corrige" &&
+isStudent()
+){
+
+continue;
+
+}
+
+if(isTeacher()){
+
+if(
+r.professeurId &&
+r.professeurId!==currentUser.uid
+){
+
+continue;
+
+}
+
+}
+
+let devoirTitre="Devoir";
+
+try{
+
+const devoirSnap=
+await getDoc(
+doc(db,"devoirs",r.devoirId)
+);
+
+if(devoirSnap.exists()){
+
+devoirTitre=
+devoirSnap.data().titre||
+"Devoir";
+
+}
+
+}catch(e){
+
+console.error(e);
+
+}
+
+count++;
+
+const tr=
+document.createElement("tr");
+
+tr.innerHTML=`
+
+<td>
+${escapeHtml(devoirTitre)}
+</td>
+
+<td>
+${escapeHtml(r.etudiantNom||"")}
+</td>
+
+<td>
+${
+r.note!==null &&
+r.note!==undefined
+?
+`<span class="grade">${escapeHtml(r.note)}/100</span>`
+:
+"Non noté"
+}
+</td>
+
+<td>
+${escapeHtml(r.correction||"")}
+</td>
+
+<td>
+${escapeHtml(r.commentaireProf||"")}
+</td>
+
+<td>
+<span class="badge badge-green">
+Corrigé
+</span>
+</td>
+
+<td></td>
+`;
+
+const action=
+tr.lastElementChild;
+
+if(isTeacherOrAdmin()){
+
+const btn=
+document.createElement("button");
+
+btn.className=
+"btn btn-purple";
+
+btn.textContent=
+"✏️ Modifier correction";
+
+btn.onclick=()=>{
+correctRemise(
+item.id,
+r,
+devoirTitre
+);
+};
+
+action.appendChild(btn);
+
+}
+
+tbody.appendChild(tr);
+
+}
+
+if(count===0){
+
+tbody.innerHTML=`
+<tr>
+<td colspan="7">
+Aucune correction disponible.
+</td>
+</tr>
+`;
+
+}
+
+}catch(error){
+
+console.error(error);
+
+showToast(
+"Impossible de charger les corrections."
+);
+
+}
+
+}
+
+
+/* =====================================================
+RESULTATS
+===================================================== */
+
+async function renderResultats(){
+
+const container=
+document.getElementById(
+"page-resultats"
+);
+
+container.innerHTML=`
+
+<div class="page-title">
+
+<h2>📊 Résultats</h2>
+
+<p>
+Résultats et notes des étudiants.
+</p>
+
+</div>
+
+<div class="${
+isStudent()
+?
+"student-note"
+:
+"teacher-note"
+}">
+
+${
+isStudent()
+?
+"👨‍🎓 Vous pouvez voir vos notes et résultats."
+:
+"👨‍🏫 Vous pouvez voir les résultats liés aux devoirs corrigés."
+}
+
+</div>
+
+<div class="panel">
+
+<div class="table-wrap">
+
+<table>
+
+<thead>
+
+<tr>
+<th>Devoir</th>
+<th>Élève</th>
+<th>Matière</th>
+<th>Note /100</th>
+<th>Commentaire</th>
+<th>Statut</th>
+</tr>
+
+</thead>
+
+<tbody id="resultatsTable">
+
+<tr>
+<td colspan="6">
+Chargement...
+</td>
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+`;
+
+await refreshResultats();
+
+}
+
+
+/* =====================================================
+REFRESH RESULTATS
+===================================================== */
+
+async function refreshResultats(){
+
+const tbody=
+document.getElementById(
+"resultatsTable"
+);
+
+if(!tbody)return;
+
+try{
+
+const snap=
+await getDocs(
+collection(db,"remises")
+);
+
+tbody.innerHTML="";
+
+let count=0;
+
+for(const item of snap.docs){
+
+const r=item.data();
+
+if(r.note===null||
+r.note===undefined||
+r.note===""){
+
+continue;
+
+}
+
+if(
+isStudent() &&
+r.etudiantId!==currentUser.uid
+){
+
+continue;
+
+}
+
+if(isTeacher()){
+
+if(
+r.professeurId &&
+r.professeurId!==currentUser.uid
+){
+
+continue;
+
+}
+
+}
+
+let devoirTitre="Devoir";
+let matiere="";
+
+try{
+
+const devoirSnap=
+await getDoc(
+doc(db,"devoirs",r.devoirId)
+);
+
+if(devoirSnap.exists()){
+
+const d=
+devoirSnap.data();
+
+devoirTitre=
+d.titre||"Devoir";
+
+matiere=
+d.matiere||"";
+
+}
+
+}catch(e){
+
+console.error(e);
+
+}
+
+count++;
+
+const tr=
+document.createElement("tr");
+
+tr.innerHTML=`
+
+<td>
+${escapeHtml(devoirTitre)}
+</td>
+
+<td>
+${escapeHtml(r.etudiantNom||"")}
+</td>
+
+<td>
+${escapeHtml(matiere)}
+</td>
+
+<td>
+<span class="grade">
+${escapeHtml(r.note)}/100
+</span>
+</td>
+
+<td>
+${escapeHtml(r.commentaireProf||"")}
+</td>
+
+<td>
+
+<span class="badge badge-green">
+Corrigé
+</span>
+
+</td>
+`;
+
+tbody.appendChild(tr);
+
+}
+
+if(count===0){
+
+tbody.innerHTML=`
+<tr>
+<td colspan="6">
+Aucun résultat disponible.
+</td>
+</tr>
+`;
+
+}
+
+}catch(error){
+
+console.error(error);
+
+showToast(
+"Impossible de charger les résultats."
+);
+
+}
+
+}
+
+
+/* =====================================================
+VIEW DEVOIR REMISES
+===================================================== */
+
+window.viewDevoirRemises=
+async function(devoirId){
+
+if(!isTeacherOrAdmin()){
+
+showToast(
+"Accès réservé au professeur."
+);
+
+return;
+
+}
+
+document
+.getElementById("userMenu")
+.classList.remove("hidden");
+
+document
+.getElementById("userMenu")
+.innerHTML=`
+
+<div class="modal-box">
+
+<button
+class="modal-close"
+onclick="closeUserMenu()">
+×
+</button>
+
+<h3>📥 Remises des élèves</h3>
+
+<div id="devoirRemisesContent">
+Chargement...
+</div>
+
+</div>
+`;
+
+try{
+
+const snap=
+await getDocs(
+collection(db,"remises")
+);
+
+const box=
+document.getElementById(
+"devoirRemisesContent"
+);
+
+box.innerHTML="";
+
+let found=0;
+
+for(const item of snap.docs){
+
+const r=item.data();
+
+if(r.devoirId!==devoirId)
+continue;
+
+if(
+isTeacher() &&
+r.professeurId &&
+r.professeurId!==currentUser.uid
+)
+continue;
+
+found++;
+
+const div=
+document.createElement("div");
+
+div.className="info-card";
+
+div.innerHTML=`
+
+<h4>
+👨‍🎓 ${escapeHtml(r.etudiantNom||"")}
+</h4>
+
+<p>
+<strong>Commentaire :</strong>
+${escapeHtml(r.commentaire||"")}
+</p>
+
+<p>
+<strong>Note :</strong>
+${
+r.note!==null &&
+r.note!==undefined
+?
+`<span class="grade">${escapeHtml(r.note)}/100</span>`
+:
+"Non corrigé"
+}
+</p>
+
+<p>
+<strong>Commentaire professeur :</strong>
+${escapeHtml(r.commentaireProf||"")}
+</p>
+
+<div style="margin-top:10px"></div>
+
+`;
+
+if(r.fichier){
+
+const link=
+document.createElement("a");
+
+link.href=r.fichier;
+link.target="_blank";
+link.rel="noopener";
+
+link.className="btn";
+
+link.textContent=
+"📄 Ouvrir la remise";
+
+div.appendChild(link);
+
+}
+
+const btn=
+document.createElement("button");
+
+btn.className=
+"btn btn-purple";
+
+btn.style.marginLeft="5px";
+
+btn.textContent=
+"✏️ Corriger";
+
+btn.onclick=()=>{
+closeUserMenu();
+correctRemise(
+item.id,
+r,
+"Devoir"
+);
+};
+
+div.appendChild(btn);
+
+box.appendChild(div);
+
+}
+
+if(found===0){
+
+box.innerHTML=
+"<p>Aucune remise pour ce devoir.</p>";
+
+}
+
+}catch(error){
+
+console.error(error);
+
+showToast(
+"Impossible de charger les remises."
+);
+
+}
+
+};
+
+
+/* =====================================================
+USERS ADMIN
+===================================================== */
+
+async function renderUsers(){
+
+if(!isAdmin()){
+
+showToast(
+"Accès réservé à l'administrateur."
+);
+
+return;
+
+}
+
+const container=
+document.getElementById(
+"page-utilisateurs"
+);
+
+container.innerHTML=`
+
+<div class="page-title">
+
+<h2>👥 Gestion des utilisateurs</h2>
+
+<p>
+L'administrateur contrôle les comptes,
+les rôles et les statuts.
+</p>
+
+</div>
+
+<div class="panel">
+
+<h3>Utilisateurs enregistrés</h3>
+
+<div class="table-wrap">
+
+<table>
+
+<thead>
+
+<tr>
+<th>Nom</th>
+<th>E-mail</th>
+<th>Rôle</th>
+<th>Statut</th>
+<th>UID</th>
+<th>Actions</th>
+</tr>
+
+</thead>
+
+<tbody id="usersTable">
+
+<tr>
+<td colspan="6">
+Chargement...
+</td>
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+`;
+
+try{
+
+const snap=
+await getDocs(
+collection(db,"users")
+);
+
+const tbody=
+document.getElementById(
+"usersTable"
+);
+
+tbody.innerHTML="";
+
+snap.forEach(item=>{
+
+const data=item.data();
+
+const tr=
+document.createElement("tr");
+
+tr.innerHTML=`
+
+<td>
+${escapeHtml(data.name||"")}
+</td>
+
+<td>
+${escapeHtml(data.email||"")}
+</td>
+
+<td>
+${escapeHtml(data.role||"")}
+</td>
+
+<td>
+
+<span class="badge ${
+data.status==="accepted"
+?
+"badge-green"
+:
+"badge-orange"
+}">
+
+${escapeHtml(data.status||"")}
+
+</span>
+
+</td>
+
+<td>
+${escapeHtml(data.uid||item.id)}
+</td>
+
+<td></td>
+`;
+
+const actions=
+tr.lastElementChild;
+
+
+/* ACCEPT */
+
+if(data.status!=="accepted"){
+
+const accept=
+document.createElement("button");
+
+accept.className=
+"btn btn-green";
+
+accept.textContent=
+"Accepter";
+
+accept.onclick=()=>{
+updateUserStatus(
+item.id,
+"accepted"
+);
+};
+
+actions.appendChild(accept);
+
+}
+
+
+/* ROLE */
+
+const role=
+document.createElement("button");
+
+role.className="btn";
+
+role.style.marginLeft="5px";
+
+role.textContent=
+"Modifier rôle";
+
+role.onclick=()=>{
+changeUserRole(
+item.id,
+data.role||"eleve"
+);
+};
+
+actions.appendChild(role);
+
+
+/* DELETE */
+
+if(item.id!==currentUser.uid){
+
+const del=
+document.createElement("button");
+
+del.className=
+"btn btn-red";
+
+del.style.marginLeft="5px";
+
+del.textContent=
+"Supprimer";
+
+del.onclick=()=>{
+deleteUserProfile(
+item.id
+);
+};
+
+actions.appendChild(del);
+
+}
+
+tbody.appendChild(tr);
+
+});
+
+}catch(error){
+
+console.error(error);
+
+showToast(
+"Impossible de charger les utilisateurs."
+);
+
+}
+
+}
+
+
+/* =====================================================
+UPDATE USER STATUS
+===================================================== */
+
+async function updateUserStatus(
+uid,
+status
+){
+
+if(!isAdmin()){
+
+showToast(
+"Seul l'administrateur peut modifier le statut."
+);
+
+return;
+
+}
+
+try{
+
+await updateDoc(
+doc(db,"users",uid),
+{
+status:status
+}
+);
+
+showToast(
+"Utilisateur accepté."
+);
+
+await renderUsers();
+
+loadDashboard();
+
+}catch(error){
+
+console.error(error);
+
+showToast(
+"Impossible de modifier le statut."
+);
+
+}
+
+}
+
+
+/* =====================================================
+CHANGE ROLE
+===================================================== */
+
+async function changeUserRole(
+uid,
+oldRole
+){
+
+if(!isAdmin()){
+
+showToast(
+"Seul l'administrateur peut modifier les rôles."
+);
+
+return;
+
+}
+
+const roleInput=
+prompt(
+"Entrez le rôle :\n\n1 = administrateur\n2 = professeur\n3 = eleve",
+oldRole||"eleve"
+);
+
+if(roleInput===null)return;
+
+const valeur=
+roleInput.trim().toLowerCase();
+
+const roleMap={
+
+"1":"administrateur",
+"2":"professeur",
+"3":"eleve",
+
+"administrateur":"administrateur",
+"admin":"administrateur",
+
+"professeur":"professeur",
+"prof":"professeur",
+"professeure":"professeur",
+
+"eleve":"eleve",
+"élève":"eleve",
+"etudiant":"eleve",
+"étudiant":"eleve"
+
+};
+
+const role=
+roleMap[valeur];
+
+if(!role){
+
+showToast(
+"Rôle invalide."
+);
+
+return;
+
+}
+
+try{
+
+await updateDoc(
+doc(db,"users",uid),
+{
+role:role
+}
+);
+
+showToast(
+"Rôle modifié avec succès."
+);
+
+await renderUsers();
+
+}catch(error){
+
+console.error(error);
+
+showToast(
+"Impossible de modifier le rôle."
+);
+
+}
+
+}
+
+
+/* =====================================================
+DELETE USER
+===================================================== */
+
+async function deleteUserProfile(uid){
+
+if(!isAdmin()){
+
+showToast(
+"Seul l'administrateur peut supprimer un utilisateur."
+);
+
+return;
+
+}
+
+if(!confirm(
+"Supprimer le profil Firestore de cet utilisateur ?"
+)){
+
+return;
+
+}
+
+try{
+
+await deleteDoc(
+doc(db,"users",uid)
+);
+
+showToast(
+"Profil supprimé."
+);
+
+await renderUsers();
+
+loadDashboard();
+
+}catch(error){
+
+console.error(error);
+
+showToast(
+"Suppression impossible."
+);
+
+}
+
+}
+
+
+/* =====================================================
+DASHBOARD
+===================================================== */
+
+async function countCollection(name){
+
+try{
+
+const snap=
+await getDocs(
+collection(db,name)
+);
+
+return snap.size;
+
+}catch(error){
+
+console.error(error);
+
+return 0;
+
+}
+
+}
+
+
+async function loadDashboard(){
+
+const [
+etudiants,
+professeurs,
+classes,
+matieres,
+devoirs
+]=await Promise.all([
+
+countCollection("etudiants"),
+countCollection("professeurs"),
+countCollection("classes"),
+countCollection("matieres"),
+countCollection("devoirs")
+
+]);
+
+document
+.getElementById("statEtudiants")
+.textContent=etudiants;
+
+document
+.getElementById("statProfesseurs")
+.textContent=professeurs;
+
+document
+.getElementById("statClasses")
+.textContent=classes;
+
+document
+.getElementById("statMatieres")
+.textContent=matieres;
+
+document
+.getElementById("statDevoirs")
+.textContent=devoirs;
+
+
+if(isAdmin()){
+
+try{
+
+const users=
+await getDocs(
+collection(db,"users")
+);
+
+let pending=0;
+
+users.forEach(d=>{
+
+if(
+d.data().status==="attente"
+){
+
+pending++;
+
+}
+
+});
+
+document
+.getElementById("statPending")
+.textContent=
+pending;
+
+}catch(error){
+
+console.error(error);
+
+}
+
+}else{
+
+document
+.getElementById("statPending")
+.textContent="0";
+
+}
+
+}
+
+
+/* =====================================================
+STATISTICS
+===================================================== */
+
+async function renderStatistics(){
+
+const container=
+document.getElementById(
+"page-statistiques"
+);
+
+container.innerHTML=`
+
+<div class="page-title">
+
+<h2>📈 Statistiques</h2>
+
+<p>
+Vue générale des données académiques.
+</p>
+
+</div>
+
+<div class="stats">
+
+<div class="stat">
+<div class="stat-icon">🎓</div>
+<div class="stat-title">Étudiants</div>
+<div id="s1" class="stat-number">0</div>
+</div>
+
+<div class="stat">
+<div class="stat-icon">👨‍🏫</div>
+<div class="stat-title">Professeurs</div>
+<div id="s2" class="stat-number">0</div>
+</div>
+
+<div class="stat">
+<div class="stat-icon">🏫</div>
+<div class="stat-title">Classes</div>
+<div id="s3" class="stat-number">0</div>
+</div>
+
+<div class="stat">
+<div class="stat-icon">📚</div>
+<div class="stat-title">Matières</div>
+<div id="s4" class="stat-number">0</div>
+</div>
+
+</div>
+`;
+
+document.getElementById("s1")
+.textContent=
+await countCollection("etudiants");
+
+document.getElementById("s2")
+.textContent=
+await countCollection("professeurs");
+
+document.getElementById("s3")
+.textContent=
+await countCollection("classes");
+
+document.getElementById("s4")
+.textContent=
+await countCollection("matieres");
+
+}
+
+
+/* =====================================================
+BACKUP
+===================================================== */
+
+function renderBackup(){
+
+const container=
+document.getElementById(
+"page-sauvegarde"
+);
+
+container.innerHTML=`
+
+<div class="page-title">
+
+<h2>💾 Données / Sauvegarde</h2>
+
+<p>
+Exportez les données de votre établissement.
+</p>
+
+</div>
+
+<div class="panel">
+
+<h3>Exporter les données</h3>
+
+<p style="margin-bottom:15px">
+
+L'export crée un fichier JSON contenant
+les collections accessibles.
+
+</p>
+
+${
+isAdmin()
+?
+`
+<button
+class="btn btn-green"
+onclick="exportData()">
+
+💾 Télécharger la sauvegarde
+
+</button>
+`
+:
+`
+<div class="admin-only-note">
+
+🔒 Seul l'administrateur peut effectuer
+une sauvegarde.
+
+</div>
+`
+}
+
+</div>
+`;
+
+}
+
+
+window.exportData=
+async function(){
+
+if(!isAdmin()){
+
+showToast(
+"Seul l'administrateur peut exporter les données."
+);
+
+return;
+
+}
+
+const collections=[
+
+"users",
+"etudiants",
+"professeurs",
+"classes",
+"departements",
+"filieres",
+"matieres",
+"cours",
+"devoirs",
+"remises"
+
+];
+
+const backup={};
+
+for(const name of collections){
+
+try{
+
+const snap=
+await getDocs(
+collection(db,name)
+);
+
+backup[name]=
+snap.docs.map(
+d=>({
+id:d.id,
+...d.data()
+})
+);
+
+}catch(error){
+
+backup[name]=[];
+
+}
+
+}
+
+const blob=
+new Blob(
+[
+JSON.stringify(
+backup,
+null,
+2
+)
+],
+{
+type:"application/json"
+}
+);
+
+const url=
+URL.createObjectURL(blob);
+
+const a=
+document.createElement("a");
+
+a.href=url;
+
+a.download=
+"sauvegarde-centre-formation-le-pedagogue.json";
+
+a.click();
+
+URL.revokeObjectURL(url);
+
+showToast(
+"Sauvegarde téléchargée."
+);
+
+};
+
+
+/* =====================================================
+LANGUAGE
+===================================================== */
+
+window.changeLanguage=function(){
+
+const value=
+document
+.getElementById("languageSelect")
+.value;
+
+localStorage.setItem(
+"language",
+value
+);
+
+if(value==="ht"){
+
+document
+.getElementById("welcomeText")
+.textContent=
+"Byenveni nan espas jesyon Centre de Formation Le Pédagogue.";
+
+}else{
+
+document
+.getElementById("welcomeText")
+.textContent=
+"Bienvenue dans votre espace de gestion.";
+
+}
+
+};
+
+const savedLanguage=
+localStorage.getItem("language");
+
+if(savedLanguage){
+
+document
+.getElementById("languageSelect")
+.value=
+savedLanguage;
+
+}
+
+
+/* =====================================================
+USER MENU
+===================================================== */
+
+window.toggleUserMenu=function(){
+
+document
+.getElementById("userMenu")
+.classList.remove("hidden");
+
+};
+
+
+window.closeUserMenu=function(){
+
+document
+.getElementById("userMenu")
+.classList.add("hidden");
+
+};
+
+
+/* =====================================================
+TOAST
+===================================================== */
+
+function showToast(message){
+
+const toast=
+document.getElementById("toast");
+
+toast.textContent=message;
+
+toast.classList.remove("hidden");
+
+setTimeout(()=>{
+toast.classList.add("hidden");
+},3500);
+
+}
+
+
+/* =====================================================
+FIREBASE FRIENDLY ERRORS
+===================================================== */
+
+function getFriendlyError(error){
+
+const code=
+error?.code||"";
+
+if(
+code.includes(
+"email-already-in-use"
+)
+){
+
+return "Cette adresse e-mail est déjà utilisée.";
+
+}
+
+if(
+code.includes("invalid-credential")||
+code.includes("wrong-password")||
+code.includes("user-not-found")
+){
+
+return "E-mail ou mot de passe incorrect.";
+
+}
+
+if(
+code.includes("invalid-email")
+){
+
+return "Adresse e-mail invalide.";
+
+}
+
+if(
+code.includes("weak-password")
+){
+
+return "Le mot de passe est trop faible.";
+
+}
+
+if(
+code.includes("popup-closed-by-user")
+){
+
+return "La fenêtre Google a été fermée.";
+
+}
+
+if(
+code.includes("popup-blocked")
+){
+
+return "Chrome a bloqué la fenêtre Google.";
+
+}
+
+if(
+code.includes("operation-not-allowed")
+){
+
+return "La connexion Google n'est pas activée dans Firebase Authentication.";
+
+}
+
+if(
+code.includes("unauthorized-domain")
+){
+
+return "Ce domaine n'est pas autorisé dans Firebase Authentication.";
+
+}
+
+if(
+code.includes("permission-denied")
+){
+
+return "Accès refusé par les règles Firebase.";
+
+}
+
+return "Une erreur est survenue. Vérifiez les informations saisies.";
+
+}
+
+
+/* =====================================================
+ESCAPE HTML
+===================================================== */
+
+function escapeHtml(value){
+
+return String(value)
+.replaceAll("&","&amp;")
+.replaceAll("<","&lt;")
+.replaceAll(">","&gt;")
+.replaceAll('"',"&quot;")
+.replaceAll("'","&#039;");
+
+}
+
+</script>
+
+</body>
+</html>
