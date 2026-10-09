@@ -1,6 +1,6 @@
-const CACHE_NAME = "le-pedagogue-v1";
+const CACHE_NAME = "pedagogue-app-v1";
 
-const APP_FILES = [
+const FILES_TO_CACHE = [
   "./",
   "./index.html",
   "./manifest.json"
@@ -9,9 +9,9 @@ const APP_FILES = [
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then((cache) => cache.addAll(APP_FILES))
+      .then((cache) => cache.addAll(FILES_TO_CACHE))
       .catch((error) => {
-        console.error("Erreur de cache :", error);
+        console.error("Erreur de cache:", error);
       })
   );
 
@@ -20,11 +20,11 @@ self.addEventListener("install", (event) => {
 
 self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys().then((keys) =>
+    caches.keys().then((cacheNames) =>
       Promise.all(
-        keys
-          .filter((key) => key !== CACHE_NAME)
-          .map((key) => caches.delete(key))
+        cacheNames
+          .filter((name) => name !== CACHE_NAME)
+          .map((name) => caches.delete(name))
       )
     )
   );
@@ -35,36 +35,11 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
 
-  const url = new URL(event.request.url);
-
-  if (url.origin !== self.location.origin) return;
-
   event.respondWith(
-    fetch(event.request)
-      .then((response) => {
-        if (response && response.ok) {
-          const copy = response.clone();
-
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, copy);
-          });
-        }
-
-        return response;
+    fetch(event.request).catch(() =>
+      caches.match(event.request).then((cachedResponse) => {
+        return cachedResponse || Response.error();
       })
-      .catch(async () => {
-        const cached = await caches.match(event.request);
-
-        if (cached) return cached;
-
-        if (event.request.mode === "navigate") {
-          return caches.match("./index.html");
-        }
-
-        return new Response("Ou pa konekte ak entènèt la.", {
-          status: 503,
-          headers: { "Content-Type": "text/plain; charset=utf-8" }
-        });
-      })
+    )
   );
 });
