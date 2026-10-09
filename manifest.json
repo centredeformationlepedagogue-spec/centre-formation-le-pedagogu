@@ -1,15 +1,14 @@
 {
-  "id": "./",
   "name": "Centre de Formation Le Pédagogue",
   "short_name": "Le Pédagogue",
   "description": "Gestion universitaire et école professionnelle",
-  "lang": "fr",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#f1f5f9",
-  "theme_color": "#1d4ed8",
+  "background_color": "#ffffff",
+  "theme_color": "#0f3d91",
+  "lang": "fr",
   "icons": [
     {
       "src": "./icon-192.png",
