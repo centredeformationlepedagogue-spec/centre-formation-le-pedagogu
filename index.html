@@ -45,6 +45,9 @@ button{cursor:pointer}
 .btn-danger{background:#fee2e2;color:#991b1b}
 .btn-success{background:#dcfce7;color:#166534}
 .btn-light{background:#fff;color:var(--blue);border:1px solid #dbe5f5}
+/* Modification 3 : Changement de la couleur du bouton Google (fond blanc cassé/gris clair élégant, texte foncé pour un style pro et propre) */
+.btn-google{background:#f8fafc;color:#1e293b;border:1px solid #cbd5e1}
+.btn-google:hover{background:#f1f5f9}
 .btn:disabled{opacity:.5;cursor:not-allowed}
 .full{width:100%}
 .auth-buttons{display:grid;gap:10px;margin-top:18px}
@@ -137,7 +140,8 @@ th{background:#f7f9fd;color:#475569;white-space:nowrap}
     <div class="auth-buttons">
       <button class="btn btn-primary full" id="loginBtn" type="button">Se connecter</button>
       <button class="btn btn-secondary full" id="registerBtn" type="button">Créer un compte</button>
-      <button class="btn btn-light full" id="googleBtn" type="button">Continuer avec Google</button>
+      <!-- Modification 3 : Utilisation de la classe .btn-google pour changer la couleur du bouton Google -->
+      <button class="btn btn-google full" id="googleBtn" type="button">Continuer avec Google</button>
     </div>
     <div id="authMessage"></div>
     <p class="footer-note">Les nouveaux comptes doivent être acceptés par l'administration avant d'accéder aux modules.</p>
@@ -260,6 +264,7 @@ const modules = {
     title:"Étudiants", collection:"etudiants",
     fields:[
       ["nom","Nom","text",true],["prenom","Prénom","text",true],
+      // Modification 1 : Utilisation de type="date" pour faciliter la saisie sur Android et ordinateurs
       ["dateNaissance","Date de naissance","date",false],
       ["sexe","Sexe","select",false,["Masculin","Féminin","Autre"]],
       ["email","E-mail","email",false],["telephone","Téléphone","tel",false],
@@ -297,6 +302,7 @@ const modules = {
   },
   annees: {
     title:"Années académiques", collection:"annees_academiques",
+    // Modification 1 : Utilisation de type="date" pour les dates de début et de fin
     fields:[["nom","Année académique","text",true],["dateDebut","Date de début","date",false],["dateFin","Date de fin","date",false],["active","Année active","select",false,["Oui","Non"]]]
   },
   affectations: {
@@ -305,10 +311,12 @@ const modules = {
   },
   inscriptions: {
     title:"Élèves / Classes", collection:"inscriptions",
+    // Modification 1 : Utilisation de type="date" pour la date d'inscription
     fields:[["eleve","Nom / e-mail de l'élève","text",true],["classe","Classe","text",true],["annee","Année académique","text",false],["dateInscription","Date d'inscription","date",false]]
   },
   devoirs: {
     title:"Devoirs", collection:"devoirs", teacher:true, studentRead:true,
+    // Modification 1 : Utilisation de type="date" pour la date limite
     fields:[["titre","Titre du devoir","text",true],["matiere","Matière","text",false],["classe","Classe","text",true],["description","Consignes","textarea",true],["dateLimite","Date limite","date",false],["noteMax","Note maximale","number",false]]
   },
   remises: {
@@ -889,7 +897,7 @@ async function renderUsers() {
       <tbody>${users.map(user => {
         const status = user.status || "attente";
         return `<tr>
-          <td>${escapeHtml(user.email || "—")}<br><small>${escapeHtml(user.uid || user.id)}</small></td>
+          <td>${escapeHtml(user.email \vert{}\vert{} "—")}<br><small>${escapeHtml(user.uid || user.id)}</small></td>
           <td><select data-role="${escapeHtml(user.id)}">
             <option value="eleve" ${user.role==="eleve"?"selected":""}>Élève</option>
             <option value="professeur" ${user.role==="professeur"?"selected":""}>Professeur</option>
@@ -897,6 +905,7 @@ async function renderUsers() {
           </select></td>
           <td><span class="status ${escapeHtml(status)}">${escapeHtml(status)}</span></td>
           <td><div class="actions">
+            <!-- Modification 2 : Appel direct à updateStatusAndRole pour enregistrer le rôle sélectionné dans Firestore lors de l'acceptation -->
             <button class="btn btn-success" data-accept="${escapeHtml(user.id)}">Accepter</button>
             <button class="btn btn-secondary" data-save-role="${escapeHtml(user.id)}">Modifier rôle</button>
             <button class="btn btn-danger" data-refuse="${escapeHtml(user.id)}">Refuser</button>
@@ -906,8 +915,9 @@ async function renderUsers() {
       }).join("")}</tbody></table></div>
       <p class="footer-note">« Supprimer profil » supprime le document Firestore, mais ne supprime pas à lui seul le compte dans Firebase Authentication.</p>`;
 
+    // Modification 2 : Utilisation d'une fonction dédiée pour enregistrer le rôle choisi lors de l'acceptation
     $("usersTable").querySelectorAll("[data-accept]").forEach(button =>
-      button.addEventListener("click", () => updateUserStatus(button.dataset.accept, "accepted"))
+      button.addEventListener("click", () => updateStatusAndRole(button.dataset.accept, "accepted"))
     );
     $("usersTable").querySelectorAll("[data-refuse]").forEach(button =>
       button.addEventListener("click", () => updateUserStatus(button.dataset.refuse, "refuse"))
@@ -954,6 +964,25 @@ async function updateUserStatus(uid, status) {
     await renderUsers();
   } catch (error) {
     toast("Impossible de modifier le statut : " + error.message);
+  }
+}
+
+/* Modification 2 : Fonction dédiée pour accepter l'utilisateur tout en enregistrant explicitement son rôle sélectionné dans Firestore */
+async function updateStatusAndRole(uid, status) {
+  if (!isAdmin()) return;
+  try {
+    const roleSelect = $("usersTable").querySelector(`[data-role="${CSS.escape(uid)}"]`);
+    const role = roleSelect ? roleSelect.value : "eleve";
+    
+    await updateDoc(doc(db, "users", uid), {
+      status,
+      role,
+      updatedAt: serverTimestamp()
+    });
+    toast("Compte accepté et rôle enregistré avec succès.");
+    await renderUsers();
+  } catch (error) {
+    toast("Impossible de valider le compte : " + error.message);
   }
 }
 
