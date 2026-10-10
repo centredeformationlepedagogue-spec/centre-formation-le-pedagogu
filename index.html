@@ -1,1 +1,330 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#1d4ed8">
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" href="./icon-192.png">
+<title>Centre de Formation Le Pédagogue</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f1f5f9;color:#1e293b}
+button,input,textarea,select{font:inherit;padding:10px;border-radius:7px;border:1px solid #cbd5e1}
+button{cursor:pointer;background:#1d4ed8;color:white;border:0;margin:3px}
+header{background:#0f172a;color:white;padding:15px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+nav{background:#1e293b;padding:10px;display:flex;gap:5px;flex-wrap:wrap}
+nav button{background:#334155}
+main{padding:16px;max-width:1100px;margin:auto}
+.panel,.card{background:white;padding:16px;border-radius:12px;margin:12px 0;box-shadow:0 2px 8px #0001}
+input,textarea,select{width:100%;margin:5px 0 12px}
+label{font-weight:bold;display:block}
+.hidden{display:none!important}
+.error{color:#b91c1c}.success{color:#15803d}
+.card button{margin-top:8px}
+video,iframe{width:100%;aspect-ratio:16/9;border:0}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+</style>
+</head>
+<body>
+<header>
+  <strong>Centre de Formation Le Pédagogue</strong>
+  <span id="who"></span>
+  <button onclick="logout()">Déconnexion</button>
+</header>
 
+<section id="auth" class="panel" style="max-width:440px;margin:25px auto">
+  <h2>Connexion</h2>
+  <div id="msg"></div>
+  <label>Email</label><input id="email" type="email" autocomplete="email">
+  <label>Mot de passe</label><input id="password" type="password" autocomplete="current-password">
+  <button onclick="login()">Se connecter</button>
+  <button onclick="register()">Créer un compte</button>
+  <button onclick="googleLogin()">Continuer avec Google</button>
+</section>
+
+<div id="app" class="hidden">
+<nav>
+  <button onclick="page('home')">Accueil</button>
+  <button onclick="page('videos')">Vidéos des classes</button>
+  <button onclick="page('exams')">Examens</button>
+  <button onclick="page('answers')">Réponses / Corrections</button>
+  <button onclick="page('results')">Résultats</button>
+  <button id="usersBtn" class="hidden" onclick="page('users')">Utilisateurs</button>
+</nav>
+<main>
+<section id="home" class="panel">
+  <h2>Bienvenue au Centre de Formation Le Pédagogue</h2>
+  <p>Espas pou ansèyman, videyo, egzamen ak rezilta.</p>
+</section>
+<section id="videos" class="hidden">
+  <div class="panel">
+    <h2>Publier une vidéo</h2>
+    <div id="videoForm" class="hidden">
+      <label>Titre</label><input id="vtitle">
+      <label>Classe (identifiant exact de la classe)</label><input id="vclass">
+      <label>Lien YouTube</label><input id="vurl" placeholder="https://www.youtube.com/watch?v=...">
+      <label>Description</label><textarea id="vdesc"></textarea>
+      <button onclick="saveVideo()">Publier la vidéo</button>
+    </div>
+  </div>
+  <div id="videoList"></div>
+</section>
+<section id="exams" class="hidden">
+  <div class="panel">
+    <h2>Créer un examen</h2>
+    <div id="examForm" class="hidden">
+      <label>Titre</label><input id="etitle">
+      <label>Classe (identifiant exact)</label><input id="eclass">
+      <label>Type</label>
+      <select id="etype"><option value="ecrit">Questions écrites</option><option value="qcm">QCM</option></select>
+      <label>Date limite</label><input id="edate" type="date">
+      <label>Question 1</label><textarea id="q1"></textarea>
+      <div id="qcmFields">
+        <label>Choix séparés par |</label><input id="opts" placeholder="Choix A | Choix B | Choix C">
+        <label>Numéro de la bonne réponse (1, 2 ou 3)</label><input id="correct" type="number" min="1" max="3" value="1">
+      </div>
+      <label>Points</label><input id="points" type="number" min="1" value="10">
+      <button onclick="saveExam()">Publier l'examen</button>
+    </div>
+  </div>
+  <div id="examList"></div>
+</section>
+<section id="answers" class="hidden">
+  <div class="panel"><h2>Réponses à corriger</h2></div>
+  <div id="answerList"></div>
+</section>
+<section id="results" class="hidden">
+  <div class="panel"><h2>Mes résultats</h2></div>
+  <div id="resultList"></div>
+</section>
+<section id="users" class="hidden">
+  <div class="panel"><h2>Gestion des utilisateurs</h2></div>
+  <div id="userList"></div>
+</section>
+</main>
+</div>
+
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+import {
+ getAuth,onAuthStateChanged,signInWithEmailAndPassword,
+ createUserWithEmailAndPassword,GoogleAuthProvider,signInWithPopup,signOut
+} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+import {
+ getFirestore,collection,doc,getDoc,getDocs,addDoc,setDoc,updateDoc,
+ query,where,serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+
+const firebaseConfig={
+ apiKey:"AIzaSyAhrtcVaEZ7oU-p4Ihzl0APX2ccXKi4jBU",
+ authDomain:"centre-de-formation-le-pe.firebaseapp.com",
+ projectId:"centre-de-formation-le-pe",
+ storageBucket:"centre-de-formation-le-pe.firebasestorage.app",
+ messagingSenderId:"11834103838",
+ appId:"1:11834103838:web:b82c994e78486cd313760f"
+};
+
+const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);
+const ADMIN="centredeformationlepedagogue@gmail.com";
+let me=null,profile=null;
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const admin=()=>me?.email?.toLowerCase()===ADMIN;
+const accepted=()=>profile?.status==="accepted"||admin();
+const role=()=>admin()?"administrateur":profile?.role||"";
+const teacher=()=>accepted()&&role()==="professeur";
+const student=()=>accepted()&&role()==="eleve";
+
+function message(s,good=false){$("msg").innerHTML=`<p class="${good?"success":"error"}">${esc(s)}</p>`}
+window.login=async()=>{try{await signInWithEmailAndPassword(auth,$("email").value.trim(),$("password").value)}catch(e){message("Connexion impossible : "+e.message)}};
+window.register=async()=>{
+ try{
+  const c=await createUserWithEmailAndPassword(auth,$("email").value.trim(),$("password").value);
+  await setDoc(doc(db,"users",c.user.uid),{
+   uid:c.user.uid,email:c.user.email,nom:c.user.displayName||"",
+   role:"eleve",status:"attente",createdAt:serverTimestamp()
+  });
+  message("Compte créé. Attendez l'approbation de l'administrateur.",true);
+ }catch(e){message("Inscription impossible : "+e.message)}
+};
+window.googleLogin=async()=>{try{await signInWithPopup(auth,new GoogleAuthProvider())}catch(e){message("Google : "+e.message)}};
+window.logout=()=>signOut(auth);
+window.page=id=>{
+ document.querySelectorAll("main>section").forEach(s=>s.classList.add("hidden"));
+ $(id).classList.remove("hidden");
+ if(id==="videos")loadVideos();
+ if(id==="exams")loadExams();
+ if(id==="answers")loadAnswers();
+ if(id==="results")loadResults();
+ if(id==="users")loadUsers();
+};
+onAuthStateChanged(auth,async u=>{
+ me=u;
+ if(!u){$("auth").classList.remove("hidden");$("app").classList.add("hidden");return}
+ try{
+  const r=doc(db,"users",u.uid),s=await getDoc(r);
+  if(u.email?.toLowerCase()===ADMIN){
+   profile={uid:u.uid,email:u.email,role:"administrateur",status:"accepted"};
+   await setDoc(r,{...profile,nom:u.displayName||"",updatedAt:serverTimestamp()},{merge:true});
+  }else if(!s.exists()){
+   profile={uid:u.uid,email:u.email,nom:u.displayName||"",role:"eleve",status:"attente"};
+   await setDoc(r,{...profile,createdAt:serverTimestamp()});
+  }else profile=s.data();
+  if(!accepted()){
+   $("auth").classList.remove("hidden");$("app").classList.add("hidden");
+   message("Compte en attente d'approbation par l'administrateur.");return;
+  }
+  $("auth").classList.add("hidden");$("app").classList.remove("hidden");
+  $("who").textContent=(profile.nom||u.email)+" — "+role();
+  $("usersBtn").classList.toggle("hidden",!admin());
+  $("videoForm").classList.toggle("hidden",!(admin()||teacher()));
+  $("examForm").classList.toggle("hidden",!(admin()||teacher()));
+  page("home");
+ }catch(e){$("auth").classList.remove("hidden");$("app").classList.add("hidden");message("Erreur Firebase : "+e.message)}
+});
+
+function youtube(url){
+ try{
+  const u=new URL(url);
+  let id=u.hostname.includes("youtu.be")?u.pathname.slice(1):u.searchParams.get("v");
+  if(u.pathname.includes("/embed/"))id=u.pathname.split("/embed/")[1];
+  return id&&/^[\w-]+$/.test(id)?`https://www.youtube-nocookie.com/embed/${id}`:"";
+ }catch{return ""}
+}
+window.saveVideo=async()=>{
+ if(!(admin()||teacher()))return;
+ const url=youtube($("vurl").value.trim());
+ if(!url)return alert("Mete yon lyen YouTube ki valab.");
+ try{
+  await addDoc(collection(db,"videos_classes"),{
+   titre:$("vtitle").value.trim(),classeId:$("vclass").value.trim(),
+   videoUrl:url,description:$("vdesc").value.trim(),
+   professeurId:me.uid,professeurEmail:me.email,
+   createdAt:serverTimestamp()
+  });
+  alert("Vidéo publiée.");loadVideos();
+ }catch(e){alert("Erreur publication : "+e.message)}
+};
+async function loadVideos(){
+ $("videoList").innerHTML="Chargement...";
+ try{
+  const s=await getDocs(collection(db,"videos_classes"));let h="";
+  s.forEach(x=>{const d=x.data();h+=`<article class="card"><h3>${esc(d.titre)}</h3><p>${esc(d.description)}</p><p>Classe : ${esc(d.classeId)}</p><iframe loading="lazy" src="${esc(d.videoUrl)}" allowfullscreen></iframe></article>`});
+  $("videoList").innerHTML=h||"<p>Aucune vidéo.</p>";
+ }catch(e){$("videoList").textContent="Impossible de charger les vidéos : "+e.message}
+}
+
+window.saveExam=async()=>{
+ if(!(admin()||teacher()))return;
+ const type=$("etype").value,text=$("q1").value.trim(),pts=Number($("points").value);
+ if(!text||pts<=0)return alert("Ranpli kesyon an ak pwen yo.");
+ let q={index:1,texte:text,points:pts};
+ let correction=null;
+ if(type==="qcm"){
+  const options=$("opts").value.split("|").map(s=>s.trim()).filter(Boolean);
+  const correct=Number($("correct").value)-1;
+  if(options.length<2||correct<0||correct>=options.length)return alert("Verifye chwa QCM ak bon repons lan.");
+  q.options=options;correction={correctIndex:correct,points:pts};
+ }
+ try{
+  const r=await addDoc(collection(db,"examens"),{
+   titre:$("etitle").value.trim(),classeId:$("eclass").value.trim(),
+   type,dateLimite:$("edate").value,questions:[q],totalPoints:pts,
+   professeurId:me.uid,createdAt:serverTimestamp()
+  });
+  if(correction)await setDoc(doc(db,"examens_corrections",r.id),{
+   examId:r.id,answers:{"1":correction},professeurId:me.uid
+  });
+  alert("Examen publié.");loadExams();
+ }catch(e){alert("Erreur : "+e.message)}
+};
+async function loadExams(){
+ $("examList").innerHTML="Chargement...";
+ try{
+  const s=await getDocs(collection(db,"examens"));let h="";
+  s.forEach(x=>{const d=x.data();h+=`<article class="card"><h3>${esc(d.titre)}</h3><p>Classe : ${esc(d.classeId)} — ${d.type==="qcm"?"QCM":"Écrit"}</p><p>Date limite : ${esc(d.dateLimite||"Non définie")}</p>${student()?`<button onclick="takeExam('${x.id}')">Passer l'examen</button>`:""}</article>`});
+  $("examList").innerHTML=h||"Aucun examen.";
+ }catch(e){$("examList").textContent="Erreur : "+e.message}
+}
+window.takeExam=async id=>{
+ if(!student())return;
+ const s=await getDoc(doc(db,"examens",id));if(!s.exists())return;
+ const d=s.data();
+ const old=await getDocs(query(collection(db,"reponses_examens"),where("examId","==",id),where("etudiantId","==",me.uid)));
+ if(!old.empty)return alert("Ou deja remèt egzamen sa.");
+ const q=d.questions[0];let answer="";
+ if(d.type==="qcm"){
+  const choice=prompt(q.texte+"\n"+q.options.map((v,i)=>`${i+1}. ${v}`).join("\n")+"\nTape nimewo repons lan.");
+  const n=Number(choice)-1;if(!Number.isInteger(n)||n<0||n>=q.options.length)return;
+  answer=String(n);
+ }else{answer=prompt(q.texte)||"";if(!answer.trim())return}
+ try{
+  await addDoc(collection(db,"reponses_examens"),{
+   examId:id,examTitre:d.titre,classeId:d.classeId,type:d.type,
+   answers:{"1":answer},etudiantId:me.uid,etudiantEmail:me.email,
+   professeurId:d.professeurId,statut:"a_corriger",createdAt:serverTimestamp()
+  });
+  alert("Repons ou yo voye bay pwofesè a.");loadExams();
+ }catch(e){alert("Erè remiz : "+e.message)}
+};
+async function loadAnswers(){
+ if(!(admin()||teacher())){$("answerList").textContent="Se pwofesè oswa administratè ki gen aksè.";return}
+ $("answerList").innerHTML="Chargement...";
+ try{
+  const s=await getDocs(collection(db,"reponses_examens"));let h="";
+  for(const x of s.docs){
+   const d=x.data();if(!admin()&&d.professeurId!==me.uid)continue;
+   const exam=await getDoc(doc(db,"examens",d.examId));if(!exam.exists())continue;
+   const q=exam.data().questions[0],raw=d.answers?.["1"]??"";
+   const answer=d.type==="qcm"?(q.options?.[Number(raw)]||"Réponse inconnue"):raw;
+   h+=`<article class="card"><h3>${esc(d.etudiantEmail)}</h3><p>${esc(exam.data().titre)}</p><p><strong>Réponse :</strong> ${esc(answer)}</p><label>Note sur ${exam.data().totalPoints}</label><input id="g${x.id}" type="number" min="0" max="${exam.data().totalPoints}" value="${d.note??""}"><label>Commentaire</label><textarea id="c${x.id}">${esc(d.commentaire||"")}</textarea><button onclick="grade('${x.id}','${d.examId}','${d.etudiantId}',${exam.data().totalPoints})">Enregistrer correction</button></article>`;
+  }
+  $("answerList").innerHTML=h||"Pa gen repons pou korije.";
+ }catch(e){$("answerList").textContent="Erreur : "+e.message}
+}
+window.grade=async(id,examId,uid,total)=>{
+ if(!(admin()||teacher()))return;
+ const note=Number($("g"+id).value),comment=$("c"+id).value.trim();
+ if(note<0||note>total)return alert("Note invalide.");
+ try{
+  const s=await getDoc(doc(db,"reponses_examens",id));
+  if(!s.exists()||(!admin()&&s.data().professeurId!==me.uid))return alert("Accès refusé.");
+  await updateDoc(doc(db,"reponses_examens",id),{
+   note,totalPoints:total,commentaire:comment,statut:"corrige",
+   corrige:true,dateCorrection:serverTimestamp()
+  });
+  await setDoc(doc(db,"resultats","exam-"+id),{
+   source:"examen",examId,etudiantId:uid,uid,note,totalPoints:total,
+   note100:Math.round(note/total*10000)/100,commentaire:comment,
+   professeurId:me.uid,dateCorrection:serverTimestamp()
+  });
+  alert("Correction enregistrée.");loadAnswers();
+ }catch(e){alert("Erreur correction : "+e.message)}
+};
+async function loadResults(){
+ $("resultList").innerHTML="Chargement...";
+ try{
+  const s=await getDocs(collection(db,"resultats"));let h="";
+  s.forEach(x=>{const d=x.data();if(!admin()&&d.etudiantId!==me.uid&&d.uid!==me.uid)return;
+   h+=`<article class="card"><h3>${esc(d.examTitre||"Résultat d'examen")}</h3><p>Note : ${esc(d.note)} / ${esc(d.totalPoints)}</p><p>Pourcentage : ${esc(d.note100)}%</p><p>Commentaire : ${esc(d.commentaire||"Aucun")}</p></article>`;
+  });
+  $("resultList").innerHTML=h||"Aucun résultat disponible.";
+ }catch(e){$("resultList").textContent="Erreur : "+e.message}
+}
+async function loadUsers(){
+ if(!admin())return;
+ try{
+  const s=await getDocs(collection(db,"users"));let h="";
+  s.forEach(x=>{const d=x.data();h+=`<article class="card"><strong>${esc(d.email)}</strong><p>Rôle : ${esc(d.role)} — Statut : ${esc(d.status)}</p><select id="r${x.id}"><option value="eleve">Élève</option><option value="professeur">Professeur</option><option value="administrateur">Administrateur</option></select><button onclick="acceptUser('${x.id}')">Accepter / appliquer le rôle</button></article>`});
+  $("userList").innerHTML=h||"Aucun utilisateur.";
+ }catch(e){$("userList").textContent="Erreur : "+e.message}
+}
+window.acceptUser=async id=>{
+ if(!admin())return;
+ const role=$("r"+id).value;
+ try{await updateDoc(doc(db,"users",id),{role,status:"accepted",approvedBy:me.uid,updatedAt:serverTimestamp()});alert("Utilisateur accepté.");loadUsers()}
+ catch(e){alert("Erreur : "+e.message)}
+};
+</script>
+</body>
+</html>
