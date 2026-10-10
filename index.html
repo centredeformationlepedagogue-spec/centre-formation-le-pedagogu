@@ -165,7 +165,7 @@ th{background:#f7f9fd;color:#475569;white-space:nowrap}
   <button class="nav-btn" data-page="devoirs">📋 Devoirs</button>
   <button class="nav-btn" data-page="remises">📤 Remises / Corrections</button>
   <button class="nav-btn" data-page="resultats">📊 Résultats</button>
-  <div class="nav-title">Administration</div>
+  <div class="nav-title admin-only hidden">Administration</div>
   <button class="nav-btn admin-only hidden" data-page="utilisateurs">👥 Utilisateurs</button>
   <button class="nav-btn admin-only hidden" data-page="statistiques">📈 Statistiques</button>
   <button class="nav-btn admin-only hidden" data-page="sauvegarde">💾 Données / Sauvegarde</button>
@@ -202,7 +202,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {
  getFirestore,doc,getDoc,setDoc,updateDoc,deleteDoc,
- collection,addDoc,getDocs,serverTimestamp
+ collection,addDoc,getDocs,query,where,serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig={
@@ -267,11 +267,11 @@ const modules={
  ["description","Consignes","textarea",true],["dateLimite","Date limite","date",false],["noteMax","Note maximale","number",false]
  ]},
  remises:{title:"Remises / Corrections",collection:"remises",teacher:true,student:true,fields:[
- ["devoir","Devoir","text",true],["eleve","Nom / e-mail de l'élève","text",true],["classe","Classe","text",false],
+ ["devoir","Devoir","text",true],["eleve","E-mail de l'élève","text",true],["classe","Classe","text",false],
  ["reponse","Réponse / lien du travail","textarea",true],["commentaire","Commentaire du professeur","textarea",false],["note","Note sur 100","number",false]
  ]},
  resultats:{title:"Résultats",collection:"resultats",teacher:true,fields:[
- ["eleve","Nom / e-mail de l'élève","text",true],["matiere","Matière","text",true],
+ ["eleve","E-mail de l'élève","text",true],["matiere","Matière","text",true],
  ["classe","Classe","text",false],["note","Note sur 100","number",true],["commentaire","Commentaire","textarea",false]
  ]}
 };
@@ -351,26 +351,20 @@ const collectionsInitiales=[
 
 async function initialiserCollectionsAutomatiquement(){
  if(!isAdmin())return;
- const erreurs=[];
  for(const nomCollection of collectionsInitiales){
   try{
    const snapshot=await getDocs(collection(db,nomCollection));
    const vraisDocuments=snapshot.docs.filter(d=>d.data().__system!==true);
-   if(vraisDocuments.length===0){
-    const existe=snapshot.docs.some(d=>d.data().__system===true);
-    if(!existe){
-     await addDoc(collection(db,nomCollection),{
-      __system:true,type:"initialisation",nomCollection,
-      createdBy:currentUser.uid,createdAt:serverTimestamp()
-     });
-    }
+   if(vraisDocuments.length===0&&!snapshot.docs.some(d=>d.data().__system===true)){
+    await addDoc(collection(db,nomCollection),{
+     __system:true,type:"initialisation",nomCollection,
+     createdBy:currentUser.uid,createdAt:serverTimestamp()
+    });
    }
   }catch(error){
    console.warn("Initialisation impossible pour "+nomCollection,error.message);
-   erreurs.push(nomCollection);
   }
  }
- if(erreurs.length)console.warn("Collections non initialisées :",erreurs.join(", "));
 }
 
 async function getCollectionSnapshot(name){
@@ -388,12 +382,33 @@ function showAuth(message=""){
 function roleLabel(role){
  return ({administrateur:"Administrateur",professeur:"Professeur",eleve:"Étudiant / Élève"})[role]||"Compte";
 }
+
+function configureNavigation(){
+ const student=isStudent();
+ document.querySelectorAll("[data-page]").forEach(button=>{
+  const page=button.dataset.page;
+  const allowedForStudent=["dashboard","devoirs","remises","resultats"];
+  button.classList.toggle("hidden",student&&!allowedForStudent.includes(page));
+ });
+ document.querySelectorAll(".nav-title").forEach(title=>{
+  if(!student){
+   title.classList.toggle("hidden",title.classList.contains("admin-only")&&!isAdmin());
+   return;
+  }
+  const text=title.textContent.trim();
+  title.classList.toggle("hidden",!["Général","Pédagogie"].includes(text));
+ });
+ document.querySelectorAll(".admin-only").forEach(el=>{
+  el.classList.toggle("hidden",!isAdmin());
+ });
+}
+
 function showApp(){
  $("authScreen").classList.add("hidden");
  $("appScreen").classList.remove("hidden");
  $("userName").textContent=currentProfile?.displayName||currentUser?.email||"Utilisateur";
  $("userRole").textContent=roleLabel(currentProfile?.role);
- document.querySelectorAll(".admin-only").forEach(el=>el.classList.toggle("hidden",!isAdmin()));
+ configureNavigation();
 }
 
 $("loginBtn").addEventListener("click",async()=>{
@@ -485,11 +500,13 @@ document.querySelectorAll("[data-page]").forEach(button=>{
 
 function canOpenPage(page){
  if(["utilisateurs","statistiques","sauvegarde"].includes(page))return isAdmin();
- if(!modules[page])return true;
  if(isAdmin())return true;
- if(["devoirs","remises","resultats"].includes(page))return isTeacher()||isStudent();
+ if(isStudent())return ["dashboard","devoirs","remises","resultats"].includes(page);
+ if(isTeacher())return ["dashboard","devoirs","remises","resultats"].includes(page)||
+  ["professeurs","departements","filieres","classes","matieres","cours","annees","affectations","inscriptions"].includes(page);
  return false;
 }
+
 function openPage(page){
  if(!currentUser||!currentProfile)return;
  if(!canOpenPage(page)){toast("Vous n'avez pas l'autorisation d'accéder à ce module.");return;}
@@ -520,7 +537,19 @@ async function renderDashboard(){
  const stats=$("dashboardStats");
  try{
   if(!currentProfile||currentProfile.status!=="accepted")throw new Error("Votre compte n'est pas accepté.");
-  if(isAdmin()){
+
+  if(isStudent()){
+   const devoirs=await getCollectionSnapshot("devoirs");
+   const remises=await getModuleRecords("remises");
+   const resultats=await getModuleRecords("resultats");
+   const items=[
+    ["Devoirs disponibles",devoirs.length],
+    ["Mes remises",remises.length],
+    ["Mes résultats",resultats.length]
+   ];
+   stats.innerHTML=items.map(item=>`
+    <div class="stat"><div class="label">${escapeHtml(item[0])}</div><div class="number">${item[1]}</div></div>`).join("");
+  }else if(isAdmin()){
    const items=[
     ["Étudiants","etudiants"],["Professeurs","professeurs"],
     ["Classes","classes"],["Matières","matieres"],
@@ -546,17 +575,51 @@ async function renderDashboard(){
 
 async function getModuleRecords(page){
  const module=modules[page];
- const docs=await getCollectionSnapshot(module.collection);
- let records=docs.map(d=>({id:d.id,...d.data()}));
- if(!isAdmin()){
-  if(page==="remises"&&isStudent()){
-   records=records.filter(r=>(r.eleve||"").toLowerCase()===(currentUser.email||"").toLowerCase()||(r.uid||"")===currentUser.uid);
-  }else if(page==="resultats"&&isStudent()){
-   records=records.filter(r=>(r.eleve||"").toLowerCase()===(currentUser.email||"").toLowerCase()||(r.uid||"")===currentUser.uid);
+
+ // L'élève ne peut lire que ses propres remises et résultats.
+ if(isStudent()&&["remises","resultats"].includes(page)){
+  const found=new Map();
+  const col=collection(db,module.collection);
+  const email=(currentUser.email||"").toLowerCase();
+  const searches=[query(col,where("uid","==",currentUser.uid))];
+
+  if(email){
+   searches.push(query(col,where("eleve","==",email)));
+   searches.push(query(col,where("email","==",email)));
   }
+
+  for(const search of searches){
+   const snapshot=await getDocs(search);
+   snapshot.docs.forEach(d=>{
+    if(d.data().__system!==true)found.set(d.id,{id:d.id,...d.data()});
+   });
+  }
+  return [...found.values()];
  }
- return records;
+
+ const docs=await getCollectionSnapshot(module.collection);
+ return docs.map(d=>({id:d.id,...d.data()}));
 }
+
+function getVisibleFields(page){
+ if(page==="remises"&&isStudent()){
+  return [
+   ["devoir","Devoir","text",true],
+   ["classe","Classe","text",false],
+   ["reponse","Réponse / lien du travail","textarea",true]
+  ];
+ }
+ if(page==="resultats"&&isStudent()){
+  return [
+   ["matiere","Matière","text",true],
+   ["classe","Classe","text",false],
+   ["note","Ma note sur 100","number",false],
+   ["commentaire","Commentaire du professeur","textarea",false]
+  ];
+ }
+ return modules[page].fields;
+}
+
 function canAdd(page){
  if(isAdmin())return true;
  if(page==="devoirs")return isTeacher();
@@ -571,7 +634,9 @@ function canEdit(page){
  if(page==="resultats")return isTeacher();
  return false;
 }
-function canDelete(page){return isAdmin()||((page==="devoirs"||page==="remises"||page==="resultats")&&isTeacher());}
+function canDelete(page){
+ return isAdmin()||((page==="devoirs"||page==="remises"||page==="resultats")&&isTeacher());
+}
 
 async function renderModule(page){
  const module=modules[page];
@@ -598,20 +663,23 @@ async function renderModule(page){
  }
 }
 
-function drawRecordsTable(page,records,query=""){
+function drawRecordsTable(page,records,queryText=""){
  const module=modules[page];
- const filtered=records.filter(record=>module.fields.some(field=>String(record[field[0]]??"").toLowerCase().includes(query.toLowerCase())));
+ const visibleFields=getVisibleFields(page);
+ const filtered=records.filter(record=>
+  visibleFields.some(field=>String(record[field[0]]??"").toLowerCase().includes(queryText.toLowerCase()))
+ );
  if(!filtered.length){
   $("recordsArea").innerHTML='<div class="empty">Aucune donnée à afficher.</div>';
   return;
  }
- const headers=module.fields.map(field=>`<th>${escapeHtml(field[1])}</th>`).join("");
+ const headers=visibleFields.map(field=>`<th>${escapeHtml(field[1])}</th>`).join("");
  const rows=filtered.map(record=>{
-  const cells=module.fields.map(field=>`<td>${escapeHtml(record[field[0]]??"—")}</td>`).join("");
+  const cells=visibleFields.map(field=>`<td>${escapeHtml(record[field[0]]??"—")}</td>`).join("");
   let buttons="";
-  if(canEdit(page))buttons+=`<button class="btn btn-secondary" data-edit="${escapeHtml(record.id)}" type="button">Modifier</button>`;
+  if(canEdit(page))buttons+=`<button class="btn btn-secondary" data-edit="${escapeHtml(record.id)}" type="button">Modifier / corriger</button>`;
   if(canDelete(page))buttons+=`<button class="btn btn-danger" data-delete="${escapeHtml(record.id)}" type="button">Supprimer</button>`;
-  return `<tr>${cells}<td><div class="actions">${buttons||"—"}</div></td></tr>`;
+  return `<tr>${cells}<td><div class="actions">${buttons||"Consultation uniquement"}</div></td></tr>`;
  }).join("");
  $("recordsArea").innerHTML=`<div class="table-wrap"><table><thead><tr>${headers}<th>Actions</th></tr></thead><tbody>${rows}</tbody></table></div>`;
  $("recordsArea").querySelectorAll("[data-edit]").forEach(button=>{
@@ -625,11 +693,14 @@ function drawRecordsTable(page,records,query=""){
 function openRecordModal(page,id=null){
  if(id&&!canEdit(page)){toast("Vous ne pouvez pas modifier cette donnée.");return;}
  if(!id&&!canAdd(page)){toast("Vous ne pouvez pas ajouter cette donnée.");return;}
+ if(page==="remises"&&isStudent()&&id){toast("Vous ne pouvez pas modifier une remise déjà envoyée.");return;}
+
  const module=modules[page];
+ const fields=getVisibleFields(page);
  const record=id?currentRecords.find(item=>item.id===id)||{}:{};
  editingRecordId=id;
- $("modalTitle").textContent=(id?"Modifier : ":"Ajouter : ")+module.title;
- $("modalFields").innerHTML=module.fields.map(field=>{
+ $("modalTitle").textContent=(id?"Modifier / corriger : ":"Ajouter : ")+module.title;
+ $("modalFields").innerHTML=fields.map(field=>{
   const [key,label,type,required,options]=field;
   let input="";
   if(type==="textarea"){
@@ -645,6 +716,7 @@ function openRecordModal(page,id=null){
  }).join("");
  $("modalBackdrop").classList.remove("hidden");
 }
+
 function closeModal(){
  $("modalBackdrop").classList.add("hidden");
  $("recordForm").reset();
@@ -661,23 +733,31 @@ $("recordForm").addEventListener("submit",async event=>{
  const page=currentPage;
  const module=modules[page];
  if(!module)return;
+
+ if(page==="remises"&&isStudent()&&editingRecordId){
+  toast("Vous ne pouvez pas modifier une remise déjà envoyée.");
+  return;
+ }
+
  const data={};
- for(const field of module.fields){
+ const fields=getVisibleFields(page);
+ for(const field of fields){
   const key=field[0];
   const element=$("field_"+key);
-  if(!element)continue;
-  data[key]=element.value.trim();
+  if(element)data[key]=element.value.trim();
  }
+
  if(page==="remises"&&isStudent()){
-  data.eleve=currentUser.email||"";
   data.uid=currentUser.uid;
+  data.eleve=(currentUser.email||"").toLowerCase();
+  data.createdBy=currentUser.uid;
   data.updatedAt=serverTimestamp();
+  delete data.note;
+  delete data.commentaire;
+  delete data.correction;
  }
- if(page==="remises"&&isStudent()&&!editingRecordId){
-  data.note="";
-  data.commentaire="";
- }
- if((page==="remises"||page==="resultats")&&data.note!==""&&data.note!==undefined){
+
+ if((page==="remises"||page==="resultats")&&data.note!==undefined&&data.note!==""){
   const note=Number(data.note);
   if(!Number.isFinite(note)||note<0||note>100){
    toast("La note doit être comprise entre 0 et 100.");
@@ -685,21 +765,32 @@ $("recordForm").addEventListener("submit",async event=>{
   }
   data.note=note;
  }
+
  try{
   if(editingRecordId){
+   if(!canEdit(page)){
+    toast("Vous ne pouvez pas modifier cette donnée.");
+    return;
+   }
    await updateDoc(doc(db,module.collection,editingRecordId),{
     ...data,updatedAt:serverTimestamp()
    });
    toast("Modification enregistrée.");
   }else{
+   if(!canAdd(page)){
+    toast("Vous ne pouvez pas ajouter cette donnée.");
+    return;
+   }
    data.createdAt=serverTimestamp();
    data.createdBy=currentUser.uid;
+
    if(page==="remises"&&isStudent()){
     data.uid=currentUser.uid;
-    data.eleve=currentUser.email||"";
+    data.eleve=(currentUser.email||"").toLowerCase();
    }
+
    await addDoc(collection(db,module.collection),data);
-   toast("Donnée ajoutée avec succès.");
+   toast(page==="remises"&&isStudent()?"Votre devoir a été remis.":"Donnée ajoutée avec succès.");
   }
   closeModal();
   await renderModule(page);
@@ -719,7 +810,7 @@ async function removeRecord(page,id){
  }catch(error){toast("Suppression impossible : "+error.message);}
 }
 
-/* Administration des utilisateurs : rôle et statut sont modifiables. */
+/* Administration des utilisateurs */
 async function renderUsers(){
  $("pageContent").innerHTML=`
  <div class="page-head">
@@ -752,25 +843,18 @@ async function renderUsers(){
    </tr>`;
   }).join("");
   $("usersArea").innerHTML=`<div class="table-wrap"><table><thead><tr><th>Nom</th><th>E-mail</th><th>Rôle</th><th>Statut</th><th>UID</th><th>Actions</th></tr></thead><tbody>${rows}</tbody></table></div>`;
-  $("usersArea").querySelectorAll("[data-user-accept]").forEach(button=>{
-   button.addEventListener("click",()=>changeUser(button.dataset.userAccept,true));
-  });
-  $("usersArea").querySelectorAll("[data-user-role]").forEach(button=>{
-   button.addEventListener("click",()=>changeUser(button.dataset.userRole,false));
-  });
-  $("usersArea").querySelectorAll("[data-user-refuse]").forEach(button=>{
-   button.addEventListener("click",()=>refuseUser(button.dataset.userRefuse));
-  });
-  $("usersArea").querySelectorAll("[data-user-delete]").forEach(button=>{
-   button.addEventListener("click",()=>deleteUserProfile(button.dataset.userDelete));
-  });
+  $("usersArea").querySelectorAll("[data-user-accept]").forEach(button=>button.addEventListener("click",()=>changeUser(button.dataset.userAccept,true)));
+  $("usersArea").querySelectorAll("[data-user-role]").forEach(button=>button.addEventListener("click",()=>changeUser(button.dataset.userRole,false)));
+  $("usersArea").querySelectorAll("[data-user-refuse]").forEach(button=>button.addEventListener("click",()=>refuseUser(button.dataset.userRefuse)));
+  $("usersArea").querySelectorAll("[data-user-delete]").forEach(button=>button.addEventListener("click",()=>deleteUserProfile(button.dataset.userDelete)));
  }catch(error){
   $("usersArea").innerHTML=`<div class="message error">Impossible de charger les utilisateurs : ${escapeHtml(error.message)}</div>`;
  }
 }
+
 async function changeUser(uid,accept){
  if(!isAdmin())return toast("Réservé à l'administration.");
- const roleInput=prompt("Choisissez le rôle : tapez eleve, professeur ou administrateur.", "eleve");
+ const roleInput=prompt("Choisissez le rôle : tapez eleve, professeur ou administrateur.","eleve");
  if(roleInput===null)return;
  const role=roleInput.trim().toLowerCase();
  if(!["eleve","professeur","administrateur"].includes(role)){
@@ -779,9 +863,12 @@ async function changeUser(uid,accept){
  }
  if(role==="administrateur"&&!confirm("Donner les droits administrateur à cet utilisateur ?"))return;
  try{
-  await updateDoc(doc(db,"users",uid),{
+  const userRef=doc(db,"users",uid);
+  const userSnap=await getDoc(userRef);
+  if(!userSnap.exists())throw new Error("Profil utilisateur introuvable.");
+  await updateDoc(userRef,{
    role,
-   status:accept?"accepted":((await getDoc(doc(db,"users",uid))).data()?.status||"attente"),
+   status:accept?"accepted":(userSnap.data().status||"attente"),
    updatedAt:serverTimestamp()
   });
   toast(accept?"Utilisateur accepté avec le rôle "+role+".":"Rôle modifié : "+role+".");
@@ -830,7 +917,7 @@ async function renderStatistics(){
  }
 }
 
-/* Exportation JSON et CSV pour sauvegarder les données. */
+/* Sauvegarde */
 async function renderBackup(){
  $("pageContent").innerHTML=`
  <div class="page-head"><div><h2>Données / Sauvegarde</h2><p>Exporter les données Firestore</p></div></div>
@@ -841,7 +928,7 @@ async function renderBackup(){
    <button class="btn btn-primary" id="exportJson" type="button">Exporter JSON</button>
    <button class="btn btn-secondary" id="exportCsv" type="button">Exporter CSV des étudiants</button>
   </div>
-  <p class="footer-note">Conservez les fichiers exportés dans un emplacement sûr. Cette fonction exporte les données ; elle ne constitue pas une sauvegarde automatique Firebase.</p>
+  <p class="footer-note">Cette fonction exporte les données ; elle ne constitue pas une sauvegarde automatique Firebase.</p>
  </div>`;
  $("exportJson").addEventListener("click",exportJson);
  $("exportCsv").addEventListener("click",exportStudentsCsv);
@@ -862,9 +949,7 @@ async function exportJson(){
    try{
     const docs=await getCollectionSnapshot(name);
     result.collections[name]=docs.map(d=>({id:d.id,...d.data()}));
-   }catch(error){
-    result.collections[name]={error:error.message};
-   }
+   }catch(error){result.collections[name]={error:error.message};}
   }
   downloadFile("sauvegarde-le-pedagogue.json",JSON.stringify(result,null,2),"application/json;charset=utf-8");
   toast("Export JSON terminé.");
