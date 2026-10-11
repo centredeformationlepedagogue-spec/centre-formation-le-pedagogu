@@ -2,354 +2,316 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#0f3d91">
-<meta name="description" content="Centre de Formation Le Pédagogue — gestion universitaire et école professionnelle">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#1d4ed8">
+<meta name="description" content="Centre de Formation Le Pédagogue">
 <link rel="manifest" href="./manifest.json">
+<link rel="icon" href="./icon-192.png">
 <title>Centre de Formation Le Pédagogue</title>
 <style>
-:root{--blue:#0f3d91;--blue2:#1769d2;--bg:#f3f6fb;--text:#17243a;--border:#dce4f0;--white:#fff;--red:#c62828;--green:#178348}
-*{box-sizing:border-box}
-body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}
-button,input,select,textarea{font:inherit}
-button{cursor:pointer;border:0;border-radius:8px;padding:10px 14px;background:var(--blue);color:white}
-button:hover{filter:brightness(1.08)}
-button:disabled{opacity:.5;cursor:not-allowed}
-input,select,textarea{width:100%;padding:11px;border:1px solid var(--border);border-radius:8px;background:white;margin:5px 0 12px}
-textarea{min-height:90px;resize:vertical}
-label{font-weight:600;font-size:14px}
-h1,h2,h3{margin-top:0}
-small,.muted{color:#64748b}
-.hidden{display:none!important}
-#authScreen{max-width:440px;margin:7vh auto;padding:24px;background:white;border-radius:16px;box-shadow:0 8px 30px #10204018}
-.logo{font-size:28px;font-weight:800;color:var(--blue);margin-bottom:8px}
-#app{display:none;min-height:100vh}
-.sidebar{position:fixed;left:0;top:0;bottom:0;width:250px;background:#102e68;color:white;padding:20px 12px;overflow:auto;z-index:5}
-.brand{font-size:19px;font-weight:800;padding:10px;margin-bottom:18px}
-.navbtn{display:block;width:100%;text-align:left;margin:4px 0;background:transparent;color:#eaf1ff;border-radius:8px}
-.navbtn.active,.navbtn:hover{background:#ffffff20}
-.main{margin-left:250px;min-height:100vh}
-.topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:15px 22px;background:white;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:4}
-.top-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.content{padding:22px;max-width:1500px;margin:auto}
-.card{background:white;border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 2px 8px #14213d08}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}
-.stat{padding:20px;border-radius:12px;background:white;border:1px solid var(--border)}
-.stat strong{display:block;font-size:28px;color:var(--blue);margin-top:8px}
-.row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.flex{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.tablewrap{overflow:auto}
-table{width:100%;border-collapse:collapse;background:white}
-th,td{padding:11px;border-bottom:1px solid var(--border);text-align:left;vertical-align:top}
-th{background:#eef3fb}
-.badge{display:inline-block;padding:4px 8px;border-radius:20px;background:#e9efff;color:var(--blue);font-size:12px;font-weight:700}
-.badge.green{background:#e5f7ec;color:var(--green)}
-.badge.red{background:#ffebee;color:var(--red)}
-.danger{background:var(--red)}
-.secondary{background:#e8eef8;color:var(--blue)}
-.success{background:var(--green)}
-.question{border:1px solid var(--border);padding:14px;border-radius:10px;margin:12px 0}
-.option{display:flex;gap:8px;align-items:center;font-weight:400}
-.option input{width:auto;margin:8px 0}
-#examTimer{font-size:22px;font-weight:800;color:var(--red)}
-#toast{position:fixed;bottom:20px;right:20px;max-width:90%;background:#14213d;color:white;padding:13px 18px;border-radius:10px;z-index:20;display:none}
-@media(max-width:800px){.sidebar{position:relative;width:100%;height:auto;max-height:none}.main{margin-left:0}.topbar{position:relative;align-items:flex-start;flex-direction:column}.content{padding:12px}.row{grid-template-columns:1fr}}
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--blue:#1d4ed8;--dark:#0f172a;--bg:#f1f5f9;--border:#e2e8f0;--text:#1e293b;--muted:#64748b;--green:#16a34a;--red:#dc2626}
+body{font-family:Arial,sans-serif;background:var(--bg);color:var(--text)}
+button,input,select,textarea{font:inherit}button{cursor:pointer;border:0}.hidden{display:none!important}
+.btn{padding:10px 14px;border-radius:8px;font-weight:bold;margin:3px}.primary{background:var(--blue);color:white}.green{background:var(--green);color:white}.red{background:var(--red);color:white}.light{background:#e2e8f0;color:#1e293b}
+#authPage{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:18px;background:linear-gradient(135deg,#0f172a,#1d4ed8)}
+.auth-card{background:white;padding:25px;border-radius:16px;width:100%;max-width:440px}
+h1,h2,h3{margin-bottom:12px}.auth-card h1{font-size:22px;text-align:center}.auth-card p{text-align:center;color:var(--muted);margin-bottom:15px}
+.form-group{margin:12px 0}.form-group label{display:block;font-weight:bold;margin-bottom:6px;font-size:14px}.form-group input,.form-group select,.form-group textarea{width:100%;padding:11px;border:1px solid var(--border);border-radius:8px;background:white}
+.message{padding:11px;margin:10px 0;border-radius:8px;background:#dbeafe;color:#1e40af}.message.error{background:#fee2e2;color:#991b1b}
+.topbar{position:fixed;top:0;left:0;right:0;height:65px;background:white;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 15px;z-index:10;gap:8px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:bold}.brand img{width:36px;height:36px}.top-actions{display:flex;align-items:center;gap:7px;flex-wrap:wrap}.top-actions button,.top-actions select{padding:8px;border-radius:7px}
+.sidebar{position:fixed;top:65px;bottom:0;left:0;width:245px;overflow:auto;background:var(--dark);color:white;padding:12px;z-index:9}
+.nav-title{font-size:11px;text-transform:uppercase;color:#94a3b8;padding:14px 8px 7px}.nav-btn{display:block;width:100%;text-align:left;padding:11px;border-radius:7px;margin-bottom:3px;background:transparent;color:#cbd5e1}.nav-btn:hover,.nav-btn.active{background:var(--blue);color:white}
+.main{margin-left:245px;padding:85px 22px 25px}.page-title{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:20px}.page-title p{color:var(--muted)}
+.panel,.stat-card,.assignment-card{background:white;border:1px solid var(--border);border-radius:12px;padding:17px;margin-bottom:17px}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:20px}.stat-card strong{display:block;font-size:27px;margin:7px 0}.stat-card span{color:var(--muted)}
+.table-wrap{overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:650px}th,td{padding:10px;border-bottom:1px solid var(--border);text-align:left;font-size:13px}th{background:#f8fafc}
+.search{padding:10px;border:1px solid var(--border);border-radius:8px;max-width:100%;margin-bottom:10px}
+.grid-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.full{grid-column:1/-1}
+.modal{position:fixed;inset:0;background:#0008;display:flex;align-items:center;justify-content:center;padding:15px;z-index:30}.modal-card{background:white;padding:20px;border-radius:13px;width:100%;max-width:650px;max-height:90vh;overflow:auto}
+.toast{position:fixed;bottom:15px;right:15px;background:#0f172a;color:white;padding:13px;border-radius:9px;z-index:40}
+.badge{padding:4px 8px;border-radius:20px;background:#dcfce7;color:#166534;font-size:12px}
+@media(max-width:950px){.sidebar{transform:translateX(-100%);transition:.2s}.sidebar.open{transform:translateX(0)}.main{margin-left:0}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.mobile-menu{display:inline-block!important}}
+@media(max-width:600px){.topbar{padding:0 7px}.brand-name{display:none}.top-actions{gap:3px}.top-actions button,.top-actions select{font-size:11px;padding:7px}.main{padding:80px 10px 20px}.grid-form{grid-template-columns:1fr}.full{grid-column:auto}.stats{gap:7px}.stat-card{padding:11px}.stat-card strong{font-size:22px}}
+.mobile-menu{display:none;background:var(--blue);color:white;padding:9px;border-radius:7px}
 </style>
 </head>
 <body>
-<div id="authScreen">
-  <div class="logo">Le Pédagogue</div>
-  <h2>Centre de Formation</h2>
-  <p class="muted">Espace université et école professionnelle</p>
-  <label for="authEmail">Adresse e-mail</label>
-  <input id="authEmail" type="email" autocomplete="email" placeholder="nom@exemple.com">
-  <label for="authPassword">Mot de passe</label>
-  <input id="authPassword" type="password" autocomplete="current-password" placeholder="Mot de passe">
-  <button id="loginBtn" style="width:100%" onclick="loginEmail()">Se connecter</button>
-  <button class="secondary" style="width:100%;margin-top:8px" onclick="registerEmail()">Créer un compte</button>
-  <button style="width:100%;margin-top:8px;background:#fff;color:#243047;border:1px solid #dce4f0" onclick="loginGoogle()">Continuer avec Google</button>
-  <p id="authMessage" class="muted"></p>
+<div id="authPage">
+<div class="auth-card">
+<div style="text-align:center;margin-bottom:20px"><img src="./icon-192.png" alt="Logo" style="width:75px;height:75px"><h1>Centre de Formation Le Pédagogue</h1><p>Gestion universitaire et école professionnelle</p><button class="btn green" onclick="installApp()">📲 Installer l’application</button></div>
+<div id="authMessage"></div>
+<div id="loginBox">
+<h2>Connexion</h2>
+<div class="form-group"><label>Email</label><input id="loginEmail" type="email" autocomplete="username"></div>
+<div class="form-group"><label>Mot de passe</label><input id="loginPassword" type="password" autocomplete="current-password"></div>
+<button class="btn primary" style="width:100%" onclick="login()">Se connecter</button>
+<button class="btn light" style="width:100%" onclick="loginGoogle()">🔵 Continuer avec Google</button>
+<p>Pas encore de compte ? <button class="btn light" onclick="showRegister()">Créer un compte</button></p>
+</div>
+<div id="registerBox" class="hidden">
+<h2>Créer un compte</h2>
+<div class="form-group"><label>Nom complet</label><input id="registerName"></div>
+<div class="form-group"><label>Email</label><input id="registerEmail" type="email"></div>
+<div class="form-group"><label>Mot de passe</label><input id="registerPassword" type="password" minlength="6"></div>
+<button class="btn primary" style="width:100%" onclick="register()">Créer mon compte</button>
+<p>Votre compte sera en attente d’approbation par l’administrateur.</p>
+<button class="btn light" onclick="showLogin()">Retour à la connexion</button>
+</div>
+</div>
 </div>
 
-<div id="app">
-  <aside class="sidebar">
-    <div class="brand">🎓 Le Pédagogue</div>
-    <button class="navbtn active" data-page="Accueil" onclick="navigate('Accueil')">🏠 Accueil</button>
-    <button class="navbtn" data-page="Étudiants" onclick="navigate('Étudiants')">👨‍🎓 Étudiants</button>
-    <button class="navbtn" data-page="Professeurs" onclick="navigate('Professeurs')">👨‍🏫 Professeurs</button>
-    <button class="navbtn" data-page="Départements" onclick="navigate('Départements')">🏢 Départements</button>
-    <button class="navbtn" data-page="Filières" onclick="navigate('Filières')">📚 Filières</button>
-    <button class="navbtn" data-page="Classes" onclick="navigate('Classes')">🏫 Classes</button>
-    <button class="navbtn" data-page="Matières" onclick="navigate('Matières')">📖 Matières</button>
-    <button class="navbtn" data-page="Cours" onclick="navigate('Cours')">📝 Cours</button>
-    <button class="navbtn" data-page="Années académiques" onclick="navigate('Années académiques')">📅 Années académiques</button>
-    <button class="navbtn" data-page="Affectations" onclick="navigate('Affectations')">🔗 Affectations</button>
-    <button class="navbtn" data-page="Élèves / Classes" onclick="navigate('Élèves / Classes')">👥 Élèves / Classes</button>
-    <button class="navbtn" data-page="Devoirs" onclick="navigate('Devoirs')">📋 Devoirs</button>
-    <button class="navbtn" data-page="Examens" onclick="navigate('Examens')">⏱️ Examens</button>
-    <button class="navbtn" data-page="Remises / Corrections" onclick="navigate('Remises / Corrections')">✍️ Remises / Corrections</button>
-    <button class="navbtn" data-page="Résultats" onclick="navigate('Résultats')">📊 Résultats</button>
-    <button class="navbtn" data-page="Statistiques" onclick="navigate('Statistiques')">📈 Statistiques</button>
-    <button class="navbtn admin-only hidden" data-page="Utilisateurs" onclick="navigate('Utilisateurs')">🛡️ Utilisateurs</button>
-    <button class="navbtn admin-only hidden" data-page="Données / Sauvegarde" onclick="navigate('Données / Sauvegarde')">💾 Données / Sauvegarde</button>
-  </aside>
-  <main class="main">
-    <header class="topbar">
-      <div><strong id="pageTitle">Accueil</strong><div class="muted" id="userInfo">Connexion...</div></div>
-      <div class="top-actions">
-        <button class="secondary" id="installBtn" onclick="installApp()" hidden>Installer l'application</button>
-        <button class="danger" onclick="logoutUser()">Déconnexion</button>
-      </div>
-    </header>
-    <div class="content" id="pageContent"></div>
-  </main>
+<div id="appPage" class="hidden">
+<header class="topbar">
+<div class="brand"><button class="mobile-menu" onclick="toggleSidebar()">☰</button><img src="./icon-192.png" alt=""><span class="brand-name">Centre de Formation Le Pédagogue</span></div>
+<div class="top-actions"><button class="green" onclick="installApp()">📲 Installer</button><span id="userNameTop"></span><span id="roleLabel" class="badge"></span><button class="red" onclick="logout()">Déconnexion</button></div>
+</header>
+<aside id="sidebar" class="sidebar">
+<div class="nav-title">Principal</div><button class="nav-btn active" onclick="showPage('dashboard',this)">🏠 Accueil</button>
+<div id="adminNav">
+<div class="nav-title">Administration académique</div>
+<button class="nav-btn" onclick="showPage('etudiants',this)">👨‍🎓 Étudiants</button>
+<button class="nav-btn" onclick="showPage('professeurs',this)">👨‍🏫 Professeurs</button>
+<button class="nav-btn" onclick="showPage('departements',this)">🏛️ Départements</button>
+<button class="nav-btn" onclick="showPage('filieres',this)">🎓 Filières / Programmes</button>
+<button class="nav-btn" onclick="showPage('classes',this)">🏫 Classes / Groupes</button>
+<button class="nav-btn" onclick="showPage('matieres',this)">📚 Matières / Cours</button>
+<button class="nav-btn" onclick="showPage('annees',this)">📅 Années académiques</button>
+<button class="nav-btn" onclick="showPage('affectations',this)">🔗 Affectations</button>
+<button class="nav-btn" onclick="showPage('inscriptions',this)">👥 Élèves / Classes</button>
+<button class="nav-btn" onclick="showPage('users',this)">👥 Utilisateurs</button>
+<button class="nav-btn" onclick="showPage('statistiques',this)">📈 Statistiques</button>
 </div>
-<div id="toast"></div>
+<div class="nav-title">Espace pédagogique</div>
+<button class="nav-btn" onclick="showPage('devoirs',this)">📝 Devoirs</button>
+<button class="nav-btn" onclick="showPage('remises',this)">📤 Remises / Corrections</button>
+<button class="nav-btn" onclick="showPage('resultats',this)">📊 Résultats / Notes</button>
+</aside>
+<main class="main">
+<section id="page-dashboard"></section>
+<section id="page-etudiants" class="hidden"></section><section id="page-professeurs" class="hidden"></section>
+<section id="page-departements" class="hidden"></section><section id="page-filieres" class="hidden"></section>
+<section id="page-classes" class="hidden"></section><section id="page-matieres" class="hidden"></section>
+<section id="page-annees" class="hidden"></section><section id="page-affectations" class="hidden"></section>
+<section id="page-inscriptions" class="hidden"></section><section id="page-users" class="hidden"></section>
+<section id="page-statistiques" class="hidden"></section><section id="page-devoirs" class="hidden"></section>
+<section id="page-remises" class="hidden"></section><section id="page-resultats" class="hidden"></section>
+</main>
+</div>
+<div id="modal" class="modal hidden"><div class="modal-card"><div style="display:flex;justify-content:space-between"><h3 id="modalTitle">Ajouter</h3><button class="btn light" onclick="closeModal()">✕</button></div><div id="modalBody"></div></div></div>
+<div id="toast" class="toast hidden"></div>
 
 <script type="module">
-import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {getAuth,onAuthStateChanged,createUserWithEmailAndPassword,signInWithEmailAndPassword,GoogleAuthProvider,signInWithPopup,signOut,setPersistence,browserLocalPersistence} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import {getFirestore,doc,getDoc,setDoc,addDoc,updateDoc,deleteDoc,collection,getDocs,query,where,serverTimestamp,onSnapshot} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import{initializeApp}from"https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+import{getAuth,onAuthStateChanged,signInWithEmailAndPassword,createUserWithEmailAndPassword,GoogleAuthProvider,signInWithPopup,signOut}from"https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+import{getFirestore,collection,doc,getDoc,getDocs,setDoc,addDoc,updateDoc,deleteDoc,serverTimestamp,query,where}from"https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
 const firebaseConfig={
- apiKey:"AIzaSyAhrtcVaEZ7oU-p4Ihzl0APX2ccXKi4jBU",
- authDomain:"centre-de-formation-le-pe.firebaseapp.com",
- projectId:"centre-de-formation-le-pe",
- storageBucket:"centre-de-formation-le-pe.firebasestorage.app",
- messagingSenderId:"11834103838",
- appId:"1:11834103838:web:b82c994e78486cd313760f"
+apiKey:"AIzaSyAhrtcVaEZ7oU-p4Ihzl0APX2ccXKi4jBU",
+authDomain:"centre-de-formation-le-pe.firebaseapp.com",
+projectId:"centre-de-formation-le-pe",
+storageBucket:"centre-de-formation-le-pe.firebasestorage.app",
+messagingSenderId:"11834103838",
+appId:"1:11834103838:web:b82c994e78486cd313760f"
 };
-const ADMIN_EMAIL="centredeformationlepedagogue@gmail.com";
-const appFirebase=initializeApp(firebaseConfig);
-const auth=getAuth(appFirebase);
-const db=getFirestore(appFirebase);
-const googleProvider=new GoogleAuthProvider();
-let currentUser=null,userProfile=null,currentPage="Accueil",installPrompt=null;
-let cache={},activeExam=null,activeAttempt=null,examTimerInterval=null;
-let editingExamId=null,examQuestions=[];
-const modules={
- "Étudiants":{col:"etudiants",fields:[["nom","Nom"],["prenom","Prénom"],["email","E-mail"],["telephone","Téléphone"],["classeId","Code de classe"]]},
- "Professeurs":{col:"professeurs",fields:[["nom","Nom"],["prenom","Prénom"],["email","E-mail"],["telephone","Téléphone"],["specialite","Spécialité"]]},
- "Départements":{col:"departements",fields:[["nom","Nom du département"],["description","Description"]]},
- "Filières":{col:"filieres",fields:[["nom","Nom de la filière"],["departement","Département"],["description","Description"]]},
- "Classes":{col:"classes",fields:[["nom","Nom de la classe"],["code","Code de classe"],["filiere","Filière"],["annee","Année académique"]]},
- "Matières":{col:"matieres",fields:[["nom","Nom de la matière"],["code","Code matière"],["classeId","Code de classe"],["professeurId","UID du professeur"]]},
- "Cours":{col:"cours",fields:[["titre","Titre du cours"],["matiere","Matière"],["classeId","Code de classe"],["description","Description"]]},
- "Années académiques":{col:"annees_academiques",fields:[["nom","Année académique"],["dateDebut","Date de début"],["dateFin","Date de fin"]]},
- "Affectations":{col:"affectations",fields:[["professeurId","UID du professeur"],["classeId","Code de classe"],["matiereId","Code de matière"],["annee","Année académique"]]},
- "Élèves / Classes":{col:"inscriptions",fields:[["eleveId","UID de l'élève"],["classeId","Code de classe"],["annee","Année académique"]]},
- "Devoirs":{col:"devoirs",fields:[["titre","Titre"],["classeId","Code de classe"],["matiereId","Code de matière"],["dateLimite","Date limite"],["description","Description"]]},
- "Remises / Corrections":{col:"remises",fields:[["devoirId","ID du devoir"],["eleveId","UID de l'élève"],["fichierOuTexte","Réponse / lien"],["note","Note sur 100"],["commentaire","Commentaire"]]},
- "Résultats":{col:"resultats",fields:[["eleveId","UID de l'élève"],["matiereId","Code de matière"],["note","Note sur 100"],["commentaire","Commentaire"]]}
+const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app),googleProvider=new GoogleAuthProvider();
+const ADMIN_EMAIL="Centredeformationlepedagogue@gmail.com";
+let currentUser=null,currentProfile=null,deferredPrompt=null;
+
+const fields={
+etudiants:{title:"Étudiants",icon:"👨‍🎓",fields:[["nom","Nom complet","text"],["email","Email","email"],["telephone","Téléphone","text"],["filiere","Filière","text"],["classe","Classe","text"],["matricule","Matricule","text"]]},
+professeurs:{title:"Professeurs",icon:"👨‍🏫",fields:[["nom","Nom complet","text"],["email","Email","email"],["telephone","Téléphone","text"],["specialite","Spécialité","text"],["departement","Département","text"]]},
+departements:{title:"Départements",icon:"🏛️",fields:[["nom","Nom du département","text"],["responsable","Responsable","text"],["description","Description","text"]]},
+filieres:{title:"Filières / Programmes",icon:"🎓",fields:[["nom","Nom de la filière","text"],["departement","Département","text"],["niveau","Niveau","text"],["duree","Durée","text"]]},
+classes:{title:"Classes / Groupes",icon:"🏫",fields:[["nom","Nom de la classe","text"],["filiere","Filière","text"],["niveau","Niveau","text"],["annee","Année académique","text"]]},
+matieres:{title:"Matières / Cours",icon:"📚",fields:[["nom","Nom de la matière","text"],["code","Code de la matière","text"],["professeur","Professeur","text"],["classe","Classe","text"]]},
+annees:{title:"Années académiques",db:"annees_academiques",fields:[["nom","Année académique","text"],["debut","Date de début","date"],["fin","Date de fin","date"]]}
 };
-function $(id){return document.getElementById(id)}
-function escapeHtml(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
-function toast(msg){$("toast").textContent=msg;$("toast").style.display="block";setTimeout(()=>$("toast").style.display="none",3500)}
-function errorText(e){return e?.message||String(e)}
-function isAdmin(){return !!currentUser&&(currentUser.email?.toLowerCase()===ADMIN_EMAIL||userProfile?.role==="administrateur"&&userProfile?.status==="accepted")}
-function isTeacher(){return isAdmin()||userProfile?.role==="professeur"&&userProfile?.status==="accepted"}
-function isStudent(){return userProfile?.role==="eleve"&&userProfile?.status==="accepted"}
-function permitted(){return isAdmin()||isTeacher()||isStudent()}
-function userClass(){return userProfile?.classeId||userProfile?.classId||""}
-async function loginEmail(){try{await setPersistence(auth,browserLocalPersistence);await signInWithEmailAndPassword(auth,$("authEmail").value.trim(),$("authPassword").value)}catch(e){$("authMessage").textContent=errorText(e)}}
-async function registerEmail(){try{const email=$("authEmail").value.trim(),password=$("authPassword").value;if(!email||password.length<6)throw Error("Saisissez un e-mail et un mot de passe d'au moins 6 caractères.");const cred=await createUserWithEmailAndPassword(auth,email,password);await setDoc(doc(db,"users",cred.user.uid),{uid:cred.user.uid,email,role:"eleve",status:"attente",createdAt:serverTimestamp()});toast("Compte créé. Attendez l'approbation de l'administrateur.")}catch(e){$("authMessage").textContent=errorText(e)}}
-async function loginGoogle(){try{await setPersistence(auth,browserLocalPersistence);await signInWithPopup(auth,googleProvider)}catch(e){$("authMessage").textContent=errorText(e)}}
-async function logoutUser(){if(examTimerInterval)clearInterval(examTimerInterval);await signOut(auth)}
-window.loginEmail=loginEmail;window.registerEmail=registerEmail;window.loginGoogle=loginGoogle;window.logoutUser=logoutUser;
+const $=id=>document.getElementById(id);
+const esc=v=>v==null?"":String(v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const dbname=k=>fields[k]?.db||k;
+const admin=()=>currentProfile?.role==="administrateur"&&currentProfile?.status==="accepted";
+const prof=()=>currentProfile?.role==="professeur"&&currentProfile?.status==="accepted";
+const student=()=>["eleve","etudiant"].includes(currentProfile?.role)&&currentProfile?.status==="accepted";
+function toast(msg){$("toast").textContent=msg;$("toast").classList.remove("hidden");setTimeout(()=>$("toast").classList.add("hidden"),3000)}
+function authMsg(msg,error=true){$("authMessage").innerHTML=`<div class="message ${error?"error":""}">${esc(msg)}</div>`}
+window.showRegister=()=>{$("loginBox").classList.add("hidden");$("registerBox").classList.remove("hidden");$("authMessage").innerHTML=""};
+window.showLogin=()=>{$("registerBox").classList.add("hidden");$("loginBox").classList.remove("hidden");$("authMessage").innerHTML=""};
+
+async function createProfile(user,name=""){
+const ref=doc(db,"users",user.uid),s=await getDoc(ref),isAdmin=(user.email||"").toLowerCase()===ADMIN_EMAIL.toLowerCase();
+if(s.exists()){if(isAdmin)await updateDoc(ref,{email:user.email,nom:name||user.displayName||"",role:"administrateur",status:"accepted"});return}
+await setDoc(ref,{uid:user.uid,email:user.email||"",nom:name||user.displayName||"",role:isAdmin?"administrateur":"attente",status:isAdmin?"accepted":"pending",createdAt:serverTimestamp()});
+}
+window.login=async()=>{
+const email=$("loginEmail").value.trim(),password=$("loginPassword").value;
+if(!email||!password)return authMsg("Veuillez remplir tous les champs.");
+try{await signInWithEmailAndPassword(auth,email,password)}catch(e){console.error(e);authMsg("Connexion impossible. Vérifiez votre email, votre mot de passe et Firebase Authentication.")}
+};
+window.register=async()=>{
+const name=$("registerName").value.trim(),email=$("registerEmail").value.trim(),password=$("registerPassword").value;
+if(!name||!email||!password)return authMsg("Veuillez remplir tous les champs.");
+if(password.length<6)return authMsg("Le mot de passe doit contenir au moins 6 caractères.");
+try{const result=await createUserWithEmailAndPassword(auth,email,password);await createProfile(result.user,name);await signOut(auth);showLogin();authMsg("Compte créé. Il est en attente d'approbation.",false)}catch(e){console.error(e);authMsg("Impossible de créer le compte. Vérifiez les informations et la configuration Firebase.")}
+};
+window.loginGoogle=async()=>{try{await signInWithPopup(auth,googleProvider)}catch(e){console.error(e);authMsg("Connexion Google impossible. Vérifiez que Google est activé dans Firebase Authentication et que le domaine est autorisé.")}};
+async function getProfile(user){
+const ref=doc(db,"users",user.uid),s=await getDoc(ref);
+if(!s.exists()){await createProfile(user);const n=await getDoc(ref);return n.exists()?n.data():null}
+const d=s.data();
+if((user.email||"").toLowerCase()===ADMIN_EMAIL.toLowerCase()&&(d.role!=="administrateur"||d.status!=="accepted")){await updateDoc(ref,{role:"administrateur",status:"accepted"});d.role="administrateur";d.status="accepted"}
+return d;
+}
 onAuthStateChanged(auth,async user=>{
- currentUser=user;
- if(!user){$("authScreen").style.display="block";$("app").style.display="none";return}
- try{
-  const ref=doc(db,"users",user.uid),snap=await getDoc(ref);
-  if(!snap.exists()){
-   const admin=user.email?.toLowerCase()===ADMIN_EMAIL;
-   userProfile={uid:user.uid,email:user.email,role:admin?"administrateur":"eleve",status:admin?"accepted":"attente",createdAt:serverTimestamp()};
-   await setDoc(ref,userProfile);
-  }else userProfile={...snap.data(),uid:user.uid};
-  if(user.email?.toLowerCase()===ADMIN_EMAIL&&userProfile.role!=="administrateur"){
-   userProfile.role="administrateur";userProfile.status="accepted";
-   await updateDoc(ref,{role:"administrateur",status:"accepted"});
-  }
-  if(userProfile.status!=="accepted"&&user.email?.toLowerCase()!==ADMIN_EMAIL){
-   $("authScreen").style.display="block";$("app").style.display="none";
-   $("authMessage").textContent="Votre compte est en attente d'approbation par l'administrateur.";
-   await signOut(auth);return;
-  }
-  $("authScreen").style.display="none";$("app").style.display="block";
-  $("userInfo").textContent=(user.email||"")+" — "+(userProfile.role||"utilisateur");
-  document.querySelectorAll(".admin-only").forEach(el=>el.classList.toggle("hidden",!isAdmin()));
-  await loadAll();navigate("Accueil");
- }catch(e){toast("Erreur Firebase : "+errorText(e))}
+if(!user){currentUser=null;currentProfile=null;$("authPage").classList.remove("hidden");$("appPage").classList.add("hidden");return}
+try{
+currentUser=user;currentProfile=await getProfile(user);
+if(!currentProfile||currentProfile.status!=="accepted"){await signOut(auth);authMsg("Compte en attente d'approbation par l'administrateur.");return}
+$("authPage").classList.add("hidden");$("appPage").classList.remove("hidden");
+$("userNameTop").textContent=currentProfile.nom||user.email;$("roleLabel").textContent=admin()?"ADMIN":prof()?"PROFESSEUR":"ÉLÈVE";
+$("adminNav").classList.toggle("hidden",!admin());dashboard();showPage("dashboard");
+}catch(e){console.error(e);await signOut(auth);authMsg("Connexion impossible. Vérifiez les règles Firestore et le profil utilisateur.")}
 });
-async function loadAll(){
- cache={};
- const names=[...Object.values(modules).map(x=>x.col),"users","examens","examens_corriges","tentatives_examens"];
- for(const name of names){
-  try{const s=await getDocs(collection(db,name));cache[name]=s.docs.map(d=>({id:d.id,...d.data()}))}
-  catch(e){cache[name]=[];console.warn(name,errorText(e))}
- }
-}
-function records(col){return cache[col]||[]}
-function canManage(){return isTeacher()}
-function navigate(page){currentPage=page;$("pageTitle").textContent=page;document.querySelectorAll(".navbtn").forEach(b=>b.classList.toggle("active",b.dataset.page===page));renderPage()}
-window.navigate=navigate;
-function renderPage(){
- if(!permitted())return;
- if(currentPage==="Accueil")return renderHome();
- if(currentPage==="Examens")return renderExams();
- if(currentPage==="Utilisateurs")return isAdmin()?renderUsers():deny();
- if(currentPage==="Données / Sauvegarde")return isAdmin()?renderBackup():deny();
- if(currentPage==="Statistiques")return renderStats();
- if(modules[currentPage])return renderCrud(currentPage);
- $("pageContent").innerHTML='<div class="card"><h2>'+escapeHtml(currentPage)+'</h2><p>Module disponible.</p></div>';
-}
-function deny(){$("pageContent").innerHTML='<div class="card">Accès réservé à l’administrateur.</div>'}
-function renderHome(){
- const stats=[["Étudiants",records("etudiants").length],["Professeurs",records("professeurs").length],["Classes",records("classes").length],["Matières",records("matieres").length],["Devoirs",records("devoirs").length],["Examens",records("examens").filter(e=>e.publie).length],["En attente",records("users").filter(u=>u.status!=="accepted").length]];
- $("pageContent").innerHTML='<h2>Tableau de bord</h2><div class="grid">'+stats.map(([n,v])=>'<div class="stat">'+escapeHtml(n)+'<strong>'+v+'</strong></div>').join("")+'</div><div class="card" style="margin-top:16px"><h3>Bienvenue</h3><p>Centre de Formation Le Pédagogue — gestion universitaire et école professionnelle.</p><p>Utilisez le menu pour gérer les données et les examens.</p></div>';
-}
-function renderCrud(page){
- const mod=modules[page];let list=records(mod.col);
- if(page==="Étudiants"&&!isAdmin()&&!isTeacher())list=list.filter(x=>x.uid===currentUser.uid||x.email===currentUser.email);
- if(!isAdmin()&&!isTeacher()&&!["Devoirs","Résultats","Remises / Corrections"].includes(page))return deny();
- if(!isAdmin()&&!isTeacher()&&["Devoirs","Résultats","Remises / Corrections"].includes(page)){
-  list=list.filter(x=>x.eleveId===currentUser.uid||x.email===currentUser.email||x.classeId===userClass());
- }
- let form=canManage()?'<div class="card"><h3>Ajouter un élément</h3><form id="crudForm" class="row">'+mod.fields.map(([key,label])=>'<div><label>'+escapeHtml(label)+'</label><input name="'+escapeHtml(key)+'" placeholder="'+escapeHtml(label)+'" '+(key==="note"?'type="number" min="0" max="100"':'')+'></div>').join("")+'<div><button type="submit">Enregistrer</button></div></form></div>':'';
- $("pageContent").innerHTML='<h2>'+escapeHtml(page)+'</h2>'+form+'<div class="card"><div class="tablewrap"><table><thead><tr>'+mod.fields.map(f=>'<th>'+escapeHtml(f[1])+'</th>').join("")+(canManage()?"<th>Actions</th>":"")+'</tr></thead><tbody>'+list.map(item=>'<tr>'+mod.fields.map(([k])=>'<td>'+escapeHtml(item[k])+'</td>').join("")+(canManage()?'<td><button class="danger" onclick="deleteRecord(\''+mod.col+'\',\''+item.id+'\')">Supprimer</button></td>':"")+'</tr>').join("")+'</tbody></table></div></div>';
- const formEl=$("crudForm");
- if(formEl)formEl.onsubmit=async e=>{e.preventDefault();try{const data=Object.fromEntries(new FormData(formEl).entries());data.createdBy=currentUser.uid;data.createdAt=serverTimestamp();if(data.note!=="")data.note=Number(data.note);await addDoc(collection(db,mod.col),data);await loadAll();renderPage();toast("Enregistrement réussi.")}catch(err){toast(errorText(err))}};
-}
-window.deleteRecord=async(col,id)=>{if(!isAdmin()&&!isTeacher())return; if(!confirm("Confirmer la suppression ?"))return;try{await deleteDoc(doc(db,col,id));await loadAll();renderPage();toast("Supprimé.")}catch(e){toast(errorText(e))}};
-function renderUsers(){
- const list=records("users");
- $("pageContent").innerHTML='<h2>Gestion des utilisateurs</h2><div class="card"><div class="tablewrap"><table><thead><tr><th>E-mail</th><th>Rôle</th><th>Statut</th><th>UID</th><th>Actions</th></tr></thead><tbody>'+list.map(u=>'<tr><td>'+escapeHtml(u.email)+'</td><td><select id="role_'+u.id+'"><option value="eleve" '+(u.role==="eleve"?"selected":"")+'>Élève</option><option value="professeur" '+(u.role==="professeur"?"selected":"")+'>Professeur</option><option value="administrateur" '+(u.role==="administrateur"?"selected":"")+'>Administrateur</option></select></td><td>'+escapeHtml(u.status)+'</td><td><small>'+escapeHtml(u.uid||u.id)+'</small></td><td><div class="flex"><button class="success" onclick="approveUser(\''+u.id+'\')">Accepter</button><button onclick="changeRole(\''+u.id+'\')">Modifier rôle</button><button class="danger" onclick="rejectUser(\''+u.id+'\')">Refuser</button></div></td></tr>').join("")+'</tbody></table></div></div>';
-}
-window.approveUser=async id=>{try{await updateDoc(doc(db,"users",id),{status:"accepted",role:$("role_"+id)?.value||"eleve",approvedBy:currentUser.uid,approvedAt:serverTimestamp()});await loadAll();renderUsers();toast("Utilisateur accepté.")}catch(e){toast(errorText(e))}};
-window.changeRole=async id=>{try{await updateDoc(doc(db,"users",id),{role:$("role_"+id).value});await loadAll();renderUsers();toast("Rôle modifié.")}catch(e){toast(errorText(e))}};
-window.rejectUser=async id=>{if(!confirm("Supprimer le profil de cet utilisateur ?"))return;try{await deleteDoc(doc(db,"users",id));await loadAll();renderUsers();toast("Profil supprimé. Le compte Auth n'est pas supprimé.")}catch(e){toast(errorText(e))}};
-function renderStats(){
- const items=Object.entries(modules).map(([name,m])=>[name,records(m.col).length]);
- $("pageContent").innerHTML='<h2>Statistiques</h2><div class="grid">'+items.map(([n,v])=>'<div class="stat">'+escapeHtml(n)+'<strong>'+v+'</strong></div>').join("")+'</div>';
-}
-function renderBackup(){
- $("pageContent").innerHTML='<h2>Données / Sauvegarde</h2><div class="card"><p>Exporter les données chargées dans un fichier JSON.</p><button onclick="exportBackup()">Exporter JSON</button><p class="muted">La restauration automatique n’est pas incluse dans cet export.</p></div>';
-}
-window.exportBackup=()=>{const blob=new Blob([JSON.stringify(cache,null,2)],{type:"application/json"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="le-pedagogue-sauvegarde.json";a.click();URL.revokeObjectURL(url)};
-function renderExams(){
- const all=records("examens");
- const list=isTeacher()?all:all.filter(e=>e.publie&&( !e.classeId||e.classeId===userClass()));
- let create=isTeacher()?'<div class="card"><h3>'+ (editingExamId?"Modifier l’examen":"Créer un examen")+'</h3><form id="examForm"><div class="row"><div><label>Titre de l’examen</label><input id="examTitle" required></div><div><label>Code de classe</label><input id="examClass" placeholder="Code de classe" required></div><div><label>Matière</label><input id="examSubject" required></div><div><label>Durée (minutes)</label><input id="examDuration" type="number" min="1" max="600" value="60" required></div><div><label>Début (date et heure)</label><input id="examStart" type="datetime-local" required></div><div><label>Fin (date et heure)</label><input id="examEnd" type="datetime-local" required></div></div><label>Description / consignes</label><textarea id="examDescription"></textarea><div class="flex"><button type="button" onclick="addQuestion('qcm')">+ Ajouter une question QCM</button><button type="button" class="secondary" onclick="addQuestion('written')">+ Ajouter une question écrite</button></div><div id="questionsEditor"></div><div class="flex"><label class="option"><input id="examPublish" type="checkbox"> Publier l’examen</label><button type="submit">Enregistrer l’examen</button><button type="button" class="secondary" onclick="resetExamForm()">Nouveau</button></div></form></div>':'';
- $("pageContent").innerHTML='<h2>Examens</h2>'+create+'<div class="card"><h3>'+ (isTeacher()?"Examens créés":"Examens disponibles")+'</h3>'+ (list.length?list.map(e=>'<div class="question"><h3>'+escapeHtml(e.titre)+'</h3><p>'+escapeHtml(e.matiere||"")+' — Classe : '+escapeHtml(e.classeId||"")+'</p><p>Durée : '+Number(e.duree||60)+' minutes · '+(e.publie?'<span class="badge green">Publié</span>':'<span class="badge">Brouillon</span>')+'</p><p>'+escapeHtml(e.description||"")+'</p><div class="flex">'+(!isTeacher()&&e.publie?'<button onclick="startExam(\''+e.id+'\')">Commencer / reprendre</button>':"")+(isTeacher()?'<button onclick="editExam(\''+e.id+'\')">Modifier</button><button onclick="viewAttempts(\''+e.id+'\')">Voir les copies</button><button class="danger" onclick="deleteExam(\''+e.id+'\')">Supprimer</button>':"")+'</div></div>').join(""):'<p>Aucun examen disponible.</p>')+'</div>';
- if(isTeacher()){
-  if(editingExamId){const e=all.find(x=>x.id===editingExamId);if(e){$("examTitle").value=e.titre||"";$("examClass").value=e.classeId||"";$("examSubject").value=e.matiere||"";$("examDuration").value=e.duree||60;$("examDescription").value=e.description||"";$("examPublish").checked=!!e.publie;$("examStart").value=e.debut||"";$("examEnd").value=e.fin||"";examQuestions=(e.questions||[]).map(q=>({...q}));renderQuestionEditor()}}
-  $("examForm").onsubmit=saveExam;
- }
-}
-window.addQuestion=(type)=>{examQuestions.push({type,texte:"",options:type==="qcm"?["","","",""]:[],points:1});renderQuestionEditor()};
-window.resetExamForm=()=>{editingExamId=null;examQuestions=[];renderExams()};
-function renderQuestionEditor(){
- const host=$("questionsEditor");if(!host)return;
- host.innerHTML=examQuestions.map((q,i)=>'<div class="question"><div class="flex"><strong>Question '+(i+1)+' — '+(q.type==="qcm"?"QCM":"Réponse écrite")+'</strong><button type="button" class="danger" onclick="removeQuestion('+i+')">Retirer</button></div><label>Énoncé</label><textarea data-q="'+i+'" data-field="texte" required>'+escapeHtml(q.texte||"")+'</textarea><label>Points</label><input type="number" min="1" max="100" data-q="'+i+'" data-field="points" value="'+Number(q.points||1)+'">'+(q.type==="qcm"?'<label>Choix A</label><input data-q="'+i+'" data-option="0" value="'+escapeHtml(q.options?.[0]||"")+'"><label>Choix B</label><input data-q="'+i+'" data-option="1" value="'+escapeHtml(q.options?.[1]||"")+'"><label>Choix C</label><input data-q="'+i+'" data-option="2" value="'+escapeHtml(q.options?.[2]||"")+'"><label>Choix D</label><input data-q="'+i+'" data-option="3" value="'+escapeHtml(q.options?.[3]||"")+'"><label>Bonne réponse (A, B, C ou D) — visible seulement par les enseignants via cette interface</label><select data-q="'+i+'" data-field="correct"><option value="">Choisir</option>'+["A","B","C","D"].map((x,j)=>'<option value="'+j+'" '+(String(q.correct)===String(j)?"selected":"")+'>'+x+'</option>').join("")+'</select>':'')+'</div>').join("");
- host.querySelectorAll("[data-q]").forEach(el=>el.addEventListener("change",()=>{const i=Number(el.dataset.q);if(el.dataset.option!==undefined)examQuestions[i].options[Number(el.dataset.option)]=el.value;else if(el.dataset.field==="points")examQuestions[i].points=Number(el.value);else if(el.dataset.field==="correct")examQuestions[i].correct=el.value===""?null:Number(el.value);else examQuestions[i][el.dataset.field]=el.value}));
-}
-window.removeQuestion=i=>{examQuestions.splice(i,1);renderQuestionEditor()};
-async function saveExam(ev){
- ev.preventDefault();try{
-  if(!isTeacher())throw Error("Accès refusé.");
-  examQuestions.forEach((q,i)=>{if(!q.texte?.trim())throw Error("Il manque l’énoncé de la question "+(i+1));if(q.type==="qcm"&&(!q.options?.every(x=>x.trim())||![0,1,2,3].includes(Number(q.correct))))throw Error("Complétez les quatre choix et la bonne réponse de la question "+(i+1));});
-  const debut=$("examStart").value,fin=$("examEnd").value;
-  if(new Date(fin)<=new Date(debut))throw Error("La date de fin doit être après la date de début.");
-  const publicQuestions=examQuestions.map(q=>{const x={type:q.type,texte:q.texte,points:Number(q.points)||1};if(q.type==="qcm")x.options=q.options;return x});
-  const answerKey=examQuestions.map(q=>({type:q.type,correct:q.type==="qcm"?Number(q.correct):null,points:Number(q.points)||1}));
-  const data={titre:$("examTitle").value.trim(),classeId:$("examClass").value.trim(),matiere:$("examSubject").value.trim(),duree:Number($("examDuration").value),debut,fin,description:$("examDescription").value.trim(),publie:$("examPublish").checked,questions:publicQuestions,teacherUid:currentUser.uid,updatedAt:serverTimestamp()};
-  if(!data.duree||data.duree<1)throw Error("La durée doit être supérieure à zéro.");
-  let id=editingExamId;
-  if(id)await updateDoc(doc(db,"examens",id),data);
-  else{data.createdAt=serverTimestamp();const r=await addDoc(collection(db,"examens"),data);id=r.id}
-  await setDoc(doc(db,"examens_corriges",id),{examId:id,teacherUid:currentUser.uid,answerKey,updatedAt:serverTimestamp()});
-  editingExamId=null;examQuestions=[];await loadAll();renderExams();toast("Examen enregistré.");
- }catch(e){toast(errorText(e))}
-}
-window.editExam=id=>{editingExamId=id;examQuestions=[];renderExams()};
-window.deleteExam=async id=>{if(!isTeacher()||!confirm("Supprimer cet examen et son corrigé ?"))return;try{await deleteDoc(doc(db,"examens",id));if(isAdmin()||records("examens_corriges").some(x=>x.id===id))await deleteDoc(doc(db,"examens_corriges",id));await loadAll();renderExams();toast("Examen supprimé.")}catch(e){toast(errorText(e))}};
-async function startExam(id){
- try{
-  const exam=records("examens").find(e=>e.id===id);if(!exam||!exam.publie)throw Error("Examen non disponible.");
-  if(exam.classeId&&exam.classeId!==userClass())throw Error("Cet examen ne correspond pas à votre classe.");
-  const now=Date.now();if(exam.debut&&now<new Date(exam.debut).getTime())throw Error("L’examen n’a pas encore commencé.");if(exam.fin&&now>new Date(exam.fin).getTime())throw Error("La période de cet examen est terminée.");
-  const attemptId=id+"__"+currentUser.uid,ref=doc(db,"tentatives_examens",attemptId),snap=await getDoc(ref);
-  if(snap.exists()&&snap.data().status==="submitted"){toast("Vous avez déjà remis cet examen.");return}
-  if(snap.exists())activeAttempt={id:attemptId,ref,data:snap.data()};
-  else{
-   const startedAt=Date.now();const data={examId:id,examTitle:exam.titre,studentUid:currentUser.uid,studentEmail:currentUser.email,classeId:exam.classeId,status:"in_progress",startedAt,deadline:Math.min(startedAt+Number(exam.duree||60)*60000,exam.fin?new Date(exam.fin).getTime():Infinity),answers:{},createdAt:serverTimestamp()};
-   await setDoc(ref,data);activeAttempt={id:attemptId,ref,data};
-  }
-  activeExam=exam;renderTakingExam();
- }catch(e){toast(errorText(e))}
-}
-window.startExam=startExam;
-function renderTakingExam(){
- if(!activeExam||!activeAttempt)return;
- if(examTimerInterval)clearInterval(examTimerInterval);
- const answers=activeAttempt.data.answers||{},qs=activeExam.questions||[];
- $("pageTitle").textContent="Examen en cours";
- $("pageContent").innerHTML='<div class="card"><div class="flex" style="justify-content:space-between"><div><h2>'+escapeHtml(activeExam.titre)+'</h2><p>'+escapeHtml(activeExam.matiere||"")+'</p></div><div>Temps restant : <span id="examTimer">--:--</span></div></div><p>'+escapeHtml(activeExam.description||"")+'</p><p class="muted">Les réponses sont sauvegardées lorsque vous remettez l’examen. Ne fermez pas la page avant la remise.</p></div><form id="takingForm">'+qs.map((q,i)=>'<div class="card"><h3>Question '+(i+1)+' ('+Number(q.points||1)+' point(s))</h3><p>'+escapeHtml(q.texte)+'</p>'+(q.type==="qcm"?(q.options||[]).map((o,j)=>'<label class="option"><input type="radio" name="answer_'+i+'" value="'+j+'" '+(String(answers[i])===String(j)?"checked":"")+'>'+String.fromCharCode(65+j)+'. '+escapeHtml(o)+'</label>').join(""):'<textarea name="answer_'+i+'" placeholder="Écrivez votre réponse ici">'+escapeHtml(answers[i]||"")+'</textarea>')+'</div>').join("")+'<div class="card"><button type="submit" class="success">Remettre l’examen</button></div></form>';
- const updateTimer=()=>{
-  const remain=Math.max(0,Number(activeAttempt.data.deadline)-Date.now());
-  const el=$("examTimer");if(el)el.textContent=String(Math.floor(remain/60000)).padStart(2,"0")+":"+String(Math.floor(remain%60000/1000)).padStart(2,"0");
-  if(remain<=0){clearInterval(examTimerInterval);submitExam(true)}
- };
- updateTimer();examTimerInterval=setInterval(updateTimer,1000);
- $("takingForm").onsubmit=e=>{e.preventDefault();submitExam(false)};
-}
-async function submitExam(auto){
- if(!activeExam||!activeAttempt)return;
- if(!auto&&!confirm("Remettre définitivement votre examen ?"))return;
- try{
-  if(examTimerInterval)clearInterval(examTimerInterval);
-  const answers={};(activeExam.questions||[]).forEach((q,i)=>{if(q.type==="qcm"){const el=document.querySelector('input[name="answer_'+i+'"]:checked');answers[i]=el?el.value:""}else{const el=document.querySelector('textarea[name="answer_'+i+'"]');answers[i]=el?el.value:""}});
-  await updateDoc(activeAttempt.ref,{answers,status:"submitted",submittedAt:serverTimestamp(),submittedAtMillis:Date.now(),autoSubmitted:!!auto});
-  activeExam=null;activeAttempt=null;await loadAll();toast(auto?"Temps écoulé : examen remis automatiquement.":"Examen remis avec succès.");navigate("Examens");
- }catch(e){toast("Impossible de remettre l’examen : "+errorText(e))}
-}
-window.submitExam=submitExam;
-async function viewAttempts(examId){
- try{
-  const all=await getDocs(query(collection(db,"tentatives_examens"),where("examId","==",examId)));
-  const attempts=all.docs.map(d=>({id:d.id,...d.data()}));
-  const keySnap=await getDoc(doc(db,"examens_corriges",examId));
-  const key=keySnap.exists()?keySnap.data().answerKey||[]:[];
-  $("pageContent").innerHTML='<h2>Copies de l’examen</h2><button class="secondary" onclick="navigate(\'Examens\')">Retour</button>'+ (attempts.length?attempts.map(a=>{
-   const exam=records("examens").find(x=>x.id===examId),qs=exam?.questions||[];
-   let autoScore=0,total=0;
-   qs.forEach((q,i)=>{const p=Number(key[i]?.points||q.points||1);total+=p;if(q.type==="qcm"&&String(a.answers?.[i]??"")===String(key[i]?.correct))autoScore+=p});
-   const isSubmitted=a.status==="submitted";
-   return '<div class="card"><h3>'+escapeHtml(a.studentEmail||a.studentUid)+'</h3><p>Statut : '+escapeHtml(a.status)+'</p><p>Score QCM automatique calculé lors de la correction : '+autoScore+' / '+total+'</p>'+qs.map((q,i)=>'<div class="question"><strong>Question '+(i+1)+' — '+escapeHtml(q.type==="qcm"?"QCM":"Écrite")+'</strong><p>'+escapeHtml(q.texte)+'</p><p><b>Réponse de l’élève :</b> '+escapeHtml(a.answers?.[i]||"(sans réponse)")+'</p>'+(q.type==="written"?'<label>Note pour cette question</label><input type="number" min="0" max="'+Number(q.points||1)+'" id="grade_'+a.id+'_'+i+'" value="'+Number(a.writtenGrades?.[i]||0)+'"><label>Commentaire</label><textarea id="comment_'+a.id+'_'+i+'">'+escapeHtml(a.comments?.[i]||"")+'</textarea>':'')+'</div>').join("")+(isSubmitted?'<button onclick="gradeAttempt(\''+a.id+'\',\''+examId+'\')">Enregistrer la correction</button>': '<p class="muted">Copie pas encore remise.</p>')+'<p>Note finale enregistrée : '+(a.finalScore==null?"En attente":escapeHtml(a.finalScore))+'</p></div>';
- }).join(""):"<div class='card'>Aucune copie reçue.</div>");
- }catch(e){toast(errorText(e))}
-}
-window.viewAttempts=viewAttempts;
-window.gradeAttempt=async(attemptId,examId)=>{
- try{
-  const exam=records("examens").find(x=>x.id===examId);if(!exam)throw Error("Examen introuvable.");
-  const ref=doc(db,"tentatives_examens",attemptId),snap=await getDoc(ref);if(!snap.exists())throw Error("Copie introuvable.");
-  const a=snap.data(),keySnap=await getDoc(doc(db,"examens_corriges",examId));const key=keySnap.exists()?keySnap.data().answerKey||[]:[];
-  const writtenGrades={},comments={};let score=0,total=0;
-  (exam.questions||[]).forEach((q,i)=>{
-   const points=Number(key[i]?.points||q.points||1);total+=points;
-   if(q.type==="qcm"){if(String(a.answers?.[i]??"")===String(key[i]?.correct))score+=points}
-   else{const input=$("grade_"+attemptId+"_"+i),comment=$("comment_"+attemptId+"_"+i);const grade=Math.max(0,Math.min(points,Number(input?.value||0)));writtenGrades[i]=grade;comments[i]=comment?.value||"";score+=grade}
-  });
-  const percent=total?Math.round(score/total*100):0;
-  await updateDoc(ref,{writtenGrades,comments,qcmAndWrittenScore:score,totalPoints:total,finalScore:percent,gradedBy:currentUser.uid,gradedAt:serverTimestamp(),gradingStatus:"corrected"});
-  await addDoc(collection(db,"resultats"),{eleveId:a.studentUid,studentEmail:a.studentEmail,examId,examTitle:exam.titre,matiereId:exam.matiere,note:percent,commentaire:"Résultat de l’examen",createdBy:currentUser.uid,createdAt:serverTimestamp()});
-  await loadAll();toast("Correction enregistrée : "+percent+" / 100.");viewAttempts(examId);
- }catch(e){toast(errorText(e))}
+window.logout=()=>signOut(auth);
+window.toggleSidebar=()=>$("sidebar").classList.toggle("open");
+
+window.showPage=async(key,button)=>{
+document.querySelectorAll("main section").forEach(s=>s.classList.add("hidden"));
+$("page-"+key)?.classList.remove("hidden");
+document.querySelectorAll(".nav-btn").forEach(b=>b.classList.remove("active"));if(button)button.classList.add("active");
+$("sidebar").classList.remove("open");
+if(key==="dashboard")dashboard();
+else if(fields[key]&&admin())loadGeneric(key);
+else if(key==="users"&&admin())loadUsers();
+else if(key==="affectations"&&admin())loadAffectations();
+else if(key==="inscriptions"&&admin())loadInscriptions();
+else if(key==="statistiques"&&admin())loadStats();
+else if(key==="devoirs")loadAssignments();
+else if(key==="remises")loadSubmissions();
+else if(key==="resultats")loadResults();
 };
-window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();installPrompt=e;$("installBtn").hidden=false});
-window.installApp=async()=>{if(!installPrompt){toast("Dans Chrome, ouvrez le menu ⋮ puis choisissez Installer l’application ou Ajouter à l’écran d’accueil.");return}installPrompt.prompt();await installPrompt.userChoice;installPrompt=null;$("installBtn").hidden=true};
-if("serviceWorker" in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));
+
+async function count(col){try{return(await getDocs(collection(db,col))).size}catch(e){return 0}}
+async function dashboard(){
+const page=$("page-dashboard");
+page.innerHTML=`<div class="page-title"><div><h2>Tableau de bord</h2><p>Bienvenue dans votre espace de gestion académique.</p></div></div><div class="panel"><b>Compte :</b> ${esc(currentUser?.email)}<br><b>Rôle :</b> ${admin()?"Administrateur":prof()?"Professeur":"Élève"}</div>${admin()?'<div class="stats"><div class="stat-card">👨‍🎓<strong id="nEt">…</strong><span>Étudiants</span></div><div class="stat-card">👨‍🏫<strong id="nPr">…</strong><span>Professeurs</span></div><div class="stat-card">🏫<strong id="nCl">…</strong><span>Classes</span></div><div class="stat-card">📚<strong id="nMa">…</strong><span>Matières</span></div><div class="stat-card">📝<strong id="nDe">…</strong><span>Devoirs</span></div><div class="stat-card">⏳<strong id="nUs">…</strong><span>Utilisateurs en attente</span></div></div>':""}<div class="panel"><h3>Centre de Formation Le Pédagogue</h3>Gestion universitaire et école professionnelle.</div>`;
+if(admin()){for(const [id,col] of [["nEt","etudiants"],["nPr","professeurs"],["nCl","classes"],["nMa","matieres"],["nDe","devoirs"]])$(id).textContent=await count(col);try{const s=await getDocs(collection(db,"users"));let n=0;s.forEach(x=>{if(x.data().status!=="accepted")n++});$("nUs").textContent=n}catch(e){$("nUs").textContent="—"}}
+}
+
+async function loadGeneric(key){
+const c=fields[key],page=$("page-"+key);
+page.innerHTML=`<div class="page-title"><div><h2>${c.title}</h2><p>Gestion des données.</p></div><button class="btn primary" onclick="openRecord('${key}')">➕ Ajouter</button></div><div class="panel"><input class="search" id="search-${key}" placeholder="Rechercher..." oninput="filterRows('${key}')"><div id="table-${key}" class="table-wrap">Chargement…</div></div>`;
+await renderGeneric(key);
+}
+async function renderGeneric(key){
+const c=fields[key],box=$("table-"+key);
+try{
+const s=await getDocs(collection(db,dbname(key)));
+if(s.empty){box.innerHTML="Aucune donnée enregistrée.";return}
+let html="<table><thead><tr>"+c.fields.map(f=>`<th>${esc(f[1])}</th>`).join("")+"<th>Actions</th></tr></thead><tbody>";
+s.forEach(x=>{const d=x.data();html+=`<tr>${c.fields.map(f=>`<td>${esc(d[f[0]])}</td>`).join("")}<td><button class="btn light" onclick="openRecord('${key}','${x.id}')">Modifier</button><button class="btn red" onclick="deleteRecord('${key}','${x.id}')">Supprimer</button></td></tr>`});
+box.innerHTML=html+"</tbody></table>";
+}catch(e){console.error(e);box.textContent="Impossible de charger les données. Vérifiez les règles Firestore."}
+}
+window.filterRows=key=>{const q=$("search-"+key).value.toLowerCase();document.querySelectorAll(`#table-${key} tbody tr`).forEach(r=>r.style.display=r.textContent.toLowerCase().includes(q)?"":"none")};
+window.openRecord=async(key,id=null)=>{
+if(!admin())return toast("Accès réservé à l'administrateur.");
+const c=fields[key];let d={};
+if(id){const s=await getDoc(doc(db,dbname(key),id));if(!s.exists())return toast("Donnée introuvable.");d=s.data()}
+$("modalTitle").textContent=(id?"Modifier ":"Ajouter ")+c.title;
+$("modalBody").innerHTML=`<form onsubmit="saveRecord(event,'${key}','${id||""}')"><div class="grid-form">${c.fields.map(f=>`<div class="form-group"><label>${esc(f[1])}</label><input id="f-${f[0]}" type="${f[2]}" value="${esc(d[f[0]]||"")}"></div>`).join("")}</div><button class="btn primary">💾 Enregistrer</button></form>`;
+$("modal").classList.remove("hidden");
+};
+window.saveRecord=async(e,key,id)=>{e.preventDefault();if(!admin())return;const d={};fields[key].fields.forEach(f=>d[f[0]]=$("f-"+f[0]).value.trim());d.updatedAt=serverTimestamp();try{if(id)await updateDoc(doc(db,dbname(key),id),d);else{d.createdAt=serverTimestamp();await addDoc(collection(db,dbname(key)),d)}closeModal();toast("Enregistré avec succès.");await loadGeneric(key);dashboard()}catch(x){console.error(x);toast("Échec d'enregistrement. Vérifiez les règles Firestore.")}};
+window.deleteRecord=async(key,id)=>{if(!admin()||!confirm("Supprimer cet élément ?"))return;try{await deleteDoc(doc(db,dbname(key),id));await renderGeneric(key);toast("Élément supprimé.")}catch(e){console.error(e);toast("Suppression impossible.")}};
+window.closeModal=()=>{$("modal").classList.add("hidden");$("modalBody").innerHTML=""};
+
+async function loadUsers(){
+const p=$("page-users");p.innerHTML=`<div class="page-title"><h2>👥 Utilisateurs</h2><button class="btn light" onclick="loadUsers()">Actualiser</button></div><div class="panel"><input class="search" id="searchUsers" placeholder="Rechercher..." oninput="filterUsers()"><div id="usersTable" class="table-wrap">Chargement…</div></div>`;
+try{const s=await getDocs(collection(db,"users"));if(s.empty){$("usersTable").textContent="Aucun utilisateur.";return}let h="<table id='userTable'><thead><tr><th>Nom</th><th>Email</th><th>Rôle</th><th>Statut</th><th>UID</th><th>Actions</th></tr></thead><tbody>";
+s.forEach(x=>{const d=x.data();h+=`<tr><td>${esc(d.nom)}</td><td>${esc(d.email)}</td><td>${esc(d.role)}</td><td>${esc(d.status)}</td><td>${esc(x.id)}</td><td>${x.id!==currentUser.uid?`<button class="btn green" onclick="acceptUser('${x.id}')">Accepter</button><button class="btn light" onclick="changeRole('${x.id}')">Rôle</button><button class="btn red" onclick="deleteUser('${x.id}')">Supprimer</button>`:"Compte actuel"}</td></tr>`});
+$("usersTable").innerHTML=h+"</tbody></table>";
+}catch(e){console.error(e);$("usersTable").textContent="Impossible de charger les utilisateurs."}
+}
+window.filterUsers=()=>{const q=$("searchUsers").value.toLowerCase();document.querySelectorAll("#userTable tbody tr").forEach(r=>r.style.display=r.textContent.toLowerCase().includes(q)?"":"none")};
+window.acceptUser=async uid=>{if(!admin())return;const r=prompt("Rôle : 1 = élève, 2 = professeur, 3 = administrateur","1");if(r===null)return;const role=r==="2"?"professeur":r==="3"?"administrateur":"eleve";try{await updateDoc(doc(db,"users",uid),{role,status:"accepted",approvedBy:currentUser.email,approvedAt:serverTimestamp()});toast("Utilisateur accepté.");loadUsers()}catch(e){console.error(e);toast("Impossible d'accepter l'utilisateur.")}};
+window.changeRole=async uid=>{if(!admin())return;const r=prompt("Rôle exact : eleve, professeur ou administrateur");if(!["eleve","etudiant","professeur","administrateur"].includes(r))return toast("Rôle invalide.");try{await updateDoc(doc(db,"users",uid),{role:r,status:"accepted",updatedAt:serverTimestamp()});loadUsers()}catch(e){console.error(e);toast("Impossible de modifier le rôle.")}};
+window.deleteUser=async uid=>{if(!admin()||!confirm("Supprimer le profil utilisateur ?"))return;try{await deleteDoc(doc(db,"users",uid));loadUsers()}catch(e){console.error(e);toast("Suppression impossible.")}};
+
+async function selectOptions(col,label){const s=await getDocs(collection(db,col));let h='<option value="">Choisir</option>';s.forEach(x=>h+=`<option value="${x.id}">${esc(label(x.data()))}</option>`);return h}
+async function loadAffectations(){
+$("page-affectations").innerHTML=`<div class="page-title"><h2>🔗 Affectations</h2><button class="btn primary" onclick="openAffectation()">Nouvelle affectation</button></div><div class="panel"><div id="affTable">Chargement…</div></div>`;
+try{const s=await getDocs(collection(db,"affectations"));let h="<table><thead><tr><th>Professeur</th><th>Filière</th><th>Classe</th><th>Matière</th><th>Action</th></tr></thead><tbody>";s.forEach(x=>{const d=x.data();h+=`<tr><td>${esc(d.professeurNom)}</td><td>${esc(d.filiereNom)}</td><td>${esc(d.classeNom)}</td><td>${esc(d.matiereNom)}</td><td><button class="btn red" onclick="deleteAffectation('${x.id}')">Supprimer</button></td></tr>`});$("affTable").innerHTML=s.empty?"Aucune affectation.":h+"</tbody></table>"}catch(e){console.error(e);$("affTable").textContent="Erreur de chargement."}
+}
+window.openAffectation=async()=>{
+if(!admin())return;
+try{
+const [ps,fs,cs,ms]=await Promise.all([selectOptions("professeurs",d=>d.nom||d.email||"Professeur"),selectOptions("filieres",d=>d.nom||"Filière"),selectOptions("classes",d=>d.nom||"Classe"),selectOptions("matieres",d=>d.nom||"Matière")]);
+$("modalTitle").textContent="Nouvelle affectation";
+$("modalBody").innerHTML=`<form onsubmit="saveAffectation(event)"><div class="form-group"><label>Professeur</label><select id="ap" required>${ps}</select></div><div class="form-group"><label>Filière</label><select id="af" required>${fs}</select></div><div class="form-group"><label>Classe</label><select id="ac" required>${cs}</select></div><div class="form-group"><label>Matière</label><select id="am" required>${ms}</select></div><button class="btn primary">Enregistrer</button></form>`;
+$("modal").classList.remove("hidden");
+}catch(e){console.error(e);toast("Impossible de charger les choix.")}
+};
+window.saveAffectation=async e=>{
+e.preventDefault();if(!admin())return;
+try{
+const ids=[$("ap").value,$("af").value,$("ac").value,$("am").value];
+const cols=["professeurs","filieres","classes","matieres"];
+const snaps=await Promise.all(ids.map((id,i)=>getDoc(doc(db,cols[i],id))));
+if(snaps.some(s=>!s.exists()))return toast("Sélection invalide.");
+const d=snaps.map(s=>s.data());
+const email=(d[0].email||"").toLowerCase();
+let uid="";
+if(email){const us=await getDocs(query(collection(db,"users"),where("email","==",email)));if(!us.empty)uid=us.docs[0].id}
+await addDoc(collection(db,"affectations"),{professeurId:ids[0],professeurUid:uid,professeurNom:d[0].nom||"",professeurEmail:email,filiereId:ids[1],filiereNom:d[1].nom||"",classeId:ids[2],classeNom:d[2].nom||"",matiereId:ids[3],matiereNom:d[3].nom||"",createdAt:serverTimestamp(),createdBy:currentUser.uid});
+closeModal();toast("Affectation enregistrée.");loadAffectations();
+}catch(e){console.error(e);toast("Impossible d'enregistrer l'affectation.")}
+};
+window.deleteAffectation=async id=>{if(!admin()||!confirm("Supprimer cette affectation ?"))return;try{await deleteDoc(doc(db,"affectations",id));loadAffectations()}catch(e){console.error(e);toast("Suppression impossible.")}};
+
+async function loadInscriptions(){
+$("page-inscriptions").innerHTML=`<div class="page-title"><h2>👥 Élèves / Classes</h2><button class="btn primary" onclick="openInscription()">Inscrire un élève</button></div><div class="panel"><div id="insTable">Chargement…</div></div>`;
+try{const s=await getDocs(collection(db,"inscriptions"));let h="<table><thead><tr><th>Élève</th><th>Classe</th><th>Action</th></tr></thead><tbody>";s.forEach(x=>{const d=x.data();h+=`<tr><td>${esc(d.eleveNom)}</td><td>${esc(d.classeNom)}</td><td><button class="btn red" onclick="deleteInscription('${x.id}')">Supprimer</button></td></tr>`});$("insTable").innerHTML=s.empty?"Aucune inscription.":h+"</tbody></table>"}catch(e){console.error(e);$("insTable").textContent="Erreur de chargement."}
+}
+window.openInscription=async()=>{
+if(!admin())return;
+try{const [es,cs]=await Promise.all([selectOptions("etudiants",d=>d.nom||d.email||"Élève"),selectOptions("classes",d=>d.nom||"Classe")]);$("modalTitle").textContent="Inscrire un élève";$("modalBody").innerHTML=`<form onsubmit="saveInscription(event)"><div class="form-group"><label>Élève</label><select id="ie" required>${es}</select></div><div class="form-group"><label>Classe</label><select id="ic" required>${cs}</select></div><button class="btn primary">Enregistrer</button></form>`;$("modal").classList.remove("hidden")}catch(e){console.error(e);toast("Impossible de charger les listes.")}
+};
+window.saveInscription=async e=>{
+e.preventDefault();if(!admin())return;
+try{const ei=$("ie").value,ci=$("ic").value;const [es,cs]=await Promise.all([getDoc(doc(db,"etudiants",ei)),getDoc(doc(db,"classes",ci))]);if(!es.exists()||!cs.exists())return toast("Élève ou classe introuvable.");const el=es.data(),cl=cs.data();const dup=await getDocs(query(collection(db,"inscriptions"),where("eleveId","==",ei),where("classeId","==",ci)));if(!dup.empty)return toast("Cet élève est déjà inscrit dans cette classe.");await addDoc(collection(db,"inscriptions"),{eleveId:ei,eleveNom:el.nom||el.email||"",eleveEmail:el.email||"",classeId:ci,classeNom:cl.nom||"",createdAt:serverTimestamp(),createdBy:currentUser.uid});closeModal();loadInscriptions();toast("Inscription enregistrée.")}catch(e){console.error(e);toast("Impossible d'enregistrer l'inscription.")}
+};
+window.deleteInscription=async id=>{if(!admin()||!confirm("Supprimer cette inscription ?"))return;try{await deleteDoc(doc(db,"inscriptions",id));loadInscriptions()}catch(e){console.error(e);toast("Suppression impossible.")}};
+
+async function loadAssignments(){
+const p=$("page-devoirs");p.innerHTML=`<div class="page-title"><h2>📝 Devoirs</h2>${admin()||prof()?'<button class="btn primary" onclick="openAssignment()">Nouveau devoir</button>':""}</div><div id="assignmentList" class="grid-form"></div>`;
+try{const s=await getDocs(collection(db,"devoirs"));let h="";s.forEach(x=>{const d=x.data();if(prof()&&d.professeurId!==currentUser.uid)return;h+=`<div class="assignment-card"><h3>${esc(d.titre)}</h3><p>${esc(d.description||"")}</p><p>Classe : ${esc(d.classe||"")}</p><p>Date limite : ${esc(d.dateLimite||"Non définie")}</p>${student()?`<button class="btn primary" onclick="submitAssignment('${x.id}','${esc(d.titre)}')">Remettre le devoir</button>`:""}</div>`});$("assignmentList").innerHTML=h||"Aucun devoir disponible."}catch(e){console.error(e);$("assignmentList").textContent="Impossible de charger les devoirs."}
+}
+window.openAssignment=()=>{if(!admin()&&!prof())return;$("modalTitle").textContent="Créer un devoir";$("modalBody").innerHTML=`<form onsubmit="saveAssignment(event)"><div class="form-group"><label>Titre</label><input id="at" required></div><div class="form-group"><label>Matière</label><input id="am" required></div><div class="form-group"><label>Classe</label><input id="acl" required></div><div class="form-group"><label>Date limite</label><input id="ad" type="date"></div><div class="form-group"><label>Description / consigne</label><textarea id="ades" rows="4"></textarea></div><button class="btn primary">Publier le devoir</button></form>`;$("modal").classList.remove("hidden")};
+window.saveAssignment=async e=>{e.preventDefault();if(!admin()&&!prof())return;try{await addDoc(collection(db,"devoirs"),{titre:$("at").value.trim(),matiere:$("am").value.trim(),classe:$("acl").value.trim(),dateLimite:$("ad").value,description:$("ades").value.trim(),professeurId:currentUser.uid,professeurEmail:currentUser.email,createdAt:serverTimestamp()});closeModal();toast("Devoir publié.");loadAssignments()}catch(e){console.error(e);toast("Impossible de publier le devoir.")}};
+window.submitAssignment=async(id,titre)=>{if(!student())return;$("modalTitle").textContent="Remettre le devoir";$("modalBody").innerHTML=`<p><b>${titre}</b></p><form onsubmit="saveSubmission(event,'${id}')"><div class="form-group"><label>Votre réponse / travail</label><textarea id="work" rows="7" required></textarea></div><button class="btn primary">Envoyer</button></form>`;$("modal").classList.remove("hidden")};
+window.saveSubmission=async(e,id)=>{e.preventDefault();if(!student())return;try{const d=await getDoc(doc(db,"devoirs",id));if(!d.exists())return toast("Devoir introuvable.");await addDoc(collection(db,"remises"),{devoirId:id,devoirTitre:d.data().titre,etudiantId:currentUser.uid,etudiantNom:currentProfile.nom||currentUser.email,etudiantEmail:currentUser.email,professeurId:d.data().professeurId,contenu:$("work").value.trim(),corrige:false,createdAt:serverTimestamp()});closeModal();toast("Travail remis.");}catch(e){console.error(e);toast("Impossible d'envoyer le travail.")}};
+
+async function loadSubmissions(){
+$("page-remises").innerHTML=`<div class="page-title"><h2>📤 Remises / Corrections</h2></div><div class="panel"><div id="subTable">Chargement…</div></div>`;
+try{let s=await getDocs(collection(db,"remises"));let h="<table><thead><tr><th>Devoir</th><th>Élève</th><th>Travail</th><th>Note /100</th><th>Action</th></tr></thead><tbody>";s.forEach(x=>{const d=x.data();if(prof()&&d.professeurId!==currentUser.uid)return;if(student()&&d.etudiantId!==currentUser.uid)return;h+=`<tr><td>${esc(d.devoirTitre)}</td><td>${esc(d.etudiantNom)}</td><td>${esc(d.contenu)}</td><td>${d.note100??"—"}</td><td>${prof()?`<button class="btn primary" onclick="correctSubmission('${x.id}')">Corriger</button>`:`<button class="btn light" onclick="viewSubmission('${x.id}')">Voir</button>`}</td></tr>`});$("subTable").innerHTML=h+"</tbody></table>"}catch(e){console.error(e);$("subTable").textContent="Impossible de charger les remises."}
+}
+window.viewSubmission=async id=>{const s=await getDoc(doc(db,"remises",id));if(!s.exists())return;const d=s.data();$("modalTitle").textContent="Détail de la remise";$("modalBody").innerHTML=`<h3>${esc(d.devoirTitre)}</h3><div class="panel">${esc(d.contenu)}</div><p>Note : ${d.note100??"En attente"} /100</p><p>Commentaire : ${esc(d.commentaire||"Aucun")}</p>`;$("modal").classList.remove("hidden")};
+window.correctSubmission=async id=>{if(!prof())return;const s=await getDoc(doc(db,"remises",id));if(!s.exists())return;const d=s.data();$("modalTitle").textContent="Corriger le travail";$("modalBody").innerHTML=`<p><b>${esc(d.devoirTitre)} — ${esc(d.etudiantNom)}</b></p><div class="panel">${esc(d.contenu)}</div><form onsubmit="saveCorrection(event,'${id}')"><div class="form-group"><label>Note sur 100</label><input id="grade" type="number" min="0" max="100" required value="${d.note100??""}"></div><div class="form-group"><label>Commentaire</label><textarea id="comment" rows="4">${esc(d.commentaire||"")}</textarea></div><button class="btn green">Enregistrer la correction</button></form>`;$("modal").classList.remove("hidden")};
+window.saveCorrection=async(e,id)=>{e.preventDefault();if(!prof())return;const n=Number($("grade").value);if(n<0||n>100)return toast("La note doit être entre 0 et 100.");try{const s=await getDoc(doc(db,"remises",id));if(!s.exists())return;const d=s.data(),commentaire=$("comment").value.trim();await updateDoc(doc(db,"remises",id),{note100:n,commentaire,corrige:true,correcteurId:currentUser.uid,dateCorrection:serverTimestamp()});await addDoc(collection(db,"resultats"),{remiseId:id,devoirId:d.devoirId,devoirTitre:d.devoirTitre,etudiantId:d.etudiantId,etudiantNom:d.etudiantNom,professeurId:currentUser.uid,note100:n,commentaire,dateCorrection:serverTimestamp()});closeModal();toast("Correction enregistrée.");loadSubmissions()}catch(e){console.error(e);toast("Impossible d'enregistrer la correction.")}};
+
+async function loadResults(){
+$("page-resultats").innerHTML=`<div class="page-title"><h2>📊 Résultats / Notes</h2></div><div class="panel"><div id="resultsTable">Chargement…</div></div>`;
+try{const s=await getDocs(collection(db,"resultats"));let h="<table><thead><tr><th>Devoir</th><th>Élève</th><th>Note /100</th><th>Commentaire</th></tr></thead><tbody>";s.forEach(x=>{const d=x.data();if(student()&&d.etudiantId!==currentUser.uid)return;if(prof()&&d.professeurId!==currentUser.uid)return;h+=`<tr><td>${esc(d.devoirTitre)}</td><td>${esc(d.etudiantNom)}</td><td>${d.note100??"—"}</td><td>${esc(d.commentaire||"")}</td></tr>`});$("resultsTable").innerHTML=h+"</tbody></table>"}catch(e){console.error(e);$("resultsTable").textContent="Impossible de charger les résultats."}
+}
+async function loadStats(){
+const p=$("page-statistiques");p.innerHTML=`<div class="page-title"><h2>📈 Statistiques</h2></div><div class="stats"><div class="stat-card">Étudiants<strong>${await count("etudiants")}</strong></div><div class="stat-card">Professeurs<strong>${await count("professeurs")}</strong></div><div class="stat-card">Classes<strong>${await count("classes")}</strong></div><div class="stat-card">Devoirs<strong>${await count("devoirs")}</strong></div></div>`;
+}
+
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredPrompt=e});
+window.installApp=async()=>{if(deferredPrompt){deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null}else toast("Ouvrez le menu ⋮ de Chrome puis choisissez Installer l'application ou Ajouter à l'écran d'accueil.")};
+if("serviceWorker"in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(e=>console.log("Service Worker:",e)));
 </script>
 </body>
 </html>
