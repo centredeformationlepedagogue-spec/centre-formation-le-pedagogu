@@ -337,11 +337,17 @@ $("pageContent").querySelectorAll("[data-delete]").forEach(b=>b.addEventListener
 }
 function showRecordForm(module,record){
 const role=currentProfile?.role;
-if(!isAdmin()&&!["devoirs","remises","resultats"].includes(module.id)){toast("Action réservée à l'administrateur.",true);return}
+
+/* CORRECTION : les professeurs peuvent ouvrir le formulaire des examens. */
+if(!isAdmin()&&!["devoirs","examens","remises","resultats"].includes(module.id)){
+toast("Action réservée à l'administrateur.",true);
+return;
+}
+
 editingId=record?.id||null;
 const fields=module.fields.map(([key,label])=>{
 let value=record?.[key]??"";
-if(!record&&["devoirs","remises","resultats","affectations"].includes(module.id)){
+if(!record&&["devoirs","remises","resultats","affectations","examens"].includes(module.id)){
 if(key==="professeurUid"&&role==="professeur")value=currentUser.uid;
 if(key==="etudiantId"&&!isAdmin()&&role!=="professeur")value=currentUser.uid;
 }
@@ -418,9 +424,17 @@ return`<tr><td><b>${escapeHTML(e.titre||"Examen")}</b><div>${escapeHTML(e.descri
 $("pageContent").querySelectorAll("[data-start-exam]").forEach(b=>b.addEventListener("click",()=>startExam(exams.find(e=>e.id===b.dataset.startExam),attempts.find(a=>a.examenId===b.dataset.startExam&&a.statut==="en_cours"))))
 }
 async function renderTeacherExams(){
-const snap=await getDocs(collection(db,"examens"));
-const exams=snap.docs.map(d=>({id:d.id,...d.data()})).filter(e=>isAdmin()||e.professeurUid===currentUser.uid);
-$("pageContent").innerHTML=`<div class="card"><div class="page-head"><div><h3>Gestion des examens</h3><p class="muted">Créez des examens QCM et des questions écrites avec une durée définie.</p></div><button class="btn btn-primary" id="createExamBtn">＋ Créer un examen</button></div><div class="notice">Le format des questions est un tableau JSON. Types : « qcm » et « ecrit ». Les QCM sont corrigés automatiquement. Les réponses écrites restent à corriger par le professeur.</div><div class="table-wrap"><table><thead><tr><th>Examen</th><th>Classe</th><th>Durée</th><th>Questions</th><th>Actions</th></tr></thead><tbody>${exams.map(e=>`<tr><td><b>${escapeHTML(e.titre||"Examen")}</b><div>${escapeHTML(e.matiereId||"")}</div></td><td>${escapeHTML(e.classeId||"")}</td><td>${Number(e.dureeMinutes||30)} min</td><td>${parseQuestions(e).length}</td><td><div class="actions"><button class="btn btn-secondary" data-edit-exam="${escapeHTML(e.id)}">Modifier</button><button class="btn btn-primary" data-results-exam="${escapeHTML(e.id)}">Tentatives</button>${isAdmin()?`<button class="btn btn-danger" data-delete-exam="${escapeHTML(e.id)}">Supprimer</button>`:""}</div></td></tr>`).join("")||'<tr><td colspan="5">Aucun examen créé.</td></tr>'}</tbody></table></div><div id="examExtra"></div></div>`;
+
+/* CORRECTION : le professeur charge ses propres examens avec une requête Firestore autorisée. */
+const snap=isAdmin()
+  ? await getDocs(collection(db,"examens"))
+  : await getDocs(query(
+      collection(db,"examens"),
+      where("professeurUid","==",currentUser.uid)
+    ));
+
+const exams=snap.docs.map(d=>({id:d.id,...d.data()}));
+$("pageContent").innerHTML=`<div class="card"><div class="page-head"><div><h3>Gestion des examens</h3><p class="muted">Créez des examens QCM et des questions écrites avec une durée définie.</p></div><button class="btn btn-primary" id="createExamBtn" type="button">＋ Créer un examen</button></div><div class="notice">Le format des questions est un tableau JSON. Types : « qcm » et « ecrit ». Les QCM sont corrigés automatiquement. Les réponses écrites restent à corriger par le professeur.</div><div class="table-wrap"><table><thead><tr><th>Examen</th><th>Classe</th><th>Durée</th><th>Questions</th><th>Actions</th></tr></thead><tbody>${exams.map(e=>`<tr><td><b>${escapeHTML(e.titre||"Examen")}</b><div>${escapeHTML(e.matiereId||"")}</div></td><td>${escapeHTML(e.classeId||"")}</td><td>${Number(e.dureeMinutes||30)} min</td><td>${parseQuestions(e).length}</td><td><div class="actions"><button class="btn btn-secondary" data-edit-exam="${escapeHTML(e.id)}">Modifier</button><button class="btn btn-primary" data-results-exam="${escapeHTML(e.id)}">Tentatives</button>${isAdmin()?`<button class="btn btn-danger" data-delete-exam="${escapeHTML(e.id)}">Supprimer</button>`:""}</div></td></tr>`).join("")||'<tr><td colspan="5">Aucun examen créé.</td></tr>'}</tbody></table></div><div id="examExtra"></div></div>`;
 $("createExamBtn").addEventListener("click",()=>showRecordForm(modules.find(m=>m.id==="examens"),null));
 $("pageContent").querySelectorAll("[data-edit-exam]").forEach(b=>b.addEventListener("click",()=>{const e=exams.find(x=>x.id===b.dataset.editExam);if(e)showRecordForm(modules.find(m=>m.id==="examens"),e)}));
 $("pageContent").querySelectorAll("[data-delete-exam]").forEach(b=>b.addEventListener("click",async()=>{if(!confirm("Supprimer cet examen ? Les tentatives existantes ne seront pas supprimées automatiquement."))return;try{await deleteDoc(doc(db,"examens",b.dataset.deleteExam));toast("Examen supprimé.");await renderExams()}catch(err){toast(friendlyError(err),true)}}));
