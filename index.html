@@ -149,7 +149,6 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:20px}
     </div>
     <div class="top-actions">
       <span id="userInfo" class="user-info"></span>
-      <!-- Bouton installation toujours visible -->
       <button id="installBtn" class="btn btn-secondary" type="button">📲 Installer l'application</button>
       <button id="logoutBtn" class="btn btn-danger" type="button">🚪 Déconnexion</button>
     </div>
@@ -187,7 +186,6 @@ import {
   collection,getDocs,addDoc,serverTimestamp,query,where
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-/* CONFIGURATION FIREBASE EXISTANTE */
 const firebaseConfig = {
   apiKey: "AIzaSyAhrtcVaEZ7oU-p4Ihzl0APX2ccXKi4jBU",
   authDomain: "centre-de-formation-le-pe.firebaseapp.com",
@@ -371,7 +369,6 @@ $("loginForm").addEventListener("submit",async event=>{
     await signInWithEmailAndPassword(
       auth,$("loginEmail").value.trim(),$("loginPassword").value
     );
-    // onAuthStateChanged gère la suite.
   }catch(error){showAuthMessage(friendlyError(error),"error");}
 });
 
@@ -391,7 +388,6 @@ $("createAccountBtn").addEventListener("click",async()=>{
   try{
     const result=await createUserWithEmailAndPassword(auth,email,password);
     await sendEmailVerification(result.user);
-    // Le profil est créé par le déclenchement de connexion.
     showAuthMessage("Compte créé. Vérifiez votre e-mail. Votre accès reste soumis à l'approbation de l'administrateur.","info");
     await signOut(auth);
   }catch(error){showAuthMessage(friendlyError(error),"error");}
@@ -420,13 +416,17 @@ $("logoutBtn").addEventListener("click",async()=>{
   catch(error){toast(friendlyError(error),true);}
 });
 
-/* MODULES */
+/* MODULES
+   Les clés internes restent compatibles avec Firestore.
+   Les étiquettes visibles sont simplifiées et les champs
+   professeurId redondants sont retirés des formulaires.
+*/
 const modules=[
   {id:"etudiants",title:"Étudiants",collection:"etudiants",fields:[
-    ["nom","Nom"],["prenom","Prénom"],["email","E-mail"],["telephone","Téléphone"],["classeId","ID de classe"]
+    ["nom","Nom"],["prenom","Prénom"],["email","E-mail"],["telephone","Téléphone"],["classeId","Code de classe"]
   ]},
   {id:"eleves",title:"Élèves",collection:"eleves",fields:[
-    ["nom","Nom"],["prenom","Prénom"],["email","E-mail"],["telephone","Téléphone"],["classeId","ID de classe"]
+    ["nom","Nom"],["prenom","Prénom"],["email","E-mail"],["telephone","Téléphone"],["classeId","Code de classe"]
   ]},
   {id:"professeurs",title:"Professeurs",collection:"professeurs",fields:[
     ["nom","Nom"],["prenom","Prénom"],["email","E-mail"],["telephone","Téléphone"],["specialite","Spécialité"]
@@ -435,34 +435,34 @@ const modules=[
     ["nom","Nom"],["description","Description"]
   ]},
   {id:"filieres",title:"Filières",collection:"filieres",fields:[
-    ["nom","Nom"],["description","Description"],["departementId","ID département"]
+    ["nom","Nom"],["description","Description"],["departementId","Code du département"]
   ]},
   {id:"classes",title:"Classes",collection:"classes",fields:[
-    ["nom","Nom de la classe"],["niveau","Niveau"],["filiereId","ID filière"],["anneeAcademique","Année académique"]
+    ["nom","Nom de la classe"],["niveau","Niveau"],["filiereId","Code de filière"],["anneeAcademique","Année académique"]
   ]},
   {id:"matieres",title:"Matières",collection:"matieres",fields:[
-    ["nom","Nom"],["code","Code"],["description","Description"]
+    ["nom","Nom"],["code","Code de matière"],["description","Description"]
   ]},
   {id:"cours",title:"Cours",collection:"cours",fields:[
-    ["nom","Titre du cours"],["description","Description"],["matiereId","ID matière"],["classeId","ID classe"]
+    ["nom","Titre du cours"],["description","Description"],["matiereId","Code matière"],["classeId","Code de classe"]
   ]},
   {id:"annees",title:"Années académiques",collection:"annees_academiques",fields:[
     ["nom","Nom"],["debut","Date de début"],["fin","Date de fin"],["statut","Statut"]
   ]},
   {id:"affectations",title:"Affectations",collection:"affectations",fields:[
-    ["professeurId","ID professeur"],["professeurUid","UID professeur"],["classeId","ID classe"],["matiereId","ID matière"],["coursId","ID cours"]
+    ["professeurUid","Compte du professeur"],["classeId","Code de classe"],["matiereId","Code matière"],["coursId","Code du cours"]
   ]},
   {id:"inscriptions",title:"Élèves / Classes",collection:"inscriptions",fields:[
-    ["etudiantId","UID étudiant"],["eleveId","UID élève"],["classeId","ID classe"],["anneeAcademique","Année académique"],["statut","Statut"]
+    ["etudiantId","Compte étudiant"],["eleveId","Compte élève"],["classeId","Code de classe"],["anneeAcademique","Année académique"],["statut","Statut"]
   ]},
   {id:"devoirs",title:"Devoirs",collection:"devoirs",fields:[
-    ["titre","Titre"],["description","Description"],["classeId","ID classe"],["professeurId","UID professeur"],["professeurUid","UID professeur"],["dateLimite","Date limite"]
+    ["titre","Titre"],["description","Description"],["classeId","Code de classe"],["professeurUid","Compte du professeur"],["dateLimite","Date limite"]
   ]},
   {id:"remises",title:"Remises / Corrections",collection:"remises",fields:[
-    ["devoirId","ID devoir"],["etudiantId","UID étudiant"],["classeId","ID classe"],["professeurId","UID professeur"],["professeurUid","UID professeur"],["contenu","Travail remis"],["dateRemise","Date de remise"],["note100","Note sur 100"],["commentaire","Commentaire"],["statut","Statut"]
+    ["devoirId","Code du devoir"],["etudiantId","Compte de l'étudiant"],["classeId","Code de classe"],["professeurUid","Compte du professeur"],["contenu","Travail remis"],["dateRemise","Date de remise"],["note100","Note sur 100"],["commentaire","Commentaire"],["statut","Statut"]
   ]},
   {id:"resultats",title:"Résultats",collection:"resultats",fields:[
-    ["etudiantId","UID étudiant"],["classeId","ID classe"],["professeurId","UID professeur"],["professeurUid","UID professeur"],["matiereId","ID matière"],["note100","Note sur 100"],["note20","Note sur 20"],["commentaire","Commentaire"]
+    ["etudiantId","Compte de l'étudiant"],["classeId","Code de classe"],["professeurUid","Compte du professeur"],["matiereId","Code matière"],["note100","Note sur 100"],["note20","Note sur 20"],["commentaire","Commentaire"]
   ]},
   {id:"statistiques",title:"Statistiques",collection:"statistiques",fields:[
     ["nom","Nom"],["description","Description"],["valeur","Valeur"]
@@ -562,7 +562,7 @@ async function openPage(page){
 $("refreshBtn").addEventListener("click",()=>openPage(currentPage));
 window.goPage=page=>openPage(page);
 
-/* TABLEAU DE BORD : CONTENU ADAPTÉ AU RÔLE */
+/* TABLEAU DE BORD */
 async function countCollection(name){
   const snap=await getDocs(collection(db,name));
   return snap.size;
@@ -791,8 +791,8 @@ function showRecordForm(module,record){
   const fields=module.fields.map(([key,label])=>{
     let value=record?.[key]??"";
 
-    if(!record&&["devoirs","remises","resultats"].includes(module.id)){
-      if((key==="professeurId"||key==="professeurUid")&&role==="professeur")value=currentUser.uid;
+    if(!record&&["devoirs","remises","resultats","affectations"].includes(module.id)){
+      if(key==="professeurUid"&&role==="professeur")value=currentUser.uid;
       if(key==="etudiantId"&&!isAdmin()&&role!=="professeur")value=currentUser.uid;
     }
 
@@ -829,9 +829,14 @@ function showRecordForm(module,record){
 
     for(const [key,value] of formData.entries())data[key]=String(value).trim();
 
-    if(["devoirs","remises","resultats"].includes(module.id)&&role==="professeur"){
-      data.professeurId=currentUser.uid;
-      data.professeurUid=currentUser.uid;
+    /* Konserve konpatibilite Firestore san montre de chan pwofesè. */
+    if(["devoirs","remises","resultats","affectations"].includes(module.id)){
+      if(role==="professeur"){
+        data.professeurUid=currentUser.uid;
+        data.professeurId=currentUser.uid;
+      }else if(data.professeurUid){
+        data.professeurId=data.professeurUid;
+      }
     }
 
     if(module.id==="remises"&&!isAdmin()&&role!=="professeur"){
