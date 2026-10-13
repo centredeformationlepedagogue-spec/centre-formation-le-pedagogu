@@ -366,25 +366,105 @@ return`<div class="field ${large?"full":""}"><label>${escapeHTML(label)}</label>
 }).join("");
 const area=$("recordFormArea");
 if(!area){toast("Impossible d'ouvrir le formulaire : espace de formulaire absent.",true);return}
-area.innerHTML=`<div class="card"><h3>${record?"Modifier":"Ajouter"} — ${escapeHTML(module.title)}</h3>${module.id==="examens"?'<div class="notice">Questions JSON : chaque question doit contenir « type » (« qcm » ou « ecrit »), « question » et « points ». Une question QCM doit aussi contenir « options » et « correctAnswer ». Exemple disponible dans le champ ci-dessous.</div>':""}<form id="recordForm"><div class="form-grid">${fields}</div><div class="actions" style="margin-top:14px"><button class="btn btn-primary" type="submit">Enregistrer</button><button class="btn btn-secondary" id="cancelFormBtn" type="button">Annuler</button></div></form></div>`;
+area.innerHTML=`<div class="card"><h3>${record?"Modifier":"Ajouter"} — ${escapeHTML(module.title)}</h3>${module.id==="examens"?'<div class="notice">Questions JSON : vous pouvez saisir une liste de questions ou un objet contenant « questions ». Chaque question doit contenir « question » et « points ». Pour un QCM, ajoutez « type":"qcm », « options » et « correctAnswer ». Pour une question écrite, utilisez « type":"ecrit ».</div>':""}<form id="recordForm"><div class="form-grid">${fields}</div><div class="actions" style="margin-top:14px"><button class="btn btn-primary" type="submit">Enregistrer</button><button class="btn btn-secondary" id="cancelFormBtn" type="button">Annuler</button></div></form></div>`;
 area.scrollIntoView({behavior:"smooth",block:"start"});
 $("cancelFormBtn").addEventListener("click",()=>{area.innerHTML="";editingId=null});
 $("recordForm").addEventListener("submit",async e=>{
 e.preventDefault();const fd=new FormData(e.currentTarget),data={};
 for(const[k,v]of fd.entries())data[k]=String(v).trim();
+
 if(module.id==="examens"){
 try{
-if(!data.titre||!data.classeId)throw Error("Le titre et le code de classe sont obligatoires.");
-const questions=JSON.parse(data.questionsJSON||"[]");
-if(!Array.isArray(questions)||!questions.length)throw Error("Ajoutez au moins une question dans le format JSON.");
-for(const q of questions){if(!q.question||!["qcm","ecrit"].includes(q.type))throw Error("Chaque question doit avoir un texte et un type qcm ou ecrit.");if(q.type==="qcm"&&(!Array.isArray(q.options)||!q.options.length||q.correctAnswer===undefined))throw Error("Chaque QCM doit contenir des options et une bonne réponse.");if(!Number.isFinite(Number(q.points))||Number(q.points)<=0)throw Error("Chaque question doit avoir un nombre de points positif.")}
+if(!data.titre)throw Error("Le titre de l'examen est obligatoire.");
+if(!data.classeId)throw Error("Le code de classe est obligatoire.");
+
+let parsed=JSON.parse(data.questionsJSON||"[]");
+let questions=Array.isArray(parsed)?parsed:parsed&&Array.isArray(parsed.questions)?parsed.questions:[];
+
+if(!questions.length){
+throw Error('Ajoutez au moins une question. Vous pouvez saisir un tableau JSON ou un objet contenant "questions".');
+}
+
+questions=questions.map((q,index)=>{
+if(!q||typeof q!=="object"||Array.isArray(q)){
+throw Error(`La question ${index+1} n'est pas un objet JSON valide.`);
+}
+
+const question=String(q.question??q.enonce??q.texte??"").trim();
+if(!question){
+throw Error(`La question ${index+1} ne contient pas de texte.`);
+}
+
+let type=String(q.type??"").toLowerCase().trim();
+const rawOptions=q.options??q.choix??q.propositions;
+let options=Array.isArray(rawOptions)?rawOptions.map(x=>String(x)):[];
+
+if(!type)type=options.length?"qcm":"ecrit";
+if(["qcm","choix_multiple","multiple_choice","multiple"].includes(type))type="qcm";
+if(["ecrit","écrit","texte","written","ouverte","open"].includes(type))type="ecrit";
+
+if(!["qcm","ecrit"].includes(type)){
+throw Error(`Type invalide pour la question ${index+1}. Utilisez "qcm" ou "ecrit".`);
+}
+
+const points=Number(q.points??q.point??1);
+if(!Number.isFinite(points)||points<=0){
+throw Error(`La question ${index+1} doit avoir un nombre de points positif.`);
+}
+
+const normalized={type,question,points};
+
+if(type==="qcm"){
+if(options.length<2){
+throw Error(`La question QCM ${index+1} doit avoir au moins deux options.`);
+}
+
+let correct=q.correctAnswer??q.answer??q.reponse??q.bonneReponse??q.bonne_reponse??q.correct??q.reponseCorrecte;
+
+if(correct===undefined||correct===null||String(correct).trim()===""){
+throw Error(`Indiquez la bonne réponse pour la question QCM ${index+1}.`);
+}
+
+if(typeof correct==="number"||(typeof correct==="string"&&/^\d+$/.test(correct.trim())&&Number(correct)>=0&&Number(correct)<options.length)){
+const idx=Number(correct);
+if(idx>=0&&idx<options.length){
+correct=options[idx];
+}
+}
+
+const correctText=String(correct).trim();
+const matchingOption=options.find(o=>o.trim().toLowerCase()===correctText.toLowerCase());
+
+if(!matchingOption){
+throw Error(`La bonne réponse de la question ${index+1} doit correspondre à l'une des options proposées.`);
+}
+
+normalized.options=options;
+normalized.correctAnswer=matchingOption;
+}
+
+return normalized;
+});
+
 data.questionsJSON=JSON.stringify(questions);
 data.dureeMinutes=Number(data.dureeMinutes||30);
-if(data.dureeMinutes<1)throw Error("La durée doit être d'au moins une minute.");
-data.noteMax=Number(data.noteMax||questions.reduce((s,q)=>s+Number(q.points),0));
-data.professeurUid=role==="professeur"?currentUser.uid:(data.professeurUid||"");
-}catch(err){toast(err.message||"Le JSON des questions est invalide.",true);return}
+if(!Number.isFinite(data.dureeMinutes)||data.dureeMinutes<1){
+throw Error("La durée doit être d'au moins une minute.");
 }
+
+data.noteMax=Number(data.noteMax||questions.reduce((sum,q)=>sum+q.points,0));
+if(!Number.isFinite(data.noteMax)||data.noteMax<=0){
+throw Error("La note maximale doit être positive.");
+}
+
+data.professeurUid=role==="professeur"?currentUser.uid:(data.professeurUid||"");
+
+}catch(err){
+toast(err.message||"Le JSON des questions est invalide.",true);
+return;
+}
+}
+
 if(["devoirs","remises","resultats","affectations","examens"].includes(module.id)){
 if(role==="professeur"){data.professeurUid=currentUser.uid;data.professeurId=currentUser.uid}
 else if(data.professeurUid)data.professeurId=data.professeurUid
@@ -488,7 +568,13 @@ finally{btn.disabled=false;btn.textContent="Enregistrer la note de cours"}
 
 /* EXAMENS CHRONOMÉTRÉS */
 function stopTimer(){if(timerInterval){clearInterval(timerInterval);timerInterval=null}}
-function parseQuestions(exam){try{const q=JSON.parse(exam.questionsJSON||"[]");return Array.isArray(q)?q:[]}catch{return[]}}
+function parseQuestions(exam){
+try{
+const parsed=JSON.parse(exam.questionsJSON||"[]");
+const questions=Array.isArray(parsed)?parsed:(parsed&&Array.isArray(parsed.questions)?parsed.questions:[]);
+return questions;
+}catch{return[]}
+}
 function examAvailable(exam){
 const now=Date.now(),start=exam.dateDebut?new Date(exam.dateDebut).getTime():0,end=exam.dateLimite?new Date(exam.dateLimite).getTime():Infinity;
 return now>=start&&now<=end
@@ -514,7 +600,7 @@ $("pageContent").querySelectorAll("[data-start-exam]").forEach(b=>b.addEventList
 async function renderTeacherExams(){
 const snap=isAdmin()?await getDocs(collection(db,"examens")):await getDocs(query(collection(db,"examens"),where("professeurUid","==",currentUser.uid)));
 const exams=snap.docs.map(d=>({id:d.id,...d.data()}));
-$("pageContent").innerHTML=`<div class="card"><div class="page-head"><div><h3>Gestion des examens</h3><p class="muted">Créez des examens QCM et des questions écrites avec une durée définie.</p></div><button class="btn btn-primary" id="createExamBtn" type="button">＋ Créer un examen</button></div><div class="notice">Les QCM sont corrigés automatiquement. Les réponses écrites restent à corriger par le professeur.</div><div id="recordFormArea"></div><div class="table-wrap"><table><thead><tr><th>Examen</th><th>Classe</th><th>Durée</th><th>Questions</th><th>Actions</th></tr></thead><tbody>${exams.map(e=>`<tr><td><b>${escapeHTML(e.titre||"Examen")}</b><div>${escapeHTML(e.matiereId||"")}</div></td><td>${escapeHTML(e.classeId||"")}</td><td>${Number(e.dureeMinutes||30)} min</td><td>${parseQuestions(e).length}</td><td><div class="actions"><button class="btn btn-secondary" data-edit-exam="${escapeHTML(e.id)}">Modifier</button><button class="btn btn-primary" data-results-exam="${escapeHTML(e.id)}">Tentatives</button>${isAdmin()?`<button class="btn btn-danger" data-delete-exam="${escapeHTML(e.id)}">Supprimer</button>`:""}</div></td></tr>`).join("")||'<tr><td colspan="5">Aucun examen créé.</td></tr>'}</tbody></table></div><div id="examExtra"></div></div>`;
+$("pageContent").innerHTML=`<div class="card"><div class="page-head"><div><h3>Gestion des examens</h3><p class="muted">Créez des examens QCM et des questions écrites avec une durée définie.</p></div><button class="btn btn-primary" id="createExamBtn" type="button">＋ Créer un examen</button></div><div class="notice">Les QCM sont corrigés automatiquement. Les réponses écrites restent à corriger par le professeur. Le JSON peut être une liste de questions ou un objet avec une propriété « questions ».</div><div id="recordFormArea"></div><div class="table-wrap"><table><thead><tr><th>Examen</th><th>Classe</th><th>Durée</th><th>Questions</th><th>Actions</th></tr></thead><tbody>${exams.map(e=>`<tr><td><b>${escapeHTML(e.titre||"Examen")}</b><div>${escapeHTML(e.matiereId||"")}</div></td><td>${escapeHTML(e.classeId||"")}</td><td>${Number(e.dureeMinutes||30)} min</td><td>${parseQuestions(e).length}</td><td><div class="actions"><button class="btn btn-secondary" data-edit-exam="${escapeHTML(e.id)}">Modifier</button><button class="btn btn-primary" data-results-exam="${escapeHTML(e.id)}">Tentatives</button>${isAdmin()?`<button class="btn btn-danger" data-delete-exam="${escapeHTML(e.id)}">Supprimer</button>`:""}</div></td></tr>`).join("")||'<tr><td colspan="5">Aucun examen créé.</td></tr>'}</tbody></table></div><div id="examExtra"></div></div>`;
 $("createExamBtn").addEventListener("click",()=>showRecordForm(modules.find(m=>m.id==="examens"),null));
 $("pageContent").querySelectorAll("[data-edit-exam]").forEach(b=>b.addEventListener("click",()=>{const e=exams.find(x=>x.id===b.dataset.editExam);if(e)showRecordForm(modules.find(m=>m.id==="examens"),e)}));
 $("pageContent").querySelectorAll("[data-delete-exam]").forEach(b=>b.addEventListener("click",async()=>{if(!confirm("Supprimer cet examen ? Les tentatives existantes ne seront pas supprimées automatiquement."))return;try{await deleteDoc(doc(db,"examens",b.dataset.deleteExam));toast("Examen supprimé.");await renderExams()}catch(err){toast(friendlyError(err),true)}}));
