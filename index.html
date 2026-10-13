@@ -94,6 +94,9 @@ td{overflow-wrap:anywhere}
 .exam-option input{width:auto;margin-top:3px}
 .exam-option span{flex:1}
 .exam-result{padding:16px;background:#dcfce7;border-radius:12px;color:#166534}
+.course-note{border:1px solid var(--border);border-radius:12px;padding:16px;margin:14px 0;background:#fff}
+.course-note img{display:block;max-width:100%;max-height:700px;object-fit:contain;margin:12px auto;border-radius:8px;border:1px solid var(--border)}
+.course-text{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.75}
 @media(max-width:800px){
 .topbar{height:auto;align-items:flex-start;flex-direction:column}
 .top-actions{width:100%}
@@ -262,11 +265,12 @@ const modules=[
 {id:"statistiques",title:"Statistiques",collection:"statistiques",fields:[["nom","Nom"],["description","Description"],["valeur","Valeur"]]},
 {id:"configuration",title:"Configuration",collection:"configuration",fields:[["nom","Nom"],["valeur","Valeur"],["description","Description"]]}
 ];
+
 const mainNav=[
-["accueil","🏠","Accueil"],["etudiants","🎓","Étudiants"],["eleves","👨‍🎓","Élèves"],["professeurs","👨‍🏫","Professeurs"],["departements","🏢","Départements"],["filieres","📚","Filières"],["classes","🏫","Classes"],["matieres","📖","Matières"],["cours","📝","Cours"],["annees","📅","Années académiques"],["affectations","🔗","Affectations"],["inscriptions","📋","Élèves / Classes"],["devoirs","🗒️","Devoirs"],["examens","⏱️","Examens chronométrés"],["remises","📥","Remises / Corrections"],["resultats","📊","Résultats"]
+["accueil","🏠","Accueil"],["etudiants","🎓","Étudiants"],["eleves","👨‍🎓","Élèves"],["professeurs","👨‍🏫","Professeurs"],["departements","🏢","Départements"],["filieres","📚","Filières"],["classes","🏫","Classes"],["matieres","📖","Matières"],["cours","📝","Cours"],["annees","📅","Années académiques"],["affectations","🔗","Affectations"],["inscriptions","📋","Élèves / Classes"],["devoirs","🗒️","Devoirs"],["examens","⏱️","Examens chronométrés"],["notes_cours","📒","Notes de cours"],["remises","📥","Remises / Corrections"],["resultats","📊","Résultats"]
 ];
-const studentPages=["accueil","devoirs","examens","remises","resultats"];
-const teacherPages=["accueil","devoirs","examens","remises","resultats"];
+const studentPages=["accueil","devoirs","examens","notes_cours","remises","resultats"];
+const teacherPages=["accueil","devoirs","examens","notes_cours","remises","resultats"];
 
 function buildNavigation(){
 const nav=$("navigation");nav.innerHTML="";
@@ -282,10 +286,17 @@ async function openPage(page){
 if(!isApproved())return;
 if(!isAdmin()&&!studentPages.includes(page)&&!teacherPages.includes(page)){toast("Vous n'avez pas accès à ce module.",true);return}
 stopTimer();currentPage=page;editingId=null;buildNavigation();
-const titles={accueil:"Tableau de bord",utilisateurs:"Gestion des utilisateurs",sauvegarde:"Données / Sauvegarde"};
+const titles={accueil:"Tableau de bord",utilisateurs:"Gestion des utilisateurs",sauvegarde:"Données / Sauvegarde",notes_cours:"Notes de cours"};
 const module=modules.find(m=>m.id===page);$("pageTitle").textContent=titles[page]||module?.title||page;$("pageContent").innerHTML='<div class="card">Chargement…</div>';
-try{if(page==="accueil")return await renderDashboard();if(page==="utilisateurs")return await renderUsers();if(page==="sauvegarde")return await renderBackup();if(page==="examens")return await renderExams();if(module)return await renderModule(module);$("pageContent").innerHTML='<div class="card">Module non disponible.</div>'}
-catch(err){console.error(err);$("pageContent").innerHTML=`<div class="card"><b>Erreur :</b> ${escapeHTML(friendlyError(err))}<p class="muted">Vérifiez les règles Firestore et les autorisations.</p></div>`}
+try{
+if(page==="accueil")return await renderDashboard();
+if(page==="utilisateurs")return await renderUsers();
+if(page==="sauvegarde")return await renderBackup();
+if(page==="examens")return await renderExams();
+if(page==="notes_cours")return await renderNotesCours();
+if(module)return await renderModule(module);
+$("pageContent").innerHTML='<div class="card">Module non disponible.</div>'
+}catch(err){console.error(err);$("pageContent").innerHTML=`<div class="card"><b>Erreur :</b> ${escapeHTML(friendlyError(err))}<p class="muted">Vérifiez les règles Firestore et les autorisations.</p></div>`}
 }
 $("refreshBtn").addEventListener("click",()=>openPage(currentPage));
 window.goPage=page=>openPage(page);
@@ -302,14 +313,14 @@ try{
 const c=await Promise.all(["etudiants","eleves","professeurs","classes","matieres","devoirs","examens"].map(countCollection));
 const pending=await getDocs(query(collection(db,"users"),where("status","==","attente")));
 const stats=[["🎓","Étudiants / Élèves",Math.max(c[0],c[1])],["👨‍🏫","Professeurs",c[2]],["🏫","Classes",c[3]],["📚","Matières",c[4]],["📝","Devoirs",c[5]],["⏱️","Examens",c[6]],["⏳","Comptes en attente",pending.size]];
-content.innerHTML=welcome+`<div class="stats-grid">${stats.map(([i,l,v])=>`<div class="stat"><small>${i} ${escapeHTML(l)}</small><strong>${v}</strong></div>`).join("")}</div><div class="dashboard-grid">${dashboardAction("👥","Utilisateurs","Valider les comptes et attribuer les rôles.","utilisateurs","Gérer les comptes")}${dashboardAction("🏫","Classes et groupes","Organiser les classes.","classes")}${dashboardAction("🎓","Étudiants","Gérer les dossiers.","etudiants")}${dashboardAction("👨‍🏫","Professeurs","Gérer les professeurs.","professeurs")}${dashboardAction("📚","Cours et matières","Organiser les cours.","matieres")}${dashboardAction("📝","Devoirs","Gérer les travaux.","devoirs")}${dashboardAction("⏱️","Examens chronométrés","Créer des examens QCM et écrits.","examens")}${dashboardAction("📥","Remises et corrections","Suivre les travaux remis.","remises")}${dashboardAction("📊","Résultats","Consulter les notes.","resultats")}${dashboardAction("💾","Sauvegarde","Exporter les données.","sauvegarde")}</div>`;
+content.innerHTML=welcome+`<div class="stats-grid">${stats.map(([i,l,v])=>`<div class="stat"><small>${i} ${escapeHTML(l)}</small><strong>${v}</strong></div>`).join("")}</div><div class="dashboard-grid">${dashboardAction("👥","Utilisateurs","Valider les comptes et attribuer les rôles.","utilisateurs","Gérer les comptes")}${dashboardAction("🏫","Classes et groupes","Organiser les classes.","classes")}${dashboardAction("🎓","Étudiants","Gérer les dossiers.","etudiants")}${dashboardAction("👨‍🏫","Professeurs","Gérer les professeurs.","professeurs")}${dashboardAction("📚","Cours et matières","Organiser les cours.","matieres")}${dashboardAction("📝","Devoirs","Gérer les travaux.","devoirs")}${dashboardAction("⏱️","Examens chronométrés","Créer des examens QCM et écrits.","examens")}${dashboardAction("📒","Notes de cours","Publier des cours et des photos de pages.","notes_cours")}${dashboardAction("📥","Remises et corrections","Suivre les travaux remis.","remises")}${dashboardAction("📊","Résultats","Consulter les notes.","resultats")}${dashboardAction("💾","Sauvegarde","Exporter les données.","sauvegarde")}</div>`;
 }catch(err){content.innerHTML=welcome+'<div class="notice">Certaines statistiques ne peuvent pas être chargées. Vérifiez les autorisations Firestore.</div>'+dashboardAction("⏱️","Examens chronométrés","Créer et suivre les examens.","examens")}
 return
 }
 if(role==="professeur"){
-content.innerHTML=welcome+`<div class="card"><h3>Votre espace professeur</h3><p>Préparez les devoirs, créez des examens chronométrés, corrigez les travaux et consultez les résultats.</p></div><div class="dashboard-grid">${dashboardAction("📝","Mes devoirs","Gérer les devoirs.","devoirs")}${dashboardAction("⏱️","Examens","Créer des examens et consulter les tentatives.","examens")}${dashboardAction("📥","Travaux remis","Consulter les remises.","remises")}${dashboardAction("📊","Notes et résultats","Consulter ou saisir les résultats.","resultats")}</div>`;return
+content.innerHTML=welcome+`<div class="card"><h3>Votre espace professeur</h3><p>Préparez les devoirs, créez des examens chronométrés, publiez des notes de cours, corrigez les travaux et consultez les résultats.</p></div><div class="dashboard-grid">${dashboardAction("📝","Mes devoirs","Gérer les devoirs.","devoirs")}${dashboardAction("⏱️","Examens","Créer des examens et consulter les tentatives.","examens")}${dashboardAction("📒","Notes de cours","Publier du texte et une photo de page pour les élèves.","notes_cours")}${dashboardAction("📥","Travaux remis","Consulter les remises.","remises")}${dashboardAction("📊","Notes et résultats","Consulter ou saisir les résultats.","resultats")}</div>`;return
 }
-content.innerHTML=welcome+`<div class="card"><h3>Votre espace étudiant</h3><p>Retrouvez les devoirs, les examens, vos remises et vos résultats.</p></div><div class="dashboard-grid">${dashboardAction("📝","Mes devoirs","Consulter les devoirs.","devoirs")}${dashboardAction("⏱️","Examens chronométrés","Passer un examen et suivre le temps restant.","examens")}${dashboardAction("📤","Mes remises","Consulter ou envoyer les travaux.","remises")}${dashboardAction("📊","Mes résultats","Consulter les notes et commentaires.","resultats")}</div>`
+content.innerHTML=welcome+`<div class="card"><h3>Votre espace étudiant</h3><p>Retrouvez les devoirs, les examens, les notes de cours, vos remises et vos résultats.</p></div><div class="dashboard-grid">${dashboardAction("📝","Mes devoirs","Consulter les devoirs.","devoirs")}${dashboardAction("⏱️","Examens chronométrés","Passer un examen et suivre le temps restant.","examens")}${dashboardAction("📒","Notes de cours","Lire et copier le texte de vos cours.","notes_cours")}${dashboardAction("📤","Mes remises","Consulter ou envoyer les travaux.","remises")}${dashboardAction("📊","Mes résultats","Consulter les notes et commentaires.","resultats")}</div>`
 }
 
 async function getModuleRecords(module){
@@ -327,6 +338,7 @@ snap=p.role==="professeur"?await getDocs(query(collection(db,"resultats"),where(
 }else return[];
 return snap.docs.map(d=>({id:d.id,...d.data()}))
 }
+
 async function renderModule(module){
 const admin=isAdmin(),records=await getModuleRecords(module),role=currentProfile?.role;
 const canAdd=admin||(module.id==="devoirs"&&role==="professeur")||(module.id==="remises"&&["professeur","eleve","etudiant"].includes(role))||(module.id==="resultats"&&role==="professeur");
@@ -335,15 +347,10 @@ if($("newRecordBtn"))$("newRecordBtn").addEventListener("click",()=>showRecordFo
 $("pageContent").querySelectorAll("[data-edit]").forEach(b=>b.addEventListener("click",()=>{const r=records.find(x=>x.id===b.dataset.edit);if(r)showRecordForm(module,r)}));
 $("pageContent").querySelectorAll("[data-delete]").forEach(b=>b.addEventListener("click",async()=>{if(!confirm("Supprimer définitivement cet enregistrement ?"))return;try{await deleteDoc(doc(db,module.collection,b.dataset.delete));toast("Enregistrement supprimé.");await openPage(module.id)}catch(e){toast(friendlyError(e),true)}}))
 }
+
 function showRecordForm(module,record){
 const role=currentProfile?.role;
-
-/* CORRECTION : les professeurs peuvent ouvrir le formulaire des examens. */
-if(!isAdmin()&&!["devoirs","examens","remises","resultats"].includes(module.id)){
-toast("Action réservée à l'administrateur.",true);
-return;
-}
-
+if(!isAdmin()&&!["devoirs","examens","remises","resultats"].includes(module.id)){toast("Action réservée à l'administrateur.",true);return}
 editingId=record?.id||null;
 const fields=module.fields.map(([key,label])=>{
 let value=record?.[key]??"";
@@ -357,8 +364,11 @@ const type=["dateDebut","dateLimite","debut","fin","dateRemise"].includes(key)?"
 const placeholder=key==="questionsJSON"?'[{"type":"qcm","question":"Question ?","options":["A","B","C"],"correctAnswer":"A","points":2},{"type":"ecrit","question":"Expliquez...","points":5}]':"";
 return`<div class="field ${large?"full":""}"><label>${escapeHTML(label)}</label>${large?`<textarea name="${escapeHTML(key)}" placeholder="${escapeHTML(placeholder)}">${escapeHTML(value)}</textarea>`:`<input name="${escapeHTML(key)}" value="${escapeHTML(value)}" type="${type}" ${number?'min="0"':''} placeholder="${escapeHTML(placeholder)}">`}</div>`
 }).join("");
-$("recordFormArea").innerHTML=`<div class="card"><h3>${record?"Modifier":"Ajouter"} — ${escapeHTML(module.title)}</h3>${module.id==="examens"?'<div class="notice">Pour créer les questions, saisissez un tableau JSON. Chaque question doit contenir « type » (« qcm » ou « ecrit »), « question » et « points ». Une question QCM doit aussi avoir « options » et « correctAnswer ». Exemple disponible dans le champ Questions au format JSON.</div>':""}<form id="recordForm"><div class="form-grid">${fields}</div><div class="actions" style="margin-top:14px"><button class="btn btn-primary" type="submit">Enregistrer</button><button class="btn btn-secondary" id="cancelFormBtn" type="button">Annuler</button></div></form></div>`;
-$("cancelFormBtn").addEventListener("click",()=>{$("recordFormArea").innerHTML="";editingId=null});
+const area=$("recordFormArea");
+if(!area){toast("Impossible d'ouvrir le formulaire : espace de formulaire absent.",true);return}
+area.innerHTML=`<div class="card"><h3>${record?"Modifier":"Ajouter"} — ${escapeHTML(module.title)}</h3>${module.id==="examens"?'<div class="notice">Questions JSON : chaque question doit contenir « type » (« qcm » ou « ecrit »), « question » et « points ». Une question QCM doit aussi contenir « options » et « correctAnswer ». Exemple disponible dans le champ ci-dessous.</div>':""}<form id="recordForm"><div class="form-grid">${fields}</div><div class="actions" style="margin-top:14px"><button class="btn btn-primary" type="submit">Enregistrer</button><button class="btn btn-secondary" id="cancelFormBtn" type="button">Annuler</button></div></form></div>`;
+area.scrollIntoView({behavior:"smooth",block:"start"});
+$("cancelFormBtn").addEventListener("click",()=>{area.innerHTML="";editingId=null});
 $("recordForm").addEventListener("submit",async e=>{
 e.preventDefault();const fd=new FormData(e.currentTarget),data={};
 for(const[k,v]of fd.entries())data[k]=String(v).trim();
@@ -388,13 +398,99 @@ toast("Enregistrement effectué.");editingId=null;await openPage(module.id)
 })
 }
 
+/* NOTES DE COURS : texte + photo compressée directement dans Firestore */
+async function compressPhoto(file){
+if(!file||!file.type.startsWith("image/"))throw Error("Choisissez un fichier image valide.");
+if(file.size>12*1024*1024)throw Error("La photo dépasse 12 Mo. Choisissez une photo plus petite.");
+const imageURL=URL.createObjectURL(file);
+try{
+const img=new Image();
+await new Promise((resolve,reject)=>{img.onload=resolve;img.onerror=()=>reject(Error("Impossible de lire cette image."));img.src=imageURL});
+const maxSide=1000,scale=Math.min(1,maxSide/Math.max(img.width,img.height));
+const canvas=document.createElement("canvas");
+canvas.width=Math.max(1,Math.round(img.width*scale));canvas.height=Math.max(1,Math.round(img.height*scale));
+const ctx=canvas.getContext("2d");ctx.fillStyle="#ffffff";ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(img,0,0,canvas.width,canvas.height);
+for(const quality of [.72,.58,.45,.32]){
+const data=canvas.toDataURL("image/jpeg",quality);
+if(data.length<330000)return data;
+}
+throw Error("La photo est encore trop volumineuse. Prenez une photo plus nette mais moins grande.");
+}finally{URL.revokeObjectURL(imageURL)}
+}
+async function renderNotesCours(){
+const role=currentProfile?.role,teacher=role==="professeur"||isAdmin();
+let snap;
+if(isAdmin())snap=await getDocs(collection(db,"notes_cours"));
+else if(teacher)snap=await getDocs(query(collection(db,"notes_cours"),where("professeurUid","==",currentUser.uid)));
+else{
+const p=currentProfile||{},classes=Array.isArray(p.classIds)?p.classIds:(p.classeId?[p.classeId]:[]);
+if(!classes.length){
+$("pageContent").innerHTML='<div class="card"><h3>Notes de cours</h3><div class="notice">Votre profil ne contient pas encore de code de classe. Contactez l’administrateur pour associer votre compte à une classe.</div></div>';return;
+}
+let all=[];
+for(const id of classes.slice(0,30)){
+const s=await getDocs(query(collection(db,"notes_cours"),where("classeId","==",id)));
+all.push(...s.docs.map(d=>({id:d.id,...d.data()})));
+}
+const unique=[...new Map(all.map(n=>[n.id,n])).values()];
+return showNotesCours(unique,teacher);
+}
+showNotesCours(snap.docs.map(d=>({id:d.id,...d.data()})),teacher);
+}
+function showNotesCours(notes,teacher){
+const content=$("pageContent");
+content.innerHTML=`<div class="card"><div class="page-head"><div><h3>Notes de cours</h3><p class="muted">${teacher?"Publiez un cours écrit et ajoutez une photo de page.":"Lisez vos cours et copiez leur texte."}</p></div>${teacher?'<button class="btn btn-primary" id="addCourseNoteBtn" type="button">＋ Ajouter une note de cours</button>':""}</div><div id="courseNoteFormArea"></div><div id="courseNotesList">${notes.map(n=>`<article class="course-note"><h3>${escapeHTML(n.titre||"Note de cours")}</h3><p class="muted">Classe : ${escapeHTML(n.classeId||"Non précisée")} ${n.matiereId?" · Matière : "+escapeHTML(n.matiereId):""}</p><div class="course-text" id="courseText-${escapeHTML(n.id)}">${escapeHTML(n.contenu||"")}</div>${n.photoData?`<img src="${n.photoData}" alt="Photo de la page du cours">`:n.photoUrl?`<img src="${escapeHTML(n.photoUrl)}" alt="Photo de la page du cours">`:""}<div class="actions"><button class="btn btn-secondary" data-copy-course="${escapeHTML(n.id)}" type="button">📋 Copier le texte du cours</button>${teacher&&(isAdmin()||n.professeurUid===currentUser.uid)?`<button class="btn btn-secondary" data-edit-course="${escapeHTML(n.id)}" type="button">Modifier</button><button class="btn btn-danger" data-delete-course="${escapeHTML(n.id)}" type="button">Supprimer</button>`:""}</div></article>`).join("")||'<div class="notice">Aucune note de cours publiée pour le moment.</div>'}</div></div>`;
+if(teacher)$("addCourseNoteBtn").addEventListener("click",()=>showCourseNoteForm(null));
+content.querySelectorAll("[data-copy-course]").forEach(b=>b.addEventListener("click",async()=>{
+const el=$("courseText-"+b.dataset.copyCourse),text=el?.innerText||"";
+try{if(navigator.clipboard&&window.isSecureContext)await navigator.clipboard.writeText(text);else{const ta=document.createElement("textarea");ta.value=text;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();const ok=document.execCommand("copy");ta.remove();if(!ok)throw Error("Copie non autorisée")}toast("Texte du cours copié. Vous pouvez le coller dans vos notes.");}
+catch(e){toast("La copie automatique est bloquée. Sélectionnez le texte du cours puis choisissez Copier.",true)}
+}));
+content.querySelectorAll("[data-edit-course]").forEach(b=>b.addEventListener("click",()=>{const n=notes.find(x=>x.id===b.dataset.editCourse);if(n)showCourseNoteForm(n)}));
+content.querySelectorAll("[data-delete-course]").forEach(b=>b.addEventListener("click",async()=>{const n=notes.find(x=>x.id===b.dataset.deleteCourse);if(!n||!confirm("Supprimer cette note de cours ?"))return;try{await deleteDoc(doc(db,"notes_cours",n.id));toast("Note de cours supprimée.");await renderNotesCours()}catch(e){toast(friendlyError(e),true)}}));
+}
+function showCourseNoteForm(note){
+const area=$("courseNoteFormArea");
+if(!area)return;
+area.innerHTML=`<div class="card"><h3>${note?"Modifier la note de cours":"Nouvelle note de cours"}</h3><form id="courseNoteForm"><div class="field"><label for="cnTitre">Titre du cours *</label><input id="cnTitre" name="titre" required maxlength="180" value="${escapeHTML(note?.titre||"")}" placeholder="Ex. Introduction à la biologie"></div><div class="form-grid"><div class="field"><label for="cnClasse">Code de classe *</label><input id="cnClasse" name="classeId" required value="${escapeHTML(note?.classeId||currentProfile?.classeId||"")}" placeholder="Ex. BIO-1"></div><div class="field"><label for="cnMatiere">Matière</label><input id="cnMatiere" name="matiereId" value="${escapeHTML(note?.matiereId||"")}" placeholder="Ex. Biologie"></div></div><div class="field"><label for="cnContenu">Texte du cours</label><textarea id="cnContenu" name="contenu" maxlength="12000" style="min-height:180px" placeholder="Écrivez ou collez ici le texte du cours. Les élèves pourront le copier.">${escapeHTML(note?.contenu||"")}</textarea></div><div class="field"><label for="cnPhoto">Photo d'une page du cours (facultatif)</label><input id="cnPhoto" name="photo" type="file" accept="image/*" capture="environment"><p class="muted">Sur téléphone, vous pouvez prendre une photo avec l'appareil photo. L'image sera réduite avant son enregistrement dans Firestore.</p><div id="cnPhotoPreview">${note?.photoData?`<img src="${note.photoData}" alt="Aperçu" style="max-width:100%;max-height:260px">`:note?.photoUrl?`<img src="${escapeHTML(note.photoUrl)}" alt="Aperçu" style="max-width:100%;max-height:260px">`:""}</div><label><input id="cnRemovePhoto" type="checkbox" style="width:auto"> Retirer la photo actuelle</label></div><div class="actions"><button id="saveCourseNoteBtn" class="btn btn-primary" type="submit">Enregistrer la note de cours</button><button id="cancelCourseNoteBtn" class="btn btn-secondary" type="button">Annuler</button></div></form></div>`;
+$("cancelCourseNoteBtn").addEventListener("click",()=>area.innerHTML="");
+$("cnPhoto").addEventListener("change",async()=>{
+const file=$("cnPhoto").files?.[0];if(!file)return;
+try{const data=await compressPhoto(file);$("cnPhotoPreview").innerHTML=`<img src="${data}" alt="Aperçu de la photo" style="max-width:100%;max-height:260px">`;}
+catch(e){$("cnPhoto").value="";toast(e.message||"Impossible de traiter la photo.",true)}
+});
+$("courseNoteForm").addEventListener("submit",async e=>{
+e.preventDefault();
+if(!isAdmin()&&currentProfile?.role!=="professeur"){toast("Seul un professeur ou l'administrateur peut publier une note de cours.",true);return}
+const btn=$("saveCourseNoteBtn");btn.disabled=true;btn.textContent="Enregistrement…";
+try{
+const data={
+titre:$("cnTitre").value.trim(),
+classeId:$("cnClasse").value.trim(),
+matiereId:$("cnMatiere").value.trim(),
+contenu:$("cnContenu").value.trim(),
+professeurUid:isAdmin()?(note?.professeurUid||currentUser.uid):currentUser.uid,
+updatedAt:stamp()
+};
+if(!data.titre||!data.classeId)throw Error("Le titre et le code de classe sont obligatoires.");
+if(data.contenu.length>12000)throw Error("Le texte du cours est trop long.");
+if($("cnRemovePhoto").checked){data.photoData="";data.photoUrl=""}
+const file=$("cnPhoto").files?.[0];
+if(file)data.photoData=await compressPhoto(file);
+if(!data.contenu&&!data.photoData&&!data.photoUrl)throw Error("Ajoutez le texte du cours ou une photo de page.");
+if(note){await updateDoc(doc(db,"notes_cours",note.id),data)}
+else{data.createdAt=stamp();await addDoc(collection(db,"notes_cours"),data)}
+toast("Note de cours enregistrée.");await renderNotesCours();
+}catch(err){console.error(err);toast(friendlyError(err),true)}
+finally{btn.disabled=false;btn.textContent="Enregistrer la note de cours"}
+});
+}
+
 /* EXAMENS CHRONOMÉTRÉS */
 function stopTimer(){if(timerInterval){clearInterval(timerInterval);timerInterval=null}}
 function parseQuestions(exam){try{const q=JSON.parse(exam.questionsJSON||"[]");return Array.isArray(q)?q:[]}catch{return[]}}
 function examAvailable(exam){
-const now=Date.now();
-const start=exam.dateDebut?new Date(exam.dateDebut).getTime():0;
-const end=exam.dateLimite?new Date(exam.dateLimite).getTime():Infinity;
+const now=Date.now(),start=exam.dateDebut?new Date(exam.dateDebut).getTime():0,end=exam.dateLimite?new Date(exam.dateLimite).getTime():Infinity;
 return now>=start&&now<=end
 }
 function fmtTime(ms){const sec=Math.max(0,Math.ceil(ms/1000));return`${String(Math.floor(sec/60)).padStart(2,"0")}:${String(sec%60).padStart(2,"0")}`}
@@ -403,38 +499,22 @@ stopTimer();
 const admin=isAdmin(),role=currentProfile?.role;
 if(admin||role==="professeur")return renderTeacherExams();
 const p=currentProfile||{},classes=Array.isArray(p.classIds)?p.classIds:(p.classeId?[p.classeId]:[]);
-if(!classes.length){
-$("pageContent").innerHTML='<div class="card"><h3>Examens chronométrés</h3><div class="notice">Votre compte n’est pas encore associé à une classe. Contactez l’administrateur pour ajouter votre code de classe dans votre profil.</div></div>';return
-}
+if(!classes.length){$("pageContent").innerHTML='<div class="card"><h3>Examens chronométrés</h3><div class="notice">Votre compte n’est pas encore associé à une classe. Contactez l’administrateur pour ajouter votre code de classe dans votre profil.</div></div>';return}
 let exams=[];
-for(const id of classes.slice(0,30)){
-const s=await getDocs(query(collection(db,"examens"),where("classeId","==",id)));
-exams.push(...s.docs.map(d=>({id:d.id,...d.data()})))
-}
+for(const id of classes.slice(0,30)){const s=await getDocs(query(collection(db,"examens"),where("classeId","==",id)));exams.push(...s.docs.map(d=>({id:d.id,...d.data()})))}
 exams=[...new Map(exams.map(e=>[e.id,e])).values()];
 let attempts=[];
 try{const s=await getDocs(query(collection(db,"tentatives_examens"),where("etudiantId","==",currentUser.uid)));attempts=s.docs.map(d=>({id:d.id,...d.data()}))}catch(err){console.error(err)}
-const submitted=new Set(attempts.filter(a=>a.statut==="termine").map(a=>a.examenId));
-$("pageContent").innerHTML=`<div class="card"><h3>Mes examens chronométrés</h3><p class="muted">Le chronomètre démarre lorsque vous commencez. Le temps de départ est enregistré dans Firestore pour continuer après actualisation de la page.</p><div class="table-wrap"><table><thead><tr><th>Examen</th><th>Durée</th><th>Disponibilité</th><th>Résultat</th><th>Action</th></tr></thead><tbody>${exams.map(e=>{
-const attempt=attempts.find(a=>a.examenId===e.id&&a.statut==="termine");
-const ongoing=attempts.find(a=>a.examenId===e.id&&a.statut==="en_cours");
-const available=examAvailable(e);
-return`<tr><td><b>${escapeHTML(e.titre||"Examen")}</b><div>${escapeHTML(e.description||"")}</div></td><td>${Number(e.dureeMinutes||30)} minutes</td><td>${available?'<span class="badge badge-ok">Disponible</span>':'<span class="badge badge-wait">Hors période</span>'}</td><td>${attempt?`Note : ${Number(attempt.noteObtenue||0)} / ${Number(attempt.noteMax||e.noteMax||0)}${attempt.correctionManuelle?' — Correction à terminer':''}`:ongoing?"En cours":"Non commencé"}</td><td>${attempt?'<span class="badge badge-ok">Terminé</span>':available?`<button class="btn btn-primary" data-start-exam="${escapeHTML(e.id)}">${ongoing?"Reprendre":"Commencer"}</button>`:"—"}</td></tr>`
+$("pageContent").innerHTML=`<div class="card"><h3>Mes examens chronométrés</h3><p class="muted">Le chronomètre démarre lorsque vous commencez. Le temps de départ est enregistré dans Firestore.</p><div class="table-wrap"><table><thead><tr><th>Examen</th><th>Durée</th><th>Disponibilité</th><th>Résultat</th><th>Action</th></tr></thead><tbody>${exams.map(e=>{
+const attempt=attempts.find(a=>a.examenId===e.id&&a.statut==="termine"),ongoing=attempts.find(a=>a.examenId===e.id&&a.statut==="en_cours"),available=examAvailable(e);
+return`<tr><td><b>${escapeHTML(e.titre||"Examen")}</b><div>${escapeHTML(e.description||"")}</div></td><td>${Number(e.dureeMinutes||30)} minutes</td><td>${available?'<span class="badge badge-ok">Disponible</span>':'<span class="badge badge-wait">Hors période</span>'}</td><td>${attempt?`Note : ${Number(attempt.noteObtenue||0)} / ${Number(attempt.noteMax||e.noteMax||0)}`:ongoing?"En cours":"Non commencé"}</td><td>${attempt?'<span class="badge badge-ok">Terminé</span>':available?`<button class="btn btn-primary" data-start-exam="${escapeHTML(e.id)}">${ongoing?"Reprendre":"Commencer"}</button>`:"—"}</td></tr>`
 }).join("")||'<tr><td colspan="5">Aucun examen disponible pour vos classes.</td></tr>'}</tbody></table></div></div>`;
 $("pageContent").querySelectorAll("[data-start-exam]").forEach(b=>b.addEventListener("click",()=>startExam(exams.find(e=>e.id===b.dataset.startExam),attempts.find(a=>a.examenId===b.dataset.startExam&&a.statut==="en_cours"))))
 }
 async function renderTeacherExams(){
-
-/* CORRECTION : le professeur charge ses propres examens avec une requête Firestore autorisée. */
-const snap=isAdmin()
-  ? await getDocs(collection(db,"examens"))
-  : await getDocs(query(
-      collection(db,"examens"),
-      where("professeurUid","==",currentUser.uid)
-    ));
-
+const snap=isAdmin()?await getDocs(collection(db,"examens")):await getDocs(query(collection(db,"examens"),where("professeurUid","==",currentUser.uid)));
 const exams=snap.docs.map(d=>({id:d.id,...d.data()}));
-$("pageContent").innerHTML=`<div class="card"><div class="page-head"><div><h3>Gestion des examens</h3><p class="muted">Créez des examens QCM et des questions écrites avec une durée définie.</p></div><button class="btn btn-primary" id="createExamBtn" type="button">＋ Créer un examen</button></div><div class="notice">Le format des questions est un tableau JSON. Types : « qcm » et « ecrit ». Les QCM sont corrigés automatiquement. Les réponses écrites restent à corriger par le professeur.</div><div class="table-wrap"><table><thead><tr><th>Examen</th><th>Classe</th><th>Durée</th><th>Questions</th><th>Actions</th></tr></thead><tbody>${exams.map(e=>`<tr><td><b>${escapeHTML(e.titre||"Examen")}</b><div>${escapeHTML(e.matiereId||"")}</div></td><td>${escapeHTML(e.classeId||"")}</td><td>${Number(e.dureeMinutes||30)} min</td><td>${parseQuestions(e).length}</td><td><div class="actions"><button class="btn btn-secondary" data-edit-exam="${escapeHTML(e.id)}">Modifier</button><button class="btn btn-primary" data-results-exam="${escapeHTML(e.id)}">Tentatives</button>${isAdmin()?`<button class="btn btn-danger" data-delete-exam="${escapeHTML(e.id)}">Supprimer</button>`:""}</div></td></tr>`).join("")||'<tr><td colspan="5">Aucun examen créé.</td></tr>'}</tbody></table></div><div id="examExtra"></div></div>`;
+$("pageContent").innerHTML=`<div class="card"><div class="page-head"><div><h3>Gestion des examens</h3><p class="muted">Créez des examens QCM et des questions écrites avec une durée définie.</p></div><button class="btn btn-primary" id="createExamBtn" type="button">＋ Créer un examen</button></div><div class="notice">Les QCM sont corrigés automatiquement. Les réponses écrites restent à corriger par le professeur.</div><div id="recordFormArea"></div><div class="table-wrap"><table><thead><tr><th>Examen</th><th>Classe</th><th>Durée</th><th>Questions</th><th>Actions</th></tr></thead><tbody>${exams.map(e=>`<tr><td><b>${escapeHTML(e.titre||"Examen")}</b><div>${escapeHTML(e.matiereId||"")}</div></td><td>${escapeHTML(e.classeId||"")}</td><td>${Number(e.dureeMinutes||30)} min</td><td>${parseQuestions(e).length}</td><td><div class="actions"><button class="btn btn-secondary" data-edit-exam="${escapeHTML(e.id)}">Modifier</button><button class="btn btn-primary" data-results-exam="${escapeHTML(e.id)}">Tentatives</button>${isAdmin()?`<button class="btn btn-danger" data-delete-exam="${escapeHTML(e.id)}">Supprimer</button>`:""}</div></td></tr>`).join("")||'<tr><td colspan="5">Aucun examen créé.</td></tr>'}</tbody></table></div><div id="examExtra"></div></div>`;
 $("createExamBtn").addEventListener("click",()=>showRecordForm(modules.find(m=>m.id==="examens"),null));
 $("pageContent").querySelectorAll("[data-edit-exam]").forEach(b=>b.addEventListener("click",()=>{const e=exams.find(x=>x.id===b.dataset.editExam);if(e)showRecordForm(modules.find(m=>m.id==="examens"),e)}));
 $("pageContent").querySelectorAll("[data-delete-exam]").forEach(b=>b.addEventListener("click",async()=>{if(!confirm("Supprimer cet examen ? Les tentatives existantes ne seront pas supprimées automatiquement."))return;try{await deleteDoc(doc(db,"examens",b.dataset.deleteExam));toast("Examen supprimé.");await renderExams()}catch(err){toast(friendlyError(err),true)}}));
@@ -443,31 +523,24 @@ $("pageContent").querySelectorAll("[data-results-exam]").forEach(b=>b.addEventLi
 async function showExamAttempts(exam){
 const area=$("examExtra");area.innerHTML='<div class="card">Chargement des tentatives…</div>';
 try{
-const s=await getDocs(query(collection(db,"tentatives_examens"),where("examenId","==",exam.id)));
-const attempts=s.docs.map(d=>({id:d.id,...d.data()}));
+const s=await getDocs(query(collection(db,"tentatives_examens"),where("examenId","==",exam.id))),attempts=s.docs.map(d=>({id:d.id,...d.data()}));
 area.innerHTML=`<div class="card"><h3>Tentatives — ${escapeHTML(exam.titre||"Examen")}</h3><div class="table-wrap"><table><thead><tr><th>Compte étudiant</th><th>Note QCM</th><th>Note écrite</th><th>Statut</th><th>Correction</th></tr></thead><tbody>${attempts.map(a=>`<tr><td>${escapeHTML(a.etudiantEmail||a.etudiantId||"")}</td><td>${Number(a.noteQCM||0)}</td><td>${a.correctionManuelle?"À corriger":Number(a.noteEcrite||0)}</td><td>${escapeHTML(a.statut||"")}</td><td>${a.statut==="termine"&&a.correctionManuelle?`<button class="btn btn-primary" data-grade-attempt="${escapeHTML(a.id)}">Corriger</button>`:"—"}</td></tr>`).join("")||'<tr><td colspan="5">Aucune tentative.</td></tr>'}</tbody></table></div><div id="gradeArea"></div></div>`;
 area.querySelectorAll("[data-grade-attempt]").forEach(b=>b.addEventListener("click",()=>gradeAttempt(attempts.find(a=>a.id===b.dataset.gradeAttempt),exam)));
 }catch(err){area.innerHTML=`<div class="notice">${escapeHTML(friendlyError(err))}</div>`}
 }
 async function gradeAttempt(attempt,exam){
-const questions=parseQuestions(exam),answers=attempt.reponses||{},written=questions.filter((q,i)=>q.type==="ecrit"&&answers[i]!==undefined);
-const area=$("gradeArea");
+const questions=parseQuestions(exam),answers=attempt.reponses||{},written=questions.filter((q,i)=>q.type==="ecrit"&&answers[i]!==undefined),area=$("gradeArea");
 area.innerHTML=`<h3>Correction des réponses écrites</h3><form id="gradeForm">${written.map(q=>{const i=questions.indexOf(q);return`<div class="exam-question"><h4>${escapeHTML(q.question)}</h4><p><b>Réponse de l'étudiant :</b><br>${escapeHTML(answers[i]||"Aucune réponse")}</p><label>Note (maximum ${Number(q.points)||1})</label><input type="number" name="g${i}" min="0" max="${Number(q.points)||1}" step="0.5" required value="${Number((attempt.notesEcrites||{})[i]||0)}"></div>`}).join("")}<div class="field"><label>Commentaire général</label><textarea name="commentaire">${escapeHTML(attempt.commentaire||"")}</textarea></div><button class="btn btn-primary" type="submit">Enregistrer la correction</button></form>`;
 $("gradeForm").addEventListener("submit",async ev=>{
 ev.preventDefault();const fd=new FormData(ev.currentTarget),notes={};let score=0;
 for(const q of written){const i=questions.indexOf(q),n=Number(fd.get("g"+i));if(n<0||n>Number(q.points)){toast("Une note dépasse le maximum autorisé.",true);return}notes[i]=n;score+=n}
-try{
-const total=Number(attempt.noteQCM||0)+score;
-await updateDoc(doc(db,"tentatives_examens",attempt.id),{notesEcrites:notes,noteEcrite:score,noteObtenue:total,commentaire:String(fd.get("commentaire")||""),correctionManuelle:false,corrigePar:currentUser.uid,dateCorrection:stamp(),updatedAt:stamp()});
-toast("Correction enregistrée.");await showExamAttempts(exam)
-}catch(err){toast(friendlyError(err),true)}
+try{const total=Number(attempt.noteQCM||0)+score;await updateDoc(doc(db,"tentatives_examens",attempt.id),{notesEcrites:notes,noteEcrite:score,noteObtenue:total,commentaire:String(fd.get("commentaire")||""),correctionManuelle:false,corrigePar:currentUser.uid,dateCorrection:stamp(),updatedAt:stamp()});toast("Correction enregistrée.");await showExamAttempts(exam)}catch(err){toast(friendlyError(err),true)}
 })
 }
 async function startExam(exam,existing){
 if(!exam)return;
 if(!examAvailable(exam)){toast("Cet examen n'est pas dans sa période de disponibilité.",true);return}
-const questions=parseQuestions(exam);
-if(!questions.length){toast("Cet examen ne contient aucune question valide.",true);return}
+const questions=parseQuestions(exam);if(!questions.length){toast("Cet examen ne contient aucune question valide.",true);return}
 let attempt=existing;
 if(!attempt){
 if(!confirm(`Commencer « ${exam.titre} » ? La durée est de ${Number(exam.dureeMinutes||30)} minutes. Le travail sera remis automatiquement à la fin du temps.`))return;
@@ -475,19 +548,14 @@ const start=Date.now(),duration=Math.max(1,Number(exam.dureeMinutes||30))*60000;
 const data={examenId:exam.id,titre:exam.titre||"",etudiantId:currentUser.uid,etudiantEmail:currentUser.email||"",classeId:exam.classeId||"",professeurUid:exam.professeurUid||"",debutMs:start,finMs:start+duration,dureeMinutes:Number(exam.dureeMinutes||30),statut:"en_cours",reponses:{},createdAt:stamp(),updatedAt:stamp()};
 try{const ref=await addDoc(collection(db,"tentatives_examens"),data);attempt={id:ref.id,...data}}catch(err){toast(friendlyError(err),true);return}
 }
-activeExam=exam;activeAttempt=attempt;answerCache={...(attempt.reponses||{})};
-renderExamAttempt();
+activeExam=exam;activeAttempt=attempt;answerCache={...(attempt.reponses||{})};renderExamAttempt();
 }
 function renderExamAttempt(){
-stopTimer();
-const exam=activeExam,attempt=activeAttempt,questions=parseQuestions(exam);
-if(!exam||!attempt)return;
+stopTimer();const exam=activeExam,attempt=activeAttempt,questions=parseQuestions(exam);if(!exam||!attempt)return;
 $("pageTitle").textContent=exam.titre||"Examen chronométré";
-$("pageContent").innerHTML=`<div class="card"><div class="page-head"><div><h3>${escapeHTML(exam.titre||"Examen")}</h3><p>${escapeHTML(exam.description||"Lisez chaque question attentivement.")}</p></div><button class="btn btn-secondary" id="leaveExamBtn">Quitter l'examen</button></div><div id="examTimer" class="timer">Calcul du temps…</div><div class="notice">Vos réponses sont enregistrées régulièrement. Lorsque le temps atteint zéro, l'examen est remis automatiquement. Ne fermez pas votre session avant la confirmation de remise.</div><form id="examAnswerForm">${questions.map((q,i)=>`<div class="exam-question"><h4>Question ${i+1} — ${Number(q.points)||1} point(s)</h4><p>${escapeHTML(q.question)}</p>${q.type==="qcm"?(q.options||[]).map((opt,j)=>`<label class="exam-option"><input type="radio" name="q${i}" value="${escapeHTML(opt)}" ${String(answerCache[i]??"")===String(opt)?"checked":""}><span>${escapeHTML(opt)}</span></label>`).join(""):`<textarea name="q${i}" placeholder="Votre réponse…">${escapeHTML(answerCache[i]||"")}</textarea>`}</div>`).join("")}<button class="btn btn-primary btn-block" id="submitExamBtn" type="submit">📤 Remettre mon examen</button></form></div>`;
+$("pageContent").innerHTML=`<div class="card"><div class="page-head"><div><h3>${escapeHTML(exam.titre||"Examen")}</h3><p>${escapeHTML(exam.description||"Lisez chaque question attentivement.")}</p></div><button class="btn btn-secondary" id="leaveExamBtn">Quitter l'examen</button></div><div id="examTimer" class="timer">Calcul du temps…</div><div class="notice">Vos réponses sont enregistrées régulièrement. Lorsque le temps atteint zéro, l'examen est remis automatiquement.</div><form id="examAnswerForm">${questions.map((q,i)=>`<div class="exam-question"><h4>Question ${i+1} — ${Number(q.points)||1} point(s)</h4><p>${escapeHTML(q.question)}</p>${q.type==="qcm"?(q.options||[]).map(opt=>`<label class="exam-option"><input type="radio" name="q${i}" value="${escapeHTML(opt)}" ${String(answerCache[i]??"")===String(opt)?"checked":""}><span>${escapeHTML(opt)}</span></label>`).join(""):`<textarea name="q${i}" placeholder="Votre réponse…">${escapeHTML(answerCache[i]||"")}</textarea>`}</div>`).join("")}<button class="btn btn-primary btn-block" id="submitExamBtn" type="submit">📤 Remettre mon examen</button></form></div>`;
 $("leaveExamBtn").addEventListener("click",async()=>{if(confirm("Quitter l'écran ? Votre tentative reste en cours et le chronomètre continue.")){stopTimer();activeExam=null;activeAttempt=null;await openPage("examens")}});
-const form=$("examAnswerForm");
-form.addEventListener("change",()=>saveCurrentAnswers(false));
-form.addEventListener("input",()=>saveCurrentAnswers(false));
+const form=$("examAnswerForm");form.addEventListener("change",()=>saveCurrentAnswers(false));form.addEventListener("input",()=>saveCurrentAnswers(false));
 form.addEventListener("submit",async e=>{e.preventDefault();if(confirm("Remettre définitivement cet examen ? Vous ne pourrez plus modifier vos réponses."))await submitExam(false)});
 updateTimer();timerInterval=setInterval(updateTimer,1000);
 }
@@ -500,46 +568,24 @@ return answers
 let saveQueue=Promise.resolve();
 function saveCurrentAnswers(showNotice){
 if(!activeAttempt||!$("examAnswerForm"))return;
-answerCache=collectAnswers();
-const answers={...answerCache},attemptId=activeAttempt.id;
+answerCache=collectAnswers();const answers={...answerCache},attemptId=activeAttempt.id;
 saveQueue=saveQueue.then(()=>updateDoc(doc(db,"tentatives_examens",attemptId),{reponses:answers,updatedAt:stamp()})).catch(err=>{console.error(err);if(showNotice)toast("Impossible de sauvegarder les réponses : "+friendlyError(err),true)});
 return saveQueue
 }
 function updateTimer(){
 if(!activeAttempt||!$("examTimer"))return;
-const remaining=Number(activeAttempt.finMs)-Date.now(),el=$("examTimer");
-el.textContent="⏱️ Temps restant : "+fmtTime(remaining);
-el.classList.toggle("warning",remaining<=60000);
-if(remaining<=0){stopTimer();submitExam(true)}
+const remaining=Number(activeAttempt.finMs)-Date.now(),el=$("examTimer");el.textContent="⏱️ Temps restant : "+fmtTime(remaining);el.classList.toggle("warning",remaining<=60000);if(remaining<=0){stopTimer();submitExam(true)}
 }
 async function submitExam(automatic){
 if(!activeExam||!activeAttempt)return;
-const exam=activeExam,attempt=activeAttempt,questions=parseQuestions(exam);
-const form=$("examAnswerForm");
+const exam=activeExam,attempt=activeAttempt,questions=parseQuestions(exam),form=$("examAnswerForm");
 if(form)answerCache=collectAnswers();
-const answers={...answerCache};stopTimer();
-if($("submitExamBtn"))$("submitExamBtn").disabled=true;
+const answers={...answerCache};stopTimer();if($("submitExamBtn"))$("submitExamBtn").disabled=true;
 try{
-await saveQueue;
-const qcmQuestions=questions.filter(q=>q.type==="qcm");
-let score=0,maxQCM=0,notesQCM={};
-questions.forEach((q,i)=>{
-if(q.type!=="qcm")return;
-const points=Number(q.points)||1;maxQCM+=points;
-const correct=String(q.correctAnswer).trim().toLowerCase();
-const given=String(answers[i]??"").trim().toLowerCase();
-if(given&&given===correct){score+=points;notesQCM[i]=points}else notesQCM[i]=0
-});
-const writtenQuestions=questions.filter(q=>q.type==="ecrit");
-const writtenMax=writtenQuestions.reduce((s,q)=>s+(Number(q.points)||1),0);
-const hasWritten=writtenQuestions.some((q,i)=>String(answers[questions.indexOf(q)]||"").trim());
-const data={
-reponses:answers,notesQCM,noteQCM:score,noteEcrite:0,noteObtenue:score,
-noteMax:questions.reduce((s,q)=>s+(Number(q.points)||1),0),
-correctionManuelle:writtenQuestions.length>0&&hasWritten,
-statut:"termine",remisAutomatiquement:!!automatic,dateRemise:stamp(),updatedAt:stamp()
-};
-await updateDoc(doc(db,"tentatives_examens",attempt.id),data);
+await saveQueue;let score=0,maxQCM=0,notesQCM={};
+questions.forEach((q,i)=>{if(q.type!=="qcm")return;const points=Number(q.points)||1;maxQCM+=points;const correct=String(q.correctAnswer).trim().toLowerCase(),given=String(answers[i]??"").trim().toLowerCase();if(given&&given===correct){score+=points;notesQCM[i]=points}else notesQCM[i]=0});
+const writtenQuestions=questions.filter(q=>q.type==="ecrit"),hasWritten=writtenQuestions.some(q=>String(answers[questions.indexOf(q)]||"").trim());
+await updateDoc(doc(db,"tentatives_examens",attempt.id),{reponses:answers,notesQCM,noteQCM:score,noteEcrite:0,noteObtenue:score,noteMax:questions.reduce((s,q)=>s+(Number(q.points)||1),0),correctionManuelle:writtenQuestions.length>0&&hasWritten,statut:"termine",remisAutomatiquement:!!automatic,dateRemise:stamp(),updatedAt:stamp()});
 activeExam=null;activeAttempt=null;answerCache={};
 $("pageContent").innerHTML=`<div class="card"><div class="exam-result"><h3>Examen remis avec succès</h3><p>${automatic?"Le temps est écoulé. Votre examen a été remis automatiquement.":"Votre examen a été remis."}</p><h2>Note QCM : ${score} / ${maxQCM}</h2><p>${writtenQuestions.length?`Les réponses écrites ${hasWritten?"attendent la correction du professeur.":"n'ont pas reçu de réponse."}`:"Toutes les questions ont été corrigées automatiquement."}</p></div><button class="btn btn-primary" id="backExamsBtn">Retour aux examens</button></div>`;
 $("backExamsBtn").addEventListener("click",()=>openPage("examens"));
@@ -565,7 +611,7 @@ async function renderBackup(){
 if(!isAdmin()){$("pageContent").innerHTML='<div class="card">Accès réservé à l’administrateur.</div>';return}
 $("pageContent").innerHTML='<div class="card"><h3>Exporter les données Firestore</h3><p>Créez une sauvegarde JSON des collections disponibles.</p><button id="exportBtn" class="btn btn-primary">💾 Exporter les données</button><div class="notice">Conservez les sauvegardes dans un endroit sûr : elles peuvent contenir des données personnelles.</div></div>';
 $("exportBtn").addEventListener("click",async()=>{
-const names=["users","etudiants","eleves","professeurs","departements","filieres","programmes","classes","matieres","cours","annees_academiques","horaires","affectations","inscriptions","devoirs","examens","tentatives_examens","examens_corriges","remises","resultats","statistiques","configuration","sauvegardes"];
+const names=["users","etudiants","eleves","professeurs","departements","filieres","programmes","classes","matieres","cours","annees_academiques","horaires","affectations","inscriptions","devoirs","examens","tentatives_examens","examens_corriges","notes_cours","remises","resultats","statistiques","configuration","sauvegardes"];
 const backup={application:"Centre de Formation Le Pédagogue",exportedAt:new Date().toISOString(),projectId:firebaseConfig.projectId,collections:{}};
 try{for(const n of names){const s=await getDocs(collection(db,n));backup.collections[n]=s.docs.map(d=>({id:d.id,...d.data()}))}
 const blob=new Blob([JSON.stringify(backup,null,2)],{type:"application/json"}),url=URL.createObjectURL(blob),link=document.createElement("a");link.href=url;link.download=`sauvegarde-le-pedagogue-${new Date().toISOString().slice(0,10)}.json`;document.body.appendChild(link);link.click();link.remove();URL.revokeObjectURL(url);toast("Export terminé.")
