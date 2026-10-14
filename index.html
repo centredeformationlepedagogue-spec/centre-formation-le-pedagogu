@@ -136,6 +136,7 @@ const modules=[
 {id:"affectations",title:"Affectations",collection:"affectations",fields:[["professeurUid","Compte professeur"],["classeId","Code de classe"],["matiereId","Code matière"],["coursId","Code cours"]]},
 {id:"inscriptions",title:"Élèves / Classes",collection:"inscriptions",fields:[["etudiantId","Compte étudiant"],["eleveId","Compte élève"],["classeId","Code de classe"],["anneeAcademique","Année académique"],["statut","Statut"]]},
 {id:"devoirs",title:"Devoirs",collection:"devoirs",fields:[["titre","Titre"],["description","Description"],["classeId","Code de classe"],["dateLimite","Date limite"]]},
+{id:"examens",title:"Examens",collection:"examens",fields:[["titre","Titre de l'examen"],["description","Description"],["classeId","Code de classe"],["dateDebut","Date et heure de début"],["dateLimite","Date et heure de fin"],["dureeMinutes","Durée en minutes"]]},
 {id:"remises",title:"Remises / Corrections",collection:"remises",fields:[["devoirId","Code devoir"],["etudiantId","Compte élève"],["classeId","Code classe"],["contenu","Travail remis"],["note100","Note sur 100"],["commentaire","Commentaire"],["statut","Statut"]]},
 {id:"resultats",title:"Résultats",collection:"resultats",fields:[["etudiantId","Compte élève"],["classeId","Code classe"],["matiereId","Code matière"],["note100","Note sur 100"],["note20","Note sur 20"],["commentaire","Commentaire"]]},
 {id:"videos",title:"Vidéos",collection:"videos",fields:[["titre","Titre"],["classeId","Code classe"],["url","Lien vidéo"],["description","Description"]]},
@@ -239,7 +240,7 @@ toast("Enregistrement effectué.");await openPage(m.id)
 }
 }
 function examBuilder(questions){
-return`<div class="full"><div class="notice">Créez les questions avec les champs ci-dessous. Vous n'avez pas besoin d'écrire du JSON manuellement.</div><div class="field"><label>Ajouter un type de question</label><select id="newQuestionType"><option value="qcm">QCU — une seule bonne réponse</option><option value="ecrit">Question ouverte — réponse écrite</option></select></div><button class="btn secondary" id="addQuestion" type="button">＋ Ajouter une question</button><div id="questionBuilder"></div></div>`
+return`<div class="full"><div class="notice">Choisissez le type de chaque question : QCU (choix d'une seule bonne réponse) ou question ouverte (réponse écrite). Vous pouvez mélanger les deux types dans le même examen.</div><div class="field"><label>Type de la prochaine question</label><select id="newQuestionType"><option value="qcm">QCU — une seule bonne réponse</option><option value="ecrit">Question ouverte — réponse écrite</option></select></div><button class="btn secondary" id="addQuestion" type="button">＋ Ajouter une question</button><div id="questionBuilder"></div></div>`
 }
 let builderQuestions=[];
 function setupQuestionBuilder(qs){
@@ -291,7 +292,7 @@ $("pageContent").querySelectorAll("[data-start]").forEach(b=>b.onclick=()=>start
 async function renderTeacherExams(){
 const snap=isAdmin()?await getDocs(collection(db,"examens")):await getDocs(query(collection(db,"examens"),where("professeurUid","==",currentUser.uid)));
 const exams=snap.docs.map(d=>({id:d.id,...d.data()}));
-$("pageContent").innerHTML=`<div class="card"><div class="page-head"><div><h3>Gestion des examens</h3><p class="muted">QCU, questions ouvertes ou examen mélangé.</p></div><button id="createExam" class="btn primary">＋ Créer un examen</button></div><div class="notice">Ajoutez vos questions à l'aide du formulaire. Aucun JSON à taper. Les QCU sont corrigés automatiquement ; les questions ouvertes sont corrigées par le professeur.</div><div class="table-wrap"><table><thead><tr><th>Examen</th><th>Classe</th><th>Durée</th><th>Questions</th><th>Actions</th></tr></thead><tbody>${exams.map(e=>`<tr><td>${esc(e.titre)}</td><td>${esc(e.classeId)}</td><td>${Number(e.dureeMinutes||30)} min</td><td>${parseQuestions(e).length}</td><td><div class="actions"><button class="btn secondary" data-edit-exam="${esc(e.id)}">Modifier</button><button class="btn primary" data-attempts="${esc(e.id)}">Tentatives</button>${isAdmin()?`<button class="btn danger" data-delete-exam="${esc(e.id)}">Supprimer</button>`:""}</div></td></tr>`).join("")||'<tr><td colspan="5">Aucun examen créé.</td></tr>'}</tbody></table></div><div id="examExtra"></div></div>`;
+$("pageContent").innerHTML=`<div class="card"><div class="page-head"><div><h3>Gestion des examens</h3><p class="muted">QCU, questions ouvertes ou examen mélangé.</p></div><button id="createExam" class="btn primary">＋ Créer un examen</button></div><div class="notice">Ajoutez vos questions à l'aide du formulaire. Choisissez QCU pour des propositions avec une bonne réponse, ou question ouverte pour une réponse écrite. Les QCU sont corrigés automatiquement ; les questions ouvertes sont corrigées par le professeur.</div><div class="table-wrap"><table><thead><tr><th>Examen</th><th>Classe</th><th>Durée</th><th>Questions</th><th>Actions</th></tr></thead><tbody>${exams.map(e=>`<tr><td>${esc(e.titre)}</td><td>${esc(e.classeId)}</td><td>${Number(e.dureeMinutes||30)} min</td><td>${parseQuestions(e).length}</td><td><div class="actions"><button class="btn secondary" data-edit-exam="${esc(e.id)}">Modifier</button><button class="btn primary" data-attempts="${esc(e.id)}">Tentatives</button>${isAdmin()?`<button class="btn danger" data-delete-exam="${esc(e.id)}">Supprimer</button>`:""}</div></td></tr>`).join("")||'<tr><td colspan="5">Aucun examen créé.</td></tr>'}</tbody></table></div><div id="examExtra"></div></div>`;
 $("createExam").onclick=()=>recordForm(modules.find(m=>m.id==="examens"),null);
 $("pageContent").querySelectorAll("[data-edit-exam]").forEach(b=>b.onclick=()=>{const e=exams.find(x=>x.id===b.dataset.editExam);recordForm(modules.find(m=>m.id==="examens"),e)});
 $("pageContent").querySelectorAll("[data-delete-exam]").forEach(b=>b.onclick=async()=>{if(confirm("Supprimer cet examen ?"))try{await deleteDoc(doc(db,"examens",b.dataset.deleteExam));toast("Examen supprimé.");await renderExams()}catch(e){toast(friendly(e),true)}});
@@ -429,13 +430,61 @@ const blob=new Blob([JSON.stringify(backup,null,2)],{type:"application/json"}),u
 }
 }
 
-/* Installation PWA */
-window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();installPrompt=e});
-$("installBtn").onclick=async()=>{
-if(installPrompt){await installPrompt.prompt();installPrompt=null;return}
-alert("Pour installer l'application : ouvrez le site HTTPS dans Chrome, appuyez sur ⋮ puis « Installer l'application » ou « Ajouter à l'écran d'accueil ».")
-};
-if("serviceWorker"in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(console.error));
+/* Installation PWA : bouton corrigé */
+window.addEventListener("beforeinstallprompt",e=>{
+e.preventDefault();
+installPrompt=e;
+$("installBtn").textContent="📲 Installer l'application";
+});
+
+window.addEventListener("appinstalled",()=>{
+installPrompt=null;
+$("installBtn").textContent="✓ Application installée";
+toast("Application installée avec succès.");
+});
+
+$("installBtn").addEventListener("click",async()=>{
+if(installPrompt){
+try{
+const promptEvent=installPrompt;
+installPrompt=null;
+await promptEvent.prompt();
+const result=await promptEvent.userChoice;
+if(result?.outcome==="accepted"){
+$("installBtn").textContent="✓ Installation lancée";
+}else{
+$("installBtn").textContent="📲 Installer";
+}
+}catch(e){
+console.error("Erreur d'installation PWA :",e);
+toast("L'installation automatique n'a pas fonctionné. Utilisez le menu du navigateur.",true);
+}
+return;
+}
+
+const standalone=window.matchMedia("(display-mode: standalone)").matches||window.navigator.standalone===true;
+if(standalone){
+toast("L'application est déjà installée.");
+return;
+}
+
+const ua=navigator.userAgent||"";
+if(/iPhone|iPad|iPod/i.test(ua)){
+alert("Pour installer l'application sur iPhone : ouvrez le site dans Safari, appuyez sur Partager, puis sur « Sur l'écran d'accueil ».");
+}else{
+alert("Pour installer l'application :\n\n1. Ouvrez le site publié en HTTPS dans Chrome ou Samsung Internet.\n2. Appuyez sur le menu ⋮ du navigateur.\n3. Choisissez « Installer l'application » ou « Ajouter à l'écran d'accueil ».\n\nSi cette option n'apparaît pas, vérifiez que manifest.json et sw.js sont bien publiés à côté de index.html.");
+}
+});
+
+if("serviceWorker"in navigator){
+window.addEventListener("load",()=>{
+navigator.serviceWorker.register("./sw.js").then(()=>{
+console.log("Service Worker enregistré.");
+}).catch(e=>{
+console.error("Erreur Service Worker :",e);
+});
+});
+}
 </script>
 </body>
 </html>
