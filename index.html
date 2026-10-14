@@ -221,17 +221,45 @@ for(const[k,v]of fd.entries())data[k]=String(v).trim();
 if(["devoirs","examens","remises","resultats","affectations"].includes(m.id)){
 if(currentProfile.role==="professeur"){data.professeurUid=currentUser.uid;data.professeurId=currentUser.uid}
 }
-if(m.id==="remises"&&!isAdmin()&&currentProfile.role!=="professeur"){data.etudiantId=currentUser.uid;data.statut="soumis";delete data.note100;delete data.commentaire}
-if(isExam){
-const questions=readBuilderQuestions();
-if(!questions.length)return toast("Ajoutez au moins une question.",true);
-if(!data.titre||!data.classeId)return toast("Le titre et le code de classe sont obligatoires.",true);
-data.questionsJSON=JSON.stringify(questions);
-data.dureeMinutes=Math.max(1,Number(data.dureeMinutes||30));
-data.noteMax=questions.reduce((s,q)=>s+q.points,0);
-data.professeurUid=isAdmin()?(data.professeurUid||currentUser.uid):currentUser.uid;
-data.professeurId=isAdmin()?(data.professeurId||currentUser.uid):currentUser.uid;
+if(m.id==="remises"&&!isAdmin()&&currentProfile.role!=="professeur"){
+  data.etudiantId=currentUser.uid;
+  data.statut="soumis";
+  delete data.note100;
+  delete data.commentaire;
 }
+
+if(isExam){
+  let questions;
+
+  try{
+    questions=readBuilderQuestions();
+  }catch(error){
+    console.error("Erreur questions examen :",error);
+    return toast("Erè pandan lekti kesyon yo. Verifye kesyon yo.",true);
+  }
+
+  if(!questions || !questions.length){
+    return toast("Ajoutez au moins une question.",true);
+  }
+
+  if(!data.titre || !data.classeId){
+    return toast("Le titre et le code de classe sont obligatoires.",true);
+  }
+
+  data.questionsJSON=JSON.stringify(questions);
+  data.dureeMinutes=Math.max(1,Number(data.dureeMinutes||30));
+  data.noteMax=questions.reduce((s,q)=>s+Number(q.points||0),0);
+  data.statut="publie";
+
+  data.professeurUid=isAdmin()
+    ?(data.professeurUid||currentUser.uid)
+    :currentUser.uid;
+
+  data.professeurId=isAdmin()
+    ?(data.professeurId||currentUser.uid)
+    :currentUser.uid;
+}
+
 try{
 data.updatedAt=stamp();
 if(r)await updateDoc(doc(db,m.collection,r.id),data);
@@ -259,17 +287,49 @@ area.querySelectorAll("[data-qopts]").forEach(el=>el.onchange=()=>{const i=Numbe
 area.querySelectorAll("[data-qcorrect]").forEach(el=>el.onchange=()=>builderQuestions[Number(el.dataset.qcorrect)].correctAnswer=el.value);
 area.querySelectorAll("[data-remove-q]").forEach(el=>el.onclick=()=>{builderQuestions.splice(Number(el.dataset.removeQ),1);drawQuestionBuilder()})
 }
-function readBuilderQuestions(){
-const result=builderQuestions.map(q=>({...q,question:String(q.question||"").trim(),points:Number(q.points)}));
-for(const q of result){
-if(!q.question||!Number.isFinite(q.points)||q.points<=0)throw Error("Chaque question doit avoir un texte et un nombre de points positif.");
-if(q.type==="qcm"){
-q.options=(q.options||[]).map(String).map(x=>x.trim()).filter(Boolean);
-if(q.options.length<2)throw Error("Chaque QCU doit contenir au moins deux propositions.");
-if(!q.options.includes(String(q.correctAnswer)))throw Error("Choisissez une bonne réponse parmi les propositions.");
-}else{delete q.options;delete q.correctAnswer}
-}
-return result
+function readBuilderQuestions() {
+  const result = builderQuestions.map(q => ({
+    ...q,
+    question: String(q.question || "").trim(),
+    points: Number(q.points)
+  }));
+
+  for (const q of result) {
+    if (
+      !q.question ||
+      !Number.isFinite(q.points) ||
+      q.points <= 0
+    ) {
+      throw new Error(
+        "Chaque question doit avoir un texte et un nombre de points positif."
+      );
+    }
+
+    if (q.type === "qcm") {
+      q.options = (q.options || [])
+        .map(x => String(x).trim())
+        .filter(Boolean);
+
+      if (q.options.length < 2) {
+        throw new Error(
+          "Chaque QCU doit contenir au moins deux propositions."
+        );
+      }
+
+      if (!q.options.includes(String(q.correctAnswer || ""))) {
+        throw new Error(
+          "Choisissez une bonne réponse parmi les propositions."
+        );
+      }
+    } else if (q.type === "ecrit") {
+      delete q.options;
+      delete q.correctAnswer;
+    } else {
+      throw new Error("Type de question non valide.");
+    }
+  }
+
+  return result;
 }
 function parseQuestions(exam){
 try{
