@@ -211,7 +211,9 @@ const area=$("recordFormArea");if(!area)return;
 const isExam=m.id==="examens";
 area.innerHTML=`<div class="card"><h3>${r?"Modifier":"Ajouter"} — ${esc(m.title)}</h3><form id="dataForm"><div class="form-grid">${m.fields.filter(([k])=>!(isExam&&k==="questionsJSON")).map(([k,l])=>{
 const value=r?.[k]??"",long=["description","contenu","commentaire"].includes(k),num=["note100","note20","dureeMinutes","noteMax"].includes(k),type=["dateLimite","dateDebut"].includes(k)?"datetime-local":num?"number":"text";
-return`<div class="field ${long?"full":""}"><label>${esc(l)}</label>${long?`<textarea name="${esc(k)}">${esc(value)}</textarea>`:`<input name="${esc(k)}" type="${type}" value="${esc(value)}" ${num?'min="0"':''}>`}</div>`
+let formattedValue=value;
+if(type==="datetime-local"&&value){formattedValue=String(value).slice(0,16)}
+return`<div class="field ${long?"full":""}"><label>${esc(l)}</label>${long?`<textarea name="${esc(k)}">${esc(value)}</textarea>`:`<input name="${esc(k)}" type="${type}" value="${esc(formattedValue)}" ${num?'min="0"':''} ${isExam&&k==="titre"?"required":""} ${isExam&&k==="classeId"?"required":""}>`}</div>`
 }).join("")}</div>${isExam?examBuilder(r):""}<div class="actions"><button class="btn primary" type="submit">Enregistrer</button><button class="btn secondary" id="cancelForm" type="button">Annuler</button></div></form></div>`;
 $("cancelForm").onclick=()=>area.innerHTML="";
 if(isExam){setupQuestionBuilder(parseQuestions(r||{}))}
@@ -230,34 +232,32 @@ if(m.id==="remises"&&!isAdmin()&&currentProfile.role!=="professeur"){
 
 if(isExam){
   let questions;
-
   try{
     questions=readBuilderQuestions();
   }catch(error){
     console.error("Erreur questions examen :",error);
-    return toast("Erè pandan lekti kesyon yo. Verifye kesyon yo.",true);
+    return toast(error?.message||"Vérifiez les questions de l'examen.",true);
   }
 
-  if(!questions || !questions.length){
-    return toast("Ajoutez au moins une question.",true);
+  if(!questions||!questions.length){
+    return toast("Ajoutez au moins une question avant d'enregistrer l'examen.",true);
   }
 
-  if(!data.titre || !data.classeId){
-    return toast("Le titre et le code de classe sont obligatoires.",true);
+  if(!data.titre||!data.classeId){
+    return toast("Le titre de l'examen et le code de classe sont obligatoires.",true);
+  }
+
+  const duration=Number(data.dureeMinutes||30);
+  if(!Number.isFinite(duration)||duration<1){
+    return toast("La durée doit être d'au moins une minute.",true);
   }
 
   data.questionsJSON=JSON.stringify(questions);
-  data.dureeMinutes=Math.max(1,Number(data.dureeMinutes||30));
+  data.dureeMinutes=Math.floor(duration);
   data.noteMax=questions.reduce((s,q)=>s+Number(q.points||0),0);
   data.statut="publie";
-
-  data.professeurUid=isAdmin()
-    ?(data.professeurUid||currentUser.uid)
-    :currentUser.uid;
-
-  data.professeurId=isAdmin()
-    ?(data.professeurId||currentUser.uid)
-    :currentUser.uid;
+  data.professeurUid=isAdmin()?(data.professeurUid||currentUser.uid):currentUser.uid;
+  data.professeurId=isAdmin()?(data.professeurId||currentUser.uid):currentUser.uid;
 }
 
 try{
@@ -268,14 +268,17 @@ toast("Enregistrement effectué.");await openPage(m.id)
 }catch(err){console.error(err);toast(friendly(err),true)}
 }
 }
-function examBuilder(questions){
-return`<div class="full"><div class="notice">Choisissez le type de chaque question : QCU (choix d'une seule bonne réponse) ou question ouverte (réponse écrite). Vous pouvez mélanger les deux types dans le même examen.</div><div class="field"><label>Type de la prochaine question</label><select id="newQuestionType"><option value="qcm">QCU — une seule bonne réponse</option><option value="ecrit">Question ouverte — réponse écrite</option></select></div><button class="btn secondary" id="addQuestion" type="button">＋ Ajouter une question</button><div id="questionBuilder"></div></div>`
+function examBuilder(){
+return`<div class="full"><div class="notice">Choisissez le type de chaque question : QCU (une seule bonne réponse) ou question ouverte (réponse écrite). Vous pouvez mélanger les deux types dans le même examen.</div><div class="field"><label>Type de la prochaine question</label><select id="newQuestionType"><option value="qcm">QCU — une seule bonne réponse</option><option value="ecrit">Question ouverte — réponse écrite</option></select></div><button class="btn secondary" id="addQuestion" type="button">＋ Ajouter une question</button><div id="questionBuilder"></div></div>`
 }
 let builderQuestions=[];
 function setupQuestionBuilder(qs){
-builderQuestions=(qs||[]).map(q=>({...q,options:Array.isArray(q.options)?q.options:["Option A","Option B","Option C"]}));
+builderQuestions=(qs||[]).map(q=>({...q,options:Array.isArray(q.options)?[...q.options]:["Option A","Option B","Option C"]}));
 drawQuestionBuilder();
-$("addQuestion").onclick=()=>{builderQuestions.push({type:$("newQuestionType").value,question:"",points:1,options:["Option A","Option B","Option C"],correctAnswer:"Option A"});drawQuestionBuilder()}
+$("addQuestion").onclick=()=>{
+builderQuestions.push({type:$("newQuestionType").value,question:"",points:1,options:["Option A","Option B","Option C"],correctAnswer:"Option A"});
+drawQuestionBuilder()
+}
 }
 function drawQuestionBuilder(){
 const area=$("questionBuilder");if(!area)return;
@@ -287,49 +290,23 @@ area.querySelectorAll("[data-qopts]").forEach(el=>el.onchange=()=>{const i=Numbe
 area.querySelectorAll("[data-qcorrect]").forEach(el=>el.onchange=()=>builderQuestions[Number(el.dataset.qcorrect)].correctAnswer=el.value);
 area.querySelectorAll("[data-remove-q]").forEach(el=>el.onclick=()=>{builderQuestions.splice(Number(el.dataset.removeQ),1);drawQuestionBuilder()})
 }
-function readBuilderQuestions() {
-  const result = builderQuestions.map(q => ({
-    ...q,
-    question: String(q.question || "").trim(),
-    points: Number(q.points)
-  }));
-
-  for (const q of result) {
-    if (
-      !q.question ||
-      !Number.isFinite(q.points) ||
-      q.points <= 0
-    ) {
-      throw new Error(
-        "Chaque question doit avoir un texte et un nombre de points positif."
-      );
-    }
-
-    if (q.type === "qcm") {
-      q.options = (q.options || [])
-        .map(x => String(x).trim())
-        .filter(Boolean);
-
-      if (q.options.length < 2) {
-        throw new Error(
-          "Chaque QCU doit contenir au moins deux propositions."
-        );
-      }
-
-      if (!q.options.includes(String(q.correctAnswer || ""))) {
-        throw new Error(
-          "Choisissez une bonne réponse parmi les propositions."
-        );
-      }
-    } else if (q.type === "ecrit") {
-      delete q.options;
-      delete q.correctAnswer;
-    } else {
-      throw new Error("Type de question non valide.");
-    }
-  }
-
-  return result;
+function readBuilderQuestions(){
+const result=builderQuestions.map(q=>({...q,question:String(q.question||"").trim(),points:Number(q.points)}));
+for(const q of result){
+if(!q.question||!Number.isFinite(q.points)||q.points<=0){
+throw new Error("Chaque question doit avoir un texte et un nombre de points positif.");
+}
+if(q.type==="qcm"){
+q.options=(q.options||[]).map(x=>String(x).trim()).filter(Boolean);
+if(q.options.length<2)throw new Error("Chaque QCU doit contenir au moins deux propositions.");
+if(!q.options.includes(String(q.correctAnswer||"")))throw new Error("Choisissez une bonne réponse parmi les propositions.");
+}else if(q.type==="ecrit"){
+delete q.options;delete q.correctAnswer;
+}else{
+throw new Error("Type de question non valide.");
+}
+}
+return result;
 }
 function parseQuestions(exam){
 try{
@@ -351,7 +328,6 @@ $("pageContent").innerHTML=`<div class="card"><h3>Mes examens</h3><p class="mute
 $("pageContent").querySelectorAll("[data-start]").forEach(b=>b.onclick=()=>startExam(exams.find(e=>e.id===b.dataset.start),attempts.find(a=>a.examenId===b.dataset.start&&a.statut==="en_cours")))
 }
 async function renderTeacherExams(){
-/* CORRECTION : professeurId doit correspondre au champ vérifié par les règles Firestore. */
 const snap=isAdmin()?await getDocs(collection(db,"examens")):await getDocs(query(collection(db,"examens"),where("professeurId","==",currentUser.uid)));
 const exams=snap.docs.map(d=>({id:d.id,...d.data()}));
 $("pageContent").innerHTML=`<div class="card"><div class="page-head"><div><h3>Gestion des examens</h3><p class="muted">QCU, questions ouvertes ou examen mélangé.</p></div><button id="createExam" class="btn primary">＋ Créer un examen</button></div><div class="notice">Ajoutez vos questions à l'aide du formulaire. Choisissez QCU pour des propositions avec une bonne réponse, ou question ouverte pour une réponse écrite. Les QCU sont corrigés automatiquement ; les questions ouvertes sont corrigées par le professeur.</div><div class="table-wrap"><table><thead><tr><th>Examen</th><th>Classe</th><th>Durée</th><th>Questions</th><th>Actions</th></tr></thead><tbody>${exams.map(e=>`<tr><td>${esc(e.titre)}</td><td>${esc(e.classeId)}</td><td>${Number(e.dureeMinutes||30)} min</td><td>${parseQuestions(e).length}</td><td><div class="actions"><button class="btn secondary" data-edit-exam="${esc(e.id)}">Modifier</button><button class="btn primary" data-attempts="${esc(e.id)}">Tentatives</button>${isAdmin()?`<button class="btn danger" data-delete-exam="${esc(e.id)}">Supprimer</button>`:""}</div></td></tr>`).join("")||'<tr><td colspan="5">Aucun examen créé.</td></tr>'}</tbody></table></div><div id="examExtra"></div></div>`;
@@ -492,11 +468,12 @@ const blob=new Blob([JSON.stringify(backup,null,2)],{type:"application/json"}),u
 }
 }
 
-/* Installation PWA */
+/* Installation PWA — Android, Chrome et Samsung Internet */
 window.addEventListener("beforeinstallprompt",e=>{
 e.preventDefault();
 installPrompt=e;
 $("installBtn").textContent="📲 Installer l'application";
+$("installBtn").disabled=false;
 });
 window.addEventListener("appinstalled",()=>{
 installPrompt=null;
@@ -504,32 +481,41 @@ $("installBtn").textContent="✓ Application installée";
 toast("Application installée avec succès.");
 });
 $("installBtn").addEventListener("click",async()=>{
+const btn=$("installBtn");
+const standalone=window.matchMedia("(display-mode: standalone)").matches||window.navigator.standalone===true;
+if(standalone){toast("L'application est déjà installée.");return}
 if(installPrompt){
 try{
 const promptEvent=installPrompt;
-installPrompt=null;
 await promptEvent.prompt();
 const result=await promptEvent.userChoice;
-if(result?.outcome==="accepted")$("installBtn").textContent="✓ Installation lancée";
-else $("installBtn").textContent="📲 Installer";
-}catch(e){
-console.error("Erreur d'installation PWA :",e);
-toast("L'installation automatique n'a pas fonctionné. Utilisez le menu du navigateur.",true);
+installPrompt=null;
+if(result?.outcome==="accepted")btn.textContent="✓ Installation lancée";
+else btn.textContent="📲 Installer l'application";
+}catch(error){
+console.error("Erreur installation :",error);
+toast("Utilisez le menu ⋮ du navigateur pour installer l'application.",true);
 }
 return;
 }
-const standalone=window.matchMedia("(display-mode: standalone)").matches||window.navigator.standalone===true;
-if(standalone){toast("L'application est déjà installée.");return}
 const ua=navigator.userAgent||"";
 if(/iPhone|iPad|iPod/i.test(ua)){
 alert("Pour installer l'application sur iPhone : ouvrez le site dans Safari, appuyez sur Partager, puis sur « Sur l'écran d'accueil ».");
-}else{
-alert("Pour installer l'application :\n\n1. Ouvrez le site publié en HTTPS dans Chrome ou Samsung Internet.\n2. Appuyez sur le menu ⋮ du navigateur.\n3. Choisissez « Installer l'application » ou « Ajouter à l'écran d'accueil ».\n\nSi cette option n'apparaît pas, vérifiez que manifest.json et sw.js sont bien publiés à côté de index.html.");
+return;
 }
+alert("Pour installer Centre de Formation Le Pédagogue :\n\n1. Ouvrez le site publié en HTTPS dans Chrome ou Samsung Internet.\n2. Appuyez sur le menu ⋮ du navigateur.\n3. Choisissez « Installer l'application » ou « Ajouter à l'écran d'accueil ».\n\nSi l'option n'apparaît pas, vérifiez que manifest.json, sw.js et les icônes PWA sont publiés à côté de index.html.");
 });
-if("serviceWorker"in navigator){
-window.addEventListener("load",()=>{
-navigator.serviceWorker.register("./sw.js").then(()=>console.log("Service Worker enregistré.")).catch(e=>console.error("Erreur Service Worker :",e));
+
+/* Enregistrement et vérification du Service Worker */
+if("serviceWorker" in navigator){
+window.addEventListener("load",async()=>{
+try{
+const registration=await navigator.serviceWorker.register("./sw.js");
+console.log("Service Worker enregistré.");
+await registration.update().catch(error=>console.warn("Mise à jour du Service Worker différée :",error));
+}catch(error){
+console.error("Erreur Service Worker :",error);
+}
 });
 }
 </script>
