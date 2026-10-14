@@ -159,21 +159,57 @@ const b=document.createElement("button");b.className="nav-btn"+(id===currentPage
 }
 }
 async function openPage(page){
-if(!approved())return;
-if(!isAdmin()&&!(currentProfile?.role==="professeur"?teacherPages:studentPages).includes(page)){toast("Accès non autorisé.",true);return}
-stopTimer();currentPage=page;buildNavigation();
-const mod=modules.find(m=>m.id===page),titles={accueil:"Tableau de bord",examens:"Examens chronométrés",notes_cours:"Notes de cours",utilisateurs:"Gestion des utilisateurs",sauvegarde:"Sauvegarde"};
-$("pageTitle").textContent=titles[page]||mod?.title||page;$("pageContent").innerHTML='<div class="card">Chargement…</div>';
-try{
-if(page==="accueil")return await renderDashboard();
-if(page==="examens")return await renderExams();
-if(page==="notes_cours")return await renderNotesCours();
-if(page==="utilisateurs")return await renderUsers();
-if(page==="sauvegarde")return await renderBackup();
-if(mod)return await renderModule(mod);
-}catch(e){console.error(e);$("pageContent").innerHTML=`<div class="card"><b>Erreur :</b> ${esc(friendly(e))}<p class="muted">Vérifiez les règles Firestore.</p></div>`}
+  if(!approved()) return;
+
+  if(!isAdmin() &&
+     !(currentProfile?.role==="professeur"
+       ? teacherPages
+       : studentPages).includes(page)){
+    toast("Accès non autorisé.",true);
+    return;
+  }
+
+  try {
+    stopTimer();
+    currentPage=page;
+    buildNavigation();
+
+    const mod=modules.find(m=>m.id===page);
+    const titles={
+      accueil:"Tableau de bord",
+      examens:"Examens chronométrés",
+      notes_cours:"Notes de cours",
+      utilisateurs:"Gestion des utilisateurs",
+      sauvegarde:"Sauvegarde"
+    };
+
+    $("pageTitle").textContent=titles[page]||mod?.title||page;
+    $("pageContent").innerHTML=
+      '<div class="card">Chargement…</div>';
+
+    if(page==="accueil") return await renderDashboard();
+    if(page==="examens") return await renderExams();
+    if(page==="notes_cours") return await renderNotesCours();
+    if(page==="utilisateurs") return await renderUsers();
+    if(page==="sauvegarde") return await renderBackup();
+
+    if(mod) return await renderModule(mod);
+
+  } catch(e) {
+    console.error("Erreur navigation :",e);
+
+    const content=$("pageContent");
+    if(content){
+      content.innerHTML=
+        '<div class="card"><b>Erreur de navigation :</b> '+
+        esc(friendly(e))+
+        '<p class="muted">Vérifiez la console JavaScript et les règles Firestore.</p></div>';
+    }
+  }
 }
+
 window.goPage=p=>openPage(p);
+
 function dash(icon,title,desc,page){return`<div class="dash-card"><div style="font-size:27px">${icon}</div><h3>${esc(title)}</h3><p>${esc(desc)}</p><button class="btn secondary" onclick="window.goPage('${page}')">Ouvrir →</button></div>`}
 async function renderDashboard(){
 const name=currentProfile?.nom||currentUser?.displayName||currentUser?.email||"Utilisateur";
