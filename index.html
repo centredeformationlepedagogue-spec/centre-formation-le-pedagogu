@@ -310,10 +310,10 @@ const modules=[
 {id:"configuration",title:"Configuration",collection:"configuration",fields:[["nom","Nom"],["valeur","Valeur"],["description","Description"]]}
 ];
 const navItems=[
-["accueil","🏠 Accueil"],["etudiants","🎓 Étudiants"],["eleves","👨‍🎓 Élèves"],["professeurs","👨‍🏫 Professeurs"],["departements","🏢 Départements"],["filieres","📚 Filières"],["classes","🏫 Classes"],["affectations","🔗 Affectations"],["inscriptions","📋 Inscriptions"],["matieres","📖 Matières"],["cours","📝 Cours"],["annees","📅 Années académiques"],["devoirs","📑 Devoirs"],["examens","⏱️ Examens"],["notes_cours","📒 Notes de cours"],["remises","📥 Remises / Corrections"],["resultats","📊 Résultats"],["videos","🎬 Vidéos"],["documents","📄 Documents"],["statistiques","📈 Statistiques"],["configuration","⚙️ Configuration"]
+["accueil","🏠 Accueil"],["etudiants","🎓 Étudiants"],["eleves","👨‍🎓 Élèves"],["professeurs","👨‍🏫 Professeurs"],["departements","🏢 Départements"],["filieres","📚 Filières"],["classes","🏫 Classes"],["affectations","🔗 Affectations"],["inscriptions","📋 Inscriptions"],["matieres","📖 Matières"],["cours","📝 Cours"],["annees","📅 Années académiques"],["devoirs","📑 Devoirs"],["examens","⏱️ Examens"],["notes_cours","📒 Notes de cours"],["remises","📥 Remises / Corrections"],["bulletin","🎓 Mon bulletin"], ["resultats","📊 Résultats"],["videos","🎬 Vidéos"],["documents","📄 Documents"],["statistiques","📈 Statistiques"],["configuration","⚙️ Configuration"]
 ];
-const studentPages=["accueil","devoirs","examens","notes_cours","remises","resultats","videos","documents"];
-const teacherPages=[...studentPages];
+const studentPages=["accueil","devoirs","examens","notes_cours","remises","resultats","bulletin","videos","documents"];
+const teacherPages=studentPages.filter(p=>p!=="bulletin");
 
 function buildNavigation(){
 const n=$("navigation");n.innerHTML="";
@@ -339,6 +339,7 @@ $("pageContent").innerHTML='<div class="card">Chargement…</div>';
 if(page==="accueil")return await renderDashboard();
 if(page==="examens")return await renderExams();
 if(page==="notes_cours")return await renderNotesCours();
+  if(page==="bulletin")return await renderBulletin();
 if(page==="utilisateurs")return await renderUsers();
 if(page==="sauvegarde")return await renderBackup();
 if(mod)return await renderModule(mod);
@@ -360,7 +361,7 @@ const waiting=await getDocs(query(collection(db,"users"),where("status","==","at
 html+=`<div class="stats-grid">${[["Étudiants",Math.max(counts[0],counts[1])],["Professeurs",counts[2]],["Classes",counts[3]],["Matières",counts[4]],["Devoirs",counts[5]],["Examens",counts[6]],["Comptes en attente",waiting.size]].map(x=>`<div class="stat"><small>${esc(x[0])}</small><strong>${x[1]}</strong></div>`).join("")}</div>`;
 html+='<div class="dashboard-grid">'+dash("👥","Utilisateurs","Approuver les comptes et attribuer les rôles.","utilisateurs")+dash("🏫","Classes","Organiser les classes.","classes")+dash("🎓","Étudiants","Gérer les dossiers.","etudiants")+dash("👨‍🏫","Professeurs","Gérer les professeurs.","professeurs")+dash("⏱️","Examens","Créer des QCU et des questions ouvertes.","examens")+dash("📒","Notes de cours","Publier texte et photos.","notes_cours")+dash("📥","Corrections","Consulter les remises.","remises")+dash("💾","Sauvegarde","Exporter les données.","sauvegarde")+'</div>';
 }else if(currentProfile.role==="professeur"){
-html+='<div class="dashboard-grid">'+dash("📑","Devoirs","Créer et gérer les devoirs.","devoirs")+dash("⏱️","Examens","Créer des QCU et questions ouvertes.","examens")+dash("📒","Notes de cours","Publier les cours.","notes_cours")+dash("📥","Corrections","Corriger les travaux et examens.","remises")+dash("📊","Résultats","Consulter les notes.","resultats")+'</div>'
+html+='<div class="dashboard-grid">'+dash("📑","Devoirs","Créer et gérer les devoirs.","devoirs")+dash("⏱️","Examens","Créer des QCU et questions ouvertes.","examens")+dash("📒","Notes de cours","Publier les cours.","notes_cours")+dash("📥","Corrections","Corriger les travaux et examens.","remises")+dash("📊","Résultats","Consulter les notes.","resultats")+dash("🎓","Mon bulletin","Consulter et imprimer mon bulletin scolaire.","bulletin")'</div>'
 }else{
 html+='<div class="dashboard-grid">'+dash("📑","Mes devoirs","Consulter les devoirs.","devoirs")+dash("⏱️","Examens","Passer les examens.","examens")+dash("📒","Notes de cours","Lire et copier les cours.","notes_cours")+dash("📥","Mes remises","Consulter les travaux.","remises")+dash("📊","Mes résultats","Voir les notes.","resultats")+'</div>'
 }
@@ -703,7 +704,224 @@ btn.disabled=false;
 }
 };
 }
+/* BULLETIN SCOLAIRE — consultation personnelle et impression PDF */
+async function renderBulletin(){
+  if(!["eleve","etudiant"].includes(currentProfile?.role)){
+    $("pageContent").innerHTML=`
+      <div class="card">
+        <h3>Bulletin scolaire</h3>
+        <div class="notice">
+          Cette page est réservée aux élèves et aux étudiants.
+        </div>
+      </div>`;
+    return;
+  }
 
+  $("pageContent").innerHTML=`
+    <div class="card">
+      <h3>🎓 Mon bulletin scolaire</h3>
+      <p class="muted">Chargement de vos résultats personnels…</p>
+    </div>`;
+
+  try{
+    const snap=await getDocs(query(
+      collection(db,"resultats"),
+      where("etudiantId","==",currentUser.uid)
+    ));
+
+    const rows=snap.docs.map(d=>({
+      id:d.id,
+      ...d.data()
+    }));
+
+    const validRows=rows.map(r=>{
+      const has20=r.note20!==undefined&&r.note20!==null&&r.note20!=="";
+      const has100=r.note100!==undefined&&r.note100!==null&&r.note100!=="";
+
+      let note20=null;
+      let note100=null;
+
+      if(has20&&Number.isFinite(Number(r.note20))){
+        note20=Number(r.note20);
+      }else if(has100&&Number.isFinite(Number(r.note100))){
+        note20=Number(r.note100)/5;
+      }
+
+      if(has100&&Number.isFinite(Number(r.note100))){
+        note100=Number(r.note100);
+      }else if(note20!==null){
+        note100=note20*5;
+      }
+
+      return {
+        matiere:String(r.matiereId||r.matiere||"Matière non précisée"),
+        classe:String(r.classeId||currentProfile.classeId||"—"),
+        periode:String(r.periode||r.trimestre||r.semestre||r.anneeAcademique||"—"),
+        note20,
+        note100,
+        commentaire:String(r.commentaire||"")
+      };
+    });
+
+    const graded=validRows.filter(r=>r.note20!==null);
+    const average=graded.length
+      ?graded.reduce((sum,r)=>sum+r.note20,0)/graded.length
+      :null;
+
+    const studentName=[
+      currentProfile.prenom||currentUser.displayName||"",
+      currentProfile.nom||""
+    ].filter(Boolean).join(" ")||currentUser.email||"Élève";
+
+    const escPrint=v=>esc(v);
+    const averageText=average===null?"Non disponible":average.toFixed(2)+"/20";
+    const resultText=average===null
+      ?"Notes non disponibles"
+      :average>=10?"Moyenne générale : "+average.toFixed(2)+"/20"
+      :"Moyenne générale : "+average.toFixed(2)+"/20";
+
+    const tableRows=validRows.map(r=>`
+      <tr>
+        <td>${escPrint(r.matiere)}</td>
+        <td>${escPrint(r.classe)}</td>
+        <td>${escPrint(r.periode)}</td>
+        <td>${r.note20===null?"—":r.note20.toFixed(2)+"/20"}</td>
+        <td>${r.note100===null?"—":r.note100.toFixed(2)+"/100"}</td>
+        <td>${escPrint(r.commentaire||"—")}</td>
+      </tr>
+    `).join("");
+
+    $("pageContent").innerHTML=`
+      <div class="card">
+        <div class="page-head">
+          <div>
+            <h3>🎓 Mon bulletin scolaire</h3>
+            <p class="muted">Consultez vos notes et imprimez votre bulletin.</p>
+          </div>
+          <button id="downloadBulletin" class="btn primary">
+            📄 Télécharger / Imprimer en PDF
+          </button>
+        </div>
+
+        <div id="bulletinDocument">
+          <div class="notice">
+            <b>Centre de Formation Le Pédagogue</b><br>
+            Bulletin scolaire
+          </div>
+
+          <div class="card">
+            <p><b>Nom de l'élève :</b> ${escPrint(studentName)}</p>
+            <p><b>E-mail :</b> ${escPrint(currentUser.email||"—")}</p>
+            <p><b>Classe :</b> ${escPrint(currentProfile.classeId||"—")}</p>
+            <p><b>Année académique :</b> ${escPrint(currentProfile.anneeAcademique||"—")}</p>
+          </div>
+
+          <div class="stats-grid">
+            <div class="stat">
+              <small>Matières avec note</small>
+              <strong>${graded.length}</strong>
+            </div>
+            <div class="stat">
+              <small>Moyenne générale</small>
+              <strong>${average===null?"—":average.toFixed(2)+"/20"}</strong>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Matière</th>
+                  <th>Classe</th>
+                  <th>Période</th>
+                  <th>Note /20</th>
+                  <th>Note /100</th>
+                  <th>Commentaire</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${tableRows||'<tr><td colspan="6">Aucun résultat publié pour votre compte.</td></tr>'}
+              </tbody>
+            </table>
+          </div>
+
+          <div class="notice">
+            ${escPrint(resultText)}<br>
+            <small>
+              Ce bulletin reprend les résultats enregistrés dans le système.
+              Les décisions officielles doivent être validées par l'établissement.
+            </small>
+          </div>
+
+          <p class="muted">
+            Édité le ${new Date().toLocaleDateString("fr-FR")}
+          </p>
+        </div>
+      </div>`;
+
+    $("downloadBulletin").onclick=()=>{
+      const printWindow=window.open("","_blank");
+
+      if(!printWindow){
+        toast("Autorisez les fenêtres contextuelles du navigateur puis réessayez.",true);
+        return;
+      }
+
+      const content=$("bulletinDocument").innerHTML;
+
+      printWindow.document.open();
+      printWindow.document.write(`<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bulletin scolaire - ${escPrint(studentName)}</title>
+<style>
+body{font-family:Arial,sans-serif;color:#17243a;margin:24px;line-height:1.5}
+h3{color:#0f3d91}
+.notice{background:#edf3fc;padding:12px;border-radius:8px;margin:12px 0}
+.card{border:1px solid #dce4f0;border-radius:8px;padding:12px;margin:12px 0}
+.stats-grid{display:flex;gap:12px;margin:12px 0}
+.stat{border:1px solid #dce4f0;padding:12px;flex:1}
+.stat strong{display:block;font-size:20px;color:#0f3d91}
+.table-wrap{width:100%;overflow:visible}
+table{width:100%;border-collapse:collapse}
+th,td{border:1px solid #cbd5e1;padding:8px;text-align:left;font-size:12px;overflow-wrap:anywhere}
+th{background:#edf3fc;color:#0f3d91}
+.muted{color:#64748b}
+@page{size:A4 portrait;margin:12mm}
+@media print{body{margin:0}.card,.notice,table{break-inside:avoid}}
+</style>
+</head>
+<body>
+${content}
+<script>
+window.onload=function(){
+  setTimeout(function(){window.print()},500);
+};
+<\/script>
+</body>
+</html>`);
+      printWindow.document.close();
+    };
+
+  }catch(e){
+    console.error("Erreur bulletin :",e);
+    $("pageContent").innerHTML=`
+      <div class="card">
+        <h3>Impossible de charger le bulletin</h3>
+        <div class="message error">${esc(friendly(e))}</div>
+        <p class="muted">
+          Vérifiez les règles Firestore et assurez-vous que les résultats
+          utilisent l'identifiant du compte élève dans le champ etudiantId.
+        </p>
+        <button class="btn secondary" onclick="window.goPage('bulletin')">
+          Réessayer
+        </button>
+      </div>`;
+  }
+}
+  
 /* Gestion des comptes : informations personnelles, rôle et statut */
 async function renderUsers(){
 if(!isAdmin())return;
