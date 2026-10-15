@@ -317,7 +317,11 @@ const teacherPages=studentPages.filter(p=>p!=="bulletin");
 
 function buildNavigation(){
 const n=$("navigation");n.innerHTML="";
-navItems.filter(([id])=>isAdmin()||(currentProfile?.role==="professeur"?teacherPages:studentPages).includes(id)).forEach(([id,label])=>{
+navItems.filter(([id])=>
+  id==="bulletin"
+    ? ["eleve","etudiant"].includes(currentProfile?.role)
+    : isAdmin()||(currentProfile?.role==="professeur"?teacherPages:studentPages).includes(id)
+).forEach(([id,label])=>{
 const b=document.createElement("button");b.className="nav-btn"+(id===currentPage?" active":"");b.textContent=label;b.onclick=()=>openPage(id);n.appendChild(b)
 });
 if(isAdmin())for(const [id,label] of [["utilisateurs","👥 Utilisateurs"],["sauvegarde","💾 Sauvegarde"]]){
@@ -361,11 +365,24 @@ const waiting=await getDocs(query(collection(db,"users"),where("status","==","at
 html+=`<div class="stats-grid">${[["Étudiants",Math.max(counts[0],counts[1])],["Professeurs",counts[2]],["Classes",counts[3]],["Matières",counts[4]],["Devoirs",counts[5]],["Examens",counts[6]],["Comptes en attente",waiting.size]].map(x=>`<div class="stat"><small>${esc(x[0])}</small><strong>${x[1]}</strong></div>`).join("")}</div>`;
 html+='<div class="dashboard-grid">'+dash("👥","Utilisateurs","Approuver les comptes et attribuer les rôles.","utilisateurs")+dash("🏫","Classes","Organiser les classes.","classes")+dash("🎓","Étudiants","Gérer les dossiers.","etudiants")+dash("👨‍🏫","Professeurs","Gérer les professeurs.","professeurs")+dash("⏱️","Examens","Créer des QCU et des questions ouvertes.","examens")+dash("📒","Notes de cours","Publier texte et photos.","notes_cours")+dash("📥","Corrections","Consulter les remises.","remises")+dash("💾","Sauvegarde","Exporter les données.","sauvegarde")+'</div>';
 }else if(currentProfile.role==="professeur"){
-html+='<div class="dashboard-grid">'+dash("📑","Devoirs","Créer et gérer les devoirs.","devoirs")+dash("⏱️","Examens","Créer des QCU et questions ouvertes.","examens")+dash("📒","Notes de cours","Publier les cours.","notes_cours")+dash("📥","Corrections","Corriger les travaux et examens.","remises")+dash("📊","Résultats","Consulter les notes.","resultats")+dash("🎓","Mon bulletin","Consulter et imprimer mon bulletin scolaire.","bulletin")'</div>'
+html+='<div class="dashboard-grid">'
++dash("📑","Devoirs","Créer et gérer les devoirs.","devoirs")
++dash("⏱️","Examens","Créer des QCU et questions ouvertes.","examens")
++dash("📒","Notes de cours","Publier les cours.","notes_cours")
++dash("📥","Corrections","Corriger les travaux et examens.","remises")
++dash("📊","Résultats","Consulter les notes.","resultats")
++'</div>';
 }else{
-html+='<div class="dashboard-grid">'+dash("📑","Mes devoirs","Consulter les devoirs.","devoirs")+dash("⏱️","Examens","Passer les examens.","examens")+dash("📒","Notes de cours","Lire et copier les cours.","notes_cours")+dash("📥","Mes remises","Consulter les travaux.","remises")+dash("📊","Mes résultats","Voir les notes.","resultats")+'</div>'
+html+='<div class="dashboard-grid">'
++dash("📑","Mes devoirs","Consulter les devoirs.","devoirs")
++dash("⏱️","Examens","Passer les examens.","examens")
++dash("📒","Notes de cours","Lire et copier les cours.","notes_cours")
++dash("📥","Mes remises","Consulter les travaux.","remises")
++dash("📊","Mes résultats","Voir les notes.","resultats")
++dash("🎓","Mon bulletin","Consulter et imprimer mon bulletin scolaire.","bulletin")
++'</div>';
 }
-$("pageContent").innerHTML=html
+$("pageContent").innerHTML=html;
 }
 function canEditModule(id){return isAdmin()||(["devoirs","examens","notes_cours"].includes(id)&&currentProfile.role==="professeur")||(["remises"].includes(id)&&["professeur","eleve","etudiant"].includes(currentProfile.role))||(id==="resultats"&&currentProfile.role==="professeur")}
 
