@@ -307,12 +307,34 @@ const modules=[
 {id:"videos",title:"Vidéos",collection:"videos",fields:[["titre","Titre"],["classeId","Code classe"],["url","Lien vidéo"],["description","Description"]]},
 {id:"documents",title:"Documents",collection:"documents",fields:[["titre","Titre"],["classeId","Code classe"],["url","Lien du document"],["description","Description"]]},
 {id:"statistiques",title:"Statistiques",collection:"statistiques",fields:[["nom","Nom"],["description","Description"],["valeur","Valeur"]]},
+{id:"bulletins",title:"Bulletins scolaires",collection:"bulletins",fields:[["titre","Titre du bulletin"],["etudiantId","UID étudiant"],["eleveId","UID élève"],["classeId","Code de classe"],["periode","Période"],["anneeAcademique","Année académique"],["url","Lien du fichier PDF"],["fichierNom","Nom du fichier"]]},
 {id:"configuration",title:"Configuration",collection:"configuration",fields:[["nom","Nom"],["valeur","Valeur"],["description","Description"]]}
 ];
 const navItems=[
-["accueil","🏠 Accueil"],["etudiants","🎓 Étudiants"],["eleves","👨‍🎓 Élèves"],["professeurs","👨‍🏫 Professeurs"],["departements","🏢 Départements"],["filieres","📚 Filières"],["classes","🏫 Classes"],["affectations","🔗 Affectations"],["inscriptions","📋 Inscriptions"],["matieres","📖 Matières"],["cours","📝 Cours"],["annees","📅 Années académiques"],["devoirs","📑 Devoirs"],["examens","⏱️ Examens"],["notes_cours","📒 Notes de cours"],["remises","📥 Remises / Corrections"],["resultats","📊 Résultats"],["videos","🎬 Vidéos"],["documents","📄 Documents"],["statistiques","📈 Statistiques"],["configuration","⚙️ Configuration"]
+["accueil","🏠 Accueil"],
+["etudiants","🎓 Étudiants"],
+["eleves","👨‍🎓 Élèves"],
+["professeurs","👨‍🏫 Professeurs"],
+["departements","🏢 Départements"],
+["filieres","📚 Filières"],
+["classes","🏫 Classes"],
+["affectations","🔗 Affectations"],
+["inscriptions","📋 Inscriptions"],
+["matieres","📖 Matières"],
+["cours","📝 Cours"],
+["annees","📅 Années académiques"],
+["devoirs","📑 Devoirs"],
+["examens","⏱️ Examens"],
+["notes_cours","📒 Notes de cours"],
+["remises","📥 Remises / Corrections"],
+["resultats","📊 Résultats"],
+["videos","🎬 Vidéos"],
+["documents","📄 Documents"],
+["bulletins","📄 Mes bulletins"],
+["statistiques","📈 Statistiques"],
+["configuration","⚙️ Configuration"]
 ];
-const studentPages=["accueil","devoirs","examens","notes_cours","remises","resultats","videos","documents"];
+const studentPages=["accueil","devoirs","examens","notes_cours","remises","resultats","videos","documents","bulletins"];
 const teacherPages=[...studentPages];
 
 function buildNavigation(){
@@ -339,6 +361,7 @@ $("pageContent").innerHTML='<div class="card">Chargement…</div>';
 if(page==="accueil")return await renderDashboard();
 if(page==="examens")return await renderExams();
 if(page==="notes_cours")return await renderNotesCours();
+  if(page==="bulletins")return await renderBulletins();
 if(page==="utilisateurs")return await renderUsers();
 if(page==="sauvegarde")return await renderBackup();
 if(mod)return await renderModule(mod);
@@ -411,6 +434,43 @@ if(!data.titre||!data.classeId)return toast("Le titre de l'examen et le code de 
 const duration=Number(data.dureeMinutes||30);
 if(!Number.isFinite(duration)||duration<1)return toast("La durée doit être d'au moins une minute.",true);
 data.questionsJSON=JSON.stringify(questions);data.dureeMinutes=Math.floor(duration);data.noteMax=questions.reduce((s,q)=>s+Number(q.points||0),0);data.statut="publie";data.professeurUid=isAdmin()?(data.professeurUid||currentUser.uid):currentUser.uid;data.professeurId=isAdmin()?(data.professeurId||currentUser.uid):currentUser.uid;
+}
+  if(m.id==="bulletins"){
+  if(!data.titre||!data.url){
+    return toast("Le titre et le lien du PDF sont obligatoires.",true);
+  }
+
+  try{
+    const u=new URL(data.url);
+    if(!["https:","http:"].includes(u.protocol)){
+      return toast("Le lien du bulletin est invalide.",true);
+    }
+  }catch{
+    return toast("Saisissez un lien PDF valide.",true);
+  }
+
+  if(!data.etudiantId&&!data.eleveId&&!data.classeId){
+    return toast("Indiquez un UID élève, un UID étudiant ou une classe.",true);
+  }
+
+  data.statut="publie";
+  data.published=true;
+}
+
+try{
+  data.updatedAt=stamp();
+  if(r) await updateDoc(doc(db,m.collection,r.id),data);
+  else{
+    data.createdAt=stamp();
+    await addDoc(collection(db,m.collection),data);
+  }
+  toast("Enregistrement effectué.");
+  await openPage(m.id);
+}
+catch(err){
+  console.error(err);
+  toast(friendly(err),true);
+}
 }
 try{data.updatedAt=stamp();if(r)await updateDoc(doc(db,m.collection,r.id),data);else{data.createdAt=stamp();await addDoc(collection(db,m.collection),data)}toast("Enregistrement effectué.");await openPage(m.id)}
 catch(err){console.error(err);toast(friendly(err),true)}
@@ -703,7 +763,139 @@ btn.disabled=false;
 }
 };
 }
+/* Bulletins scolaires : consultation et téléchargement */
+async function renderBulletins(){
+  const area=$("pageContent");
+  const role=currentProfile?.role;
+  const admin=isAdmin();
 
+  area.innerHTML=`
+    <div class="card">
+      <h3>📄 Mes bulletins scolaires</h3>
+      <p class="muted">Consultez et téléchargez vos bulletins en PDF.</p>
+      <div class="notice">Les bulletins publiés pour votre compte ou votre classe apparaîtront ici.</div>
+      <div id="bulletinsList">Chargement des bulletins...</div>
+    </div>`;
+
+  try{
+    let records=[];
+
+    if(admin){
+      const snap=await getDocs(collection(db,"bulletins"));
+      records=snap.docs.map(d=>({id:d.id,...d.data()}));
+    }else{
+      const ids=[currentUser.uid];
+      const classes=[
+        currentProfile.classeId,
+        ...(currentProfile.classIds||[])
+      ].filter(Boolean);
+
+      const requests=[
+        getDocs(query(
+          collection(db,"bulletins"),
+          where("etudiantId","==",currentUser.uid)
+        )),
+        getDocs(query(
+          collection(db,"bulletins"),
+          where("eleveId","==",currentUser.uid)
+        ))
+      ];
+
+      if(classes.length){
+        for(const classeId of [...new Set(classes)]){
+          requests.push(
+            getDocs(query(
+              collection(db,"bulletins"),
+              where("classeId","==",classeId)
+            ))
+          );
+        }
+      }
+
+      const results=await Promise.all(requests);
+      const unique=new Map();
+
+      results.forEach(snap=>{
+        snap.docs.forEach(d=>{
+          const b={id:d.id,...d.data()};
+          const assignedDirectly=
+            b.etudiantId===currentUser.uid||
+            b.eleveId===currentUser.uid;
+
+          const sameClass=
+            classes.includes(b.classeId);
+
+          if(assignedDirectly||sameClass){
+            if(b.published===true||b.statut==="publie"){
+              unique.set(b.id,b);
+            }
+          }
+        });
+      });
+
+      records=[...unique.values()];
+    }
+
+    const list=$("bulletinsList");
+    if(!list)return;
+
+    if(!records.length){
+      list.innerHTML=`
+        <div class="notice">
+          Aucun bulletin disponible pour le moment.
+          Contactez l'administration si nécessaire.
+        </div>`;
+      return;
+    }
+
+    list.innerHTML=records.map(b=>{
+      const url=String(b.url||"").trim();
+      const validUrl=(()=>{
+        try{
+          const u=new URL(url);
+          return u.protocol==="https:"||u.protocol==="http:";
+        }catch{
+          return false;
+        }
+      })();
+
+      return `
+        <article class="course-note">
+          <h3>${esc(b.titre||"Bulletin scolaire")}</h3>
+          <p><b>Classe :</b> ${esc(b.classeId||"—")}</p>
+          <p><b>Période :</b> ${esc(b.periode||"—")}</p>
+          <p><b>Année académique :</b>
+            ${esc(b.anneeAcademique||"—")}
+          </p>
+          <p><b>Fichier :</b>
+            ${esc(b.fichierNom||"Bulletin PDF")}
+          </p>
+          ${
+            validUrl
+            ? `<a class="btn primary"
+                 href="${esc(url)}"
+                 target="_blank"
+                 rel="noopener noreferrer"
+                 style="text-decoration:none">
+                 ⬇️ Ouvrir / Télécharger le bulletin
+               </a>`
+            : `<p class="muted">Le fichier PDF n'est pas encore disponible.</p>`
+          }
+        </article>`;
+    }).join("");
+
+  }catch(e){
+    console.error("Erreur bulletins :",e);
+    const list=$("bulletinsList");
+    if(list){
+      list.innerHTML=`
+        <div class="message error">
+          Impossible de charger les bulletins :
+          ${esc(friendly(e))}
+        </div>`;
+    }
+  }
+}
 /* Gestion des comptes : informations personnelles, rôle et statut */
 async function renderUsers(){
 if(!isAdmin())return;
