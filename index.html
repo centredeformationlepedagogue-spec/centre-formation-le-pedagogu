@@ -573,20 +573,135 @@ $("pageContent").querySelectorAll("[data-copy-note]").forEach(b=>b.onclick=async
 $("pageContent").querySelectorAll("[data-edit-note]").forEach(b=>b.onclick=()=>noteForm(notes.find(n=>n.id===b.dataset.editNote)));
 $("pageContent").querySelectorAll("[data-del-note]").forEach(b=>b.onclick=async()=>{if(confirm("Supprimer cette note ?"))try{await deleteDoc(doc(db,"notes_cours",b.dataset.delNote));await renderNotesCours();toast("Note supprimée.")}catch(e){toast(friendly(e),true)}})
 }
-
 function noteForm(n){
-const area=$("noteFormArea");area.innerHTML=`<div class="card"><h3>${n?"Modifier":"Nouvelle"} note de cours</h3><form id="noteForm"><div class="field"><label>Titre *</label><input name="titre" required value="${esc(n?.titre||"")}"></div><div class="form-grid"><div class="field"><label>Code de classe *</label><input name="classeId" required value="${esc(n?.classeId||currentProfile.classeId||"")}"></div><div class="field"><label>Matière</label><input name="matiereId" value="${esc(n?.matiereId||"")}"></div></div><div class="field"><label>Texte du cours</label><textarea name="contenu" maxlength="12000">${esc(n?.contenu||"")}</textarea></div><div class="field"><label>Photo de page (facultatif)</label><input id="notePhoto" type="file" accept="image/*" capture="environment"><div id="photoPreview">${n?.photoData?`<img src="${n.photoData}" style="max-width:100%;max-height:200px">`:""}</div><label><input id="removePhoto" type="checkbox" style="width:auto"> Retirer la photo actuelle</label></div><div class="actions"><button class="btn primary" id="saveNote">Enregistrer</button><button class="btn secondary" id="cancelNote" type="button">Annuler</button></div></form></div>`;
+const area=$("noteFormArea");
+area.innerHTML=`<div class="card">
+<h3>${n?"Modifier":"Nouvelle"} note de cours</h3>
+<form id="noteForm">
+<div class="field">
+<label>Titre *</label>
+<input name="titre" required value="${esc(n?.titre||"")}">
+</div>
+
+<div class="form-grid">
+<div class="field">
+<label>Code de classe *</label>
+<input name="classeId" required value="${esc(n?.classeId||currentProfile.classeId||"")}">
+</div>
+<div class="field">
+<label>Matière</label>
+<input name="matiereId" value="${esc(n?.matiereId||"")}">
+</div>
+</div>
+
+<div class="field">
+<label>Texte du cours</label>
+<textarea name="contenu" maxlength="12000">${esc(n?.contenu||"")}</textarea>
+</div>
+
+<div class="field">
+<label>Photo de page (facultatif)</label>
+
+<div class="actions">
+<button class="btn primary" id="capturePhotoBtn" type="button">📸 Capture écran / Prendre une photo</button>
+<button class="btn secondary" id="choosePhotoBtn" type="button">🖼️ Choisir une photo</button>
+</div>
+
+<input id="capturePhotoInput" type="file" accept="image/*" capture="environment" hidden>
+<input id="choosePhotoInput" type="file" accept="image/*" hidden>
+
+<div id="photoPreview">
+${n?.photoData?`<img src="${n.photoData}" style="max-width:100%;max-height:200px">`:""}
+</div>
+
+<label>
+<input id="removePhoto" type="checkbox" style="width:auto">
+Retirer la photo actuelle
+</label>
+</div>
+
+<div class="actions">
+<button class="btn primary" id="saveNote" type="submit">Enregistrer</button>
+<button class="btn secondary" id="cancelNote" type="button">Annuler</button>
+</div>
+</form>
+</div>`;
+
 let photo="";
+
 $("cancelNote").onclick=()=>area.innerHTML="";
-$("notePhoto").onchange=async()=>{try{photo=await compressPhoto($("notePhoto").files[0]);$("photoPreview").innerHTML=`<img src="${photo}" style="max-width:100%;max-height:200px">`}catch(e){toast(e.message,true);$("notePhoto").value=""}};
-$("noteForm").onsubmit=async e=>{e.preventDefault();const btn=$("saveNote");btn.disabled=true;try{
-const fd=new FormData(e.currentTarget),data={titre:String(fd.get("titre")||"").trim(),classeId:String(fd.get("classeId")||"").trim(),matiereId:String(fd.get("matiereId")||"").trim(),contenu:String(fd.get("contenu")||"").trim(),professeurUid:isAdmin()?(n?.professeurUid||currentUser.uid):currentUser.uid,updatedAt:stamp()};
-if(!data.titre||!data.classeId)throw Error("Le titre et la classe sont obligatoires.");
-if($("removePhoto").checked)data.photoData="";else if(photo)data.photoData=photo;else if(n?.photoData)data.photoData=n.photoData;
-if(!data.contenu&&!data.photoData)throw Error("Ajoutez le texte ou une photo.");
-if(n)await updateDoc(doc(db,"notes_cours",n.id),data);else{data.createdAt=stamp();await addDoc(collection(db,"notes_cours"),data)}
-toast("Note enregistrée.");await renderNotesCours()
-}catch(err){toast(friendly(err),true)}finally{btn.disabled=false}}
+
+$("capturePhotoBtn").onclick=()=>$("capturePhotoInput").click();
+$("choosePhotoBtn").onclick=()=>$("choosePhotoInput").click();
+
+async function handlePhoto(input){
+const file=input.files?.[0];
+if(!file)return;
+try{
+photo=await compressPhoto(file);
+$("photoPreview").innerHTML=
+`<img src="${photo}" alt="Aperçu de la photo du cours" style="max-width:100%;max-height:200px">`;
+$("removePhoto").checked=false;
+}catch(e){
+photo="";
+toast(e.message||"Impossible de charger cette image.",true);
+}finally{
+input.value="";
+}
+}
+
+$("capturePhotoInput").onchange=async()=>handlePhoto($("capturePhotoInput"));
+$("choosePhotoInput").onchange=async()=>handlePhoto($("choosePhotoInput"));
+
+$("removePhoto").onchange=()=>{
+if($("removePhoto").checked){
+photo="";
+$("photoPreview").innerHTML="";
+}
+};
+
+$("noteForm").onsubmit=async e=>{
+e.preventDefault();
+const btn=$("saveNote");
+btn.disabled=true;
+
+try{
+const fd=new FormData(e.currentTarget);
+const data={
+titre:String(fd.get("titre")||"").trim(),
+classeId:String(fd.get("classeId")||"").trim(),
+matiereId:String(fd.get("matiereId")||"").trim(),
+contenu:String(fd.get("contenu")||"").trim(),
+professeurUid:isAdmin()?(n?.professeurUid||currentUser.uid):currentUser.uid,
+updatedAt:stamp()
+};
+
+if(!data.titre||!data.classeId)
+throw Error("Le titre et la classe sont obligatoires.");
+
+if($("removePhoto").checked)data.photoData="";
+else if(photo)data.photoData=photo;
+else if(n?.photoData)data.photoData=n.photoData;
+
+if(!data.contenu&&!data.photoData)
+throw Error("Ajoutez le texte ou une photo.");
+
+if(n){
+await updateDoc(doc(db,"notes_cours",n.id),data);
+}else{
+data.createdAt=stamp();
+await addDoc(collection(db,"notes_cours"),data);
+}
+
+toast("Note enregistrée.");
+await renderNotesCours();
+
+}catch(err){
+toast(friendly(err),true);
+}finally{
+btn.disabled=false;
+}
+};
 }
 
 /* Gestion des comptes : informations personnelles, rôle et statut */
