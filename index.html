@@ -12,7 +12,7 @@
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--txt)}button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}button:disabled{opacity:.5}
 #authScreen{min-height:100vh;display:grid;place-items:center;padding:16px;background:linear-gradient(135deg,#0f3d91,#3674c9)}.auth-card{background:white;width:100%;max-width:440px;padding:25px;border-radius:16px;box-shadow:0 12px 35px #0002}.auth-card h1{text-align:center;color:var(--b);font-size:23px}.auth-card p{text-align:center;color:var(--mut)}.logo{display:block;width:65px;height:65px;object-fit:contain;margin:auto}
 .field{margin:12px 0}.field label{display:block;font-weight:bold;margin-bottom:6px;font-size:14px}input,select,textarea{width:100%;padding:10px;border:1px solid var(--bd);border-radius:8px;background:#fff;color:var(--txt)}textarea{min-height:90px;resize:vertical}
-.btn{border:0;border-radius:8px;padding:10px 13px;font-weight:bold;display:inline-flex;align-items:center;justify-content:center;gap:5px}.primary{background:var(--b);color:#fff}.secondary{background:#e6edf9;color:var(--b)}.danger{background:#fde8e8;color:#a51d1d}.success{background:#dcfce7;color:#166534}.block{width:100%;margin-top:9px}.google{width:100%;background:#fff;border:1px solid #ddd;margin-top:10px}.google strong{font-size:19px;background:conic-gradient(from -45deg,#4285f4 0 25%,#34a853 25% 50%,#fbbc05 50% 75%,#ea4335 75%);color:transparent;background-clip:text}
+.btn{border:0;border-radius:8px;padding:10px 13px;font-weight:bold;display:inline-flex;align-items:center;justify-content:center;gap:5px}.primary{background:var(--b);color:#fff}.secondary{background:#e6edf9;color:var(--b)}.danger{background:#fde8e8;color:#a51d1d}.success{background:#dcfce7;color:#166534}.block{width:100%;margin-top:9px}.google{width:100%;background:#fff;border:1px solid #ddd;margin-top:10px}.google strong{font-size:19px;color:#4285f4}
 .message,.notice{padding:11px;border-radius:8px;margin:12px 0;background:#dbeafe;color:#1e40af;line-height:1.5}.message.error{background:#fee2e2;color:#991b1b}.message.success{background:#dcfce7;color:#166534}
 .topbar{background:white;border-bottom:1px solid var(--bd);padding:12px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;position:sticky;top:0;z-index:5}.brand{font-weight:bold;color:var(--b);display:flex;align-items:center;gap:10px}.brand img{width:38px;height:38px;object-fit:contain}.top-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.user-info{font-size:12px;color:var(--mut)}
 .layout{display:flex;min-height:calc(100vh - 65px)}.sidebar{width:245px;flex-shrink:0;background:#102f6c;color:white;padding:12px}.sidebar-title{font-size:12px;text-transform:uppercase;opacity:.75;padding:10px}.nav-btn{display:block;width:100%;text-align:left;border:0;border-radius:7px;background:transparent;color:white;padding:10px;margin:2px 0}.nav-btn:hover,.nav-btn.active{background:#ffffff25}
@@ -33,12 +33,59 @@
 <div class="field"><label for="loginPassword">Mot de passe</label><input id="loginPassword" type="password" autocomplete="current-password" required></div>
 <button class="btn primary block">Se connecter</button>
 </form>
-<button class="btn secondary block" id="registerBtn">Créer un compte</button>
-<button class="btn google" id="googleBtn"><strong>G</strong> Continuer avec Google</button>
-<button class="btn secondary block" id="resetBtn">Mot de passe oublié ?</button>
+
+<div id="registrationFields" class="hidden">
+<div class="notice">Remplissez les informations ci-dessous pour créer votre compte. L'administrateur devra approuver votre demande.</div>
+<div class="field">
+<label for="regRole">Type de compte</label>
+<select id="regRole" required>
+<option value="eleve">Élève</option>
+<option value="etudiant">Étudiant</option>
+<option value="professeur">Professeur</option>
+</select>
+</div>
+<div class="form-grid">
+<div class="field">
+<label for="regNom">Nom *</label>
+<input id="regNom" type="text" autocomplete="family-name" required>
+</div>
+<div class="field">
+<label for="regPrenom">Prénom *</label>
+<input id="regPrenom" type="text" autocomplete="given-name" required>
+</div>
+<div class="field full">
+<label for="regTelephone">Téléphone *</label>
+<input id="regTelephone" type="tel" autocomplete="tel" required>
+</div>
+<div class="field" id="regNiveauField">
+<label for="regNiveau">Niveau d'études *</label>
+<select id="regNiveau" required>
+<option value="">Choisir un niveau</option>
+<option value="Fondamental">Fondamental</option>
+<option value="Secondaire">Secondaire</option>
+<option value="Professionnel">Professionnel</option>
+<option value="Universitaire">Universitaire</option>
+<option value="Autre">Autre</option>
+</select>
+</div>
+<div class="field" id="regClasseField">
+<label for="regClasse">Classe ou filière *</label>
+<input id="regClasse" type="text" placeholder="Ex. : NS4, Informatique..." required>
+</div>
+<div class="field full hidden" id="regSpecialiteField">
+<label for="regSpecialite">Spécialité ou matière enseignée *</label>
+<input id="regSpecialite" type="text" placeholder="Ex. : Mathématiques, Informatique...">
+</div>
+</div>
+</div>
+
+<button class="btn secondary block" id="registerBtn" type="button">Créer un compte</button>
+<button class="btn google" id="googleBtn" type="button"><strong>G</strong> Continuer avec Google</button>
+<button class="btn secondary block" id="resetBtn" type="button">Mot de passe oublié ?</button>
 <p style="font-size:12px">Tout nouveau compte doit être accepté par l'administrateur.</p>
 </div>
 </section>
+
 <section id="app" class="hidden">
 <header class="topbar">
 <div class="brand"><img src="./icon-192.png" alt="" onerror="this.style.display='none'">Centre de Formation Le Pédagogue</div>
@@ -54,14 +101,23 @@
 </div>
 </section>
 <div id="toast" class="hidden"></div>
+
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import{getAuth,onAuthStateChanged,signInWithEmailAndPassword,createUserWithEmailAndPassword,signInWithPopup,GoogleAuthProvider,signOut,sendEmailVerification,sendPasswordResetEmail}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import{getFirestore,doc,getDoc,setDoc,updateDoc,deleteDoc,collection,getDocs,addDoc,serverTimestamp,query,where}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-const firebaseConfig={apiKey:"AIzaSyAhrtcVaEZ7oU-p4Ihzl0APX2ccXKi4jBU",authDomain:"centre-de-formation-le-pe.firebaseapp.com",projectId:"centre-de-formation-le-pe",storageBucket:"centre-de-formation-le-pe.firebasestorage.app",messagingSenderId:"11834103838",appId:"1:11834103838:web:b82c994e78486cd313760f"};
+const firebaseConfig={
+apiKey:"AIzaSyAhrtcVaEZ7oU-p4Ihzl0APX2ccXKi4jBU",
+authDomain:"centre-de-formation-le-pe.firebaseapp.com",
+projectId:"centre-de-formation-le-pe",
+storageBucket:"centre-de-formation-le-pe.firebasestorage.app",
+messagingSenderId:"11834103838",
+appId:"1:11834103838:web:b82c994e78486cd313760f"
+};
 const ADMIN_EMAIL="centredeformationlepedagogue@gmail.com";
-const fb=initializeApp(firebaseConfig),auth=getAuth(fb),db=getFirestore(fb),googleProvider=new GoogleAuthProvider();
+const fb=initializeApp(firebaseConfig),auth=getAuth(fb),db=getFirestore(fb);
+const googleProvider=new GoogleAuthProvider();
 googleProvider.setCustomParameters({prompt:"select_account"});
 const $=id=>document.getElementById(id),stamp=()=>serverTimestamp();
 let currentUser=null,currentProfile=null,currentPage="accueil",installPrompt=null,timerInterval=null,activeExam=null,activeAttempt=null,answerCache={},saveQueue=Promise.resolve();
@@ -74,227 +130,526 @@ function isAdmin(){return!!currentUser&&((currentUser.email||"").toLowerCase()==
 function approved(){return!!currentProfile&&(isAdmin()||(currentProfile.status==="accepted"&&["professeur","eleve","etudiant"].includes(currentProfile.role)))}
 function roleName(r){return({administrateur:"Administrateur",professeur:"Professeur",eleve:"Élève",etudiant:"Étudiant"})[r]||r||"Utilisateur"}
 function stopTimer(){if(timerInterval){clearInterval(timerInterval);timerInterval=null}}
+
 async function ensureProfile(user){
 const ref=doc(db,"users",user.uid),snap=await getDoc(ref),email=(user.email||"").toLowerCase(),admin=email===ADMIN_EMAIL;
-if(!snap.exists()){const p={uid:user.uid,email:user.email||"",role:admin?"administrateur":"eleve",status:admin?"accepted":"attente",createdAt:stamp(),updatedAt:stamp()};await setDoc(ref,p);return p}
-let p=snap.data();if(admin&&(p.role!=="administrateur"||p.status!=="accepted")){await updateDoc(ref,{role:"administrateur",status:"accepted",email:user.email||ADMIN_EMAIL,updatedAt:stamp()});p={...p,role:"administrateur",status:"accepted"}}
-return p
+if(!snap.exists()){
+const p={uid:user.uid,email:user.email||"",role:admin?"administrateur":"eleve",status:admin?"accepted":"attente",createdAt:stamp(),updatedAt:stamp()};
+await setDoc(ref,p);return p;
 }
+let p=snap.data();
+if(admin&&(p.role!=="administrateur"||p.status!=="accepted")){
+await updateDoc(ref,{role:"administrateur",status:"accepted",email:user.email||ADMIN_EMAIL,updatedAt:stamp()});p={...p,role:"administrateur",status:"accepted"}
+}
+return p;
+}
+
 let loginLock=false;
 async function completeLogin(user){
 if(loginLock)return;loginLock=true;currentUser=user;
-try{currentProfile=await ensureProfile(user);if(!approved()){const status=currentProfile.status;await signOut(auth);currentUser=null;currentProfile=null;authMessage(status==="refuse"?"Votre demande a été refusée. Contactez l'administrateur.":"Votre compte attend l'approbation de l'administrateur.",status==="refuse"?"error":"info");return}
-$("authScreen").classList.add("hidden");$("app").classList.remove("hidden");$("userInfo").textContent=`${currentProfile.nom||user.displayName||user.email} — ${roleName(currentProfile.role)}`;buildNavigation();await openPage("accueil")
-}catch(e){console.error(e);await signOut(auth).catch(()=>{});currentUser=null;currentProfile=null;authMessage("Impossible de charger le profil : "+friendly(e),"error")}finally{loginLock=false}
+try{
+currentProfile=await ensureProfile(user);
+if(!approved()){
+const status=currentProfile.status;await signOut(auth);currentUser=null;currentProfile=null;
+authMessage(status==="refuse"?"Votre demande a été refusée. Contactez l'administrateur.":"Votre compte attend l'approbation de l'administrateur.",status==="refuse"?"error":"info");return;
+}
+$("authScreen").classList.add("hidden");$("app").classList.remove("hidden");
+$("userInfo").textContent=`${currentProfile.nom||user.displayName||user.email} — ${roleName(currentProfile.role)}`;
+buildNavigation();await openPage("accueil");
+}catch(e){console.error(e);await signOut(auth).catch(()=>{});currentUser=null;currentProfile=null;authMessage("Impossible de charger le profil : "+friendly(e),"error")}
+finally{loginLock=false}
 }
 onAuthStateChanged(auth,u=>{if(!u){stopTimer();currentUser=null;currentProfile=null;$("app").classList.add("hidden");$("authScreen").classList.remove("hidden")}else completeLogin(u)});
-$("loginForm").addEventListener("submit",async e=>{e.preventDefault();try{authMessage("Connexion en cours…");await signInWithEmailAndPassword(auth,$("loginEmail").value.trim(),$("loginPassword").value)}catch(err){authMessage(friendly(err),"error")}});
-$("registerBtn").addEventListener("click",async()=>{const email=$("loginEmail").value.trim(),password=$("loginPassword").value;if(!email||!password)return authMessage("Saisissez votre e-mail et un mot de passe.","error");if(password.length<6)return authMessage("Le mot de passe doit contenir au moins 6 caractères.","error");try{const r=await createUserWithEmailAndPassword(auth,email,password);await sendEmailVerification(r.user);await signOut(auth);authMessage("Compte créé. Vérifiez votre e-mail. Votre accès attend l'approbation de l'administrateur.","success")}catch(e){authMessage(friendly(e),"error")}});
-$("googleBtn").addEventListener("click",async()=>{try{await signInWithPopup(auth,googleProvider)}catch(e){authMessage(friendly(e),"error")}});
-$("resetBtn").addEventListener("click",async()=>{const email=$("loginEmail").value.trim();if(!email)return authMessage("Saisissez votre adresse e-mail.","error");try{await sendPasswordResetEmail(auth,email);authMessage("Si le compte existe, un e-mail de réinitialisation sera envoyé.","success")}catch(e){authMessage(friendly(e),"error")}});
+
+$("loginForm").addEventListener("submit",async e=>{
+e.preventDefault();
+try{authMessage("Connexion en cours…");await signInWithEmailAndPassword(auth,$("loginEmail").value.trim(),$("loginPassword").value)}
+catch(err){authMessage(friendly(err),"error")}
+});
+
+/* Inscription avec informations supplémentaires */
+let registrationVisible=false;
+let registrationBusy=false;
+
+function updateRegistrationFields(){
+const role=$("regRole").value;
+const professor=role==="professeur";
+$("regSpecialiteField").classList.toggle("hidden",!professor);
+$("regNiveauField").classList.toggle("hidden",professor);
+$("regClasseField").classList.toggle("hidden",professor);
+$("regNiveau").required=!professor;
+$("regClasse").required=!professor;
+$("regSpecialite").required=professor;
+}
+$("regRole").addEventListener("change",updateRegistrationFields);
+updateRegistrationFields();
+
+$("registerBtn").addEventListener("click",async()=>{
+const btn=$("registerBtn");
+
+if(!registrationVisible){
+registrationVisible=true;
+$("registrationFields").classList.remove("hidden");
+updateRegistrationFields();
+btn.textContent="Valider et créer mon compte";
+$("regNom").focus();
+return;
+}
+
+if(registrationBusy)return;
+
+const email=$("loginEmail").value.trim();
+const password=$("loginPassword").value;
+const role=$("regRole").value;
+const nom=$("regNom").value.trim();
+const prenom=$("regPrenom").value.trim();
+const telephone=$("regTelephone").value.trim();
+const niveau=$("regNiveau").value;
+const classeId=$("regClasse").value.trim();
+const specialite=$("regSpecialite").value.trim();
+
+if(!email||!password){
+authMessage("Saisissez votre adresse e-mail et votre mot de passe.","error");
+return;
+}
+if(password.length<6){
+authMessage("Le mot de passe doit contenir au moins 6 caractères.","error");
+return;
+}
+if(!nom||!prenom||!telephone){
+authMessage("Veuillez remplir le nom, le prénom et le téléphone.","error");
+return;
+}
+if(!["eleve","etudiant","professeur"].includes(role)){
+authMessage("Type de compte invalide.","error");
+return;
+}
+if(role==="professeur"&&!specialite){
+authMessage("Veuillez indiquer votre spécialité ou matière enseignée.","error");
+return;
+}
+if(role!=="professeur"&&(!niveau||!classeId)){
+authMessage("Veuillez indiquer votre niveau d'études et votre classe ou filière.","error");
+return;
+}
+
+registrationBusy=true;
+btn.disabled=true;
+
+try{
+authMessage("Création du compte en cours…");
+const credential=await createUserWithEmailAndPassword(auth,email,password);
+const profileData={
+uid:credential.user.uid,
+email:credential.user.email||email,
+nom,prenom,telephone,role,
+status:"attente",
+updatedAt:stamp()
+};
+if(role==="professeur"){
+profileData.specialite=specialite;
+}else{
+profileData.niveau=niveau;
+profileData.classeId=classeId;
+}
+
+await setDoc(doc(db,"users",credential.user.uid),{
+...profileData,
+createdAt:stamp()
+},{merge:true});
+
+await sendEmailVerification(credential.user);
+await signOut(auth);
+
+$("loginPassword").value="";
+$("registrationFields").classList.add("hidden");
+registrationVisible=false;
+btn.textContent="Créer un compte";
+authMessage("Compte créé avec succès. Vérifiez votre e-mail. Votre demande sera examinée par l'administrateur.","success");
+}catch(e){
+console.error("Erreur création du compte :",e);
+authMessage(friendly(e),"error");
+}finally{
+registrationBusy=false;
+btn.disabled=false;
+}
+});
+
+$("googleBtn").addEventListener("click",async()=>{
+try{await signInWithPopup(auth,googleProvider)}
+catch(e){authMessage(friendly(e),"error")}
+});
+$("resetBtn").addEventListener("click",async()=>{
+const email=$("loginEmail").value.trim();
+if(!email)return authMessage("Saisissez votre adresse e-mail.","error");
+try{await sendPasswordResetEmail(auth,email);authMessage("Si le compte existe, un e-mail de réinitialisation sera envoyé.","success")}
+catch(e){authMessage(friendly(e),"error")}
+});
 $("logoutBtn").addEventListener("click",async()=>{if(confirm("Voulez-vous vous déconnecter ?")){stopTimer();await signOut(auth)}});
 $("refreshBtn").addEventListener("click",()=>openPage(currentPage));
 
 const modules=[
-{id:"etudiants",title:"Étudiants",collection:"etudiants",fields:[["matricule","Matricule"],["nom","Nom"],["prenom","Prénom"],["dateNaissance","Date de naissance"],["sexe","Sexe"],["email","E-mail"],["telephone","Téléphone"],["adresse","Adresse"],["classeId","Code de classe"],["filiereId","Code de filière"],["departementId","Code du département"],["anneeAcademique","Année académique"],["statut","Statut"]]},
-{id:"eleves",title:"Élèves",collection:"eleves",fields:[["matricule","Matricule"],["nom","Nom"],["prenom","Prénom"],["dateNaissance","Date de naissance"],["sexe","Sexe"],["email","E-mail"],["telephone","Téléphone"],["adresse","Adresse"],["classeId","Code de classe"],["filiereId","Code de filière"],["anneeAcademique","Année académique"],["statut","Statut"]]},
-{id:"professeurs",title:"Professeurs",collection:"professeurs",fields:[["matricule","Matricule"],["nom","Nom"],["prenom","Prénom"],["email","E-mail"],["telephone","Téléphone"],["adresse","Adresse"],["specialite","Spécialité"],["qualification","Qualification"],["departementId","Code du département"],["statut","Statut"]]},
-{id:"departements",title:"Départements",collection:"departements",fields:[["code","Code"],["nom","Nom"],["responsable","Responsable"],["telephone","Téléphone"],["email","E-mail"],["description","Description"]]},
-{id:"filieres",title:"Filières",collection:"filieres",fields:[["code","Code de filière"],["nom","Nom"],["departementId","Code du département"],["responsable","Responsable"],["duree","Durée"],["description","Description"]]},
-{id:"classes",title:"Classes",collection:"classes",fields:[["code","Code de classe"],["nom","Nom de la classe"],["niveau","Niveau"],["filiereId","Code de filière"],["departementId","Code du département"],["anneeAcademique","Année académique"],["capacite","Capacité"],["salle","Salle"],["statut","Statut"]]},
-{id:"matieres",title:"Matières",collection:"matieres",fields:[["code","Code matière"],["nom","Nom"],["coefficient","Coefficient"],["volumeHoraire","Volume horaire"],["departementId","Code du département"],["description","Description"]]},
-{id:"cours",title:"Cours",collection:"cours",fields:[["nom","Titre du cours"],["code","Code du cours"],["description","Description"],["matiereId","Code matière"],["classeId","Code de classe"],["professeurUid","Compte professeur"],["anneeAcademique","Année académique"],["volumeHoraire","Volume horaire"],["statut","Statut"]]},
-{id:"annees",title:"Années académiques",collection:"annees_academiques",fields:[["nom","Nom"],["debut","Date de début"],["fin","Date de fin"],["statut","Statut"],["description","Description"]]},
-{id:"affectations",title:"Affectations",collection:"affectations",fields:[["professeurUid","Compte professeur"],["professeurNom","Nom du professeur"],["classeId","Code de classe"],["matiereId","Code matière"],["coursId","Code cours"],["anneeAcademique","Année académique"],["horaire","Horaire"],["salle","Salle"],["statut","Statut"]]},
-{id:"inscriptions",title:"Inscriptions",collection:"inscriptions",fields:[["etudiantId","Compte étudiant"],["eleveId","Compte élève"],["matricule","Matricule"],["classeId","Code classe"],["filiereId","Code filière"],["anneeAcademique","Année académique"],["dateInscription","Date d'inscription"],["frais","Frais"],["statut","Statut"]]},
-{id:"devoirs",title:"Devoirs",collection:"devoirs",fields:[["titre","Titre"],["description","Consignes du devoir"],["matiereId","Code matière"],["classeId","Code de classe"],["datePublication","Date de publication"],["dateLimite","Date limite"],["noteMax","Note maximale"],["fichierUrl","Lien du fichier"],["statut","Statut"]]},
-{id:"examens",title:"Examens",collection:"examens",fields:[["titre","Titre de l'examen"],["description","Description"],["matiereId","Code matière"],["classeId","Code de classe"],["dateDebut","Date et heure de début"],["dateLimite","Date et heure de fin"],["dureeMinutes","Durée en minutes"]]},
-{id:"remises",title:"Remises / Corrections",collection:"remises",fields:[["devoirId","Code devoir"],["etudiantId","Compte élève"],["etudiantNom","Nom de l'élève"],["professeurUid","Compte professeur"],["classeId","Code classe"],["contenu","Travail remis"],["fichierUrl","Lien du fichier remis"],["note100","Note sur 100"],["commentaire","Commentaire du professeur"],["statut","Statut"]]},
-{id:"resultats",title:"Résultats",collection:"resultats",fields:[["etudiantId","Compte élève"],["etudiantNom","Nom de l'élève"],["classeId","Code classe"],["matiereId","Code matière"],["devoirId","Code devoir ou examen"],["note100","Note sur 100"],["note20","Note sur 20"],["coefficient","Coefficient"],["commentaire","Commentaire"],["anneeAcademique","Année académique"]]},
-{id:"videos",title:"Vidéos",collection:"videos",fields:[["titre","Titre"],["classeId","Code classe"],["matiereId","Code matière"],["url","Lien vidéo"],["description","Description"],["statut","Statut"]]},
-{id:"documents",title:"Documents",collection:"documents",fields:[["titre","Titre"],["classeId","Code classe"],["matiereId","Code matière"],["url","Lien du document"],["type","Type de document"],["description","Description"],["statut","Statut"]]},
-{id:"statistiques",title:"Statistiques",collection:"statistiques",fields:[["nom","Nom"],["description","Description"],["valeur","Valeur"],["periode","Période"]]},
-{id:"configuration",title:"Configuration",collection:"configuration",fields:[["nom","Nom du paramètre"],["valeur","Valeur"],["description","Description"]]}
+{id:"etudiants",title:"Étudiants",collection:"etudiants",fields:[["nom","Nom"],["prenom","Prénom"],["email","E-mail"],["telephone","Téléphone"],["classeId","Code de classe"]]},
+{id:"eleves",title:"Élèves",collection:"eleves",fields:[["nom","Nom"],["prenom","Prénom"],["email","E-mail"],["telephone","Téléphone"],["classeId","Code de classe"]]},
+{id:"professeurs",title:"Professeurs",collection:"professeurs",fields:[["nom","Nom"],["prenom","Prénom"],["email","E-mail"],["telephone","Téléphone"],["specialite","Spécialité"]]},
+{id:"departements",title:"Départements",collection:"departements",fields:[["nom","Nom"],["description","Description"]]},
+{id:"filieres",title:"Filières",collection:"filieres",fields:[["nom","Nom"],["description","Description"],["departementId","Code du département"]]},
+{id:"classes",title:"Classes",collection:"classes",fields:[["nom","Nom de la classe"],["niveau","Niveau"],["filiereId","Code de filière"],["anneeAcademique","Année académique"]]},
+{id:"matieres",title:"Matières",collection:"matieres",fields:[["nom","Nom"],["code","Code matière"],["description","Description"]]},
+{id:"cours",title:"Cours",collection:"cours",fields:[["nom","Titre"],["description","Description"],["matiereId","Code matière"],["classeId","Code de classe"]]},
+{id:"annees",title:"Années académiques",collection:"annees_academiques",fields:[["nom","Nom"],["debut","Date de début"],["fin","Date de fin"],["statut","Statut"]]},
+{id:"affectations",title:"Affectations",collection:"affectations",fields:[["professeurUid","Compte professeur"],["classeId","Code de classe"],["matiereId","Code matière"],["coursId","Code cours"]]},
+{id:"inscriptions",title:"Élèves / Classes",collection:"inscriptions",fields:[["etudiantId","Compte étudiant"],["eleveId","Compte élève"],["classeId","Code de classe"],["anneeAcademique","Année académique"],["statut","Statut"]]},
+{id:"devoirs",title:"Devoirs",collection:"devoirs",fields:[["titre","Titre"],["description","Description"],["classeId","Code de classe"],["dateLimite","Date limite"]]},
+{id:"examens",title:"Examens",collection:"examens",fields:[["titre","Titre de l'examen"],["description","Description"],["classeId","Code de classe"],["dateDebut","Date et heure de début"],["dateLimite","Date et heure de fin"],["dureeMinutes","Durée en minutes"]]},
+{id:"remises",title:"Remises / Corrections",collection:"remises",fields:[["devoirId","Code devoir"],["etudiantId","Compte élève"],["classeId","Code classe"],["contenu","Travail remis"],["note100","Note sur 100"],["commentaire","Commentaire"],["statut","Statut"]]},
+{id:"resultats",title:"Résultats",collection:"resultats",fields:[["etudiantId","Compte élève"],["classeId","Code classe"],["matiereId","Code matière"],["note100","Note sur 100"],["note20","Note sur 20"],["commentaire","Commentaire"]]},
+{id:"videos",title:"Vidéos",collection:"videos",fields:[["titre","Titre"],["classeId","Code classe"],["url","Lien vidéo"],["description","Description"]]},
+{id:"documents",title:"Documents",collection:"documents",fields:[["titre","Titre"],["classeId","Code classe"],["url","Lien du document"],["description","Description"]]},
+{id:"statistiques",title:"Statistiques",collection:"statistiques",fields:[["nom","Nom"],["description","Description"],["valeur","Valeur"]]},
+{id:"configuration",title:"Configuration",collection:"configuration",fields:[["nom","Nom"],["valeur","Valeur"],["description","Description"]]}
 ];
 const navItems=[
 ["accueil","🏠 Accueil"],["etudiants","🎓 Étudiants"],["eleves","👨‍🎓 Élèves"],["professeurs","👨‍🏫 Professeurs"],["departements","🏢 Départements"],["filieres","📚 Filières"],["classes","🏫 Classes"],["affectations","🔗 Affectations"],["inscriptions","📋 Inscriptions"],["matieres","📖 Matières"],["cours","📝 Cours"],["annees","📅 Années académiques"],["devoirs","📑 Devoirs"],["examens","⏱️ Examens"],["notes_cours","📒 Notes de cours"],["remises","📥 Remises / Corrections"],["resultats","📊 Résultats"],["videos","🎬 Vidéos"],["documents","📄 Documents"],["statistiques","📈 Statistiques"],["configuration","⚙️ Configuration"]
 ];
-const studentPages=["accueil","devoirs","examens","notes_cours","remises","resultats","videos","documents","cours"];
-const teacherPages=[...studentPages,"cours","etudiants","eleves","classes","matieres","affectations","inscriptions"];
+const studentPages=["accueil","devoirs","examens","notes_cours","remises","resultats","videos","documents"];
+const teacherPages=[...studentPages];
+
 function buildNavigation(){
 const n=$("navigation");n.innerHTML="";
-navItems.filter(([id])=>isAdmin()||(currentProfile?.role==="professeur"?teacherPages:studentPages).includes(id)).forEach(([id,label])=>{const b=document.createElement("button");b.className="nav-btn"+(id===currentPage?" active":"");b.textContent=label;b.onclick=()=>openPage(id);n.appendChild(b)});
-if(isAdmin())for(const[id,label]of [["utilisateurs","👥 Utilisateurs"],["sauvegarde","💾 Sauvegarde"]]){const b=document.createElement("button");b.className="nav-btn"+(id===currentPage?" active":"");b.textContent=label;b.onclick=()=>openPage(id);n.appendChild(b)}
+navItems.filter(([id])=>isAdmin()||(currentProfile?.role==="professeur"?teacherPages:studentPages).includes(id)).forEach(([id,label])=>{
+const b=document.createElement("button");b.className="nav-btn"+(id===currentPage?" active":"");b.textContent=label;b.onclick=()=>openPage(id);n.appendChild(b)
+});
+if(isAdmin())for(const [id,label] of [["utilisateurs","👥 Utilisateurs"],["sauvegarde","💾 Sauvegarde"]]){
+const b=document.createElement("button");b.className="nav-btn"+(id===currentPage?" active":"");b.textContent=label;b.onclick=()=>openPage(id);n.appendChild(b)
 }
+}
+
 async function openPage(page){
 if(!approved())return;
-if(!isAdmin()&&!(currentProfile?.role==="professeur"?teacherPages:studentPages).includes(page)){toast("Accès non autorisé.",true);return}
-try{stopTimer();currentPage=page;buildNavigation();const mod=modules.find(m=>m.id===page),titles={accueil:"Tableau de bord",examens:"Examens chronométrés",notes_cours:"Notes de cours",utilisateurs:"Gestion des utilisateurs",sauvegarde:"Sauvegarde"};$("pageTitle").textContent=titles[page]||mod?.title||page;$("pageContent").innerHTML='<div class="card">Chargement…</div>';
+if(!isAdmin()&&!(currentProfile?.role==="professeur"?teacherPages:studentPages).includes(page)){
+toast("Accès non autorisé.",true);return;
+}
+try{
+stopTimer();currentPage=page;buildNavigation();
+const mod=modules.find(m=>m.id===page);
+const titles={accueil:"Tableau de bord",examens:"Examens chronométrés",notes_cours:"Notes de cours",utilisateurs:"Gestion des utilisateurs",sauvegarde:"Sauvegarde"};
+$("pageTitle").textContent=titles[page]||mod?.title||page;
+$("pageContent").innerHTML='<div class="card">Chargement…</div>';
 if(page==="accueil")return await renderDashboard();
 if(page==="examens")return await renderExams();
 if(page==="notes_cours")return await renderNotesCours();
 if(page==="utilisateurs")return await renderUsers();
 if(page==="sauvegarde")return await renderBackup();
-if(page==="statistiques")return await renderStatistics();
-if(page==="cours"&&!isAdmin()&&currentProfile.role==="eleve")return await renderStudentCourses();
-if(mod)return await renderModule(mod)
-}catch(e){console.error("Erreur navigation :",e);$("pageContent").innerHTML='<div class="card"><b>Erreur de navigation :</b> '+esc(friendly(e))+'<p class="muted">Vérifiez la console JavaScript et les règles Firestore.</p></div>'}
+if(mod)return await renderModule(mod);
+}catch(e){
+console.error("Erreur navigation :",e);
+const content=$("pageContent");
+if(content)content.innerHTML='<div class="card"><b>Erreur de navigation :</b> '+esc(friendly(e))+'<p class="muted">Vérifiez la console JavaScript et les règles Firestore.</p></div>';
+}
 }
 window.goPage=p=>openPage(p);
+
 function dash(icon,title,desc,page){return`<div class="dash-card"><div style="font-size:27px">${icon}</div><h3>${esc(title)}</h3><p>${esc(desc)}</p><button class="btn secondary" onclick="window.goPage('${page}')">Ouvrir →</button></div>`}
 async function renderDashboard(){
 const name=currentProfile?.nom||currentUser?.displayName||currentUser?.email||"Utilisateur";
 let html=`<div class="card welcome"><h3>Bienvenue, ${esc(name)} !</h3><p>Votre espace académique — ${esc(roleName(currentProfile.role))}</p></div>`;
 if(isAdmin()){
-const names=["etudiants","eleves","professeurs","classes","matieres","devoirs","examens"],counts=await Promise.all(names.map(async n=>(await getDocs(collection(db,n))).size)),waiting=await getDocs(query(collection(db,"users"),where("status","==","attente")));
+const names=["etudiants","eleves","professeurs","classes","matieres","devoirs","examens"],counts=await Promise.all(names.map(async n=>(await getDocs(collection(db,n))).size));
+const waiting=await getDocs(query(collection(db,"users"),where("status","==","attente")));
 html+=`<div class="stats-grid">${[["Étudiants",Math.max(counts[0],counts[1])],["Professeurs",counts[2]],["Classes",counts[3]],["Matières",counts[4]],["Devoirs",counts[5]],["Examens",counts[6]],["Comptes en attente",waiting.size]].map(x=>`<div class="stat"><small>${esc(x[0])}</small><strong>${x[1]}</strong></div>`).join("")}</div>`;
-html+='<div class="dashboard-grid">'+dash("👥","Utilisateurs","Approuver les comptes et attribuer les rôles.","utilisateurs")+dash("🏫","Classes","Organiser les classes et leurs élèves.","classes")+dash("🎓","Étudiants","Gérer les dossiers académiques.","etudiants")+dash("👨‍🏫","Professeurs","Gérer les enseignants.","professeurs")+dash("🔗","Affectations","Relier les professeurs aux classes et matières.","affectations")+dash("📋","Inscriptions","Gérer les inscriptions annuelles.","inscriptions")+dash("⏱️","Examens","Créer et corriger les examens.","examens")+dash("📒","Notes de cours","Publier texte et photos.","notes_cours")+dash("📈","Statistiques","Consulter les effectifs et données disponibles.","statistiques")+dash("💾","Sauvegarde","Exporter les données.","sauvegarde")+'</div>'
+html+='<div class="dashboard-grid">'+dash("👥","Utilisateurs","Approuver les comptes et attribuer les rôles.","utilisateurs")+dash("🏫","Classes","Organiser les classes.","classes")+dash("🎓","Étudiants","Gérer les dossiers.","etudiants")+dash("👨‍🏫","Professeurs","Gérer les professeurs.","professeurs")+dash("⏱️","Examens","Créer des QCU et des questions ouvertes.","examens")+dash("📒","Notes de cours","Publier texte et photos.","notes_cours")+dash("📥","Corrections","Consulter les remises.","remises")+dash("💾","Sauvegarde","Exporter les données.","sauvegarde")+'</div>';
 }else if(currentProfile.role==="professeur"){
-html+='<div class="dashboard-grid">'+dash("📑","Devoirs","Créer et gérer les devoirs.","devoirs")+dash("⏱️","Examens","Créer des QCU et questions ouvertes.","examens")+dash("📒","Notes de cours","Publier les cours.","notes_cours")+dash("📥","Corrections","Corriger les travaux remis.","remises")+dash("📊","Résultats","Consulter les notes.","resultats")+dash("📝","Cours","Consulter les cours affectés.","cours")+'</div>'
+html+='<div class="dashboard-grid">'+dash("📑","Devoirs","Créer et gérer les devoirs.","devoirs")+dash("⏱️","Examens","Créer des QCU et questions ouvertes.","examens")+dash("📒","Notes de cours","Publier les cours.","notes_cours")+dash("📥","Corrections","Corriger les travaux et examens.","remises")+dash("📊","Résultats","Consulter les notes.","resultats")+'</div>'
 }else{
-html+='<div class="dashboard-grid">'+dash("📑","Mes devoirs","Consulter les devoirs.","devoirs")+dash("⏱️","Examens","Passer les examens.","examens")+dash("📒","Notes de cours","Lire et copier les cours.","notes_cours")+dash("📥","Mes remises","Consulter les travaux remis.","remises")+dash("📊","Mes résultats","Voir les notes.","resultats")+dash("📝","Mes cours","Consulter les cours de votre classe.","cours")+'</div>'
+html+='<div class="dashboard-grid">'+dash("📑","Mes devoirs","Consulter les devoirs.","devoirs")+dash("⏱️","Examens","Passer les examens.","examens")+dash("📒","Notes de cours","Lire et copier les cours.","notes_cours")+dash("📥","Mes remises","Consulter les travaux.","remises")+dash("📊","Mes résultats","Voir les notes.","resultats")+'</div>'
 }
 $("pageContent").innerHTML=html
 }
-function canEditModule(id){return isAdmin()||(["devoirs","examens","notes_cours","cours"].includes(id)&&currentProfile.role==="professeur")||(["remises"].includes(id)&&["professeur","eleve","etudiant"].includes(currentProfile.role))||(id==="resultats"&&currentProfile.role==="professeur")||(["etudiants","eleves","classes","matieres","affectations","inscriptions"].includes(id)&&currentProfile.role==="professeur")}
+function canEditModule(id){return isAdmin()||(["devoirs","examens","notes_cours"].includes(id)&&currentProfile.role==="professeur")||(["remises"].includes(id)&&["professeur","eleve","etudiant"].includes(currentProfile.role))||(id==="resultats"&&currentProfile.role==="professeur")}
+
 async function renderModule(m){
 let records=[];
 if(isAdmin())records=(await getDocs(collection(db,m.collection))).docs.map(d=>({id:d.id,...d.data()}));
-else if(["devoirs","examens","videos","documents","notes_cours","cours"].includes(m.id)){const cl=currentProfile.classeId||(currentProfile.classIds||[])[0];if(cl)records=(await getDocs(query(collection(db,m.collection),where("classeId","==",cl)))).docs.map(d=>({id:d.id,...d.data()}));if(m.id==="cours"&&currentProfile.role==="professeur"){const own=await getDocs(query(collection(db,m.collection),where("professeurUid","==",currentUser.uid)));records=[...new Map([...records,...own.docs.map(d=>({id:d.id,...d.data()}))].map(x=>[x.id,x])).values()]}}
-else if(m.id==="remises"){const q=currentProfile.role==="professeur"?query(collection(db,m.collection),where("professeurUid","==",currentUser.uid)):query(collection(db,m.collection),where("etudiantId","==",currentUser.uid));records=(await getDocs(q)).docs.map(d=>({id:d.id,...d.data()}))}
-else if(m.id==="resultats"){const q=currentProfile.role==="professeur"?query(collection(db,m.collection),where("professeurUid","==",currentUser.uid)):query(collection(db,m.collection),where("etudiantId","==",currentUser.uid));records=(await getDocs(q)).docs.map(d=>({id:d.id,...d.data()}))}
-else if(["etudiants","eleves","classes","matieres","affectations","inscriptions"].includes(m.id)&&currentProfile.role==="professeur"){records=(await getDocs(collection(db,m.collection))).docs.map(d=>({id:d.id,...d.data()}))}
-$("pageContent").innerHTML=`<div class="card"><div class="page-head"><div><h3>${esc(m.title)}</h3><p class="muted">${records.length} enregistrement(s)</p></div>${canEditModule(m.id)?'<button id="addRecord" class="btn primary">＋ Ajouter</button>':""}</div><div id="recordFormArea"></div><div class="table-wrap"><table><thead><tr><th>Informations</th><th>Actions</th></tr></thead><tbody>${records.map(r=>`<tr><td>${m.fields.map(([k,l])=>r[k]!==undefined&&r[k]!==""?`<div><b>${esc(l)} :</b> ${esc(r[k])}</div>`:"").join("")||esc(r.titre||r.nom||r.id)}</td><td><div class="actions">${canEditModule(m.id)?`<button class="btn secondary" data-edit="${esc(r.id)}">Modifier</button>`:""}${isAdmin()?`<button class="btn danger" data-del="${esc(r.id)}">Supprimer</button>`:""}</div></td></tr>`).join("")||'<tr><td colspan="2">Aucun enregistrement.</td></tr>'}</tbody></table></div></div>`;
+else if(["devoirs","examens","videos","documents","notes_cours"].includes(m.id)){
+const cl=currentProfile.classeId;if(cl)records=(await getDocs(query(collection(db,m.collection),where("classeId","==",cl)))).docs.map(d=>({id:d.id,...d.data()}))
+}else if(m.id==="remises"){
+const q=currentProfile.role==="professeur"?query(collection(db,m.collection),where("professeurUid","==",currentUser.uid)):query(collection(db,m.collection),where("etudiantId","==",currentUser.uid));records=(await getDocs(q)).docs.map(d=>({id:d.id,...d.data()}))
+}else if(m.id==="resultats"){
+const q=currentProfile.role==="professeur"?query(collection(db,m.collection),where("professeurUid","==",currentUser.uid)):query(collection(db,m.collection),where("etudiantId","==",currentUser.uid));records=(await getDocs(q)).docs.map(d=>({id:d.id,...d.data()}))
+}
+$("pageContent").innerHTML=`<div class="card"><div class="page-head"><div><h3>${esc(m.title)}</h3><p class="muted">${records.length} enregistrement(s)</p></div>${canEditModule(m.id)?'<button id="addRecord" class="btn primary">＋ Ajouter</button>':""}</div><div id="recordFormArea"></div><div class="table-wrap"><table><thead><tr><th>Informations</th><th>Actions</th></tr></thead><tbody>${records.map(r=>`<tr><td>${m.fields.map(([k,l])=>r[k]!==undefined&&r[k]!==""?`<div><b>${esc(l)} :</b> ${esc(r[k])}</div>`:"").join("")||esc(r.titre||r.id)}</td><td><div class="actions">${canEditModule(m.id)?`<button class="btn secondary" data-edit="${esc(r.id)}">Modifier</button>`:""}${isAdmin()?`<button class="btn danger" data-del="${esc(r.id)}">Supprimer</button>`:""}</div></td></tr>`).join("")||'<tr><td colspan="2">Aucun enregistrement.</td></tr>'}</tbody></table></div></div>`;
 if($("addRecord"))$("addRecord").onclick=()=>recordForm(m,null);
 $("pageContent").querySelectorAll("[data-edit]").forEach(b=>b.onclick=()=>recordForm(m,records.find(r=>r.id===b.dataset.edit)));
 $("pageContent").querySelectorAll("[data-del]").forEach(b=>b.onclick=async()=>{if(confirm("Supprimer cet enregistrement ?"))try{await deleteDoc(doc(db,m.collection,b.dataset.del));toast("Supprimé.");await openPage(m.id)}catch(e){toast(friendly(e),true)}})
 }
+
 function recordForm(m,r){
-const area=$("recordFormArea");if(!area)return;const isExam=m.id==="examens";
-area.innerHTML=`<div class="card"><h3>${r?"Modifier":"Ajouter"} — ${esc(m.title)}</h3><form id="dataForm"><div class="form-grid">${m.fields.map(([k,l])=>{const value=r?.[k]??"",long=["description","contenu","commentaire","adresse","consignes"].includes(k),num=["note100","note20","dureeMinutes","noteMax","coefficient","volumeHoraire","capacite","frais"].includes(k),date=["dateLimite","dateDebut","datePublication","dateInscription","dateNaissance","debut","fin"].includes(k),type=date?(k==="dateNaissance"||k==="debut"||k==="fin"||k==="dateInscription"?"date":"datetime-local"):num?"number":"text";let formattedValue=value;if(type==="datetime-local"&&value)formattedValue=String(value).slice(0,16);return`<div class="field ${long?"full":""}"><label>${esc(l)}</label>${long?`<textarea name="${esc(k)}">${esc(value)}</textarea>`:`<input name="${esc(k)}" type="${type}" value="${esc(formattedValue)}" ${num?'min="0"':''} ${isExam&&["titre","classeId"].includes(k)?"required":""}>`}</div>`}).join("")}</div>${isExam?examBuilder(r):""}<div class="actions"><button class="btn primary" type="submit">Enregistrer</button><button class="btn secondary" id="cancelForm" type="button">Annuler</button></div></form></div>`;
-$("cancelForm").onclick=()=>area.innerHTML="";if(isExam)setupQuestionBuilder(parseQuestions(r||{}));
-$("dataForm").onsubmit=async e=>{e.preventDefault();const fd=new FormData(e.currentTarget),data={};for(const[k,v]of fd.entries())data[k]=String(v).trim();
-if(["devoirs","examens","remises","resultats","affectations","cours"].includes(m.id)&&currentProfile.role==="professeur"){data.professeurUid=currentUser.uid;data.professeurId=currentUser.uid}
-if(m.id==="remises"&&!isAdmin()&&currentProfile.role!=="professeur"){data.etudiantId=currentUser.uid;data.etudiantNom=currentProfile.nom||currentUser.displayName||currentUser.email;data.statut="soumis";delete data.note100;delete data.commentaire}
-if(m.id==="resultats"&&currentProfile.role==="professeur")data.professeurUid=currentUser.uid;
-if(isExam){let questions;try{questions=readBuilderQuestions()}catch(error){return toast(error?.message||"Vérifiez les questions.",true)}if(!questions?.length)return toast("Ajoutez au moins une question.",true);if(!data.titre||!data.classeId)return toast("Le titre et le code de classe sont obligatoires.",true);const duration=Number(data.dureeMinutes||30);if(!Number.isFinite(duration)||duration<1)return toast("La durée doit être d'au moins une minute.",true);data.questionsJSON=JSON.stringify(questions);data.dureeMinutes=Math.floor(duration);data.noteMax=questions.reduce((s,q)=>s+Number(q.points||0),0);data.statut="publie";data.professeurUid=isAdmin()?(data.professeurUid||currentUser.uid):currentUser.uid;data.professeurId=data.professeurUid}
-try{data.updatedAt=stamp();if(r)await updateDoc(doc(db,m.collection,r.id),data);else{data.createdAt=stamp();await addDoc(collection(db,m.collection),data)}toast("Enregistrement effectué.");await openPage(m.id)}catch(err){console.error(err);toast(friendly(err),true)}
+const area=$("recordFormArea");if(!area)return;
+const isExam=m.id==="examens";
+area.innerHTML=`<div class="card"><h3>${r?"Modifier":"Ajouter"} — ${esc(m.title)}</h3><form id="dataForm"><div class="form-grid">${m.fields.filter(([k])=>!(isExam&&k==="questionsJSON")).map(([k,l])=>{
+const value=r?.[k]??"",long=["description","contenu","commentaire"].includes(k),num=["note100","note20","dureeMinutes","noteMax"].includes(k),type=["dateLimite","dateDebut"].includes(k)?"datetime-local":num?"number":"text";
+let formattedValue=value;if(type==="datetime-local"&&value)formattedValue=String(value).slice(0,16);
+return`<div class="field ${long?"full":""}"><label>${esc(l)}</label>${long?`<textarea name="${esc(k)}">${esc(value)}</textarea>`:`<input name="${esc(k)}" type="${type}" value="${esc(formattedValue)}" ${num?'min="0"':''} ${isExam&&k==="titre"?"required":""} ${isExam&&k==="classeId"?"required":""}>`}</div>`
+}).join("")}</div>${isExam?examBuilder(r):""}<div class="actions"><button class="btn primary" type="submit">Enregistrer</button><button class="btn secondary" id="cancelForm" type="button">Annuler</button></div></form></div>`;
+$("cancelForm").onclick=()=>area.innerHTML="";
+if(isExam)setupQuestionBuilder(parseQuestions(r||{}));
+$("dataForm").onsubmit=async e=>{
+e.preventDefault();const fd=new FormData(e.currentTarget),data={};
+for(const[k,v]of fd.entries())data[k]=String(v).trim();
+if(["devoirs","examens","remises","resultats","affectations"].includes(m.id)){
+if(currentProfile.role==="professeur"){data.professeurUid=currentUser.uid;data.professeurId=currentUser.uid}
+}
+if(m.id==="remises"&&!isAdmin()&&currentProfile.role!=="professeur"){
+data.etudiantId=currentUser.uid;data.statut="soumis";delete data.note100;delete data.commentaire;
+}
+if(isExam){
+let questions;
+try{questions=readBuilderQuestions()}catch(error){console.error("Erreur questions examen :",error);return toast(error?.message||"Vérifiez les questions de l'examen.",true)}
+if(!questions||!questions.length)return toast("Ajoutez au moins une question avant d'enregistrer l'examen.",true);
+if(!data.titre||!data.classeId)return toast("Le titre de l'examen et le code de classe sont obligatoires.",true);
+const duration=Number(data.dureeMinutes||30);
+if(!Number.isFinite(duration)||duration<1)return toast("La durée doit être d'au moins une minute.",true);
+data.questionsJSON=JSON.stringify(questions);data.dureeMinutes=Math.floor(duration);data.noteMax=questions.reduce((s,q)=>s+Number(q.points||0),0);data.statut="publie";data.professeurUid=isAdmin()?(data.professeurUid||currentUser.uid):currentUser.uid;data.professeurId=isAdmin()?(data.professeurId||currentUser.uid):currentUser.uid;
+}
+try{data.updatedAt=stamp();if(r)await updateDoc(doc(db,m.collection,r.id),data);else{data.createdAt=stamp();await addDoc(collection(db,m.collection),data)}toast("Enregistrement effectué.");await openPage(m.id)}
+catch(err){console.error(err);toast(friendly(err),true)}
 }
 }
-function examBuilder(){return`<div class="full"><div class="notice">Choisissez le type de chaque question : QCU (une seule bonne réponse) ou question ouverte (réponse écrite).</div><div class="field"><label>Type de la prochaine question</label><select id="newQuestionType"><option value="qcm">QCU — une seule bonne réponse</option><option value="ecrit">Question ouverte</option></select></div><button class="btn secondary" id="addQuestion" type="button">＋ Ajouter une question</button><div id="questionBuilder"></div></div>`}
+
+function examBuilder(){
+return`<div class="full"><div class="notice">Choisissez le type de chaque question : QCU (une seule bonne réponse) ou question ouverte (réponse écrite). Vous pouvez mélanger les deux types dans le même examen.</div><div class="field"><label>Type de la prochaine question</label><select id="newQuestionType"><option value="qcm">QCU — une seule bonne réponse</option><option value="ecrit">Question ouverte — réponse écrite</option></select></div><button class="btn secondary" id="addQuestion" type="button">＋ Ajouter une question</button><div id="questionBuilder"></div></div>`
+}
 let builderQuestions=[];
-function setupQuestionBuilder(qs){builderQuestions=(qs||[]).map(q=>({...q,options:Array.isArray(q.options)?[...q.options]:["Option A","Option B","Option C"]}));drawQuestionBuilder();$("addQuestion").onclick=()=>{builderQuestions.push({type:$("newQuestionType").value,question:"",points:1,options:["Option A","Option B","Option C"],correctAnswer:"Option A"});drawQuestionBuilder()}}
-function drawQuestionBuilder(){const area=$("questionBuilder");if(!area)return;area.innerHTML=builderQuestions.map((q,i)=>`<div class="exam-question"><div class="page-head"><h4>Question ${i+1}</h4><button type="button" class="btn danger" data-remove-q="${i}">Supprimer</button></div><div class="field"><label>Type de question</label><select data-qtype="${i}"><option value="qcm" ${q.type==="qcm"?"selected":""}>QCU — choix unique</option><option value="ecrit" ${q.type==="ecrit"?"selected":""}>Question ouverte</option></select></div><div class="field"><label>Texte de la question</label><textarea data-qtext="${i}" required>${esc(q.question||"")}</textarea></div><div class="field"><label>Points</label><input data-qpoints="${i}" type="number" min="0.5" step="0.5" value="${Number(q.points)||1}"></div>${q.type==="qcm"?`<div class="field"><label>Propositions (une par ligne)</label><textarea data-qopts="${i}">${esc((q.options||[]).join("\n"))}</textarea><label>Bonne réponse</label><select data-qcorrect="${i}">${(q.options||[]).map(o=>`<option value="${esc(o)}" ${String(o)===String(q.correctAnswer)?"selected":""}>${esc(o)}</option>`).join("")}</select></div>`:'<p class="muted">L’élève écrira sa réponse. Le professeur corrigera cette question.</p>'}</div>`).join("");
-area.querySelectorAll("[data-qtype]").forEach(el=>el.onchange=()=>{builderQuestions[Number(el.dataset.qtype)].type=el.value;drawQuestionBuilder()});area.querySelectorAll("[data-qtext]").forEach(el=>el.oninput=()=>builderQuestions[Number(el.dataset.qtext)].question=el.value);area.querySelectorAll("[data-qpoints]").forEach(el=>el.oninput=()=>builderQuestions[Number(el.dataset.qpoints)].points=Number(el.value));area.querySelectorAll("[data-qopts]").forEach(el=>el.onchange=()=>{const i=Number(el.dataset.qopts),old=builderQuestions[i].correctAnswer;builderQuestions[i].options=el.value.split("\n").map(x=>x.trim()).filter(Boolean);builderQuestions[i].correctAnswer=builderQuestions[i].options.includes(old)?old:builderQuestions[i].options[0]||"";drawQuestionBuilder()});area.querySelectorAll("[data-qcorrect]").forEach(el=>el.onchange=()=>builderQuestions[Number(el.dataset.qcorrect)].correctAnswer=el.value);area.querySelectorAll("[data-remove-q]").forEach(el=>el.onclick=()=>{builderQuestions.splice(Number(el.dataset.removeQ),1);drawQuestionBuilder()})}
-function readBuilderQuestions(){const result=builderQuestions.map(q=>({...q,question:String(q.question||"").trim(),points:Number(q.points)}));for(const q of result){if(!q.question||!Number.isFinite(q.points)||q.points<=0)throw Error("Chaque question doit avoir un texte et un nombre de points positif.");if(q.type==="qcm"){q.options=(q.options||[]).map(x=>String(x).trim()).filter(Boolean);if(q.options.length<2)throw Error("Chaque QCU doit contenir au moins deux propositions.");if(!q.options.includes(String(q.correctAnswer||"")))throw Error("Choisissez une bonne réponse parmi les propositions.")}else if(q.type==="ecrit"){delete q.options;delete q.correctAnswer}else throw Error("Type de question non valide.")}return result}
-function parseQuestions(exam){try{const value=exam.questionsJSON,q=Array.isArray(value)?value:JSON.parse(value||"[]");return Array.isArray(q)?q.filter(x=>x&&typeof x.question==="string"&&["qcm","ecrit"].includes(x.type)):[]}catch(e){console.warn("Questions d'examen invalides",e);return[]}}
+function setupQuestionBuilder(qs){
+builderQuestions=(qs||[]).map(q=>({...q,options:Array.isArray(q.options)?[...q.options]:["Option A","Option B","Option C"]}));
+drawQuestionBuilder();
+$("addQuestion").onclick=()=>{builderQuestions.push({type:$("newQuestionType").value,question:"",points:1,options:["Option A","Option B","Option C"],correctAnswer:"Option A"});drawQuestionBuilder()}
+}
+function drawQuestionBuilder(){
+const area=$("questionBuilder");if(!area)return;
+area.innerHTML=builderQuestions.map((q,i)=>`<div class="exam-question"><div class="page-head"><h4>Question ${i+1}</h4><button type="button" class="btn danger" data-remove-q="${i}">Supprimer</button></div><div class="field"><label>Type de question</label><select data-qtype="${i}"><option value="qcm" ${q.type==="qcm"?"selected":""}>QCU — choix unique</option><option value="ecrit" ${q.type==="ecrit"?"selected":""}>Question ouverte</option></select></div><div class="field"><label>Texte de la question</label><textarea data-qtext="${i}" required>${esc(q.question||"")}</textarea></div><div class="field"><label>Points</label><input data-qpoints="${i}" type="number" min="0.5" step="0.5" value="${Number(q.points)||1}"></div>${q.type==="qcm"?`<div class="field"><label>Propositions (une par ligne)</label><textarea data-qopts="${i}">${esc((q.options||[]).join("\n"))}</textarea><label>Choisissez la bonne réponse</label><select data-qcorrect="${i}">${(q.options||[]).map(o=>`<option value="${esc(o)}" ${String(o)===String(q.correctAnswer)?"selected":""}>${esc(o)}</option>`).join("")}</select></div>`:'<p class="muted">L’élève écrira sa réponse. Le professeur corrigera cette question.</p>'}</div>`).join("");
+area.querySelectorAll("[data-qtype]").forEach(el=>el.onchange=()=>{const i=Number(el.dataset.qtype);builderQuestions[i].type=el.value;drawQuestionBuilder()});
+area.querySelectorAll("[data-qtext]").forEach(el=>el.oninput=()=>builderQuestions[Number(el.dataset.qtext)].question=el.value);
+area.querySelectorAll("[data-qpoints]").forEach(el=>el.oninput=()=>builderQuestions[Number(el.dataset.qpoints)].points=Number(el.value));
+area.querySelectorAll("[data-qopts]").forEach(el=>el.onchange=()=>{const i=Number(el.dataset.qopts),old=builderQuestions[i].correctAnswer;builderQuestions[i].options=el.value.split("\n").map(x=>x.trim()).filter(Boolean);builderQuestions[i].correctAnswer=builderQuestions[i].options.includes(old)?old:builderQuestions[i].options[0]||"";drawQuestionBuilder()});
+area.querySelectorAll("[data-qcorrect]").forEach(el=>el.onchange=()=>builderQuestions[Number(el.dataset.qcorrect)].correctAnswer=el.value);
+area.querySelectorAll("[data-remove-q]").forEach(el=>el.onclick=()=>{builderQuestions.splice(Number(el.dataset.removeQ),1);drawQuestionBuilder()})
+}
+function readBuilderQuestions(){
+const result=builderQuestions.map(q=>({...q,question:String(q.question||"").trim(),points:Number(q.points)}));
+for(const q of result){
+if(!q.question||!Number.isFinite(q.points)||q.points<=0)throw new Error("Chaque question doit avoir un texte et un nombre de points positif.");
+if(q.type==="qcm"){
+q.options=(q.options||[]).map(x=>String(x).trim()).filter(Boolean);
+if(q.options.length<2)throw new Error("Chaque QCU doit contenir au moins deux propositions.");
+if(!q.options.includes(String(q.correctAnswer||"")))throw new Error("Choisissez une bonne réponse parmi les propositions.");
+}else if(q.type==="ecrit"){delete q.options;delete q.correctAnswer}
+else throw new Error("Type de question non valide.");
+}
+return result;
+}
+function parseQuestions(exam){
+try{const value=exam.questionsJSON;const q=Array.isArray(value)?value:JSON.parse(value||"[]");return Array.isArray(q)?q.filter(x=>x&&typeof x.question==="string"&&["qcm","ecrit"].includes(x.type)):[]}
+catch(e){console.warn("Questions d'examen invalides",e);return[]}
+}
 function fmtTime(ms){const s=Math.max(0,Math.ceil(ms/1000));return`${String(Math.floor(s/60)).padStart(2,"0")}:${String(s%60).padStart(2,"0")}`}
 function available(e){const n=Date.now(),s=e.dateDebut?new Date(e.dateDebut).getTime():0,f=e.dateLimite?new Date(e.dateLimite).getTime():Infinity;return n>=s&&n<=f}
+
 async function renderExams(){
-stopTimer();if(isAdmin()||currentProfile.role==="professeur")return renderTeacherExams();
-const cl=currentProfile.classeId||(currentProfile.classIds||[])[0];if(!cl){$("pageContent").innerHTML='<div class="card"><h3>Examens</h3><div class="notice">Votre compte n’est pas encore associé à une classe. Contactez l’administrateur.</div></div>';return}
-const snap=await getDocs(query(collection(db,"examens"),where("classeId","==",cl))),exams=snap.docs.map(d=>({id:d.id,...d.data()}));let attempts=[];try{attempts=(await getDocs(query(collection(db,"tentatives_examens"),where("etudiantId","==",currentUser.uid)))).docs.map(d=>({id:d.id,...d.data()}))}catch(e){console.warn(e)}
+stopTimer();
+if(isAdmin()||currentProfile.role==="professeur")return renderTeacherExams();
+const cl=currentProfile.classeId||(currentProfile.classIds||[])[0];
+if(!cl){$("pageContent").innerHTML='<div class="card"><h3>Examens</h3><div class="notice">Votre compte n’est pas encore associé à une classe. Contactez l’administrateur.</div></div>';return}
+const snap=await getDocs(query(collection(db,"examens"),where("classeId","==",cl))),exams=snap.docs.map(d=>({id:d.id,...d.data()}));
+let attempts=[];try{attempts=(await getDocs(query(collection(db,"tentatives_examens"),where("etudiantId","==",currentUser.uid)))).docs.map(d=>({id:d.id,...d.data()}))}catch(e){console.warn(e)}
 $("pageContent").innerHTML=`<div class="card"><h3>Mes examens</h3><p class="muted">Le chronomètre commence lorsque vous démarrez l'examen.</p><div class="table-wrap"><table><thead><tr><th>Examen</th><th>Durée</th><th>Résultat</th><th>Action</th></tr></thead><tbody>${exams.map(e=>{const a=attempts.find(x=>x.examenId===e.id&&x.statut==="termine"),ongoing=attempts.find(x=>x.examenId===e.id&&x.statut==="en_cours");return`<tr><td><b>${esc(e.titre)}</b><div>${esc(e.description||"")}</div></td><td>${Number(e.dureeMinutes||30)} min</td><td>${a?`${Number(a.noteObtenue||0)} / ${Number(a.noteMax||e.noteMax||0)}`:ongoing?"En cours":"Non commencé"}</td><td>${a?"Terminé":available(e)?`<button class="btn primary" data-start="${esc(e.id)}">${ongoing?"Reprendre":"Commencer"}</button>`:"Hors période"}</td></tr>`}).join("")||'<tr><td colspan="4">Aucun examen pour votre classe.</td></tr>'}</tbody></table></div></div>`;
 $("pageContent").querySelectorAll("[data-start]").forEach(b=>b.onclick=()=>startExam(exams.find(e=>e.id===b.dataset.start),attempts.find(a=>a.examenId===b.dataset.start&&a.statut==="en_cours")))
 }
+
 async function renderTeacherExams(){
-const snap=isAdmin()?await getDocs(collection(db,"examens")):await getDocs(query(collection(db,"examens"),where("professeurId","==",currentUser.uid))),exams=snap.docs.map(d=>({id:d.id,...d.data()}));
-$("pageContent").innerHTML=`<div class="card"><div class="page-head"><div><h3>Gestion des examens</h3><p class="muted">QCU, questions ouvertes ou examen mélangé.</p></div><button id="createExam" class="btn primary">＋ Créer un examen</button></div><div class="notice">Les QCU sont corrigés automatiquement ; les questions ouvertes sont corrigées par le professeur.</div><div class="table-wrap"><table><thead><tr><th>Examen</th><th>Classe</th><th>Durée</th><th>Questions</th><th>Actions</th></tr></thead><tbody>${exams.map(e=>`<tr><td>${esc(e.titre)}</td><td>${esc(e.classeId)}</td><td>${Number(e.dureeMinutes||30)} min</td><td>${parseQuestions(e).length}</td><td><div class="actions"><button class="btn secondary" data-edit-exam="${esc(e.id)}">Modifier</button><button class="btn primary" data-attempts="${esc(e.id)}">Tentatives</button>${isAdmin()?`<button class="btn danger" data-delete-exam="${esc(e.id)}">Supprimer</button>`:""}</div></td></tr>`).join("")||'<tr><td colspan="5">Aucun examen créé.</td></tr>'}</tbody></table></div><div id="recordFormArea"></div><div id="examExtra"></div></div>`;
-$("createExam").onclick=()=>recordForm(modules.find(x=>x.id==="examens"),null);
-$("pageContent").querySelectorAll("[data-edit-exam]").forEach(b=>b.onclick=()=>recordForm(modules.find(m=>m.id==="examens"),exams.find(x=>x.id===b.dataset.editExam)));
+const snap=isAdmin()?await getDocs(collection(db,"examens")):await getDocs(query(collection(db,"examens"),where("professeurId","==",currentUser.uid)));
+const exams=snap.docs.map(d=>({id:d.id,...d.data()}));
+$("pageContent").innerHTML=`<div class="card"><div class="page-head"><div><h3>Gestion des examens</h3><p class="muted">QCU, questions ouvertes ou examen mélangé.</p></div><button id="createExam" class="btn primary">＋ Créer un examen</button></div><div class="notice">Ajoutez vos questions à l'aide du formulaire. Choisissez QCU pour des propositions avec une bonne réponse, ou question ouverte pour une réponse écrite. Les QCU sont corrigés automatiquement ; les questions ouvertes sont corrigées par le professeur.</div><div class="table-wrap"><table><thead><tr><th>Examen</th><th>Classe</th><th>Durée</th><th>Questions</th><th>Actions</th></tr></thead><tbody>${exams.map(e=>`<tr><td>${esc(e.titre)}</td><td>${esc(e.classeId)}</td><td>${Number(e.dureeMinutes||30)} min</td><td>${parseQuestions(e).length}</td><td><div class="actions"><button class="btn secondary" data-edit-exam="${esc(e.id)}">Modifier</button><button class="btn primary" data-attempts="${esc(e.id)}">Tentatives</button>${isAdmin()?`<button class="btn danger" data-delete-exam="${esc(e.id)}">Supprimer</button>`:""}</div></td></tr>`).join("")||'<tr><td colspan="5">Aucun examen créé.</td></tr>'}</tbody></table></div><div id="recordFormArea"></div><div id="examExtra"></div></div>`;
+$("createExam").onclick=()=>{const m=modules.find(x=>x.id==="examens");if(!m)return toast("Le module examens est introuvable.",true);recordForm(m,null)};
+$("pageContent").querySelectorAll("[data-edit-exam]").forEach(b=>b.onclick=()=>{const e=exams.find(x=>x.id===b.dataset.editExam);recordForm(modules.find(m=>m.id==="examens"),e)});
 $("pageContent").querySelectorAll("[data-delete-exam]").forEach(b=>b.onclick=async()=>{if(confirm("Supprimer cet examen ?"))try{await deleteDoc(doc(db,"examens",b.dataset.deleteExam));toast("Examen supprimé.");await renderExams()}catch(e){toast(friendly(e),true)}});
 $("pageContent").querySelectorAll("[data-attempts]").forEach(b=>b.onclick=()=>showAttempts(exams.find(x=>x.id===b.dataset.attempts)))
 }
+
 async function showAttempts(exam){
 const area=$("examExtra");area.innerHTML='<div class="card">Chargement des tentatives…</div>';
-try{const snap=await getDocs(query(collection(db,"tentatives_examens"),where("examenId","==",exam.id))),rows=snap.docs.map(d=>({id:d.id,...d.data()}));area.innerHTML=`<div class="card"><h3>Tentatives — ${esc(exam.titre)}</h3><div class="table-wrap"><table><thead><tr><th>Élève</th><th>Note</th><th>Statut</th><th>Action</th></tr></thead><tbody>${rows.map(a=>`<tr><td>${esc(a.etudiantEmail||a.etudiantId)}</td><td>${Number(a.noteObtenue||0)} / ${Number(a.noteMax||exam.noteMax||0)}</td><td>${esc(a.statut)}</td><td>${a.statut==="termine"&&a.correctionManuelle?`<button class="btn primary" data-grade="${esc(a.id)}">Corriger</button>`:"—"}</td></tr>`).join("")||'<tr><td colspan="4">Aucune tentative.</td></tr>'}</tbody></table></div><div id="gradeArea"></div></div>`;area.querySelectorAll("[data-grade]").forEach(b=>b.onclick=()=>gradeAttempt(rows.find(a=>a.id===b.dataset.grade),exam))}catch(e){area.innerHTML=`<div class="notice">${esc(friendly(e))}</div>`}
+try{
+const snap=await getDocs(query(collection(db,"tentatives_examens"),where("examenId","==",exam.id))),rows=snap.docs.map(d=>({id:d.id,...d.data()}));
+area.innerHTML=`<div class="card"><h3>Tentatives — ${esc(exam.titre)}</h3><div class="table-wrap"><table><thead><tr><th>Élève</th><th>Note</th><th>Statut</th><th>Action</th></tr></thead><tbody>${rows.map(a=>`<tr><td>${esc(a.etudiantEmail||a.etudiantId)}</td><td>${Number(a.noteObtenue||0)} / ${Number(a.noteMax||exam.noteMax||0)}</td><td>${esc(a.statut)}</td><td>${a.statut==="termine"&&a.correctionManuelle?`<button class="btn primary" data-grade="${esc(a.id)}">Corriger</button>`:"—"}</td></tr>`).join("")||'<tr><td colspan="4">Aucune tentative.</td></tr>'}</tbody></table></div><div id="gradeArea"></div></div>`;
+area.querySelectorAll("[data-grade]").forEach(b=>b.onclick=()=>gradeAttempt(rows.find(a=>a.id===b.dataset.grade),exam))
+}catch(e){area.innerHTML=`<div class="notice">${esc(friendly(e))}</div>`}
 }
+
 async function gradeAttempt(a,exam){
 const qs=parseQuestions(exam),answers=a.reponses||{},indices=qs.map((q,i)=>q.type==="ecrit"?i:-1).filter(i=>i>=0),area=$("gradeArea");
 area.innerHTML=`<h3>Correction des questions ouvertes</h3><form id="gradeForm">${indices.map(i=>`<div class="exam-question"><h4>${esc(qs[i].question)}</h4><p><b>Réponse :</b><br>${esc(answers[i]||"Aucune réponse")}</p><label>Note (maximum ${Number(qs[i].points)||1})</label><input type="number" name="g${i}" min="0" max="${Number(qs[i].points)||1}" step="0.5" value="${Number((a.notesEcrites||{})[i]||0)}" required></div>`).join("")}<div class="field"><label>Commentaire</label><textarea name="commentaire">${esc(a.commentaire||"")}</textarea></div><button class="btn primary">Enregistrer la correction</button></form>`;
-$("gradeForm").onsubmit=async e=>{e.preventDefault();const fd=new FormData(e.currentTarget),notes={};let score=0;for(const i of indices){const n=Number(fd.get("g"+i));if(n<0||n>Number(qs[i].points))return toast("Note supérieure au maximum.",true);notes[i]=n;score+=n}try{const noteQCM=Number(a.noteQCM||0),noteObtenue=noteQCM+score,max=qs.reduce((s,q)=>s+Number(q.points||1),0);await updateDoc(doc(db,"tentatives_examens",a.id),{notesEcrites:notes,noteEcrite:score,noteObtenue,noteMax:max,commentaire:String(fd.get("commentaire")||""),correctionManuelle:false,corrigePar:currentUser.uid,dateCorrection:stamp(),updatedAt:stamp()});toast("Correction enregistrée.");await showAttempts(exam)}catch(err){toast(friendly(err),true)}}
+$("gradeForm").onsubmit=async e=>{e.preventDefault();const fd=new FormData(e.currentTarget),notes={};let score=0;for(const i of indices){const n=Number(fd.get("g"+i));if(n<0||n>Number(qs[i].points))return toast("Note supérieure au maximum.",true);notes[i]=n;score+=n}
+try{const noteQCM=Number(a.noteQCM||0),noteObtenue=noteQCM+score,max=qs.reduce((s,q)=>s+Number(q.points||1),0);await updateDoc(doc(db,"tentatives_examens",a.id),{notesEcrites:notes,noteEcrite:score,noteObtenue,noteMax:max,commentaire:String(fd.get("commentaire")||""),correctionManuelle:false,corrigePar:currentUser.uid,dateCorrection:stamp(),updatedAt:stamp()});toast("Correction enregistrée.");await showAttempts(exam)}catch(err){toast(friendly(err),true)}
 }
+}
+
 async function startExam(exam,existing){
-if(!exam||!available(exam))return toast("Cet examen n'est pas disponible actuellement.",true);const qs=parseQuestions(exam);if(!qs.length)return toast("Cet examen ne contient aucune question valide.",true);let attempt=existing;
-if(!attempt){if(!confirm(`Commencer « ${exam.titre} » ? Durée : ${Number(exam.dureeMinutes||30)} minutes.`))return;const start=Date.now(),duration=Math.max(1,Number(exam.dureeMinutes||30))*60000,data={examenId:exam.id,titre:exam.titre||"",etudiantId:currentUser.uid,etudiantEmail:currentUser.email||"",classeId:exam.classeId||"",professeurUid:exam.professeurUid||"",debutMs:start,finMs:start+duration,dureeMinutes:Number(exam.dureeMinutes||30),statut:"en_cours",reponses:{},createdAt:stamp(),updatedAt:stamp()};try{const ref=await addDoc(collection(db,"tentatives_examens"),data);attempt={id:ref.id,...data}}catch(e){return toast(friendly(e),true)}}
+if(!exam||!available(exam))return toast("Cet examen n'est pas disponible actuellement.",true);
+const qs=parseQuestions(exam);if(!qs.length)return toast("Cet examen ne contient aucune question valide.",true);
+let attempt=existing;
+if(!attempt){
+if(!confirm(`Commencer « ${exam.titre} » ? Durée : ${Number(exam.dureeMinutes||30)} minutes.`))return;
+const start=Date.now(),duration=Math.max(1,Number(exam.dureeMinutes||30))*60000,data={examenId:exam.id,titre:exam.titre||"",etudiantId:currentUser.uid,etudiantEmail:currentUser.email||"",classeId:exam.classeId||"",professeurUid:exam.professeurUid||"",debutMs:start,finMs:start+duration,dureeMinutes:Number(exam.dureeMinutes||30),statut:"en_cours",reponses:{},createdAt:stamp(),updatedAt:stamp()};
+try{const ref=await addDoc(collection(db,"tentatives_examens"),data);attempt={id:ref.id,...data}}catch(e){return toast(friendly(e),true)}
+}
 activeExam=exam;activeAttempt=attempt;answerCache={...(attempt.reponses||{})};renderExamAttempt()
 }
+
 function renderExamAttempt(){
-stopTimer();const exam=activeExam,a=activeAttempt,qs=parseQuestions(exam);if(!exam||!a)return;$("pageTitle").textContent=exam.titre||"Examen";
+stopTimer();const exam=activeExam,a=activeAttempt,qs=parseQuestions(exam);if(!exam||!a)return;
+$("pageTitle").textContent=exam.titre||"Examen";
 $("pageContent").innerHTML=`<div class="card"><div class="page-head"><div><h3>${esc(exam.titre)}</h3><p>${esc(exam.description||"Lisez les questions attentivement.")}</p></div><button class="btn secondary" id="leaveExam">Quitter l'écran</button></div><div id="examTimer" class="timer">--:--</div><div class="notice">Vos réponses sont enregistrées régulièrement. À la fin du temps, l'examen est remis automatiquement.</div><form id="answerForm">${qs.map((q,i)=>`<div class="exam-question"><h4>Question ${i+1} — ${Number(q.points)||1} point(s)</h4><p>${esc(q.question)}</p>${q.type==="qcm"?(q.options||[]).map(o=>`<label class="exam-option"><input type="radio" name="q${i}" value="${esc(o)}" ${String(answerCache[i]??"")===String(o)?"checked":""}><span>${esc(o)}</span></label>`).join(""):`<textarea name="q${i}" placeholder="Votre réponse…">${esc(answerCache[i]||"")}</textarea>`}</div>`).join("")}<button id="submitExam" class="btn primary block">Remettre mon examen</button></form></div>`;
 $("leaveExam").onclick=async()=>{if(confirm("Quitter ? Le chronomètre continuera.")){await saveAnswers(false);stopTimer();activeExam=null;activeAttempt=null;await openPage("examens")}};
-const form=$("answerForm");form.addEventListener("input",()=>saveAnswers(false));form.addEventListener("change",()=>saveAnswers(false));form.onsubmit=async e=>{e.preventDefault();if(confirm("Remettre définitivement l'examen ?"))await submitExam(false)};updateTimer();timerInterval=setInterval(updateTimer,1000)
+const form=$("answerForm");form.addEventListener("input",()=>saveAnswers(false));form.addEventListener("change",()=>saveAnswers(false));
+form.onsubmit=async e=>{e.preventDefault();if(confirm("Remettre définitivement l'examen ?"))await submitExam(false)};
+updateTimer();timerInterval=setInterval(updateTimer,1000)
 }
-function collectAnswers(){const form=$("answerForm");if(!form)return answerCache;const fd=new FormData(form),out={};parseQuestions(activeExam).forEach((q,i)=>{const v=fd.get("q"+i);if(v!==null&&String(v).trim())out[i]=String(v).trim()});return out}
-function saveAnswers(showError){if(!activeAttempt||!$("answerForm"))return Promise.resolve();answerCache=collectAnswers();const answers={...answerCache},id=activeAttempt.id;saveQueue=saveQueue.then(()=>updateDoc(doc(db,"tentatives_examens",id),{reponses:answers,updatedAt:stamp()})).catch(e=>{console.error(e);if(showError)toast("Erreur de sauvegarde : "+friendly(e),true)});return saveQueue}
-function updateTimer(){if(!activeAttempt||!$("examTimer"))return;const left=Number(activeAttempt.finMs)-Date.now();$("examTimer").textContent="⏱ Temps restant : "+fmtTime(left);$("examTimer").classList.toggle("warning",left<=60000);if(left<=0){stopTimer();submitExam(true)}}
+
+function collectAnswers(){
+const form=$("answerForm");if(!form)return answerCache;
+const fd=new FormData(form),out={};parseQuestions(activeExam).forEach((q,i)=>{const v=fd.get("q"+i);if(v!==null&&String(v).trim())out[i]=String(v).trim()});return out
+}
+function saveAnswers(showError){
+if(!activeAttempt||!$("answerForm"))return Promise.resolve();
+answerCache=collectAnswers();const answers={...answerCache},id=activeAttempt.id;
+saveQueue=saveQueue.then(()=>updateDoc(doc(db,"tentatives_examens",id),{reponses:answers,updatedAt:stamp()})).catch(e=>{console.error(e);if(showError)toast("Erreur de sauvegarde : "+friendly(e),true)});
+return saveQueue
+}
+function updateTimer(){
+if(!activeAttempt||!$("examTimer"))return;
+const left=Number(activeAttempt.finMs)-Date.now();$("examTimer").textContent="⏱ Temps restant : "+fmtTime(left);$("examTimer").classList.toggle("warning",left<=60000);
+if(left<=0){stopTimer();submitExam(true)}
+}
 async function submitExam(auto){
-if(!activeExam||!activeAttempt)return;const exam=activeExam,a=activeAttempt,qs=parseQuestions(exam);if($("answerForm"))answerCache=collectAnswers();const answers={...answerCache};stopTimer();if($("submitExam"))$("submitExam").disabled=true;
-try{await saveQueue;let score=0,notesQCM={},maxQCM=0;qs.forEach((q,i)=>{if(q.type!=="qcm")return;const pts=Number(q.points)||1;maxQCM+=pts;const good=String(q.correctAnswer??"").trim().toLowerCase(),given=String(answers[i]??"").trim().toLowerCase();notesQCM[i]=given&&given===good?pts:0;score+=notesQCM[i]});const hasWritten=qs.some((q,i)=>q.type==="ecrit"&&String(answers[i]||"").trim()),max=qs.reduce((s,q)=>s+(Number(q.points)||1),0);
+if(!activeExam||!activeAttempt)return;
+const exam=activeExam,a=activeAttempt,qs=parseQuestions(exam);if($("answerForm"))answerCache=collectAnswers();const answers={...answerCache};stopTimer();if($("submitExam"))$("submitExam").disabled=true;
+try{
+await saveQueue;let score=0,notesQCM={},maxQCM=0;
+qs.forEach((q,i)=>{if(q.type!=="qcm")return;const pts=Number(q.points)||1;maxQCM+=pts;const good=String(q.correctAnswer??"").trim().toLowerCase(),given=String(answers[i]??"").trim().toLowerCase();notesQCM[i]=given&&given===good?pts:0;score+=notesQCM[i]});
+const hasWritten=qs.some((q,i)=>q.type==="ecrit"&&String(answers[i]||"").trim());
+const max=qs.reduce((s,q)=>s+(Number(q.points)||1),0);
 await updateDoc(doc(db,"tentatives_examens",a.id),{reponses:answers,notesQCM,noteQCM:score,noteEcrite:0,noteObtenue:score,noteMax:max,correctionManuelle:hasWritten,statut:"termine",remisAutomatiquement:!!auto,dateRemise:stamp(),updatedAt:stamp()});
-activeExam=null;activeAttempt=null;answerCache={};$("pageContent").innerHTML=`<div class="card"><h3>Examen remis avec succès</h3><div class="notice">${auto?"Le temps est écoulé. Votre examen a été remis automatiquement.":"Votre examen a été remis."}</div><h2>Note QCU : ${score} / ${maxQCM}</h2><p>${hasWritten?"Les réponses écrites attendent la correction du professeur.":"Les questions ont été corrigées automatiquement."}</p><button class="btn primary" id="backExams">Retour aux examens</button></div>`;$("backExams").onclick=()=>openPage("examens")
+activeExam=null;activeAttempt=null;answerCache={};
+$("pageContent").innerHTML=`<div class="card"><h3>Examen remis avec succès</h3><div class="notice">${auto?"Le temps est écoulé. Votre examen a été remis automatiquement.":"Votre examen a été remis."}</div><h2>Note QCU : ${score} / ${maxQCM}</h2><p>${hasWritten?"Les réponses écrites attendent la correction du professeur.":"Les questions ont été corrigées automatiquement."}</p><button class="btn primary" id="backExams">Retour aux examens</button></div>`;
+$("backExams").onclick=()=>openPage("examens")
 }catch(e){console.error(e);if($("submitExam"))$("submitExam").disabled=false;toast("La remise a échoué : "+friendly(e),true)}
 }
 
 /* Notes de cours : texte et photo */
 async function compressPhoto(file){
-if(!file||!file.type.startsWith("image/"))throw Error("Choisissez une image valide.");if(file.size>12*1024*1024)throw Error("Photo trop grande : choisissez une image de moins de 12 Mo.");const url=URL.createObjectURL(file);
-try{const img=new Image();await new Promise((res,rej)=>{img.onload=res;img.onerror=()=>rej(Error("Image illisible"));img.src=url});const scale=Math.min(1,1000/Math.max(img.width,img.height)),c=document.createElement("canvas");c.width=Math.max(1,Math.round(img.width*scale));c.height=Math.max(1,Math.round(img.height*scale));c.getContext("2d").drawImage(img,0,0,c.width,c.height);for(const q of [.7,.55,.4,.3]){const d=c.toDataURL("image/jpeg",q);if(d.length<300000)return d}throw Error("Photo trop volumineuse après compression.")}finally{URL.revokeObjectURL(url)}
+if(!file||!file.type.startsWith("image/"))throw Error("Choisissez une image valide.");
+if(file.size>12*1024*1024)throw Error("Photo trop grande : choisissez une image de moins de 12 Mo.");
+const url=URL.createObjectURL(file);
+try{
+const img=new Image();await new Promise((res,rej)=>{img.onload=res;img.onerror=()=>rej(Error("Image illisible"));img.src=url});
+const scale=Math.min(1,1000/Math.max(img.width,img.height)),c=document.createElement("canvas");c.width=Math.max(1,Math.round(img.width*scale));c.height=Math.max(1,Math.round(img.height*scale));c.getContext("2d").drawImage(img,0,0,c.width,c.height);
+for(const q of [.7,.55,.4,.3]){const d=c.toDataURL("image/jpeg",q);if(d.length<300000)return d}
+throw Error("Photo trop volumineuse après compression.")
+}finally{URL.revokeObjectURL(url)}
 }
+
 async function renderNotesCours(){
 const teacher=isAdmin()||currentProfile.role==="professeur";let notes=[];
 if(isAdmin())notes=(await getDocs(collection(db,"notes_cours"))).docs.map(d=>({id:d.id,...d.data()}));
-else if(teacher)notes=(await getDocs(query(collection(db,"notes_cours"),where("professeurUid","==",currentUser.uid))).docs.map(d=>({id:d.id,...d.data()}));
-else{const cl=currentProfile.classeId||(currentProfile.classIds||[])[0];if(!cl){$("pageContent").innerHTML='<div class="card">Votre compte n’est pas encore associé à une classe. Contactez l’administrateur.</div>';return}notes=(await getDocs(query(collection(db,"notes_cours"),where("classeId","==",cl)))).docs.map(d=>({id:d.id,...d.data()}))}
+else if(teacher)notes=(await getDocs(query(collection(db,"notes_cours"),where("professeurUid","==",currentUser.uid)))).docs.map(d=>({id:d.id,...d.data()}));
+else{
+const cl=currentProfile.classeId||(currentProfile.classIds||[])[0];if(!cl){$("pageContent").innerHTML='<div class="card">Votre compte n’est pas encore associé à une classe. Contactez l’administrateur.</div>';return}
+notes=(await getDocs(query(collection(db,"notes_cours"),where("classeId","==",cl)))).docs.map(d=>({id:d.id,...d.data()}))
+}
 $("pageContent").innerHTML=`<div class="card"><div class="page-head"><div><h3>Notes de cours</h3><p class="muted">${teacher?"Publier du texte ou une photo de cours.":"Lire et copier les cours."}</p></div>${teacher?'<button id="newNote" class="btn primary">＋ Ajouter une note</button>':""}</div><div id="noteFormArea"></div>${notes.map(n=>`<article class="course-note"><h3>${esc(n.titre)}</h3><p class="muted">Classe : ${esc(n.classeId)} · ${esc(n.matiereId||"")}</p><div class="course-text" id="noteText${esc(n.id)}">${esc(n.contenu||"")}</div>${n.photoData?`<img src="${n.photoData}" alt="Photo du cours">`:""}<div class="actions"><button class="btn secondary" data-copy-note="${esc(n.id)}">Copier le texte</button>${teacher&&(isAdmin()||n.professeurUid===currentUser.uid)?`<button class="btn secondary" data-edit-note="${esc(n.id)}">Modifier</button><button class="btn danger" data-del-note="${esc(n.id)}">Supprimer</button>`:""}</div></article>`).join("")||'<div class="notice">Aucune note de cours.</div>'}</div>`;
 if(teacher)$("newNote").onclick=()=>noteForm(null);
 $("pageContent").querySelectorAll("[data-copy-note]").forEach(b=>b.onclick=async()=>{const t=$("noteText"+b.dataset.copyNote)?.innerText||"";try{await navigator.clipboard.writeText(t);toast("Texte copié.")}catch{toast("Sélectionnez le texte puis choisissez Copier.",true)}});
 $("pageContent").querySelectorAll("[data-edit-note]").forEach(b=>b.onclick=()=>noteForm(notes.find(n=>n.id===b.dataset.editNote)));
 $("pageContent").querySelectorAll("[data-del-note]").forEach(b=>b.onclick=async()=>{if(confirm("Supprimer cette note ?"))try{await deleteDoc(doc(db,"notes_cours",b.dataset.delNote));await renderNotesCours();toast("Note supprimée.")}catch(e){toast(friendly(e),true)}})
 }
+
 function noteForm(n){
 const area=$("noteFormArea");area.innerHTML=`<div class="card"><h3>${n?"Modifier":"Nouvelle"} note de cours</h3><form id="noteForm"><div class="field"><label>Titre *</label><input name="titre" required value="${esc(n?.titre||"")}"></div><div class="form-grid"><div class="field"><label>Code de classe *</label><input name="classeId" required value="${esc(n?.classeId||currentProfile.classeId||"")}"></div><div class="field"><label>Matière</label><input name="matiereId" value="${esc(n?.matiereId||"")}"></div></div><div class="field"><label>Texte du cours</label><textarea name="contenu" maxlength="12000">${esc(n?.contenu||"")}</textarea></div><div class="field"><label>Photo de page (facultatif)</label><input id="notePhoto" type="file" accept="image/*" capture="environment"><div id="photoPreview">${n?.photoData?`<img src="${n.photoData}" style="max-width:100%;max-height:200px">`:""}</div><label><input id="removePhoto" type="checkbox" style="width:auto"> Retirer la photo actuelle</label></div><div class="actions"><button class="btn primary" id="saveNote">Enregistrer</button><button class="btn secondary" id="cancelNote" type="button">Annuler</button></div></form></div>`;
-let photo="";$("cancelNote").onclick=()=>area.innerHTML="";
+let photo="";
+$("cancelNote").onclick=()=>area.innerHTML="";
 $("notePhoto").onchange=async()=>{try{photo=await compressPhoto($("notePhoto").files[0]);$("photoPreview").innerHTML=`<img src="${photo}" style="max-width:100%;max-height:200px">`}catch(e){toast(e.message,true);$("notePhoto").value=""}};
-$("noteForm").onsubmit=async e=>{e.preventDefault();const btn=$("saveNote");btn.disabled=true;try{const fd=new FormData(e.currentTarget),data={titre:String(fd.get("titre")||"").trim(),classeId:String(fd.get("classeId")||"").trim(),matiereId:String(fd.get("matiereId")||"").trim(),contenu:String(fd.get("contenu")||"").trim(),professeurUid:isAdmin()?(n?.professeurUid||currentUser.uid):currentUser.uid,updatedAt:stamp()};if(!data.titre||!data.classeId)throw Error("Le titre et la classe sont obligatoires.");if($("removePhoto").checked)data.photoData="";else if(photo)data.photoData=photo;else if(n?.photoData)data.photoData=n.photoData;if(!data.contenu&&!data.photoData)throw Error("Ajoutez le texte ou une photo.");if(n)await updateDoc(doc(db,"notes_cours",n.id),data);else{data.createdAt=stamp();await addDoc(collection(db,"notes_cours"),data)}toast("Note enregistrée.");await renderNotesCours()}catch(err){toast(friendly(err),true)}finally{btn.disabled=false}}
+$("noteForm").onsubmit=async e=>{e.preventDefault();const btn=$("saveNote");btn.disabled=true;try{
+const fd=new FormData(e.currentTarget),data={titre:String(fd.get("titre")||"").trim(),classeId:String(fd.get("classeId")||"").trim(),matiereId:String(fd.get("matiereId")||"").trim(),contenu:String(fd.get("contenu")||"").trim(),professeurUid:isAdmin()?(n?.professeurUid||currentUser.uid):currentUser.uid,updatedAt:stamp()};
+if(!data.titre||!data.classeId)throw Error("Le titre et la classe sont obligatoires.");
+if($("removePhoto").checked)data.photoData="";else if(photo)data.photoData=photo;else if(n?.photoData)data.photoData=n.photoData;
+if(!data.contenu&&!data.photoData)throw Error("Ajoutez le texte ou une photo.");
+if(n)await updateDoc(doc(db,"notes_cours",n.id),data);else{data.createdAt=stamp();await addDoc(collection(db,"notes_cours"),data)}
+toast("Note enregistrée.");await renderNotesCours()
+}catch(err){toast(friendly(err),true)}finally{btn.disabled=false}}
 }
 
-/* Gestion des comptes et attribution des rôles */
+/* Gestion des comptes : informations personnelles, rôle et statut */
 async function renderUsers(){
-if(!isAdmin())return;const snap=await getDocs(collection(db,"users")),users=snap.docs.map(d=>({id:d.id,...d.data()}));
-$("pageContent").innerHTML=`<div class="card"><h3>Gestion des utilisateurs</h3><p class="muted">Acceptez les comptes et choisissez le rôle de chaque utilisateur.</p><div class="table-wrap"><table><thead><tr><th>E-mail</th><th>Rôle</th><th>Statut</th><th>Actions</th></tr></thead><tbody>${users.map(u=>`<tr><td>${esc(u.email)}</td><td><select data-role="${esc(u.id)}"><option value="eleve" ${u.role==="eleve"?"selected":""}>Élève</option><option value="etudiant" ${u.role==="etudiant"?"selected":""}>Étudiant</option><option value="professeur" ${u.role==="professeur"?"selected":""}>Professeur</option>${u.role==="administrateur"?'<option value="administrateur" selected>Administrateur</option>':""}</select></td><td><select data-status="${esc(u.id)}"><option value="attente" ${u.status==="attente"?"selected":""}>En attente</option><option value="accepted" ${u.status==="accepted"?"selected":""}>Accepté</option><option value="refuse" ${u.status==="refuse"?"selected":""}>Refusé</option></select></td><td><button class="btn success" data-save-user="${esc(u.id)}">Enregistrer</button> ${u.id!==currentUser.uid?`<button class="btn danger" data-del-user="${esc(u.id)}">Supprimer profil</button>`:""}</td></tr>`).join("")||'<tr><td colspan="4">Aucun utilisateur.</td></tr>'}</tbody></table></div></div>`;
-$("pageContent").querySelectorAll("[data-save-user]").forEach(b=>b.onclick=async()=>{const id=b.dataset.saveUser,role=$("pageContent").querySelector(`[data-role="${CSS.escape(id)}"]`).value,status=$("pageContent").querySelector(`[data-status="${CSS.escape(id)}"]`).value;if(id===currentUser.uid&&(role!=="administrateur"||status!=="accepted"))return toast("Vous ne pouvez pas retirer votre propre accès ici.",true);if(role==="administrateur"&&id!==currentUser.uid)return toast("Le rôle administrateur ne peut pas être attribué depuis cette page.",true);try{await updateDoc(doc(db,"users",id),{role,status,updatedAt:stamp()});toast("Utilisateur mis à jour.");await renderUsers()}catch(e){toast(friendly(e),true)}});
+if(!isAdmin())return;
+const snap=await getDocs(collection(db,"users")),users=snap.docs.map(d=>({id:d.id,...d.data()}));
+$("pageContent").innerHTML=`<div class="card"><h3>Gestion des utilisateurs</h3><p class="muted">Consultez les informations, approuvez les comptes et attribuez les rôles.</p><div class="table-wrap"><table><thead><tr><th>E-mail</th><th>Nom et prénom</th><th>Téléphone</th><th>Niveau / spécialité</th><th>Classe / filière</th><th>Rôle</th><th>Statut</th><th>Actions</th></tr></thead><tbody>${users.map(u=>`<tr>
+<td>${esc(u.email)}</td>
+<td>${esc([u.nom,u.prenom].filter(Boolean).join(" "))}</td>
+<td>${esc(u.telephone||"—")}</td>
+<td>${esc(u.role==="professeur"?(u.specialite||"—"):(u.niveau||"—"))}</td>
+<td>${esc(u.classeId||"—")}</td>
+<td><select data-role="${esc(u.id)}"><option value="eleve" ${u.role==="eleve"?"selected":""}>Élève</option><option value="etudiant" ${u.role==="etudiant"?"selected":""}>Étudiant</option><option value="professeur" ${u.role==="professeur"?"selected":""}>Professeur</option>${u.role==="administrateur"?'<option value="administrateur" selected>Administrateur</option>':""}</select></td>
+<td><select data-status="${esc(u.id)}"><option value="attente" ${u.status==="attente"?"selected":""}>En attente</option><option value="accepted" ${u.status==="accepted"?"selected":""}>Accepté</option><option value="refuse" ${u.status==="refuse"?"selected":""}>Refusé</option></select></td>
+<td><div class="actions"><button class="btn success" data-save-user="${esc(u.id)}">Enregistrer</button>${u.id!==currentUser.uid?`<button class="btn danger" data-del-user="${esc(u.id)}">Supprimer profil</button>`:""}</div></td>
+</tr>`).join("")||'<tr><td colspan="8">Aucun utilisateur.</td></tr>'}</tbody></table></div></div>`;
+$("pageContent").querySelectorAll("[data-save-user]").forEach(b=>b.onclick=async()=>{
+const id=b.dataset.saveUser,role=$("pageContent").querySelector(`[data-role="${CSS.escape(id)}"]`).value,status=$("pageContent").querySelector(`[data-status="${CSS.escape(id)}"]`).value;
+if(id===currentUser.uid&&(role!=="administrateur"||status!=="accepted"))return toast("Vous ne pouvez pas retirer votre propre accès ici.",true);
+if(role==="administrateur"&&id!==currentUser.uid)return toast("Le rôle administrateur ne peut pas être attribué depuis cette page.",true);
+try{await updateDoc(doc(db,"users",id),{role,status,updatedAt:stamp()});toast("Utilisateur mis à jour.");await renderUsers()}
+catch(e){toast(friendly(e),true)}
+});
 $("pageContent").querySelectorAll("[data-del-user]").forEach(b=>b.onclick=async()=>{if(confirm("Supprimer le profil Firestore ? Le compte Auth ne sera pas supprimé."))try{await deleteDoc(doc(db,"users",b.dataset.delUser));toast("Profil supprimé.");await renderUsers()}catch(e){toast(friendly(e),true)}})
 }
 
-/* Statistiques calculées à partir des collections existantes */
-async function renderStatistics(){
-if(!isAdmin()){toast("Accès réservé à l'administrateur.",true);return}
-$("pageContent").innerHTML='<div class="card">Calcul des statistiques…</div>';
-const names=[["Étudiants","etudiants"],["Élèves","eleves"],["Professeurs","professeurs"],["Départements","departements"],["Filières","filieres"],["Classes","classes"],["Matières","matieres"],["Cours","cours"],["Inscriptions","inscriptions"],["Devoirs","devoirs"],["Examens","examens"],["Remises","remises"],["Résultats","resultats"],["Vidéos","videos"],["Documents","documents"],["Notes de cours","notes_cours"]];
-try{const values=await Promise.all(names.map(async x=>({label:x[0],count:(await getDocs(collection(db,x[1]))).size}))),pending=(await getDocs(query(collection(db,"users"),where("status","==","attente")))).size,accepted=(await getDocs(query(collection(db,"users"),where("status","==","accepted")))).size;
-$("pageContent").innerHTML=`<div class="card"><h3>Statistiques générales</h3><p class="muted">Les nombres sont calculés à partir des collections Firestore existantes.</p><div class="stats-grid">${values.map(v=>`<div class="stat"><small>${esc(v.label)}</small><strong>${v.count}</strong></div>`).join("")}<div class="stat"><small>Comptes en attente</small><strong>${pending}</strong></div><div class="stat"><small>Comptes acceptés</small><strong>${accepted}</strong></div></div><button class="btn secondary" id="refreshStats">↻ Recalculer</button></div>`;$("refreshStats").onclick=renderStatistics
-}catch(e){$("pageContent").innerHTML=`<div class="notice">${esc(friendly(e))}</div>`}
-}
-
-/* Mes cours : consultation des cours affectés à la classe */
-async function renderStudentCourses(){
-const cl=currentProfile.classeId||(currentProfile.classIds||[])[0];if(!cl){$("pageContent").innerHTML='<div class="card">Votre compte n’est pas encore associé à une classe. Contactez l’administrateur.</div>';return}
-try{const snap=await getDocs(query(collection(db,"cours"),where("classeId","==",cl))),courses=snap.docs.map(d=>({id:d.id,...d.data()}));$("pageContent").innerHTML=`<div class="card"><h3>Mes cours</h3><p class="muted">Classe : ${esc(cl)}</p>${courses.map(c=>`<article class="course-note"><h3>${esc(c.nom||c.titre||"Cours sans titre")}</h3><p>${esc(c.description||"")}</p><p class="muted">Matière : ${esc(c.matiereId||"—")} · Année : ${esc(c.anneeAcademique||"—")}</p></article>`).join("")||'<div class="notice">Aucun cours n’est encore associé à cette classe.</div>'}</div>`}catch(e){$("pageContent").innerHTML=`<div class="notice">${esc(friendly(e))}</div>`}
-}
-
-/* Sauvegarde des données Firestore */
 async function renderBackup(){
 if(!isAdmin())return;
 $("pageContent").innerHTML='<div class="card"><h3>Sauvegarde JSON</h3><p>Exporter les collections Firestore accessibles à votre compte.</p><button id="exportBtn" class="btn primary">Exporter les données</button><div class="notice">Le fichier peut contenir des données personnelles. Conservez-le en sécurité.</div></div>';
-$("exportBtn").onclick=async()=>{const names=["users","etudiants","eleves","professeurs","departements","filieres","classes","matieres","cours","annees_academiques","affectations","inscriptions","devoirs","examens","tentatives_examens","notes_cours","remises","resultats","videos","documents","statistiques","configuration"],backup={application:"Centre de Formation Le Pédagogue",projectId:firebaseConfig.projectId,exportedAt:new Date().toISOString(),collections:{}};try{for(const name of names){const s=await getDocs(collection(db,name));backup.collections[name]=s.docs.map(d=>({id:d.id,...d.data()}))}const blob=new Blob([JSON.stringify(backup,null,2)],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="sauvegarde-le-pedagogue-"+new Date().toISOString().slice(0,10)+".json";a.click();URL.revokeObjectURL(url);toast("Export terminé.")}catch(e){toast(friendly(e),true)}}
+$("exportBtn").onclick=async()=>{
+const names=["users","etudiants","eleves","professeurs","departements","filieres","classes","matieres","cours","annees_academiques","affectations","inscriptions","devoirs","examens","tentatives_examens","notes_cours","remises","resultats","videos","documents","statistiques","configuration"],backup={application:"Centre de Formation Le Pédagogue",projectId:firebaseConfig.projectId,exportedAt:new Date().toISOString(),collections:{}};
+try{for(const name of names){const s=await getDocs(collection(db,name));backup.collections[name]=s.docs.map(d=>({id:d.id,...d.data()}))}
+const blob=new Blob([JSON.stringify(backup,null,2)],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="sauvegarde-le-pedagogue-"+new Date().toISOString().slice(0,10)+".json";a.click();URL.revokeObjectURL(url);toast("Export terminé.")}
+catch(e){toast(friendly(e),true)}
+}
 }
 
-/* Installation PWA */
-window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();installPrompt=e;$("installBtn").textContent="📲 Installer l'application";$("installBtn").disabled=false});
+/* Installation PWA — Android, Chrome et Samsung Internet */
+window.addEventListener("beforeinstallprompt",e=>{
+e.preventDefault();installPrompt=e;$("installBtn").textContent="📲 Installer l'application";$("installBtn").disabled=false;
+});
 window.addEventListener("appinstalled",()=>{installPrompt=null;$("installBtn").textContent="✓ Application installée";toast("Application installée avec succès.")});
-$("installBtn").addEventListener("click",async()=>{const btn=$("installBtn"),standalone=window.matchMedia("(display-mode: standalone)").matches||window.navigator.standalone===true;if(standalone){toast("L'application est déjà installée.");return}if(installPrompt){try{const promptEvent=installPrompt;await promptEvent.prompt();const result=await promptEvent.userChoice;installPrompt=null;if(result?.outcome==="accepted")btn.textContent="✓ Installation lancée";else btn.textContent="📲 Installer l'application"}catch(error){console.error(error);toast("Utilisez le menu ⋮ du navigateur pour installer l'application.",true)}return}const ua=navigator.userAgent||"";if(/iPhone|iPad|iPod/i.test(ua)){alert("Pour installer l'application sur iPhone : ouvrez le site dans Safari, appuyez sur Partager, puis sur « Sur l'écran d'accueil ».");return}alert("Pour installer Centre de Formation Le Pédagogue :\n\n1. Ouvrez le site publié en HTTPS dans Chrome ou Samsung Internet.\n2. Appuyez sur le menu ⋮ du navigateur.\n3. Choisissez « Installer l'application » ou « Ajouter à l'écran d'accueil ».\n\nVérifiez que manifest.json, sw.js et les icônes PWA sont publiés à côté de index.html.")});
-if("serviceWorker"in navigator){window.addEventListener("load",async()=>{try{const registration=await navigator.serviceWorker.register("./sw.js");console.log("Service Worker enregistré.");await registration.update().catch(error=>console.warn("Mise à jour du Service Worker différée :",error))}catch(error){console.error("Erreur Service Worker :",error)}})}
+$("installBtn").addEventListener("click",async()=>{
+const btn=$("installBtn");
+const standalone=window.matchMedia("(display-mode: standalone)").matches||window.navigator.standalone===true;
+if(standalone){toast("L'application est déjà installée.");return}
+if(installPrompt){
+try{const promptEvent=installPrompt;await promptEvent.prompt();const result=await promptEvent.userChoice;installPrompt=null;if(result?.outcome==="accepted")btn.textContent="✓ Installation lancée";else btn.textContent="📲 Installer l'application"}
+catch(error){console.error("Erreur installation :",error);toast("Utilisez le menu ⋮ du navigateur pour installer l'application.",true)}
+return;
+}
+const ua=navigator.userAgent||"";
+if(/iPhone|iPad|iPod/i.test(ua)){alert("Pour installer l'application sur iPhone : ouvrez le site dans Safari, appuyez sur Partager, puis sur « Sur l'écran d'accueil ».");return}
+alert("Pour installer Centre de Formation Le Pédagogue :\n\n1. Ouvrez le site publié en HTTPS dans Chrome ou Samsung Internet.\n2. Appuyez sur le menu ⋮ du navigateur.\n3. Choisissez « Installer l'application » ou « Ajouter à l'écran d'accueil ».\n\nSi l'option n'apparaît pas, vérifiez que manifest.json, sw.js et les icônes PWA sont publiés à côté de index.html.");
+});
+
+/* Enregistrement et vérification du Service Worker */
+if("serviceWorker" in navigator){
+window.addEventListener("load",async()=>{
+try{const registration=await navigator.serviceWorker.register("./sw.js");console.log("Service Worker enregistré.");await registration.update().catch(error=>console.warn("Mise à jour du Service Worker différée :",error))}
+catch(error){console.error("Erreur Service Worker :",error)}
+});
+}
 </script>
 </body>
 </html>
