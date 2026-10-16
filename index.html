@@ -160,11 +160,12 @@ function toast(s,bad=false){const t=$("toast");t.textContent=s;t.classList.remov
 function authMessage(s,type="info"){$("authMessage").innerHTML=`<div class="message ${type==="error"?"error":type==="success"?"success":""}">${esc(s)}</div>`}
 function friendly(e){const c=e?.code||"";const m={"auth/invalid-credential":"E-mail ou mot de passe incorrect.","auth/invalid-email":"Adresse e-mail invalide.","auth/email-already-in-use":"Cette adresse e-mail possède déjà un compte.","auth/weak-password":"Le mot de passe doit contenir au moins 6 caractères.","auth/unauthorized-domain":"Ce domaine n'est pas autorisé dans Firebase Authentication.","auth/popup-closed-by-user":"La fenêtre Google a été fermée.","permission-denied":"Accès refusé par les règles Firestore.","unavailable":"Service indisponible. Réessayez."};return m[c]||e?.message||"Une erreur est survenue."}
 function isAdmin(){return!!currentUser&&((currentUser.email||"").toLowerCase()===ADMIN_EMAIL||(currentProfile?.role==="administrateur"&&currentProfile?.status==="accepted"))}
+function isStudent(){  return ["eleve","etudiant"].includes(  String(currentProfile?.role||"").toLowerCase());}
 function approved(){return!!currentProfile&&(isAdmin()||(currentProfile.status==="accepted"&&["professeur","eleve","etudiant"].includes(currentProfile.role)))}
 function roleName(r){return({administrateur:"Administrateur",professeur:"Professeur",eleve:"Élève",etudiant:"Étudiant"})[r]||r||"Utilisateur"}
 function stopTimer(){if(timerInterval){clearInterval(timerInterval);timerInterval=null}}
 
-async function ensureProfile(user){
+  async function ensureProfile(user){
 const ref=doc(db,"users",user.uid),snap=await getDoc(ref),email=(user.email||"").toLowerCase(),admin=email===ADMIN_EMAIL;
 if(!snap.exists()){
 const p={uid:user.uid,email:user.email||"",role:admin?"administrateur":"eleve",status:admin?"accepted":"attente",createdAt:stamp(),updatedAt:stamp()};
