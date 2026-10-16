@@ -343,9 +343,12 @@ const modules=[
 {id:"configuration",title:"Configuration",collection:"configuration",fields:[["nom","Nom"],["valeur","Valeur"],["description","Description"]]}
 ];
 const navItems=[
-["accueil","🏠 Accueil"],["etudiants","🎓 Étudiants"],["eleves","👨‍🎓 Élèves"],["professeurs","👨‍🏫 Professeurs"],["departements","🏢 Départements"],["filieres","📚 Filières"],["classes","🏫 Classes"],["affectations","🔗 Affectations"],["inscriptions","📋 Inscriptions"],["matieres","📖 Matières"],["cours","📝 Cours"],["annees","📅 Années académiques"],["devoirs","📑 Devoirs"],["examens","⏱️ Examens"],["notes_cours","📒 Notes de cours"],["remises","📥 Remises / Corrections"],["bulletin","🎓 Mon bulletin"], ["resultats","📊 Résultats"],["videos","🎬 Vidéos"],["documents","📄 Documents"],["statistiques","📈 Statistiques"],["configuration","⚙️ Configuration"]
+["accueil","🏠 Accueil"],["etudiants","🎓 Étudiants"],["eleves","👨‍🎓 Élèves"],["professeurs","👨‍🏫 Professeurs"],["departements","🏢 Départements"],["filieres","📚 Filières"],["classes","🏫 Classes"],["affectations","🔗 Affectations"],["inscriptions","📋 Inscriptions"],["matieres","📖 Matières"],  ["cours","📝 Cours"],
+["horaire_cours","🗓️ Horaire des cours"],
+["horaire_examens","📝 Horaire des examens"],
+["annees","📅 Années académiques"],["devoirs","📑 Devoirs"],["examens","⏱️ Examens"],["notes_cours","📒 Notes de cours"],["remises","📥 Remises / Corrections"],["bulletin","🎓 Mon bulletin"], ["resultats","📊 Résultats"],["videos","🎬 Vidéos"],["documents","📄 Documents"],["statistiques","📈 Statistiques"],["configuration","⚙️ Configuration"]
 ];
-const studentPages=["accueil","devoirs","examens","notes_cours","remises","resultats","bulletin","videos","documents"];
+const studentPages=["accueil","devoirs","examens","notes_cours","remises","resultats","bulletin","videos","documents","horaire_cours","horaire_examens"];
 const teacherPages=studentPages.filter(p=>p!=="bulletin");
 
 function buildNavigation(){
@@ -370,12 +373,14 @@ toast("Accès non autorisé.",true);return;
 try{
 stopTimer();currentPage=page;buildNavigation();
 const mod=modules.find(m=>m.id===page);
-const titles={accueil:"Tableau de bord",examens:"Examens chronométrés",notes_cours:"Notes de cours",utilisateurs:"Gestion des utilisateurs",sauvegarde:"Sauvegarde"};
+const titles={accueil:"Tableau de bord",examens:"Examens chronométrés",notes_cours:"Notes de cours",utilisateurs:"Gestion des utilisateurs",sauvegarde:"Sauvegarde",horaire_cours:"Horaire des cours",horaire_examens:"Horaire des examens"};
 $("pageTitle").textContent=titles[page]||mod?.title||page;
 $("pageContent").innerHTML='<div class="card">Chargement…</div>';
 if(page==="accueil")return await renderDashboard();
 if(page==="examens")return await renderExams();
 if(page==="notes_cours")return await renderNotesCours();
+ if(page==="horaire_cours")return await renderSchedule(page);
+if(page==="horaire_examens")return await renderSchedule(page);
   if(page==="bulletin")return await renderBulletin();
 if(page==="utilisateurs")return await renderUsers();
 if(page==="sauvegarde")return await renderBackup();
@@ -971,7 +976,526 @@ window.onload=function(){
       </div>`;
   }
 }
-  
+/* =====================================================
+   HORAIRES CFLP : COURS ET EXAMENS
+   ===================================================== */
+
+window.cflpScheduleState = window.cflpScheduleState || {};
+window.cflpScheduleCache = window.cflpScheduleCache || {};
+
+function scheduleLabelDate(value){
+  if(!value)return "—";
+  const d=new Date(value+"T12:00:00");
+  return Number.isNaN(d.getTime())
+    ? value
+    : d.toLocaleDateString("fr-FR",{
+        weekday:"long",
+        day:"2-digit",
+        month:"long",
+        year:"numeric"
+      });
+}
+
+function scheduleTimeRange(r){
+  return `${esc(r.heureDebut||"—")} – ${esc(r.heureFin||"—")}`;
+}
+
+function scheduleClassName(id){
+  const classes=window.cflpScheduleCache.classes||[];
+  const c=classes.find(x=>x.id===id||x.code===id);
+  return c ? (c.nom||c.code||c.id) : (id||"Non définie");
+}
+
+function scheduleSubjectName(id){
+  const subjects=window.cflpScheduleCache.matieres||[];
+  const m=subjects.find(x=>x.id===id||x.code===id);
+  return m ? (m.nom||m.titre||m.code||m.id) : (id||"Non définie");
+}
+
+function scheduleTeacherName(id){
+  const teachers=window.cflpScheduleCache.teachers||[];
+  const t=teachers.find(x=>x.id===id||x.uid===id);
+  if(t)return [t.nom,t.prenom].filter(Boolean).join(" ")||t.email||id;
+  if(id===currentUser?.uid){
+    return currentProfile?.nom||currentUser?.displayName||currentUser?.email||id;
+  }
+  return id||"Non défini";
+}
+
+function scheduleCanManage(page,r){
+  if(page==="horaire_cours")return isAdmin();
+  if(page==="horaire_examens"){
+    return isAdmin() ||
+      (isProfessor() && (
+        r?.professeurUid===currentUser.uid ||
+        r?.createdBy===currentUser.uid
+      ));
+  }
+  return false;
+}
+
+async function renderSchedule(page){
+  const isCourse=page==="horaire_cours";
+  const collectionName=isCourse?"horaires_cours":"horaires_examens";
+  const title=isCourse?"Horaire des cours":"Horaire des examens";
+  const canCreate=isCourse?isAdmin():(isAdmin()||isProfessor());
+
+  try{
+    const [scheduleSnap,classSnap,subjectSnap]=await Promise.all([
+      getDocs(collection(db,collectionName)),
+      getDocs(collection(db,"classes")),
+      getDocs(collection(db,"matieres"))
+    ]);
+
+    let teachers=[];
+    if(isAdmin()||isProfessor()){
+      try{
+        const teacherSnap=await getDocs(collection(db,"users"));
+        teachers=teacherSnap.docs
+          .map(d=>({id:d.id,...d.data()}))
+          .filter(u=>u.role==="professeur");
+      }catch(e){
+        console.warn("Liste des professeurs indisponible :",e);
+      }
+    }
+
+    window.cflpScheduleCache[page]={
+      records:scheduleSnap.docs.map(d=>({id:d.id,...d.data()})),
+      classes:classSnap.docs.map(d=>({id:d.id,...d.data()})),
+      matieres:subjectSnap.docs.map(d=>({id:d.id,...d.data()})),
+      teachers
+    };
+
+    if(!window.cflpScheduleState[page]){
+      window.cflpScheduleState[page]={
+        view:"table",
+        month:new Date().getMonth(),
+        year:new Date().getFullYear()
+      };
+    }
+
+    drawSchedulePage(page);
+  }catch(e){
+    console.error("Erreur de chargement des horaires :",e);
+    $("pageContent").innerHTML=`
+      <div class="card">
+        <h3>${esc(title)}</h3>
+        <div class="notice">
+          Impossible de charger les horaires.
+          Vérifiez les règles Firestore et les autorisations de lecture.
+        </div>
+      </div>`;
+  }
+}
+
+function drawSchedulePage(page){
+  const isCourse=page==="horaire_cours";
+  const title=isCourse?"Horaire des cours":"Horaire des examens";
+  const state=window.cflpScheduleState[page];
+  const cache=window.cflpScheduleCache[page];
+  if(!cache)return;
+
+  let records=[...cache.records];
+
+  // Les élèves ne voient que les horaires de leurs classes.
+  if(isStudent()){
+    const allowed=new Set([
+      currentProfile.classeId,
+      ...(Array.isArray(currentProfile.classIds)?currentProfile.classIds:[])
+    ].filter(Boolean));
+
+    cache.classes.forEach(c=>{
+      if(allowed.has(c.id)||allowed.has(c.code)){
+        allowed.add(c.id);
+        if(c.code)allowed.add(c.code);
+      }
+    });
+
+    records=records.filter(r=>allowed.has(r.classeId));
+  }
+
+  records.sort((a,b)=>
+    String(a.date||"").localeCompare(String(b.date||""))||
+    String(a.heureDebut||"").localeCompare(String(b.heureDebut||""))
+  );
+
+  const canCreate=isCourse?isAdmin():(isAdmin()||isProfessor());
+
+  $("pageContent").innerHTML=`
+    <div class="card">
+      <div class="page-head">
+        <div>
+          <h3>${isCourse?"🗓️":"📝"} ${esc(title)}</h3>
+          <p class="muted">
+            ${records.length} horaire(s) disponible(s)
+          </p>
+        </div>
+        ${canCreate?`
+          <button class="btn primary" id="scheduleAdd">
+            ＋ Ajouter un horaire
+          </button>`:""}
+      </div>
+
+      <div class="actions" style="margin-bottom:14px">
+        <button class="btn ${state.view==="table"?"primary":"secondary"}"
+          id="scheduleTableView">
+          Tableau par jour
+        </button>
+        <button class="btn ${state.view==="calendar"?"primary":"secondary"}"
+          id="scheduleCalendarView">
+          Calendrier mensuel
+        </button>
+      </div>
+
+      <div id="scheduleFormArea"></div>
+      <div id="scheduleDisplay"></div>
+    </div>`;
+
+  if($("scheduleAdd")){
+    $("scheduleAdd").onclick=()=>scheduleOpenForm(page,null);
+  }
+
+  $("scheduleTableView").onclick=()=>{
+    state.view="table";
+    drawSchedulePage(page);
+  };
+
+  $("scheduleCalendarView").onclick=()=>{
+    state.view="calendar";
+    drawSchedulePage(page);
+  };
+
+  const display=$("scheduleDisplay");
+
+  if(state.view==="table"){
+    display.innerHTML=`
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Jour / Date</th>
+              <th>Heure</th>
+              <th>Titre / Matière</th>
+              <th>Classe</th>
+              <th>Professeur</th>
+              <th>Salle</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${records.map(r=>`
+              <tr>
+                <td>${esc(scheduleLabelDate(r.date))}</td>
+                <td>${scheduleTimeRange(r)}</td>
+                <td>
+                  <b>${esc(r.titre||scheduleSubjectName(r.matiereId))}</b>
+                  <div class="muted">${esc(scheduleSubjectName(r.matiereId))}</div>
+                </td>
+                <td>${esc(scheduleClassName(r.classeId))}</td>
+                <td>${esc(scheduleTeacherName(r.professeurUid))}</td>
+                <td>${esc(r.salle||"—")}</td>
+                <td>
+                  <div class="actions">
+                    ${scheduleCanManage(page,r)?`
+                      <button class="btn secondary"
+                        data-schedule-edit="${esc(r.id)}">Modifier</button>
+                      <button class="btn danger"
+                        data-schedule-delete="${esc(r.id)}">Supprimer</button>
+                    `:"—"}
+                  </div>
+                </td>
+              </tr>
+            `).join("")||
+            '<tr><td colspan="7">Aucun horaire enregistré.</td></tr>'}
+          </tbody>
+        </table>
+      </div>`;
+  }else{
+    const first=new Date(state.year,state.month,1);
+    const last=new Date(state.year,state.month+1,0);
+    const monthName=first.toLocaleDateString("fr-FR",{
+      month:"long",year:"numeric"
+    });
+    const offset=(first.getDay()+6)%7;
+    const totalCells=Math.ceil((offset+last.getDate())/7)*7;
+
+    let calendar=`
+      <div class="page-head">
+        <button class="btn secondary" id="schedulePrevMonth">←</button>
+        <h3>${esc(monthName)}</h3>
+        <button class="btn secondary" id="scheduleNextMonth">→</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px">
+        ${["Lun","Mar","Mer","Jeu","Ven","Sam","Dim"].map(d=>`
+          <div style="text-align:center;font-weight:bold;padding:6px 1px;background:#edf3fc">
+            ${d}
+          </div>`).join("")}`;
+
+    for(let i=0;i<totalCells;i++){
+      const day=i-offset+1;
+      if(day<1||day>last.getDate()){
+        calendar+=`<div style="min-height:75px;border:1px solid var(--bd);border-radius:5px;background:#f8fafc"></div>`;
+        continue;
+      }
+
+      const dateKey=
+        `${state.year}-${String(state.month+1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
+
+      const dayRecords=records.filter(r=>r.date===dateKey);
+
+      calendar+=`
+        <div style="min-width:0;min-height:75px;padding:4px;border:1px solid var(--bd);border-radius:5px;background:white">
+          <b>${day}</b>
+          ${dayRecords.map(r=>`
+            <div style="margin-top:4px;padding:3px;background:#dbeafe;border-radius:4px;font-size:10px;overflow-wrap:anywhere">
+              <b>${esc(r.heureDebut||"")}</b>
+              <div>${esc(r.titre||scheduleSubjectName(r.matiereId))}</div>
+              <div>${esc(scheduleClassName(r.classeId))}</div>
+            </div>`).join("")}
+        </div>`;
+    }
+
+    calendar+="</div>";
+    display.innerHTML=calendar;
+
+    $("schedulePrevMonth").onclick=()=>{
+      state.month--;
+      if(state.month<0){state.month=11;state.year--}
+      drawSchedulePage(page);
+    };
+
+    $("scheduleNextMonth").onclick=()=>{
+      state.month++;
+      if(state.month>11){state.month=0;state.year++}
+      drawSchedulePage(page);
+    };
+  }
+
+  $("pageContent").querySelectorAll("[data-schedule-edit]").forEach(b=>{
+    b.onclick=()=>{
+      const record=cache.records.find(r=>r.id===b.dataset.scheduleEdit);
+      if(record)scheduleOpenForm(page,record);
+    };
+  });
+
+  $("pageContent").querySelectorAll("[data-schedule-delete]").forEach(b=>{
+    b.onclick=()=>scheduleDelete(page,b.dataset.scheduleDelete);
+  });
+}
+
+async function scheduleOpenForm(page,record){
+  const isCourse=page==="horaire_cours";
+
+  if(isCourse&&!isAdmin()){
+    return toast("La gestion des horaires de cours est réservée à l’administrateur.",true);
+  }
+
+  if(!isCourse&&!isAdmin()&&!isProfessor()){
+    return toast("Vous n’avez pas l’autorisation de gérer cet horaire.",true);
+  }
+
+  if(record&&!scheduleCanManage(page,record)){
+    return toast("Vous ne pouvez pas modifier cet horaire.",true);
+  }
+
+  const cache=window.cflpScheduleCache[page];
+  const area=$("scheduleFormArea");
+
+  const classOptions=cache.classes.map(c=>{
+    const value=c.code||c.id;
+    return `<option value="${esc(value)}"
+      ${record?.classeId===value||record?.classeId===c.id?"selected":""}>
+      ${esc(c.nom||c.code||c.id)}
+    </option>`;
+  }).join("");
+
+  const subjectOptions=cache.matieres.map(m=>{
+    const value=m.code||m.id;
+    return `<option value="${esc(value)}"
+      ${record?.matiereId===value||record?.matiereId===m.id?"selected":""}>
+      ${esc(m.nom||m.titre||m.code||m.id)}
+    </option>`;
+  }).join("");
+
+  const teacherOptions=cache.teachers.map(t=>{
+    const name=[t.nom,t.prenom].filter(Boolean).join(" ")||t.email||t.id;
+    return `<option value="${esc(t.id)}"
+      ${record?.professeurUid===t.id||(!record&&t.id===currentUser.uid)?"selected":""}>
+      ${esc(name)}
+    </option>`;
+  }).join("");
+
+  area.innerHTML=`
+    <div class="card" style="border:2px solid var(--bd)">
+      <h3>${record?"Modifier":"Créer"} — ${isCourse?"Horaire des cours":"Horaire des examens"}</h3>
+
+      <form id="scheduleForm">
+        <div class="form-grid">
+          <div class="field full">
+            <label>Titre du cours / examen *</label>
+            <input name="titre" maxlength="150"
+              value="${esc(record?.titre||"")}" required>
+          </div>
+
+          <div class="field">
+            <label>Classe *</label>
+            <select name="classeId" required>
+              <option value="">Choisir une classe</option>
+              ${classOptions}
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Matière</label>
+            <select name="matiereId">
+              <option value="">Choisir une matière</option>
+              ${subjectOptions}
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Professeur *</label>
+            <select name="professeurUid"
+              ${!isAdmin()?"disabled":""} required>
+              ${!isAdmin()?`
+                <option value="${esc(currentUser.uid)}" selected>
+                  ${esc(currentProfile?.nom||currentUser.email||"Mon compte")}
+                </option>`:`
+                <option value="">Choisir un professeur</option>
+                ${teacherOptions}`}
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Date *</label>
+            <input name="date" type="date"
+              value="${esc(record?.date||"")}" required>
+          </div>
+
+          <div class="field">
+            <label>Heure de début *</label>
+            <input name="heureDebut" type="time"
+              value="${esc(record?.heureDebut||"")}" required>
+          </div>
+
+          <div class="field">
+            <label>Heure de fin *</label>
+            <input name="heureFin" type="time"
+              value="${esc(record?.heureFin||"")}" required>
+          </div>
+
+          <div class="field">
+            <label>Salle</label>
+            <input name="salle" maxlength="80"
+              value="${esc(record?.salle||"")}"
+              placeholder="Ex. Salle 2">
+          </div>
+        </div>
+
+        <div class="actions">
+          <button type="submit" class="btn primary" id="scheduleSave">
+            Enregistrer
+          </button>
+          <button type="button" class="btn secondary" id="scheduleCancel">
+            Annuler
+          </button>
+        </div>
+      </form>
+    </div>`;
+
+  $("scheduleCancel").onclick=()=>area.innerHTML="";
+
+  $("scheduleForm").onsubmit=async e=>{
+    e.preventDefault();
+
+    const form=e.currentTarget;
+    const fd=new FormData(form);
+    const titre=String(fd.get("titre")||"").trim();
+    const classeId=String(fd.get("classeId")||"").trim();
+    const matiereId=String(fd.get("matiereId")||"").trim();
+    const date=String(fd.get("date")||"").trim();
+    const heureDebut=String(fd.get("heureDebut")||"").trim();
+    const heureFin=String(fd.get("heureFin")||"").trim();
+    const salle=String(fd.get("salle")||"").trim();
+
+    const professeurUid=isAdmin()
+      ? String(fd.get("professeurUid")||"").trim()
+      : currentUser.uid;
+
+    if(!titre||!classeId||!professeurUid||!date||!heureDebut||!heureFin){
+      return toast("Remplissez tous les champs obligatoires.",true);
+    }
+
+    if(heureFin<=heureDebut){
+      return toast("L’heure de fin doit être après l’heure de début.",true);
+    }
+
+    const btn=$("scheduleSave");
+    btn.disabled=true;
+    btn.textContent="Enregistrement…";
+
+    const collectionName=isCourse?"horaires_cours":"horaires_examens";
+
+    const data={
+      titre,
+      classeId,
+      matiereId,
+      professeurUid,
+      date,
+      heureDebut,
+      heureFin,
+      salle,
+      type:isCourse?"cours":"examen",
+      updatedAt:stamp()
+    };
+
+    try{
+      if(record){
+        if(!scheduleCanManage(page,record)){
+          throw new Error("Modification non autorisée.");
+        }
+
+        await updateDoc(doc(db,collectionName,record.id),data);
+      }else{
+        data.createdBy=currentUser.uid;
+        data.createdAt=stamp();
+        await addDoc(collection(db,collectionName),data);
+      }
+
+      toast("Horaire enregistré.");
+      await renderSchedule(page);
+    }catch(err){
+      console.error(err);
+      toast(friendly(err),true);
+      btn.disabled=false;
+      btn.textContent="Enregistrer";
+    }
+  };
+}
+
+async function scheduleDelete(page,id){
+  const isCourse=page==="horaire_cours";
+  const collectionName=isCourse?"horaires_cours":"horaires_examens";
+  const cache=window.cflpScheduleCache[page];
+  const record=cache?.records.find(r=>r.id===id);
+
+  if(!record)return toast("Horaire introuvable.",true);
+
+  if(!scheduleCanManage(page,record)){
+    return toast("Vous n’avez pas l’autorisation de supprimer cet horaire.",true);
+  }
+
+  if(!confirm("Voulez-vous vraiment supprimer cet horaire ?"))return;
+
+  try{
+    await deleteDoc(doc(db,collectionName,id));
+    toast("Horaire supprimé.");
+    await renderSchedule(page);
+  }catch(e){
+    console.error(e);
+    toast(friendly(e),true);
+  }
+}  
 /* Gestion des utilisateurs : professeurs, élèves et classes affectées */
 async function renderUsers(){
   if(!isAdmin()) return;
