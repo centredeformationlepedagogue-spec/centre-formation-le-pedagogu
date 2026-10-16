@@ -972,30 +972,298 @@ window.onload=function(){
   }
 }
   
-/* Gestion des comptes : informations personnelles, rôle et statut */
+/* Gestion des utilisateurs : professeurs, élèves et classes affectées */
 async function renderUsers(){
-if(!isAdmin())return;
-const snap=await getDocs(collection(db,"users")),users=snap.docs.map(d=>({id:d.id,...d.data()}));
-$("pageContent").innerHTML=`<div class="card"><h3>Gestion des utilisateurs</h3><p class="muted">Consultez les informations, approuvez les comptes et attribuez les rôles.</p><div class="table-wrap"><table><thead><tr><th>E-mail</th><th>Nom et prénom</th><th>Téléphone</th><th>Niveau / spécialité</th><th>Classe / filière</th><th>Rôle</th><th>Statut</th><th>Actions</th></tr></thead><tbody>${users.map(u=>`<tr>
-<td>${esc(u.email)}</td>
-<td>${esc([u.nom,u.prenom].filter(Boolean).join(" "))}</td>
-<td>${esc(u.telephone||"—")}</td>
-<td>${esc(u.role==="professeur"?(u.specialite||"—"):(u.niveau||"—"))}</td>
-<td>${esc(u.classeId||"—")}</td>
-<td><select data-role="${esc(u.id)}"><option value="eleve" ${u.role==="eleve"?"selected":""}>Élève</option><option value="etudiant" ${u.role==="etudiant"?"selected":""}>Étudiant</option><option value="professeur" ${u.role==="professeur"?"selected":""}>Professeur</option>${u.role==="administrateur"?'<option value="administrateur" selected>Administrateur</option>':""}</select></td>
-<td><select data-status="${esc(u.id)}"><option value="attente" ${u.status==="attente"?"selected":""}>En attente</option><option value="accepted" ${u.status==="accepted"?"selected":""}>Accepté</option><option value="refuse" ${u.status==="refuse"?"selected":""}>Refusé</option></select></td>
-<td><div class="actions"><button class="btn success" data-save-user="${esc(u.id)}">Enregistrer</button>${u.id!==currentUser.uid?`<button class="btn danger" data-del-user="${esc(u.id)}">Supprimer profil</button>`:""}</div></td>
-</tr>`).join("")||'<tr><td colspan="8">Aucun utilisateur.</td></tr>'}</tbody></table></div></div>`;
-$("pageContent").querySelectorAll("[data-save-user]").forEach(b=>b.onclick=async()=>{
-const id=b.dataset.saveUser,role=$("pageContent").querySelector(`[data-role="${CSS.escape(id)}"]`).value,status=$("pageContent").querySelector(`[data-status="${CSS.escape(id)}"]`).value;
-if(id===currentUser.uid&&(role!=="administrateur"||status!=="accepted"))return toast("Vous ne pouvez pas retirer votre propre accès ici.",true);
-if(role==="administrateur"&&id!==currentUser.uid)return toast("Le rôle administrateur ne peut pas être attribué depuis cette page.",true);
-try{await updateDoc(doc(db,"users",id),{role,status,updatedAt:stamp()});toast("Utilisateur mis à jour.");await renderUsers()}
-catch(e){toast(friendly(e),true)}
-});
-$("pageContent").querySelectorAll("[data-del-user]").forEach(b=>b.onclick=async()=>{if(confirm("Supprimer le profil Firestore ? Le compte Auth ne sera pas supprimé."))try{await deleteDoc(doc(db,"users",b.dataset.delUser));toast("Profil supprimé.");await renderUsers()}catch(e){toast(friendly(e),true)}})
-}
+  if(!isAdmin()) return;
 
+  try {
+    const [usersSnap, classesSnap, affectationsSnap, inscriptionsSnap,
+           etudiantsSnap, elevesSnap] = await Promise.all([
+      getDocs(collection(db,"users")),
+      getDocs(collection(db,"classes")),
+      getDocs(collection(db,"affectations")),
+      getDocs(collection(db,"inscriptions")),
+      getDocs(collection(db,"etudiants")),
+      getDocs(collection(db,"eleves"))
+    ]);
+
+    const users = usersSnap.docs.map(d=>({id:d.id,...d.data()}));
+    const classes = classesSnap.docs.map(d=>({id:d.id,...d.data()}));
+    const affectations = affectationsSnap.docs.map(d=>({id:d.id,...d.data()}));
+    const inscriptions = inscriptionsSnap.docs.map(d=>({id:d.id,...d.data()}));
+    const etudiants = etudiantsSnap.docs.map(d=>({id:d.id,...d.data()}));
+    const eleves = elevesSnap.docs.map(d=>({id:d.id,...d.data()}));
+
+    const classLabel = id => {
+      if(!id) return "";
+      const c = classes.find(x =>
+        x.id===id || x.code===id || x.nom===id
+      );
+      return c ? (c.nom || c.code || c.niveau || c.id) : String(id);
+    };
+
+    const profileIds = u => {
+      const email = String(u.email||"").toLowerCase().trim();
+      const linked = [...etudiants,...eleves].filter(p =>
+        (email && String(p.email||"").toLowerCase().trim()===email) ||
+        p.uid===u.id ||
+        p.userUid===u.id ||
+        p.userId===u.id
+      );
+      return [...new Set([u.id,...linked.map(p=>p.id)])];
+    };
+
+    const assignedClasses = u => {
+      const ids = profileIds(u);
+      let result = [];
+
+      if(u.role==="professeur"){
+        affectations
+          .filter(a=>ids.includes(a.professeurUid))
+          .forEach(a=>{
+            const label = classLabel(a.classeId);
+            if(label) result.push(label);
+          });
+      }
+
+      if(["eleve","etudiant"].includes(u.role)){
+        const linkedProfiles = [...etudiants,...eleves].filter(p =>
+          ids.includes(p.id)
+        );
+
+        linkedProfiles.forEach(p=>{
+          if(p.classeId) result.push(classLabel(p.classeId));
+        });
+
+        inscriptions
+          .filter(i=>
+            ids.includes(i.eleveId) ||
+            ids.includes(i.etudiantId)
+          )
+          .forEach(i=>{
+            if(i.classeId) result.push(classLabel(i.classeId));
+          });
+
+        if(u.classeId) result.push(classLabel(u.classeId));
+      }
+
+      return [...new Set(result.filter(Boolean))];
+    };
+
+    const roleLabel = role => ({
+      administrateur:"Administrateur",
+      professeur:"Professeur",
+      eleve:"Élève",
+      etudiant:"Étudiant"
+    })[role] || role || "Non défini";
+
+    const statusLabel = status => ({
+      accepted:"Accepté",
+      attente:"En attente",
+      refuse:"Refusé"
+    })[status] || status || "Non défini";
+
+    const userName = u =>
+      [u.nom,u.prenom].filter(Boolean).join(" ") || "Non renseigné";
+
+    $("pageContent").innerHTML = `
+      <div class="card">
+        <h3>Gestion des utilisateurs et des classes</h3>
+        <p class="muted">
+          Consultez les professeurs, les élèves et les classes auxquelles
+          ils sont affectés.
+        </p>
+
+        <div class="form-grid">
+          <div class="field">
+            <label>Rechercher un utilisateur</label>
+            <input id="usersSearch"
+              placeholder="Nom, e-mail, téléphone ou classe...">
+          </div>
+
+          <div class="field">
+            <label>Filtrer par rôle</label>
+            <select id="usersRoleFilter">
+              <option value="tous">Tous les utilisateurs</option>
+              <option value="professeur">Professeurs</option>
+              <option value="eleves">Élèves et étudiants</option>
+              <option value="administrateur">Administrateurs</option>
+            </select>
+          </div>
+        </div>
+
+        <p class="muted" id="usersCount"></p>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Nom et prénom</th>
+                <th>E-mail</th>
+                <th>Téléphone</th>
+                <th>Rôle</th>
+                <th>Classe(s) affectée(s)</th>
+                <th>Niveau / spécialité</th>
+                <th>Statut</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+
+            <tbody id="usersTableBody">
+              ${users.map(u=>{
+                const assigned = assignedClasses(u);
+                const classesText = assigned.length
+                  ? assigned.join(", ")
+                  : (u.classeId ? classLabel(u.classeId) : "Non affecté");
+
+                const searchText = [
+                  userName(u),u.email,u.telephone,
+                  roleLabel(u.role),classesText,
+                  u.niveau,u.specialite,statusLabel(u.status)
+                ].join(" ").toLowerCase();
+
+                return `
+                  <tr
+                    data-user-row="${esc(u.id)}"
+                    data-user-role="${esc(u.role||"")}"
+                    data-user-search="${esc(searchText)}">
+
+                    <td>${esc(userName(u))}</td>
+                    <td>${esc(u.email||"—")}</td>
+                    <td>${esc(u.telephone||"—")}</td>
+                    <td>${esc(roleLabel(u.role))}</td>
+                    <td>${esc(classesText)}</td>
+                    <td>${esc(
+                      u.role==="professeur"
+                        ? (u.specialite||"—")
+                        : (u.niveau||"—")
+                    )}</td>
+
+                    <td>
+                      <select data-status="${esc(u.id)}">
+                        <option value="attente" ${u.status==="attente"?"selected":""}>En attente</option>
+                        <option value="accepted" ${u.status==="accepted"?"selected":""}>Accepté</option>
+                        <option value="refuse" ${u.status==="refuse"?"selected":""}>Refusé</option>
+                      </select>
+                    </td>
+
+                    <td>
+                      <div class="actions">
+                        <select data-role="${esc(u.id)}">
+                          <option value="eleve" ${u.role==="eleve"?"selected":""}>Élève</option>
+                          <option value="etudiant" ${u.role==="etudiant"?"selected":""}>Étudiant</option>
+                          <option value="professeur" ${u.role==="professeur"?"selected":""}>Professeur</option>
+                          ${u.role==="administrateur"
+                            ? '<option value="administrateur" selected>Administrateur</option>'
+                            : ""}
+                        </select>
+
+                        <button class="btn success"
+                          data-save-user="${esc(u.id)}">
+                          Enregistrer
+                        </button>
+
+                        ${u.id!==currentUser.uid
+                          ? `<button class="btn danger"
+                              data-del-user="${esc(u.id)}">
+                              Supprimer profil
+                            </button>`
+                          : ""}
+                      </div>
+                    </td>
+                  </tr>
+                `;
+              }).join("") ||
+              '<tr><td colspan="8">Aucun utilisateur.</td></tr>'}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `;
+
+    const filterUsers = () => {
+      const search = $("usersSearch").value.toLowerCase().trim();
+      const roleFilter = $("usersRoleFilter").value;
+      let visible = 0;
+
+      $("pageContent").querySelectorAll("[data-user-row]").forEach(row=>{
+        const role = row.dataset.userRole;
+        const text = row.dataset.userSearch || "";
+
+        const matchesSearch = text.includes(search);
+        const matchesRole =
+          roleFilter==="tous" ||
+          role===roleFilter ||
+          (roleFilter==="eleves" &&
+            ["eleve","etudiant"].includes(role));
+
+        const show = matchesSearch && matchesRole;
+        row.style.display = show ? "" : "none";
+        if(show) visible++;
+      });
+
+      $("usersCount").textContent =
+        visible + " utilisateur(s) affiché(s) sur " + users.length;
+    };
+
+    $("usersSearch").oninput = filterUsers;
+    $("usersRoleFilter").onchange = filterUsers;
+    filterUsers();
+
+    $("pageContent").querySelectorAll("[data-save-user]")
+      .forEach(b=>b.onclick=async()=>{
+        const id = b.dataset.saveUser;
+        const role = $("pageContent")
+          .querySelector(`[data-role="${CSS.escape(id)}"]`).value;
+        const status = $("pageContent")
+          .querySelector(`[data-status="${CSS.escape(id)}"]`).value;
+
+        if(id===currentUser.uid &&
+          (role!=="administrateur" || status!=="accepted")){
+          return toast(
+            "Vous ne pouvez pas retirer votre propre accès ici.",true
+          );
+        }
+
+        if(role==="administrateur" && id!==currentUser.uid){
+          return toast(
+            "Le rôle administrateur ne peut pas être attribué depuis cette page.",true
+          );
+        }
+
+        try{
+          await updateDoc(doc(db,"users",id),{
+            role,
+            status,
+            updatedAt:stamp()
+          });
+          toast("Utilisateur mis à jour.");
+          await renderUsers();
+        }catch(e){
+          toast(friendly(e),true);
+        }
+      });
+
+    $("pageContent").querySelectorAll("[data-del-user]")
+      .forEach(b=>b.onclick=async()=>{
+        if(confirm(
+          "Supprimer le profil Firestore ? Le compte Auth ne sera pas supprimé."
+        )){
+          try{
+            await deleteDoc(doc(db,"users",b.dataset.delUser));
+            toast("Profil supprimé.");
+            await renderUsers();
+          }catch(e){
+            toast(friendly(e),true);
+          }
+        }
+      });
+
+  }catch(e){
+    console.error("Erreur Gestion des utilisateurs :",e);
+    toast("Impossible de charger les utilisateurs et les affectations. Vérifiez les règles Firestore.",true);
+  }
+}
 async function renderBackup(){
 if(!isAdmin())return;
 $("pageContent").innerHTML='<div class="card"><h3>Sauvegarde JSON</h3><p>Exporter les collections Firestore accessibles à votre compte.</p><button id="exportBtn" class="btn primary">Exporter les données</button><div class="notice">Le fichier peut contenir des données personnelles. Conservez-le en sécurité.</div></div>';
