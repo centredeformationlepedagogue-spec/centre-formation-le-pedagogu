@@ -129,7 +129,6 @@ googleProvider.setCustomParameters({prompt:"select_account"});
 const $=id=>document.getElementById(id),stamp=()=>serverTimestamp();
 let currentUser=null,currentProfile=null,currentPage="accueil",installPrompt=null,timerInterval=null,activeExam=null,activeAttempt=null,answerCache={},saveQueue=Promise.resolve();
 
-// Unsubscribers pou onSnapshot sèlman
 let activeUnsubscribers = [];
 function clearUnsubscribers(){
   activeUnsubscribers.forEach(unsub=>{try{unsub()}catch(e){}});
@@ -251,7 +250,15 @@ btn.disabled=false;
 }
 });
 
-$("googleBtn").addEventListener("click",async()=>{try{await signInWithPopup(auth,googleProvider)}catch(e){authMessage(friendly(e),"error")}});
+$("googleBtn").addEventListener("click",async()=>{
+try{
+  authMessage("Connexion Google en cours…");
+  await signInWithPopup(auth,googleProvider);
+}catch(e){
+  authMessage(friendly(e),"error");
+}
+});
+
 $("resetBtn").addEventListener("click",async()=>{
 const email=$("loginEmail").value.trim();
 if(!email)return authMessage("Saisissez votre adresse e-mail.","error");
@@ -629,9 +636,6 @@ toast("Note enregistrée.");await renderNotesCours();
 };
 }
 
-/* =====================================================
-   BULLETIN SCOLAIRE — Senkronizasyon Otomatik ak onSnapshot
-   ===================================================== */
 async function renderBulletin(){
   if(!["eleve","etudiant"].includes(currentProfile?.role)){
     $("pageContent").innerHTML=`
@@ -794,9 +798,6 @@ async function renderBulletin(){
   activeUnsubscribers.push(unsub);
 }
 
-/* =====================================================
-   HORAIRES CFLP — Senkronizasyon Otomatik ak onSnapshot
-   ===================================================== */
 window.cflpScheduleState = window.cflpScheduleState || {};
 window.cflpScheduleCache = window.cflpScheduleCache || {};
 
@@ -837,7 +838,6 @@ async function renderSchedule(page){
   $("pageContent").innerHTML=`<div class="card"><h3>${esc(title)}</h3><p class="muted">Synchronisation en direct…</p></div>`;
 
   try{
-    // Nou chaje classes ak matieres yon sèl fwa anvan, epi nou itilize onSnapshot sou koleksyon orè a
     const [classSnap,subjectSnap]=await Promise.all([
       getDocs(collection(db,"classes")),
       getDocs(collection(db,"matieres"))
@@ -859,13 +859,12 @@ async function renderSchedule(page){
       window.cflpScheduleState[page]={view:"table",month:new Date().getMonth(),year:new Date().getFullYear()};
     }
 
-    // ONEXACT onSnapshot pou orè yo
     const unsub=onSnapshot(collection(db,collectionName),(snapshot)=>{
       window.cflpScheduleCache[page].records=snapshot.docs.map(d=>({id:d.id,...d.data()}));
       drawSchedulePage(page);
     },(err)=>{
       console.error("Erreur onSnapshot orè :",err);
-      toast("Erreur de synchronisation des orè : "+friendly(err),true);
+      toast("Erreur de synchronisation des horaires : "+friendly(err),true);
     });
 
     activeUnsubscribers.push(unsub);
