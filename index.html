@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -19,13 +20,39 @@
 .main{flex:1;min-width:0;padding:22px}.page-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px}.page-head h2{margin:0;color:var(--b)}.card,.stat,.dash-card{background:white;border:1px solid var(--bd);border-radius:12px;padding:16px;margin-bottom:16px}.card h3,.dash-card h3{color:var(--b);margin-top:0}.stats-grid,.dashboard-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:18px}.stat small{color:var(--mut)}.stat strong{display:block;font-size:27px;color:var(--b);margin-top:8px}.dash-card{display:flex;flex-direction:column;gap:9px}.dash-card p{color:var(--mut);font-size:14px;line-height:1.5;flex:1}.table-wrap{overflow-x:auto}table{border-collapse:collapse;width:100%;background:white}th,td{border-bottom:1px solid var(--bd);padding:10px;text-align:left;font-size:13px;overflow-wrap:anywhere}th{background:#edf3fc;color:var(--b)}.actions{display:flex;gap:6px;flex-wrap:wrap}.actions .btn{font-size:12px;padding:7px 9px}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.full{grid-column:1/-1}.muted{color:var(--mut)}.welcome{background:linear-gradient(120deg,#0f3d91,#2766ba);color:white}.welcome h3{color:white}.welcome p{line-height:1.6}.badge{display:inline-block;padding:4px 8px;border-radius:20px;font-size:11px;background:#dcfce7;color:#166534}.wait{background:#fef3c7;color:#92400e}
 .exam-question,.course-note{padding:15px;border:1px solid var(--bd);border-radius:10px;margin:12px 0;background:#fff}.exam-question h4{color:var(--b);margin:0 0 10px}.exam-option{display:flex;align-items:center;gap:8px;padding:8px;background:#f8faff;margin:5px 0;border-radius:6px}.exam-option input{width:auto}.exam-option span{flex:1}.timer{font-size:26px;text-align:center;padding:13px;background:#edf3fc;border:2px solid var(--bd);border-radius:10px;position:sticky;top:70px;z-index:3}.timer.warning{background:#fee2e2;color:#991b1b}.course-text{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.7}.course-note img{max-width:100%;max-height:600px;display:block;margin:12px auto}#toast{position:fixed;bottom:18px;right:18px;background:#17243a;color:white;padding:13px 16px;border-radius:8px;z-index:99;max-width:90%}footer{text-align:center;padding:20px;color:var(--mut);font-size:12px}
 @media(max-width:800px){.layout{display:block}.sidebar{width:100%;display:flex;flex-wrap:wrap;gap:3px}.sidebar-title{width:100%}.nav-btn{width:auto;flex:1 1 130px;font-size:13px}.main{padding:12px}.form-grid{grid-template-columns:1fr}.full{grid-column:auto}.topbar{position:static}.timer{top:5px}}
-#pageContent .table-wrap:has(th:nth-child(8)) {max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+/* Gestion des utilisateurs : affichage compact */
+#pageContent .table-wrap:has(th:nth-child(8)) {
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 #pageContent .table-wrap:has(th:nth-child(8)) th,
-#pageContent .table-wrap:has(th:nth-child(8)) td {padding:5px 6px;font-size:11px;line-height:1.3;vertical-align:middle}
-#pageContent .table-wrap:has(th:nth-child(8)) th {white-space:nowrap}
-#pageContent .table-wrap:has(th:nth-child(8)) .actions {gap:4px}
-#pageContent .table-wrap:has(th:nth-child(8)) .actions .btn {font-size:10px;padding:5px 6px}
-#pageContent .table-wrap:has(th:nth-child(8)) select {min-width:95px;padding:5px;font-size:11px}
+#pageContent .table-wrap:has(th:nth-child(8)) td {
+  padding: 5px 6px;
+  font-size: 11px;
+  line-height: 1.3;
+  vertical-align: middle;
+}
+
+#pageContent .table-wrap:has(th:nth-child(8)) th {
+  white-space: nowrap;
+}
+
+#pageContent .table-wrap:has(th:nth-child(8)) .actions {
+  gap: 4px;
+}
+
+#pageContent .table-wrap:has(th:nth-child(8)) .actions .btn {
+  font-size: 10px;
+  padding: 5px 6px;
+}
+
+#pageContent .table-wrap:has(th:nth-child(8)) select {
+  min-width: 95px;
+  padding: 5px;
+  font-size: 11px;
+}
 </style>
 </head>
 <body>
@@ -112,7 +139,7 @@
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import{getAuth,onAuthStateChanged,signInWithEmailAndPassword,createUserWithEmailAndPassword,signInWithPopup,GoogleAuthProvider,signOut,sendEmailVerification,sendPasswordResetEmail}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import{getFirestore,doc,getDoc,setDoc,updateDoc,deleteDoc,collection,getDocs,addDoc,serverTimestamp,query,where,onSnapshot}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import{getFirestore,doc,getDoc,setDoc,updateDoc,deleteDoc,collection,getDocs,addDoc,serverTimestamp,query,where}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig={
 apiKey:"AIzaSyAhrtcVaEZ7oU-p4Ihzl0APX2ccXKi4jBU",
@@ -129,25 +156,17 @@ googleProvider.setCustomParameters({prompt:"select_account"});
 const $=id=>document.getElementById(id),stamp=()=>serverTimestamp();
 let currentUser=null,currentProfile=null,currentPage="accueil",installPrompt=null,timerInterval=null,activeExam=null,activeAttempt=null,answerCache={},saveQueue=Promise.resolve();
 
-// Unsubscribers pou onSnapshot sèlman
-let activeUnsubscribers = [];
-function clearUnsubscribers(){
-  activeUnsubscribers.forEach(unsub=>{try{unsub()}catch(e){}});
-  activeUnsubscribers=[];
-}
-
 function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function toast(s,bad=false){const t=$("toast");t.textContent=s;t.classList.remove("hidden");t.style.background=bad?"#a51d1d":"#17243a";clearTimeout(t._timer);t._timer=setTimeout(()=>t.classList.add("hidden"),4500)}
 function authMessage(s,type="info"){$("authMessage").innerHTML=`<div class="message ${type==="error"?"error":type==="success"?"success":""}">${esc(s)}</div>`}
 function friendly(e){const c=e?.code||"";const m={"auth/invalid-credential":"E-mail ou mot de passe incorrect.","auth/invalid-email":"Adresse e-mail invalide.","auth/email-already-in-use":"Cette adresse e-mail possède déjà un compte.","auth/weak-password":"Le mot de passe doit contenir au moins 6 caractères.","auth/unauthorized-domain":"Ce domaine n'est pas autorisé dans Firebase Authentication.","auth/popup-closed-by-user":"La fenêtre Google a été fermée.","permission-denied":"Accès refusé par les règles Firestore.","unavailable":"Service indisponible. Réessayez."};return m[c]||e?.message||"Une erreur est survenue."}
 function isAdmin(){return!!currentUser&&((currentUser.email||"").toLowerCase()===ADMIN_EMAIL||(currentProfile?.role==="administrateur"&&currentProfile?.status==="accepted"))}
-function isStudent(){return ["eleve","etudiant"].includes(String(currentProfile?.role||"").toLowerCase());}
-function isProfessor(){return String(currentProfile?.role||"").toLowerCase()==="professeur";}
+function isStudent(){  return ["eleve","etudiant"].includes(  String(currentProfile?.role||"").toLowerCase());}
 function approved(){return!!currentProfile&&(isAdmin()||(currentProfile.status==="accepted"&&["professeur","eleve","etudiant"].includes(currentProfile.role)))}
 function roleName(r){return({administrateur:"Administrateur",professeur:"Professeur",eleve:"Élève",etudiant:"Étudiant"})[r]||r||"Utilisateur"}
 function stopTimer(){if(timerInterval){clearInterval(timerInterval);timerInterval=null}}
 
-async function ensureProfile(user){
+  async function ensureProfile(user){
 const ref=doc(db,"users",user.uid),snap=await getDoc(ref),email=(user.email||"").toLowerCase(),admin=email===ADMIN_EMAIL;
 if(!snap.exists()){
 const p={uid:user.uid,email:user.email||"",role:admin?"administrateur":"eleve",status:admin?"accepted":"attente",createdAt:stamp(),updatedAt:stamp()};
@@ -175,7 +194,7 @@ buildNavigation();await openPage("accueil");
 }catch(e){console.error(e);await signOut(auth).catch(()=>{});currentUser=null;currentProfile=null;authMessage("Impossible de charger le profil : "+friendly(e),"error")}
 finally{loginLock=false}
 }
-onAuthStateChanged(auth,u=>{if(!u){stopTimer();clearUnsubscribers();currentUser=null;currentProfile=null;$("app").classList.add("hidden");$("authScreen").classList.remove("hidden")}else completeLogin(u)});
+onAuthStateChanged(auth,u=>{if(!u){stopTimer();currentUser=null;currentProfile=null;$("app").classList.add("hidden");$("authScreen").classList.remove("hidden")}else completeLogin(u)});
 
 $("loginForm").addEventListener("submit",async e=>{
 e.preventDefault();
@@ -183,6 +202,7 @@ try{authMessage("Connexion en cours…");await signInWithEmailAndPassword(auth,$
 catch(err){authMessage(friendly(err),"error")}
 });
 
+/* Inscription avec informations supplémentaires */
 let registrationVisible=false;
 let registrationBusy=false;
 
@@ -201,6 +221,7 @@ updateRegistrationFields();
 
 $("registerBtn").addEventListener("click",async()=>{
 const btn=$("registerBtn");
+
 if(!registrationVisible){
 registrationVisible=true;
 $("registrationFields").classList.remove("hidden");
@@ -209,7 +230,9 @@ btn.textContent="Valider et créer mon compte";
 $("regNom").focus();
 return;
 }
+
 if(registrationBusy)return;
+
 const email=$("loginEmail").value.trim();
 const password=$("loginPassword").value;
 const role=$("regRole").value;
@@ -220,23 +243,59 @@ const niveau=$("regNiveau").value;
 const classeId=$("regClasse").value.trim();
 const specialite=$("regSpecialite").value.trim();
 
-if(!email||!password){authMessage("Saisissez votre adresse e-mail et votre mot de passe.","error");return;}
-if(password.length<6){authMessage("Le mot de passe doit contenir au moins 6 caractères.","error");return;}
-if(!nom||!prenom||!telephone){authMessage("Veuillez remplir le nom, le prénom et le téléphone.","error");return;}
-if(!["eleve","etudiant","professeur"].includes(role)){authMessage("Type de compte invalide.","error");return;}
-if(role==="professeur"&&!specialite){authMessage("Veuillez indiquer votre spécialité ou matière enseignée.","error");return;}
-if(role!=="professeur"&&(!niveau||!classeId)){authMessage("Veuillez indiquer votre niveau d'études et votre classe ou filière.","error");return;}
+if(!email||!password){
+authMessage("Saisissez votre adresse e-mail et votre mot de passe.","error");
+return;
+}
+if(password.length<6){
+authMessage("Le mot de passe doit contenir au moins 6 caractères.","error");
+return;
+}
+if(!nom||!prenom||!telephone){
+authMessage("Veuillez remplir le nom, le prénom et le téléphone.","error");
+return;
+}
+if(!["eleve","etudiant","professeur"].includes(role)){
+authMessage("Type de compte invalide.","error");
+return;
+}
+if(role==="professeur"&&!specialite){
+authMessage("Veuillez indiquer votre spécialité ou matière enseignée.","error");
+return;
+}
+if(role!=="professeur"&&(!niveau||!classeId)){
+authMessage("Veuillez indiquer votre niveau d'études et votre classe ou filière.","error");
+return;
+}
 
 registrationBusy=true;
 btn.disabled=true;
+
 try{
 authMessage("Création du compte en cours…");
 const credential=await createUserWithEmailAndPassword(auth,email,password);
-const profileData={uid:credential.user.uid,email:credential.user.email||email,nom,prenom,telephone,role,status:"attente",updatedAt:stamp()};
-if(role==="professeur"){profileData.specialite=specialite;}else{profileData.niveau=niveau;profileData.classeId=classeId;}
-await setDoc(doc(db,"users",credential.user.uid),{...profileData,createdAt:stamp()},{merge:true});
+const profileData={
+uid:credential.user.uid,
+email:credential.user.email||email,
+nom,prenom,telephone,role,
+status:"attente",
+updatedAt:stamp()
+};
+if(role==="professeur"){
+profileData.specialite=specialite;
+}else{
+profileData.niveau=niveau;
+profileData.classeId=classeId;
+}
+
+await setDoc(doc(db,"users",credential.user.uid),{
+...profileData,
+createdAt:stamp()
+},{merge:true});
+
 await sendEmailVerification(credential.user);
 await signOut(auth);
+
 $("loginPassword").value="";
 $("registrationFields").classList.add("hidden");
 registrationVisible=false;
@@ -251,14 +310,17 @@ btn.disabled=false;
 }
 });
 
-$("googleBtn").addEventListener("click",async()=>{try{await signInWithPopup(auth,googleProvider)}catch(e){authMessage(friendly(e),"error")}});
+$("googleBtn").addEventListener("click",async()=>{
+try{await signInWithPopup(auth,googleProvider)}
+catch(e){authMessage(friendly(e),"error")}
+});
 $("resetBtn").addEventListener("click",async()=>{
 const email=$("loginEmail").value.trim();
 if(!email)return authMessage("Saisissez votre adresse e-mail.","error");
 try{await sendPasswordResetEmail(auth,email);authMessage("Si le compte existe, un e-mail de réinitialisation sera envoyé.","success")}
 catch(e){authMessage(friendly(e),"error")}
 });
-$("logoutBtn").addEventListener("click",async()=>{if(confirm("Voulez-vous vous déconnecter ?")){stopTimer();clearUnsubscribers();await signOut(auth)}});
+$("logoutBtn").addEventListener("click",async()=>{if(confirm("Voulez-vous vous déconnecter ?")){stopTimer();await signOut(auth)}});
 $("refreshBtn").addEventListener("click",()=>openPage(currentPage));
 
 const modules=[
@@ -283,10 +345,10 @@ const modules=[
 {id:"configuration",title:"Configuration",collection:"configuration",fields:[["nom","Nom"],["valeur","Valeur"],["description","Description"]]}
 ];
 const navItems=[
-["accueil","🏠 Accueil"],["etudiants","🎓 Étudiants"],["eleves","👨‍🎓 Élèves"],["professeurs","👨‍🏫 Professeurs"],["departements","🏢 Départements"],["filieres","📚 Filières"],["classes","🏫 Classes"],["affectations","🔗 Affectations"],["inscriptions","📋 Inscriptions"],["matieres","📖 Matières"],["cours","📝 Cours"],
+["accueil","🏠 Accueil"],["etudiants","🎓 Étudiants"],["eleves","👨‍🎓 Élèves"],["professeurs","👨‍🏫 Professeurs"],["departements","🏢 Départements"],["filieres","📚 Filières"],["classes","🏫 Classes"],["affectations","🔗 Affectations"],["inscriptions","📋 Inscriptions"],["matieres","📖 Matières"],  ["cours","📝 Cours"],
 ["horaire_cours","🗓️ Horaire des cours"],
 ["horaire_examens","📝 Horaire des examens"],
-["annees","📅 Années académiques"],["devoirs","📑 Devoirs"],["examens","⏱️ Examens"],["notes_cours","📒 Notes de cours"],["remises","📥 Remises / Corrections"],["bulletin","🎓 Mon bulletin"],["resultats","📊 Résultats"],["videos","🎬 Vidéos"],["documents","📄 Documents"],["statistiques","📈 Statistiques"],["configuration","⚙️ Configuration"]
+["annees","📅 Années académiques"],["devoirs","📑 Devoirs"],["examens","⏱️ Examens"],["notes_cours","📒 Notes de cours"],["remises","📥 Remises / Corrections"],["bulletin","🎓 Mon bulletin"], ["resultats","📊 Résultats"],["videos","🎬 Vidéos"],["documents","📄 Documents"],["statistiques","📈 Statistiques"],["configuration","⚙️ Configuration"]
 ];
 const studentPages=["accueil","devoirs","examens","notes_cours","remises","resultats","bulletin","videos","documents","horaire_cours","horaire_examens"];
 const teacherPages=studentPages.filter(p=>p!=="bulletin");
@@ -311,7 +373,7 @@ if(!isAdmin()&&!(currentProfile?.role==="professeur"?teacherPages:studentPages).
 toast("Accès non autorisé.",true);return;
 }
 try{
-stopTimer();clearUnsubscribers();currentPage=page;buildNavigation();
+stopTimer();currentPage=page;buildNavigation();
 const mod=modules.find(m=>m.id===page);
 const titles={accueil:"Tableau de bord",examens:"Examens chronométrés",notes_cours:"Notes de cours",utilisateurs:"Gestion des utilisateurs",sauvegarde:"Sauvegarde",horaire_cours:"Horaire des cours",horaire_examens:"Horaire des examens"};
 $("pageTitle").textContent=titles[page]||mod?.title||page;
@@ -319,9 +381,9 @@ $("pageContent").innerHTML='<div class="card">Chargement…</div>';
 if(page==="accueil")return await renderDashboard();
 if(page==="examens")return await renderExams();
 if(page==="notes_cours")return await renderNotesCours();
-if(page==="horaire_cours")return await renderSchedule(page);
+ if(page==="horaire_cours")return await renderSchedule(page);
 if(page==="horaire_examens")return await renderSchedule(page);
-if(page==="bulletin")return await renderBulletin();
+  if(page==="bulletin")return await renderBulletin();
 if(page==="utilisateurs")return await renderUsers();
 if(page==="sauvegarde")return await renderBackup();
 if(mod)return await renderModule(mod);
@@ -542,6 +604,7 @@ $("backExams").onclick=()=>openPage("examens")
 }catch(e){console.error(e);if($("submitExam"))$("submitExam").disabled=false;toast("La remise a échoué : "+friendly(e),true)}
 }
 
+/* Notes de cours : texte et photo */
 async function compressPhoto(file){
 if(!file||!file.type.startsWith("image/"))throw Error("Choisissez une image valide.");
 if(file.size>12*1024*1024)throw Error("Photo trop grande : choisissez une image de moins de 12 Mo.");
@@ -562,7 +625,7 @@ else{
 const cl=currentProfile.classeId||(currentProfile.classIds||[])[0];if(!cl){$("pageContent").innerHTML='<div class="card">Votre compte n’est pas encore associé à une classe. Contactez l’administrateur.</div>';return}
 notes=(await getDocs(query(collection(db,"notes_cours"),where("classeId","==",cl)))).docs.map(d=>({id:d.id,...d.data()}))
 }
-$("pageContent").innerHTML=`<div class="card"><div class="page-head"><div><h3>Notes de cours</h3><p class="muted">${teacher?"Publier du texte ou une photo de cours.":"Lire et copier les cours."}</p></div>${teacher?'<button id="newNote" class="btn primary">＋ Ajouter une note</button>':""}</div><div id="noteFormArea"></div>${notes.map(n=>`<article class="course-note"><h3>${esc(n.titre)}</h3><p class="muted">Classe : ${esc(n.classeId)} ·${esc(n.matiereId||"")}</p><div class="course-text" id="noteText${esc(n.id)}">${esc(n.contenu\vert{}\vert{}"")}</div>${n.photoData?`<img src="${n.photoData}" alt="Photo du cours">`:""}<div class="actions"><button class="btn secondary" data-copy-note="${esc(n.id)}">Copier le texte</button>${teacher&&(isAdmin()||n.professeurUid===currentUser.uid)?`<button class="btn secondary" data-edit-note="${esc(n.id)}">Modifier</button><button class="btn danger" data-del-note="${esc(n.id)}">Supprimer</button>`:""}</div></article>`).join("")||'<div class="notice">Aucune note de cours.</div>'}</div>`;
+$("pageContent").innerHTML=`<div class="card"><div class="page-head"><div><h3>Notes de cours</h3><p class="muted">${teacher?"Publier du texte ou une photo de cours.":"Lire et copier les cours."}</p></div>${teacher?'<button id="newNote" class="btn primary">＋ Ajouter une note</button>':""}</div><div id="noteFormArea"></div>${notes.map(n=>`<article class="course-note"><h3>${esc(n.titre)}</h3><p class="muted">Classe : ${esc(n.classeId)} · ${esc(n.matiereId||"")}</p><div class="course-text" id="noteText${esc(n.id)}">${esc(n.contenu||"")}</div>${n.photoData?`<img src="${n.photoData}" alt="Photo du cours">`:""}<div class="actions"><button class="btn secondary" data-copy-note="${esc(n.id)}">Copier le texte</button>${teacher&&(isAdmin()||n.professeurUid===currentUser.uid)?`<button class="btn secondary" data-edit-note="${esc(n.id)}">Modifier</button><button class="btn danger" data-del-note="${esc(n.id)}">Supprimer</button>`:""}</div></article>`).join("")||'<div class="notice">Aucune note de cours.</div>'}</div>`;
 if(teacher)$("newNote").onclick=()=>noteForm(null);
 $("pageContent").querySelectorAll("[data-copy-note]").forEach(b=>b.onclick=async()=>{const t=$("noteText"+b.dataset.copyNote)?.innerText||"";try{await navigator.clipboard.writeText(t);toast("Texte copié.")}catch{toast("Sélectionnez le texte puis choisissez Copier.",true)}});
 $("pageContent").querySelectorAll("[data-edit-note]").forEach(b=>b.onclick=()=>noteForm(notes.find(n=>n.id===b.dataset.editNote)));
@@ -573,22 +636,48 @@ const area=$("noteFormArea");
 area.innerHTML=`<div class="card">
 <h3>${n?"Modifier":"Nouvelle"} note de cours</h3>
 <form id="noteForm">
-<div class="field"><label>Titre *</label><input name="titre" required value="${esc(n?.titre||"")}"></div>
-<div class="form-grid">
-<div class="field"><label>Code de classe *</label><input name="classeId" required value="${esc(n?.classeId||currentProfile.classeId||"")}"></div>
-<div class="field"><label>Matière</label><input name="matiereId" value="${esc(n?.matiereId||"")}"></div>
+<div class="field">
+<label>Titre *</label>
+<input name="titre" required value="${esc(n?.titre||"")}">
 </div>
-<div class="field"><label>Texte du cours</label><textarea name="contenu" maxlength="12000">${esc(n?.contenu||"")}</textarea></div>
-<div class="field"><label>Photo de page (facultatif)</label>
+
+<div class="form-grid">
+<div class="field">
+<label>Code de classe *</label>
+<input name="classeId" required value="${esc(n?.classeId||currentProfile.classeId||"")}">
+</div>
+<div class="field">
+<label>Matière</label>
+<input name="matiereId" value="${esc(n?.matiereId||"")}">
+</div>
+</div>
+
+<div class="field">
+<label>Texte du cours</label>
+<textarea name="contenu" maxlength="12000">${esc(n?.contenu||"")}</textarea>
+</div>
+
+<div class="field">
+<label>Photo de page (facultatif)</label>
+
 <div class="actions">
 <button class="btn primary" id="capturePhotoBtn" type="button">📸 Capture écran / Prendre une photo</button>
 <button class="btn secondary" id="choosePhotoBtn" type="button">🖼️ Choisir une photo</button>
 </div>
+
 <input id="capturePhotoInput" type="file" accept="image/*" capture="environment" hidden>
 <input id="choosePhotoInput" type="file" accept="image/*" hidden>
-<div id="photoPreview">${n?.photoData?`<img src="${n.photoData}" style="max-width:100%;max-height:200px">`:""}</div>
-<label><input id="removePhoto" type="checkbox" style="width:auto">Retirer la photo actuelle</label>
+
+<div id="photoPreview">
+${n?.photoData?`<img src="${n.photoData}" style="max-width:100%;max-height:200px">`:""}
 </div>
+
+<label>
+<input id="removePhoto" type="checkbox" style="width:auto">
+Retirer la photo actuelle
+</label>
+</div>
+
 <div class="actions">
 <button class="btn primary" id="saveNote" type="submit">Enregistrer</button>
 <button class="btn secondary" id="cancelNote" type="button">Annuler</button>
@@ -597,47 +686,90 @@ area.innerHTML=`<div class="card">
 </div>`;
 
 let photo="";
+
 $("cancelNote").onclick=()=>area.innerHTML="";
+
 $("capturePhotoBtn").onclick=()=>$("capturePhotoInput").click();
 $("choosePhotoBtn").onclick=()=>$("choosePhotoInput").click();
 
 async function handlePhoto(input){
-const file=input.files?.[0];if(!file)return;
+const file=input.files?.[0];
+if(!file)return;
 try{
 photo=await compressPhoto(file);
-$("photoPreview").innerHTML=`<img src="${photo}" alt="Aperçu de la photo du cours" style="max-width:100%;max-height:200px">`;
+$("photoPreview").innerHTML=
+`<img src="${photo}" alt="Aperçu de la photo du cours" style="max-width:100%;max-height:200px">`;
 $("removePhoto").checked=false;
 }catch(e){
-photo="";toast(e.message||"Impossible de charger cette image.",true);
-}finally{input.value="";}
+photo="";
+toast(e.message||"Impossible de charger cette image.",true);
+}finally{
+input.value="";
 }
+}
+
 $("capturePhotoInput").onchange=async()=>handlePhoto($("capturePhotoInput"));
 $("choosePhotoInput").onchange=async()=>handlePhoto($("choosePhotoInput"));
-$("removePhoto").onchange=()=>{if($("removePhoto").checked){photo="";$("photoPreview").innerHTML="";}};
+
+$("removePhoto").onchange=()=>{
+if($("removePhoto").checked){
+photo="";
+$("photoPreview").innerHTML="";
+}
+};
 
 $("noteForm").onsubmit=async e=>{
-e.preventDefault();const btn=$("saveNote");btn.disabled=true;
+e.preventDefault();
+const btn=$("saveNote");
+btn.disabled=true;
+
 try{
 const fd=new FormData(e.currentTarget);
-const data={titre:String(fd.get("titre")||"").trim(),classeId:String(fd.get("classeId")||"").trim(),matiereId:String(fd.get("matiereId")||"").trim(),contenu:String(fd.get("contenu")||"").trim(),professeurUid:isAdmin()?(n?.professeurUid||currentUser.uid):currentUser.uid,updatedAt:stamp()};
-if(!data.titre||!data.classeId)throw Error("Le titre et la classe sont obligatoires.");
-if($("removePhoto").checked)data.photoData="";else if(photo)data.photoData=photo;else if(n?.photoData)data.photoData=n.photoData;
-if(!data.contenu&&!data.photoData)throw Error("Ajoutez le texte ou une photo.");
-if(n){await updateDoc(doc(db,"notes_cours",n.id),data);}else{data.createdAt=stamp();await addDoc(collection(db,"notes_cours"),data);}
-toast("Note enregistrée.");await renderNotesCours();
-}catch(err){toast(friendly(err),true);}finally{btn.disabled=false;}
+const data={
+titre:String(fd.get("titre")||"").trim(),
+classeId:String(fd.get("classeId")||"").trim(),
+matiereId:String(fd.get("matiereId")||"").trim(),
+contenu:String(fd.get("contenu")||"").trim(),
+professeurUid:isAdmin()?(n?.professeurUid||currentUser.uid):currentUser.uid,
+updatedAt:stamp()
 };
+
+if(!data.titre||!data.classeId)
+throw Error("Le titre et la classe sont obligatoires.");
+
+if($("removePhoto").checked)data.photoData="";
+else if(photo)data.photoData=photo;
+else if(n?.photoData)data.photoData=n.photoData;
+
+if(!data.contenu&&!data.photoData)
+throw Error("Ajoutez le texte ou une photo.");
+
+if(n){
+await updateDoc(doc(db,"notes_cours",n.id),data);
+}else{
+data.createdAt=stamp();
+await addDoc(collection(db,"notes_cours"),data);
 }
 
-/* =====================================================
-   BULLETIN SCOLAIRE — Senkronizasyon Otomatik ak onSnapshot
-   ===================================================== */
+toast("Note enregistrée.");
+await renderNotesCours();
+
+}catch(err){
+toast(friendly(err),true);
+}finally{
+btn.disabled=false;
+}
+};
+}
+/* BULLETIN SCOLAIRE — consultation personnelle et impression PDF */
 async function renderBulletin(){
   if(!["eleve","etudiant"].includes(currentProfile?.role)){
     $("pageContent").innerHTML=`
       <div class="card">
         <h3>Bulletin scolaire</h3>
-        <div class="notice">Cette page est réservée aux élèves et aux étudiants.</div>
+        <div class="notice">
+          Cette page est réservée aux élèves et aux étudiants.
+        </div>
       </div>`;
     return;
   }
@@ -645,16 +777,19 @@ async function renderBulletin(){
   $("pageContent").innerHTML=`
     <div class="card">
       <h3>🎓 Mon bulletin scolaire</h3>
-      <p class="muted">Chargement en direct de vos résultats…</p>
+      <p class="muted">Chargement de vos résultats personnels…</p>
     </div>`;
 
-  const q = query(
-    collection(db,"resultats"),
-    where("etudiantId","==",currentUser.uid)
-  );
+  try{
+    const snap=await getDocs(query(
+      collection(db,"resultats"),
+      where("etudiantId","==",currentUser.uid)
+    ));
 
-  const unsub = onSnapshot(q, (snapshot) => {
-    const rows = snapshot.docs.map(d=>({id:d.id, ...d.data()}));
+    const rows=snap.docs.map(d=>({
+      id:d.id,
+      ...d.data()
+    }));
 
     const validRows=rows.map(r=>{
       const has20=r.note20!==undefined&&r.note20!==null&&r.note20!=="";
@@ -686,7 +821,9 @@ async function renderBulletin(){
     });
 
     const graded=validRows.filter(r=>r.note20!==null);
-    const average=graded.length?graded.reduce((sum,r)=>sum+r.note20,0)/graded.length:null;
+    const average=graded.length
+      ?graded.reduce((sum,r)=>sum+r.note20,0)/graded.length
+      :null;
 
     const studentName=[
       currentProfile.prenom||currentUser.displayName||"",
@@ -694,7 +831,11 @@ async function renderBulletin(){
     ].filter(Boolean).join(" ")||currentUser.email||"Élève";
 
     const escPrint=v=>esc(v);
-    const resultText=average===null?"Notes non disponibles":"Moyenne générale : "+average.toFixed(2)+"/20";
+    const averageText=average===null?"Non disponible":average.toFixed(2)+"/20";
+    const resultText=average===null
+      ?"Notes non disponibles"
+      :average>=10?"Moyenne générale : "+average.toFixed(2)+"/20"
+      :"Moyenne générale : "+average.toFixed(2)+"/20";
 
     const tableRows=validRows.map(r=>`
       <tr>
@@ -712,7 +853,7 @@ async function renderBulletin(){
         <div class="page-head">
           <div>
             <h3>🎓 Mon bulletin scolaire</h3>
-            <p class="muted">Consultez vos notes en direct et imprimez votre bulletin.</p>
+            <p class="muted">Consultez vos notes et imprimez votre bulletin.</p>
           </div>
           <button id="downloadBulletin" class="btn primary">
             📄 Télécharger / Imprimer en PDF
@@ -763,69 +904,135 @@ async function renderBulletin(){
 
           <div class="notice">
             ${escPrint(resultText)}<br>
-            <small>Ce bulletin est mis à jour automatiquement en temps réel par le système.</small>
+            <small>
+              Ce bulletin reprend les résultats enregistrés dans le système.
+              Les décisions officielles doivent être validées par l'établissement.
+            </small>
           </div>
 
-          <p class="muted">Édité le ${new Date().toLocaleDateString("fr-FR")}</p>
+          <p class="muted">
+            Édité le ${new Date().toLocaleDateString("fr-FR")}
+          </p>
         </div>
       </div>`;
 
-    if($("downloadBulletin")){
-      $("downloadBulletin").onclick=()=>{
-        const printWindow=window.open("","_blank");
-        if(!printWindow){toast("Autorisez les fenêtres contextuelles.",true);return;}
-        printWindow.document.open();
-        printWindow.document.write(`<!DOCTYPE html>
+    $("downloadBulletin").onclick=()=>{
+      const printWindow=window.open("","_blank");
+
+      if(!printWindow){
+        toast("Autorisez les fenêtres contextuelles du navigateur puis réessayez.",true);
+        return;
+      }
+
+      const content=$("bulletinDocument").innerHTML;
+
+      printWindow.document.open();
+      printWindow.document.write(`<!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8"><title>Bulletin - ${escPrint(studentName)}</title>
-<style>body{font-family:Arial,sans-serif;color:#17243a;margin:24px;line-height:1.5}h3{color:#0f3d91}.notice{background:#edf3fc;padding:12px;border-radius:8px;margin:12px 0}.card{border:1px solid #dce4f0;border-radius:8px;padding:12px;margin:12px 0}.stats-grid{display:flex;gap:12px;margin:12px 0}.stat{border:1px solid #dce4f0;padding:12px;flex:1}.stat strong{display:block;font-size:20px;color:#0f3d91}table{width:100%;border-collapse:collapse}th,td{border:1px solid #cbd5e1;padding:8px;text-align:left;font-size:12px}th{background:#edf3fc;color:#0f3d91}@page{size:A4 portrait;margin:12mm}</style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bulletin scolaire - ${escPrint(studentName)}</title>
+<style>
+body{font-family:Arial,sans-serif;color:#17243a;margin:24px;line-height:1.5}
+h3{color:#0f3d91}
+.notice{background:#edf3fc;padding:12px;border-radius:8px;margin:12px 0}
+.card{border:1px solid #dce4f0;border-radius:8px;padding:12px;margin:12px 0}
+.stats-grid{display:flex;gap:12px;margin:12px 0}
+.stat{border:1px solid #dce4f0;padding:12px;flex:1}
+.stat strong{display:block;font-size:20px;color:#0f3d91}
+.table-wrap{width:100%;overflow:visible}
+table{width:100%;border-collapse:collapse}
+th,td{border:1px solid #cbd5e1;padding:8px;text-align:left;font-size:12px;overflow-wrap:anywhere}
+th{background:#edf3fc;color:#0f3d91}
+.muted{color:#64748b}
+@page{size:A4 portrait;margin:12mm}
+@media print{body{margin:0}.card,.notice,table{break-inside:avoid}}
+</style>
 </head>
-<body>${$("bulletinDocument").innerHTML}<script>window.onload=()=>setTimeout(()=>window.print(),500)<\/script></body>
+<body>
+${content}
+<script>
+window.onload=function(){
+  setTimeout(function(){window.print()},500);
+};
+<\/script>
+</body>
 </html>`);
-        printWindow.document.close();
-      };
-    }
-  }, (err) => {
-    console.error("Erreur onSnapshot bulletin :", err);
-    $("pageContent").innerHTML=`<div class="card"><h3>Erreur de synchronisation</h3><div class="message error">${esc(friendly(err))}</div></div>`;
-  });
+      printWindow.document.close();
+    };
 
-  activeUnsubscribers.push(unsub);
+  }catch(e){
+    console.error("Erreur bulletin :",e);
+    $("pageContent").innerHTML=`
+      <div class="card">
+        <h3>Impossible de charger le bulletin</h3>
+        <div class="message error">${esc(friendly(e))}</div>
+        <p class="muted">
+          Vérifiez les règles Firestore et assurez-vous que les résultats
+          utilisent l'identifiant du compte élève dans le champ etudiantId.
+        </p>
+        <button class="btn secondary" onclick="window.goPage('bulletin')">
+          Réessayer
+        </button>
+      </div>`;
+  }
 }
-
 /* =====================================================
-   HORAIRES CFLP — Senkronizasyon Otomatik ak onSnapshot
+   HORAIRES CFLP : COURS ET EXAMENS
    ===================================================== */
+
 window.cflpScheduleState = window.cflpScheduleState || {};
 window.cflpScheduleCache = window.cflpScheduleCache || {};
 
 function scheduleLabelDate(value){
   if(!value)return "—";
   const d=new Date(value+"T12:00:00");
-  return Number.isNaN(d.getTime())?value:d.toLocaleDateString("fr-FR",{weekday:"long",day:"2-digit",month:"long",year:"numeric"});
+  return Number.isNaN(d.getTime())
+    ? value
+    : d.toLocaleDateString("fr-FR",{
+        weekday:"long",
+        day:"2-digit",
+        month:"long",
+        year:"numeric"
+      });
 }
-function scheduleTimeRange(r){return `${esc(r.heureDebut||"—")} – ${esc(r.heureFin||"—")}`;}
+
+function scheduleTimeRange(r){
+  return `${esc(r.heureDebut||"—")} – ${esc(r.heureFin||"—")}`;
+}
+
 function scheduleClassName(id){
   const classes=window.cflpScheduleCache.classes||[];
   const c=classes.find(x=>x.id===id||x.code===id);
-  return c?(c.nom||c.code||c.id):(id||"Non définie");
+  return c ? (c.nom||c.code||c.id) : (id||"Non définie");
 }
+
 function scheduleSubjectName(id){
   const subjects=window.cflpScheduleCache.matieres||[];
   const m=subjects.find(x=>x.id===id||x.code===id);
-  return m?(m.nom||m.titre||m.code||m.id):(id||"Non définie");
+  return m ? (m.nom||m.titre||m.code||m.id) : (id||"Non définie");
 }
+
 function scheduleTeacherName(id){
   const teachers=window.cflpScheduleCache.teachers||[];
   const t=teachers.find(x=>x.id===id||x.uid===id);
   if(t)return [t.nom,t.prenom].filter(Boolean).join(" ")||t.email||id;
-  if(id===currentUser?.uid)return currentProfile?.nom||currentUser?.displayName||currentUser?.email||id;
+  if(id===currentUser?.uid){
+    return currentProfile?.nom||currentUser?.displayName||currentUser?.email||id;
+  }
   return id||"Non défini";
 }
+
 function scheduleCanManage(page,r){
   if(page==="horaire_cours")return isAdmin();
-  if(page==="horaire_examens")return isAdmin()||(isProfessor()&&(r?.professeurUid===currentUser.uid||r?.createdBy===currentUser.uid));
+  if(page==="horaire_examens"){
+    return isAdmin() ||
+      (isProfessor() && (
+        r?.professeurUid===currentUser.uid ||
+        r?.createdBy===currentUser.uid
+      ));
+  }
   return false;
 }
 
@@ -833,47 +1040,63 @@ async function renderSchedule(page){
   const isCourse=page==="horaire_cours";
   const collectionName=isCourse?"horaires_cours":"horaires_examens";
   const title=isCourse?"Horaire des cours":"Horaire des examens";
-
-  $("pageContent").innerHTML=`<div class="card"><h3>${esc(title)}</h3><p class="muted">Synchronisation en direct…</p></div>`;
+  const canCreate=isCourse?isAdmin():(isAdmin()||isProfessor());
 
   try{
-    // Nou chaje classes ak matieres yon sèl fwa anvan, epi nou itilize onSnapshot sou koleksyon orè a
-    const [classSnap,subjectSnap]=await Promise.all([
-      getDocs(collection(db,"classes")),
-      getDocs(collection(db,"matieres"))
-    ]);
+    const [scheduleSnap,classSnap,subjectSnap]=await Promise.all([
+  getDocs(collection(db,collectionName))
+    .catch(e=>{throw new Error(collectionName+" : "+e.code+" — "+e.message)}),
+
+  getDocs(collection(db,"classes"))
+    .catch(e=>{throw new Error("classes : "+e.code+" — "+e.message)}),
+
+  getDocs(collection(db,"matieres"))
+    .catch(e=>{throw new Error("matieres : "+e.code+" — "+e.message)})
+]);
 
     let teachers=[];
     if(isAdmin()||isProfessor()){
       try{
         const teacherSnap=await getDocs(collection(db,"users"));
-        teachers=teacherSnap.docs.map(d=>({id:d.id,...d.data()})).filter(u=>u.role==="professeur");
-      }catch(e){console.warn(e);}
+        teachers=teacherSnap.docs
+          .map(d=>({id:d.id,...d.data()}))
+          .filter(u=>u.role==="professeur");
+      }catch(e){
+        console.warn("Liste des professeurs indisponible :",e);
+      }
     }
 
-    window.cflpScheduleCache.classes=classSnap.docs.map(d=>({id:d.id,...d.data()}));
-    window.cflpScheduleCache.matieres=subjectSnap.docs.map(d=>({id:d.id,...d.data()}));
-    window.cflpScheduleCache.teachers=teachers;
+    window.cflpScheduleCache[page]={
+      records:scheduleSnap.docs.map(d=>({id:d.id,...d.data()})),
+      classes:classSnap.docs.map(d=>({id:d.id,...d.data()})),
+      matieres:subjectSnap.docs.map(d=>({id:d.id,...d.data()})),
+      teachers
+    };
 
     if(!window.cflpScheduleState[page]){
-      window.cflpScheduleState[page]={view:"table",month:new Date().getMonth(),year:new Date().getFullYear()};
+      window.cflpScheduleState[page]={
+        view:"table",
+        month:new Date().getMonth(),
+        year:new Date().getFullYear()
+      };
     }
 
-    // ONEXACT onSnapshot pou orè yo
-    const unsub=onSnapshot(collection(db,collectionName),(snapshot)=>{
-      window.cflpScheduleCache[page].records=snapshot.docs.map(d=>({id:d.id,...d.data()}));
-      drawSchedulePage(page);
-    },(err)=>{
-      console.error("Erreur onSnapshot orè :",err);
-      toast("Erreur de synchronisation des orè : "+friendly(err),true);
-    });
+    drawSchedulePage(page);
+}catch(e){
+  console.error("Erreur de chargement des horaires :", e);
 
-    activeUnsubscribers.push(unsub);
-
-  }catch(e){
-    console.error("Erreur chargement orè :",e);
-    $("pageContent").innerHTML=`<div class="card"><h3>${esc(title)}</h3><div class="notice"><p>Impossible de charger les horaires : ${esc(e?.message||String(e))}</p></div></div>`;
-  }
+  $("pageContent").innerHTML = `
+    <div class="card">
+      <h3>${esc(title)}</h3>
+      <div class="notice">
+        <p>Impossible de charger les horaires.</p>
+        <p><strong>Erreur exacte :</strong></p>
+        <pre style="white-space:pre-wrap;overflow-wrap:anywhere;">${esc(e?.message || String(e))}</pre>
+        <p><strong>Code :</strong> ${esc(e?.code || "Non disponible")}</p>
+      </div>
+    </div>
+  `;
+}
 }
 
 function drawSchedulePage(page){
@@ -883,15 +1106,30 @@ function drawSchedulePage(page){
   const cache=window.cflpScheduleCache[page];
   if(!cache)return;
 
-  let records=[...(cache.records||[])];
+  let records=[...cache.records];
 
+  // Les élèves ne voient que les horaires de leurs classes.
   if(isStudent()){
-    const allowed=new Set([currentProfile.classeId,...(Array.isArray(currentProfile.classIds)?currentProfile.classIds:[])].filter(Boolean));
-    cache.classes.forEach(c=>{if(allowed.has(c.id)||allowed.has(c.code)){allowed.add(c.id);if(c.code)allowed.add(c.code);}});
+    const allowed=new Set([
+      currentProfile.classeId,
+      ...(Array.isArray(currentProfile.classIds)?currentProfile.classIds:[])
+    ].filter(Boolean));
+
+    cache.classes.forEach(c=>{
+      if(allowed.has(c.id)||allowed.has(c.code)){
+        allowed.add(c.id);
+        if(c.code)allowed.add(c.code);
+      }
+    });
+
     records=records.filter(r=>allowed.has(r.classeId));
   }
 
-  records.sort((a,b)=>String(a.date||"").localeCompare(String(b.date||""))||String(a.heureDebut||"").localeCompare(String(b.heureDebut||"")));
+  records.sort((a,b)=>
+    String(a.date||"").localeCompare(String(b.date||""))||
+    String(a.heureDebut||"").localeCompare(String(b.heureDebut||""))
+  );
+
   const canCreate=isCourse?isAdmin():(isAdmin()||isProfessor());
 
   $("pageContent").innerHTML=`
@@ -899,72 +1137,158 @@ function drawSchedulePage(page){
       <div class="page-head">
         <div>
           <h3>${isCourse?"🗓️":"📝"} ${esc(title)}</h3>
-          <p class="muted">${records.length} horaire(s) en direct</p>
+          <p class="muted">
+            ${records.length} horaire(s) disponible(s)
+          </p>
         </div>
-        ${canCreate?`<button class="btn primary" id="scheduleAdd">＋ Ajouter un horaire</button>`:""}
+        ${canCreate?`
+          <button class="btn primary" id="scheduleAdd">
+            ＋ Ajouter un horaire
+          </button>`:""}
       </div>
+
       <div class="actions" style="margin-bottom:14px">
-        <button class="btn ${state.view==="table"?"primary":"secondary"}" id="scheduleTableView">Tableau par jour</button>
-        <button class="btn ${state.view==="calendar"?"primary":"secondary"}" id="scheduleCalendarView">Calendrier mensuel</button>
+        <button class="btn ${state.view==="table"?"primary":"secondary"}"
+          id="scheduleTableView">
+          Tableau par jour
+        </button>
+        <button class="btn ${state.view==="calendar"?"primary":"secondary"}"
+          id="scheduleCalendarView">
+          Calendrier mensuel
+        </button>
       </div>
+
       <div id="scheduleFormArea"></div>
       <div id="scheduleDisplay"></div>
     </div>`;
 
-  if($("scheduleAdd"))$("scheduleAdd").onclick=()=>scheduleOpenForm(page,null);
-  $("scheduleTableView").onclick=()=>{state.view="table";drawSchedulePage(page);};
-  $("scheduleCalendarView").onclick=()=>{state.view="calendar";drawSchedulePage(page);};
+  if($("scheduleAdd")){
+    $("scheduleAdd").onclick=()=>scheduleOpenForm(page,null);
+  }
+
+  $("scheduleTableView").onclick=()=>{
+    state.view="table";
+    drawSchedulePage(page);
+  };
+
+  $("scheduleCalendarView").onclick=()=>{
+    state.view="calendar";
+    drawSchedulePage(page);
+  };
 
   const display=$("scheduleDisplay");
+
   if(state.view==="table"){
     display.innerHTML=`
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Jour / Date</th><th>Heure</th><th>Titre / Matière</th><th>Classe</th><th>Professeur</th><th>Salle</th><th>Actions</th></tr></thead>
+          <thead>
+            <tr>
+              <th>Jour / Date</th>
+              <th>Heure</th>
+              <th>Titre / Matière</th>
+              <th>Classe</th>
+              <th>Professeur</th>
+              <th>Salle</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
           <tbody>
             ${records.map(r=>`
               <tr>
                 <td>${esc(scheduleLabelDate(r.date))}</td>
                 <td>${scheduleTimeRange(r)}</td>
-                <td><b>${esc(r.titre||scheduleSubjectName(r.matiereId))}</b><div class="muted">${esc(scheduleSubjectName(r.matiereId))}</div></td>
+                <td>
+                  <b>${esc(r.titre||scheduleSubjectName(r.matiereId))}</b>
+                  <div class="muted">${esc(scheduleSubjectName(r.matiereId))}</div>
+                </td>
                 <td>${esc(scheduleClassName(r.classeId))}</td>
                 <td>${esc(scheduleTeacherName(r.professeurUid))}</td>
                 <td>${esc(r.salle||"—")}</td>
                 <td>
                   <div class="actions">
-                    ${scheduleCanManage(page,r)?`<button class="btn secondary" data-schedule-edit="${esc(r.id)}">Modifier</button><button class="btn danger" data-schedule-delete="${esc(r.id)}">Supprimer</button>`:"—"}
+                    ${scheduleCanManage(page,r)?`
+                      <button class="btn secondary"
+                        data-schedule-edit="${esc(r.id)}">Modifier</button>
+                      <button class="btn danger"
+                        data-schedule-delete="${esc(r.id)}">Supprimer</button>
+                    `:"—"}
                   </div>
                 </td>
-              </tr>`).join("")||'<tr><td colspan="7">Aucun horaire enregistré.</td></tr>'}
+              </tr>
+            `).join("")||
+            '<tr><td colspan="7">Aucun horaire enregistré.</td></tr>'}
           </tbody>
         </table>
       </div>`;
   }else{
     const first=new Date(state.year,state.month,1);
     const last=new Date(state.year,state.month+1,0);
-    const monthName=first.toLocaleDateString("fr-FR",{month:"long",year:"numeric"});
+    const monthName=first.toLocaleDateString("fr-FR",{
+      month:"long",year:"numeric"
+    });
     const offset=(first.getDay()+6)%7;
     const totalCells=Math.ceil((offset+last.getDate())/7)*7;
 
-    let calendar=`<div class="page-head"><button class="btn secondary" id="schedulePrevMonth">←</button><h3>${esc(monthName)}</h3><button class="btn secondary" id="scheduleNextMonth">→</button></div><div style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px">${["Lun","Mar","Mer","Jeu","Ven","Sam","Dim"].map(d=>`<div style="text-align:center;font-weight:bold;padding:6px 1px;background:#edf3fc">${d}</div>`).join("")}`;
+    let calendar=`
+      <div class="page-head">
+        <button class="btn secondary" id="schedulePrevMonth">←</button>
+        <h3>${esc(monthName)}</h3>
+        <button class="btn secondary" id="scheduleNextMonth">→</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px">
+        ${["Lun","Mar","Mer","Jeu","Ven","Sam","Dim"].map(d=>`
+          <div style="text-align:center;font-weight:bold;padding:6px 1px;background:#edf3fc">
+            ${d}
+          </div>`).join("")}`;
 
     for(let i=0;i<totalCells;i++){
       const day=i-offset+1;
-      if(day<1||day>last.getDate()){calendar+=`<div style="min-height:75px;border:1px solid var(--bd);border-radius:5px;background:#f8fafc"></div>`;continue;}
-      const dateKey=`${state.year}-${String(state.month+1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
+      if(day<1||day>last.getDate()){
+        calendar+=`<div style="min-height:75px;border:1px solid var(--bd);border-radius:5px;background:#f8fafc"></div>`;
+        continue;
+      }
+
+      const dateKey=
+        `${state.year}-${String(state.month+1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
+
       const dayRecords=records.filter(r=>r.date===dateKey);
-      calendar+=`<div style="min-width:0;min-height:75px;padding:4px;border:1px solid var(--bd);border-radius:5px;background:white"><b>${day}</b>${dayRecords.map(r=>`<div style="margin-top:4px;padding:3px;background:#dbeafe;border-radius:4px;font-size:10px;overflow-wrap:anywhere"><b>${esc(r.heureDebut\vert{}\vert{}"")}</b><div>${esc(r.titre||scheduleSubjectName(r.matiereId))}</div></div>`).join("")}</div>`;
+
+      calendar+=`
+        <div style="min-width:0;min-height:75px;padding:4px;border:1px solid var(--bd);border-radius:5px;background:white">
+          <b>${day}</b>
+          ${dayRecords.map(r=>`
+            <div style="margin-top:4px;padding:3px;background:#dbeafe;border-radius:4px;font-size:10px;overflow-wrap:anywhere">
+              <b>${esc(r.heureDebut||"")}</b>
+              <div>${esc(r.titre||scheduleSubjectName(r.matiereId))}</div>
+              <div>${esc(scheduleClassName(r.classeId))}</div>
+            </div>`).join("")}
+        </div>`;
     }
+
     calendar+="</div>";
     display.innerHTML=calendar;
 
-    $("schedulePrevMonth").onclick=()=>{state.month--;if(state.month<0){state.month=11;state.year--;}drawSchedulePage(page);};
-    $("scheduleNextMonth").onclick=()=>{state.month++;if(state.month>11){state.month=0;state.year++;}drawSchedulePage(page);};
+    $("schedulePrevMonth").onclick=()=>{
+      state.month--;
+      if(state.month<0){state.month=11;state.year--}
+      drawSchedulePage(page);
+    };
+
+    $("scheduleNextMonth").onclick=()=>{
+      state.month++;
+      if(state.month>11){state.month=0;state.year++}
+      drawSchedulePage(page);
+    };
   }
 
   $("pageContent").querySelectorAll("[data-schedule-edit]").forEach(b=>{
-    b.onclick=()=>{const record=cache.records.find(r=>r.id===b.dataset.scheduleEdit);if(record)scheduleOpenForm(page,record);};
+    b.onclick=()=>{
+      const record=cache.records.find(r=>r.id===b.dataset.scheduleEdit);
+      if(record)scheduleOpenForm(page,record);
+    };
   });
+
   $("pageContent").querySelectorAll("[data-schedule-delete]").forEach(b=>{
     b.onclick=()=>scheduleDelete(page,b.dataset.scheduleDelete);
   });
@@ -972,53 +1296,131 @@ function drawSchedulePage(page){
 
 async function scheduleOpenForm(page,record){
   const isCourse=page==="horaire_cours";
-  if(isCourse&&!isAdmin())return toast("La gestion des horaires de cours est réservée à l’administrateur.",true);
-  if(!isCourse&&!isAdmin()&&!isProfessor())return toast("Vous n’avez pas l’autorisation de gérer cet horaire.",true);
-  if(record&&!scheduleCanManage(page,record))return toast("Vous ne pouvez pas modifier cet horaire.",true);
+
+  if(isCourse&&!isAdmin()){
+    return toast("La gestion des horaires de cours est réservée à l’administrateur.",true);
+  }
+
+  if(!isCourse&&!isAdmin()&&!isProfessor()){
+    return toast("Vous n’avez pas l’autorisation de gérer cet horaire.",true);
+  }
+
+  if(record&&!scheduleCanManage(page,record)){
+    return toast("Vous ne pouvez pas modifier cet horaire.",true);
+  }
 
   const cache=window.cflpScheduleCache[page];
   const area=$("scheduleFormArea");
 
   const classOptions=cache.classes.map(c=>{
     const value=c.code||c.id;
-    return `<option value="${esc(value)}" ${record?.classeId===value||record?.classeId===c.id?"selected":""}>${esc(c.nom||c.code||c.id)}</option>`;
+    return `<option value="${esc(value)}"
+      ${record?.classeId===value||record?.classeId===c.id?"selected":""}>
+      ${esc(c.nom||c.code||c.id)}
+    </option>`;
   }).join("");
 
   const subjectOptions=cache.matieres.map(m=>{
     const value=m.code||m.id;
-    return `<option value="${esc(value)}" ${record?.matiereId===value||record?.matiereId===m.id?"selected":""}>${esc(m.nom||m.titre||m.code||m.id)}</option>`;
+    return `<option value="${esc(value)}"
+      ${record?.matiereId===value||record?.matiereId===m.id?"selected":""}>
+      ${esc(m.nom||m.titre||m.code||m.id)}
+    </option>`;
   }).join("");
 
   const teacherOptions=cache.teachers.map(t=>{
     const name=[t.nom,t.prenom].filter(Boolean).join(" ")||t.email||t.id;
-    return `<option value="${esc(t.id)}" ${record?.professeurUid===t.id||(!record&&t.id===currentUser.uid)?"selected":""}>${esc(name)}</option>`;
+    return `<option value="${esc(t.id)}"
+      ${record?.professeurUid===t.id||(!record&&t.id===currentUser.uid)?"selected":""}>
+      ${esc(name)}
+    </option>`;
   }).join("");
 
   area.innerHTML=`
     <div class="card" style="border:2px solid var(--bd)">
       <h3>${record?"Modifier":"Créer"} — ${isCourse?"Horaire des cours":"Horaire des examens"}</h3>
+
       <form id="scheduleForm">
         <div class="form-grid">
-          <div class="field full"><label>Titre du cours / examen *</label><input name="titre" maxlength="150" value="${esc(record?.titre||"")}" required></div>
-          <div class="field"><label>Classe *</label><select name="classeId" required><option value="">Choisir une classe</option>${classOptions}</select></div>
-          <div class="field"><label>Matière</label><select name="matiereId"><option value="">Choisir une matière</option>${subjectOptions}</select></div>
-          <div class="field"><label>Professeur *</label><select name="professeurUid" ${!isAdmin()?"disabled":""} required>${!isAdmin()?`<option value="${esc(currentUser.uid)}" selected>${esc(currentProfile?.nom||currentUser.email||"Mon compte")}</option>`:`<option value="">Choisir un professeur</option>${teacherOptions}`}</select></div>
-          <div class="field"><label>Date *</label><input name="date" type="date" value="${esc(record?.date||"")}" required></div>
-          <div class="field"><label>Heure de début *</label><input name="heureDebut" type="time" value="${esc(record?.heureDebut||"")}" required></div>
-          <div class="field"><label>Heure de fin *</label><input name="heureFin" type="time" value="${esc(record?.heureFin||"")}" required></div>
-          <div class="field"><label>Salle</label><input name="salle" maxlength="80" value="${esc(record?.salle||"")}" placeholder="Ex. Salle 2"></div>
+          <div class="field full">
+            <label>Titre du cours / examen *</label>
+            <input name="titre" maxlength="150"
+              value="${esc(record?.titre||"")}" required>
+          </div>
+
+          <div class="field">
+            <label>Classe *</label>
+            <select name="classeId" required>
+              <option value="">Choisir une classe</option>
+              ${classOptions}
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Matière</label>
+            <select name="matiereId">
+              <option value="">Choisir une matière</option>
+              ${subjectOptions}
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Professeur *</label>
+            <select name="professeurUid"
+              ${!isAdmin()?"disabled":""} required>
+              ${!isAdmin()?`
+                <option value="${esc(currentUser.uid)}" selected>
+                  ${esc(currentProfile?.nom||currentUser.email||"Mon compte")}
+                </option>`:`
+                <option value="">Choisir un professeur</option>
+                ${teacherOptions}`}
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Date *</label>
+            <input name="date" type="date"
+              value="${esc(record?.date||"")}" required>
+          </div>
+
+          <div class="field">
+            <label>Heure de début *</label>
+            <input name="heureDebut" type="time"
+              value="${esc(record?.heureDebut||"")}" required>
+          </div>
+
+          <div class="field">
+            <label>Heure de fin *</label>
+            <input name="heureFin" type="time"
+              value="${esc(record?.heureFin||"")}" required>
+          </div>
+
+          <div class="field">
+            <label>Salle</label>
+            <input name="salle" maxlength="80"
+              value="${esc(record?.salle||"")}"
+              placeholder="Ex. Salle 2">
+          </div>
         </div>
+
         <div class="actions">
-          <button type="submit" class="btn primary" id="scheduleSave">Enregistrer</button>
-          <button type="button" class="btn secondary" id="scheduleCancel">Annuler</button>
+          <button type="submit" class="btn primary" id="scheduleSave">
+            Enregistrer
+          </button>
+          <button type="button" class="btn secondary" id="scheduleCancel">
+            Annuler
+          </button>
         </div>
       </form>
     </div>`;
 
   $("scheduleCancel").onclick=()=>area.innerHTML="";
+
   $("scheduleForm").onsubmit=async e=>{
     e.preventDefault();
-    const fd=new FormData(e.currentTarget);
+
+    const form=e.currentTarget;
+    const fd=new FormData(form);
     const titre=String(fd.get("titre")||"").trim();
     const classeId=String(fd.get("classeId")||"").trim();
     const matiereId=String(fd.get("matiereId")||"").trim();
@@ -1026,26 +1428,53 @@ async function scheduleOpenForm(page,record){
     const heureDebut=String(fd.get("heureDebut")||"").trim();
     const heureFin=String(fd.get("heureFin")||"").trim();
     const salle=String(fd.get("salle")||"").trim();
-    const professeurUid=isAdmin()?String(fd.get("professeurUid")||"").trim():currentUser.uid;
 
-    if(!titre||!classeId||!professeurUid||!date||!heureDebut||!heureFin)return toast("Remplissez tous les champs obligatoires.",true);
-    if(heureFin<=heureDebut)return toast("L’heure de fin doit être après l’heure de début.",true);
+    const professeurUid=isAdmin()
+      ? String(fd.get("professeurUid")||"").trim()
+      : currentUser.uid;
 
-    const btn=$("scheduleSave");btn.disabled=true;btn.textContent="Enregistrement…";
+    if(!titre||!classeId||!professeurUid||!date||!heureDebut||!heureFin){
+      return toast("Remplissez tous les champs obligatoires.",true);
+    }
+
+    if(heureFin<=heureDebut){
+      return toast("L’heure de fin doit être après l’heure de début.",true);
+    }
+
+    const btn=$("scheduleSave");
+    btn.disabled=true;
+    btn.textContent="Enregistrement…";
+
     const collectionName=isCourse?"horaires_cours":"horaires_examens";
-    const data={titre,classeId,matiereId,professeurUid,date,heureDebut,heureFin,salle,type:isCourse?"cours":"examen",updatedAt:stamp()};
+
+    const data={
+      titre,
+      classeId,
+      matiereId,
+      professeurUid,
+      date,
+      heureDebut,
+      heureFin,
+      salle,
+      type:isCourse?"cours":"examen",
+      updatedAt:stamp()
+    };
 
     try{
       if(record){
-        if(!scheduleCanManage(page,record))throw new Error("Modification non autorisée.");
+        if(!scheduleCanManage(page,record)){
+          throw new Error("Modification non autorisée.");
+        }
+
         await updateDoc(doc(db,collectionName,record.id),data);
       }else{
         data.createdBy=currentUser.uid;
         data.createdAt=stamp();
         await addDoc(collection(db,collectionName),data);
       }
+
       toast("Horaire enregistré.");
-      area.innerHTML="";
+      await renderSchedule(page);
     }catch(err){
       console.error(err);
       toast(friendly(err),true);
@@ -1060,19 +1489,31 @@ async function scheduleDelete(page,id){
   const collectionName=isCourse?"horaires_cours":"horaires_examens";
   const cache=window.cflpScheduleCache[page];
   const record=cache?.records.find(r=>r.id===id);
+
   if(!record)return toast("Horaire introuvable.",true);
-  if(!scheduleCanManage(page,record))return toast("Vous n’avez pas l’autorisation de supprimer cet horaire.",true);
+
+  if(!scheduleCanManage(page,record)){
+    return toast("Vous n’avez pas l’autorisation de supprimer cet horaire.",true);
+  }
+
   if(!confirm("Voulez-vous vraiment supprimer cet horaire ?"))return;
+
   try{
     await deleteDoc(doc(db,collectionName,id));
     toast("Horaire supprimé.");
-  }catch(e){console.error(e);toast(friendly(e),true);}
-}
-
+    await renderSchedule(page);
+  }catch(e){
+    console.error(e);
+    toast(friendly(e),true);
+  }
+}  
+/* Gestion des utilisateurs : professeurs, élèves et classes affectées */
 async function renderUsers(){
   if(!isAdmin()) return;
+
   try {
-    const [usersSnap, classesSnap, affectationsSnap, inscriptionsSnap, etudiantsSnap, elevesSnap] = await Promise.all([
+    const [usersSnap, classesSnap, affectationsSnap, inscriptionsSnap,
+           etudiantsSnap, elevesSnap] = await Promise.all([
       getDocs(collection(db,"users")),
       getDocs(collection(db,"classes")),
       getDocs(collection(db,"affectations")),
@@ -1090,7 +1531,9 @@ async function renderUsers(){
 
     const classLabel = id => {
       if(!id) return "";
-      const c = classes.find(x => x.id===id || x.code===id || x.nom===id);
+      const c = classes.find(x =>
+        x.id===id || x.code===id || x.nom===id
+      );
       return c ? (c.nom || c.code || c.niveau || c.id) : String(id);
     };
 
@@ -1098,7 +1541,9 @@ async function renderUsers(){
       const email = String(u.email||"").toLowerCase().trim();
       const linked = [...etudiants,...eleves].filter(p =>
         (email && String(p.email||"").toLowerCase().trim()===email) ||
-        p.uid===u.id || p.userUid===u.id || p.userId===u.id
+        p.uid===u.id ||
+        p.userUid===u.id ||
+        p.userId===u.id
       );
       return [...new Set([u.id,...linked.map(p=>p.id)])];
     };
@@ -1106,33 +1551,71 @@ async function renderUsers(){
     const assignedClasses = u => {
       const ids = profileIds(u);
       let result = [];
+
       if(u.role==="professeur"){
-        affectations.filter(a=>ids.includes(a.professeurUid)).forEach(a=>{
-          const label = classLabel(a.classeId);
-          if(label) result.push(label);
-        });
+        affectations
+          .filter(a=>ids.includes(a.professeurUid))
+          .forEach(a=>{
+            const label = classLabel(a.classeId);
+            if(label) result.push(label);
+          });
       }
+
       if(["eleve","etudiant"].includes(u.role)){
-        const linkedProfiles = [...etudiants,...eleves].filter(p => ids.includes(p.id));
-        linkedProfiles.forEach(p=>{if(p.classeId) result.push(classLabel(p.classeId));});
-        inscriptions.filter(i=>ids.includes(i.eleveId)||ids.includes(i.etudiantId)).forEach(i=>{
-          if(i.classeId) result.push(classLabel(i.classeId));
+        const linkedProfiles = [...etudiants,...eleves].filter(p =>
+          ids.includes(p.id)
+        );
+
+        linkedProfiles.forEach(p=>{
+          if(p.classeId) result.push(classLabel(p.classeId));
         });
+
+        inscriptions
+          .filter(i=>
+            ids.includes(i.eleveId) ||
+            ids.includes(i.etudiantId)
+          )
+          .forEach(i=>{
+            if(i.classeId) result.push(classLabel(i.classeId));
+          });
+
         if(u.classeId) result.push(classLabel(u.classeId));
       }
+
       return [...new Set(result.filter(Boolean))];
     };
 
-    const roleLabel = role => ({administrateur:"Administrateur",professeur:"Professeur",eleve:"Élève",etudiant:"Étudiant"})[role] || role || "Non défini";
-    const statusLabel = status => ({accepted:"Accepté",attente:"En attente",refuse:"Refusé"})[status] || status || "Non défini";
-    const userName = u => [u.nom,u.prenom].filter(Boolean).join(" ") || "Non renseigné";
+    const roleLabel = role => ({
+      administrateur:"Administrateur",
+      professeur:"Professeur",
+      eleve:"Élève",
+      etudiant:"Étudiant"
+    })[role] || role || "Non défini";
+
+    const statusLabel = status => ({
+      accepted:"Accepté",
+      attente:"En attente",
+      refuse:"Refusé"
+    })[status] || status || "Non défini";
+
+    const userName = u =>
+      [u.nom,u.prenom].filter(Boolean).join(" ") || "Non renseigné";
 
     $("pageContent").innerHTML = `
       <div class="card">
         <h3>Gestion des utilisateurs et des classes</h3>
-        <p class="muted">Consultez les professeurs, les élèves et les classes auxquelles ils sont affectés.</p>
+        <p class="muted">
+          Consultez les professeurs, les élèves et les classes auxquelles
+          ils sont affectés.
+        </p>
+
         <div class="form-grid">
-          <div class="field"><label>Rechercher un utilisateur</label><input id="usersSearch" placeholder="Nom, e-mail, téléphone ou classe..."></div>
+          <div class="field">
+            <label>Rechercher un utilisateur</label>
+            <input id="usersSearch"
+              placeholder="Nom, e-mail, téléphone ou classe...">
+          </div>
+
           <div class="field">
             <label>Filtrer par rôle</label>
             <select id="usersRoleFilter">
@@ -1143,25 +1626,54 @@ async function renderUsers(){
             </select>
           </div>
         </div>
+
         <p class="muted" id="usersCount"></p>
+
         <div class="table-wrap">
           <table>
             <thead>
-              <tr><th>Nom et prénom</th><th>E-mail</th><th>Téléphone</th><th>Rôle</th><th>Classe(s) affectée(s)</th><th>Niveau / spécialité</th><th>Statut</th><th>Actions</th></tr>
+              <tr>
+                <th>Nom et prénom</th>
+                <th>E-mail</th>
+                <th>Téléphone</th>
+                <th>Rôle</th>
+                <th>Classe(s) affectée(s)</th>
+                <th>Niveau / spécialité</th>
+                <th>Statut</th>
+                <th>Actions</th>
+              </tr>
             </thead>
+
             <tbody id="usersTableBody">
               ${users.map(u=>{
                 const assigned = assignedClasses(u);
-                const classesText = assigned.length ? assigned.join(", ") : (u.classeId ? classLabel(u.classeId) : "Non affecté");
-                const searchText = [userName(u),u.email,u.telephone,roleLabel(u.role),classesText,u.niveau,u.specialite,statusLabel(u.status)].join(" ").toLowerCase();
+                const classesText = assigned.length
+                  ? assigned.join(", ")
+                  : (u.classeId ? classLabel(u.classeId) : "Non affecté");
+
+                const searchText = [
+                  userName(u),u.email,u.telephone,
+                  roleLabel(u.role),classesText,
+                  u.niveau,u.specialite,statusLabel(u.status)
+                ].join(" ").toLowerCase();
+
                 return `
-                  <tr data-user-row="${esc(u.id)}" data-user-role="${esc(u.role\vert{}\vert{}"")}" data-user-search="${esc(searchText)}">
+                  <tr
+                    data-user-row="${esc(u.id)}"
+                    data-user-role="${esc(u.role||"")}"
+                    data-user-search="${esc(searchText)}">
+
                     <td>${esc(userName(u))}</td>
                     <td>${esc(u.email||"—")}</td>
                     <td>${esc(u.telephone||"—")}</td>
                     <td>${esc(roleLabel(u.role))}</td>
                     <td>${esc(classesText)}</td>
-                    <td>${esc(u.role==="professeur"?(u.specialite||"—"):(u.niveau||"—"))}</td>
+                    <td>${esc(
+                      u.role==="professeur"
+                        ? (u.specialite||"—")
+                        : (u.niveau||"—")
+                    )}</td>
+
                     <td>
                       <select data-status="${esc(u.id)}">
                         <option value="attente" ${u.status==="attente"?"selected":""}>En attente</option>
@@ -1169,105 +1681,160 @@ async function renderUsers(){
                         <option value="refuse" ${u.status==="refuse"?"selected":""}>Refusé</option>
                       </select>
                     </td>
+
                     <td>
                       <div class="actions">
                         <select data-role="${esc(u.id)}">
                           <option value="eleve" ${u.role==="eleve"?"selected":""}>Élève</option>
                           <option value="etudiant" ${u.role==="etudiant"?"selected":""}>Étudiant</option>
                           <option value="professeur" ${u.role==="professeur"?"selected":""}>Professeur</option>
-                          ${u.role==="administrateur"?'<option value="administrateur" selected>Administrateur</option>':""}
+                          ${u.role==="administrateur"
+                            ? '<option value="administrateur" selected>Administrateur</option>'
+                            : ""}
                         </select>
-                        <button class="btn success" data-save-user="${esc(u.id)}">Enregistrer</button>
-                        ${u.id!==currentUser.uid?`<button class="btn danger" data-del-user="${esc(u.id)}">Supprimer profil</button>`:""}
+
+                        <button class="btn success"
+                          data-save-user="${esc(u.id)}">
+                          Enregistrer
+                        </button>
+
+                        ${u.id!==currentUser.uid
+                          ? `<button class="btn danger"
+                              data-del-user="${esc(u.id)}">
+                              Supprimer profil
+                            </button>`
+                          : ""}
                       </div>
                     </td>
-                  </tr>`;
-              }).join("") || '<tr><td colspan="8">Aucun utilisateur.</td></tr>'}
+                  </tr>
+                `;
+              }).join("") ||
+              '<tr><td colspan="8">Aucun utilisateur.</td></tr>'}
             </tbody>
           </table>
         </div>
-      </div>`;
+      </div>
+    `;
 
     const filterUsers = () => {
       const search = $("usersSearch").value.toLowerCase().trim();
       const roleFilter = $("usersRoleFilter").value;
       let visible = 0;
+
       $("pageContent").querySelectorAll("[data-user-row]").forEach(row=>{
         const role = row.dataset.userRole;
         const text = row.dataset.userSearch || "";
+
         const matchesSearch = text.includes(search);
-        const matchesRole = roleFilter==="tous" || role===roleFilter || (roleFilter==="eleves" && ["eleve","etudiant"].includes(role));
+        const matchesRole =
+          roleFilter==="tous" ||
+          role===roleFilter ||
+          (roleFilter==="eleves" &&
+            ["eleve","etudiant"].includes(role));
+
         const show = matchesSearch && matchesRole;
         row.style.display = show ? "" : "none";
         if(show) visible++;
       });
-      $("usersCount").textContent = visible + " utilisateur(s) affiché(s) sur " + users.length;
+
+      $("usersCount").textContent =
+        visible + " utilisateur(s) affiché(s) sur " + users.length;
     };
 
     $("usersSearch").oninput = filterUsers;
     $("usersRoleFilter").onchange = filterUsers;
     filterUsers();
 
-    $("pageContent").querySelectorAll("[data-save-user]").forEach(b=>b.onclick=async()=>{
-      const id = b.dataset.saveUser;
-      const role = $("pageContent").querySelector(`[data-role="${CSS.escape(id)}"]`).value;
-      const status = $("pageContent").querySelector(`[data-status="${CSS.escape(id)}"]`).value;
-      if(id===currentUser.uid && (role!=="administrateur" || status!=="accepted"))return toast("Vous ne pouvez pas retirer votre propre accès ici.",true);
-      if(role==="administrateur" && id!==currentUser.uid)return toast("Le rôle administrateur ne peut pas être attribué depuis cette page.",true);
-      try{
-        await updateDoc(doc(db,"users",id),{role,status,updatedAt:stamp()});
-        toast("Utilisateur mis à jour.");
-        await renderUsers();
-      }catch(e){toast(friendly(e),true);}
-    });
+    $("pageContent").querySelectorAll("[data-save-user]")
+      .forEach(b=>b.onclick=async()=>{
+        const id = b.dataset.saveUser;
+        const role = $("pageContent")
+          .querySelector(`[data-role="${CSS.escape(id)}"]`).value;
+        const status = $("pageContent")
+          .querySelector(`[data-status="${CSS.escape(id)}"]`).value;
 
-    $("pageContent").querySelectorAll("[data-del-user]").forEach(b=>b.onclick=async()=>{
-      if(confirm("Supprimer le profil Firestore ? Le compte Auth ne sera pas supprimé.")){
+        if(id===currentUser.uid &&
+          (role!=="administrateur" || status!=="accepted")){
+          return toast(
+            "Vous ne pouvez pas retirer votre propre accès ici.",true
+          );
+        }
+
+        if(role==="administrateur" && id!==currentUser.uid){
+          return toast(
+            "Le rôle administrateur ne peut pas être attribué depuis cette page.",true
+          );
+        }
+
         try{
-          await deleteDoc(doc(db,"users",b.dataset.delUser));
-          toast("Profil supprimé.");
+          await updateDoc(doc(db,"users",id),{
+            role,
+            status,
+            updatedAt:stamp()
+          });
+          toast("Utilisateur mis à jour.");
           await renderUsers();
-        }catch(e){toast(friendly(e),true);}
-      }
-    });
+        }catch(e){
+          toast(friendly(e),true);
+        }
+      });
+
+    $("pageContent").querySelectorAll("[data-del-user]")
+      .forEach(b=>b.onclick=async()=>{
+        if(confirm(
+          "Supprimer le profil Firestore ? Le compte Auth ne sera pas supprimé."
+        )){
+          try{
+            await deleteDoc(doc(db,"users",b.dataset.delUser));
+            toast("Profil supprimé.");
+            await renderUsers();
+          }catch(e){
+            toast(friendly(e),true);
+          }
+        }
+      });
 
   }catch(e){
     console.error("Erreur Gestion des utilisateurs :",e);
     toast("Impossible de charger les utilisateurs et les affectations. Vérifiez les règles Firestore.",true);
   }
 }
-
 async function renderBackup(){
-  if(!isAdmin())return;
-  $("pageContent").innerHTML='<div class="card"><h3>Sauvegarde JSON</h3><p>Exporter les collections Firestore accessibles à votre compte.</p><button id="exportBtn" class="btn primary">Exporter les données</button><div class="notice">Le fichier peut contenir des données personnelles. Conservez-le en sécurité.</div></div>';
-  $("exportBtn").onclick=async()=>{
-    const names=["users","etudiants","eleves","professeurs","departements","filieres","classes","matieres","cours","annees_academiques","affectations","inscriptions","devoirs","examens","tentatives_examens","notes_cours","remises","resultats","videos","documents","statistiques","configuration"],backup={application:"Centre de Formation Le Pédagogue",projectId:firebaseConfig.projectId,exportedAt:new Date().toISOString(),collections:{}};
-    try{
-      for(const name of names){const s=await getDocs(collection(db,name));backup.collections[name]=s.docs.map(d=>({id:d.id,...d.data()}))}
-      const blob=new Blob([JSON.stringify(backup,null,2)],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="sauvegarde-le-pedagogue-"+new Date().toISOString().slice(0,10)+".json";a.click();URL.revokeObjectURL(url);toast("Export terminé.");
-    }catch(e){toast(friendly(e),true);}
-  };
+if(!isAdmin())return;
+$("pageContent").innerHTML='<div class="card"><h3>Sauvegarde JSON</h3><p>Exporter les collections Firestore accessibles à votre compte.</p><button id="exportBtn" class="btn primary">Exporter les données</button><div class="notice">Le fichier peut contenir des données personnelles. Conservez-le en sécurité.</div></div>';
+$("exportBtn").onclick=async()=>{
+const names=["users","etudiants","eleves","professeurs","departements","filieres","classes","matieres","cours","annees_academiques","affectations","inscriptions","devoirs","examens","tentatives_examens","notes_cours","remises","resultats","videos","documents","statistiques","configuration"],backup={application:"Centre de Formation Le Pédagogue",projectId:firebaseConfig.projectId,exportedAt:new Date().toISOString(),collections:{}};
+try{for(const name of names){const s=await getDocs(collection(db,name));backup.collections[name]=s.docs.map(d=>({id:d.id,...d.data()}))}
+const blob=new Blob([JSON.stringify(backup,null,2)],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="sauvegarde-le-pedagogue-"+new Date().toISOString().slice(0,10)+".json";a.click();URL.revokeObjectURL(url);toast("Export terminé.")}
+catch(e){toast(friendly(e),true)}
+}
 }
 
-window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();installPrompt=e;$("installBtn").textContent="📲 Installer l'application";$("installBtn").disabled=false;});
-window.addEventListener("appinstalled",()=>{installPrompt=null;$("installBtn").textContent="✓ Application installée";toast("Application installée avec succès.");});
+/* Installation PWA — Android, Chrome et Samsung Internet */
+window.addEventListener("beforeinstallprompt",e=>{
+e.preventDefault();installPrompt=e;$("installBtn").textContent="📲 Installer l'application";$("installBtn").disabled=false;
+});
+window.addEventListener("appinstalled",()=>{installPrompt=null;$("installBtn").textContent="✓ Application installée";toast("Application installée avec succès.")});
 $("installBtn").addEventListener("click",async()=>{
-  const btn=$("installBtn");
-  const standalone=window.matchMedia("(display-mode: standalone)").matches||window.navigator.standalone===true;
-  if(standalone){toast("L'application est déjà installée.");return;}
-  if(installPrompt){
-    try{const promptEvent=installPrompt;await promptEvent.prompt();const result=await promptEvent.userChoice;installPrompt=null;if(result?.outcome==="accepted")btn.textContent="✓ Installation lancée";else btn.textContent="📲 Installer l'application";}
-    catch(error){console.error("Erreur installation :",error);toast("Utilisez le menu ⋮ du navigateur pour installer l'application.",true);}
-    return;
-  }
-  alert("Pour installer Centre de Formation Le Pédagogue :\n\n1. Ouvrez le site publié en HTTPS dans Chrome ou Samsung Internet.\n2. Appuyez sur le menu ⋮ du navigateur.\n3. Choisissez « Installer l'application » ou « Ajouter à l'écran d'accueil ».");
+const btn=$("installBtn");
+const standalone=window.matchMedia("(display-mode: standalone)").matches||window.navigator.standalone===true;
+if(standalone){toast("L'application est déjà installée.");return}
+if(installPrompt){
+try{const promptEvent=installPrompt;await promptEvent.prompt();const result=await promptEvent.userChoice;installPrompt=null;if(result?.outcome==="accepted")btn.textContent="✓ Installation lancée";else btn.textContent="📲 Installer l'application"}
+catch(error){console.error("Erreur installation :",error);toast("Utilisez le menu ⋮ du navigateur pour installer l'application.",true)}
+return;
+}
+const ua=navigator.userAgent||"";
+if(/iPhone|iPad|iPod/i.test(ua)){alert("Pour installer l'application sur iPhone : ouvrez le site dans Safari, appuyez sur Partager, puis sur « Sur l'écran d'accueil ».");return}
+alert("Pour installer Centre de Formation Le Pédagogue :\n\n1. Ouvrez le site publié en HTTPS dans Chrome ou Samsung Internet.\n2. Appuyez sur le menu ⋮ du navigateur.\n3. Choisissez « Installer l'application » ou « Ajouter à l'écran d'accueil ».\n\nSi l'option n'apparaît pas, vérifiez que manifest.json, sw.js et les icônes PWA sont publiés à côté de index.html.");
 });
 
+/* Enregistrement et vérification du Service Worker */
 if("serviceWorker" in navigator){
-  window.addEventListener("load",async()=>{
-    try{const registration=await navigator.serviceWorker.register("./sw.js");console.log("Service Worker enregistré.");await registration.update().catch(error=>console.warn("Mise à jour différée :",error));}
-    catch(error){console.error("Erreur Service Worker :",error);}
-  });
+window.addEventListener("load",async()=>{
+try{const registration=await navigator.serviceWorker.register("./sw.js");console.log("Service Worker enregistré.");await registration.update().catch(error=>console.warn("Mise à jour du Service Worker différée :",error))}
+catch(error){console.error("Erreur Service Worker :",error)}
+});
 }
 </script>
 </body>
