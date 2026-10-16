@@ -1042,10 +1042,15 @@ async function renderSchedule(page){
 
   try{
     const [scheduleSnap,classSnap,subjectSnap]=await Promise.all([
-      getDocs(collection(db,collectionName)),
-      getDocs(collection(db,"classes")),
-      getDocs(collection(db,"matieres"))
-    ]);
+  getDocs(collection(db,collectionName))
+    .catch(e=>{throw new Error(collectionName+" : "+e.code+" — "+e.message)}),
+
+  getDocs(collection(db,"classes"))
+    .catch(e=>{throw new Error("classes : "+e.code+" — "+e.message)}),
+
+  getDocs(collection(db,"matieres"))
+    .catch(e=>{throw new Error("matieres : "+e.code+" — "+e.message)})
+]);
 
     let teachers=[];
     if(isAdmin()||isProfessor()){
