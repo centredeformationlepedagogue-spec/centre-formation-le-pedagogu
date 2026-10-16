@@ -1086,19 +1086,11 @@ async function renderSchedule(page){
   $("pageContent").innerHTML = `
     <div class="card">
       <h3>${esc(title)}</h3>
-
       <div class="notice">
-        <strong>Impossible de charger les horaires.</strong>
-
-        <p>Diagnostic Firebase :</p>
-
-        <pre style="white-space:pre-wrap;overflow-wrap:anywhere;">${esc(
-          e?.message || String(e)
-        )}</pre>
-
-        <p>Code erreur :</p>
-
-        <pre>${esc(e?.code || "Code non disponible")}</pre>
+        <p>Impossible de charger les horaires.</p>
+        <p><strong>Erreur exacte :</strong></p>
+        <pre style="white-space:pre-wrap;overflow-wrap:anywhere;">${esc(e?.message || String(e))}</pre>
+        <p><strong>Code :</strong> ${esc(e?.code || "Non disponible")}</p>
       </div>
     </div>
   `;
