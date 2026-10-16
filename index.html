@@ -1080,8 +1080,29 @@ async function renderSchedule(page){
     }
 
     drawSchedulePage(page);
-  }catch(e){
-    console.error("Erreur de chargement des horaires :",e);
+}catch(e){
+  console.error("Erreur de chargement des horaires :", e);
+
+  $("pageContent").innerHTML = `
+    <div class="card">
+      <h3>${esc(title)}</h3>
+
+      <div class="notice">
+        <strong>Impossible de charger les horaires.</strong>
+
+        <p>Diagnostic Firebase :</p>
+
+        <pre style="white-space:pre-wrap;overflow-wrap:anywhere;">${esc(
+          e?.message || String(e)
+        )}</pre>
+
+        <p>Code erreur :</p>
+
+        <pre>${esc(e?.code || "Code non disponible")}</pre>
+      </div>
+    </div>
+  `;
+}
     $("pageContent").innerHTML=`
       <div class="card">
         <h3>${esc(title)}</h3>
