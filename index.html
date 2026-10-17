@@ -19,12 +19,6 @@
 .main{flex:1;min-width:0;padding:22px}.page-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px}.page-head h2{margin:0;color:var(--b)}.card,.stat,.dash-card{background:white;border:1px solid var(--bd);border-radius:12px;padding:16px;margin-bottom:16px}.card h3,.dash-card h3{color:var(--b);margin-top:0}.stats-grid,.dashboard-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:18px}.stat small{color:var(--mut)}.stat strong{display:block;font-size:27px;color:var(--b);margin-top:8px}.dash-card{display:flex;flex-direction:column;gap:9px}.dash-card p{color:var(--mut);font-size:14px;line-height:1.5;flex:1}.table-wrap{overflow-x:auto}table{border-collapse:collapse;width:100%;background:white}th,td{border-bottom:1px solid var(--bd);padding:10px;text-align:left;font-size:13px;overflow-wrap:anywhere}th{background:#edf3fc;color:var(--b)}.actions{display:flex;gap:6px;flex-wrap:wrap}.actions .btn{font-size:12px;padding:7px 9px}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.full{grid-column:1/-1}.muted{color:var(--mut)}.welcome{background:linear-gradient(120deg,#0f3d91,#2766ba);color:white}.welcome h3{color:white}.welcome p{line-height:1.6}.badge{display:inline-block;padding:4px 8px;border-radius:20px;font-size:11px;background:#dcfce7;color:#166534}.wait{background:#fef3c7;color:#92400e}
 .exam-question,.course-note{padding:15px;border:1px solid var(--bd);border-radius:10px;margin:12px 0;background:#fff}.exam-question h4{color:var(--b);margin:0 0 10px}.exam-option{display:flex;align-items:center;gap:8px;padding:8px;background:#f8faff;margin:5px 0;border-radius:6px}.exam-option input{width:auto}.exam-option span{flex:1}.timer{font-size:26px;text-align:center;padding:13px;background:#edf3fc;border:2px solid var(--bd);border-radius:10px;position:sticky;top:70px;z-index:3}.timer.warning{background:#fee2e2;color:#991b1b}.course-text{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.7}.course-note img{max-width:100%;max-height:600px;display:block;margin:12px auto}#toast{position:fixed;bottom:18px;right:18px;background:#17243a;color:white;padding:13px 16px;border-radius:8px;z-index:99;max-width:90%}footer{text-align:center;padding:20px;color:var(--mut);font-size:12px}
 @media(max-width:800px){.layout{display:block}.sidebar{width:100%;display:flex;flex-wrap:wrap;gap:3px}.sidebar-title{width:100%}.nav-btn{width:auto;flex:1 1 130px;font-size:13px}.main{padding:12px}.form-grid{grid-template-columns:1fr}.full{grid-column:auto}.topbar{position:static}.timer{top:5px}}
-#pageContent .table-wrap:has(th:nth-child(8)){max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
-#pageContent .table-wrap:has(th:nth-child(8)) th,#pageContent .table-wrap:has(th:nth-child(8)) td{padding:5px 6px;font-size:11px;line-height:1.3;vertical-align:middle}
-#pageContent .table-wrap:has(th:nth-child(8)) th{white-space:nowrap}
-#pageContent .table-wrap:has(th:nth-child(8)) .actions{gap:4px}
-#pageContent .table-wrap:has(th:nth-child(8)) .actions .btn{font-size:10px;padding:5px 6px}
-#pageContent .table-wrap:has(th:nth-child(8)) select{min-width:95px;padding:5px;font-size:11px}
 </style>
 </head>
 <body>
@@ -51,9 +45,18 @@
 </select>
 </div>
 <div class="form-grid">
-<div class="field"><label for="regNom">Nom *</label><input id="regNom" type="text" autocomplete="family-name" required></div>
-<div class="field"><label for="regPrenom">Prénom *</label><input id="regPrenom" type="text" autocomplete="given-name" required></div>
-<div class="field full"><label for="regTelephone">Téléphone *</label><input id="regTelephone" type="tel" autocomplete="tel" required></div>
+<div class="field">
+<label for="regNom">Nom *</label>
+<input id="regNom" type="text" autocomplete="family-name" required>
+</div>
+<div class="field">
+<label for="regPrenom">Prénom *</label>
+<input id="regPrenom" type="text" autocomplete="given-name" required>
+</div>
+<div class="field full">
+<label for="regTelephone">Téléphone *</label>
+<input id="regTelephone" type="tel" autocomplete="tel" required>
+</div>
 <div class="field" id="regNiveauField">
 <label for="regNiveau">Niveau d'études *</label>
 <select id="regNiveau" required>
@@ -119,13 +122,13 @@ googleProvider.setCustomParameters({prompt:"select_account"});
 const $=id=>document.getElementById(id),stamp=()=>serverTimestamp();
 let currentUser=null,currentProfile=null,currentPage="accueil",installPrompt=null,timerInterval=null,activeExam=null,activeAttempt=null,answerCache={},saveQueue=Promise.resolve();
 
-function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function esc(v){return String(v?=""].replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function toast(s,bad=false){const t=$("toast");t.textContent=s;t.classList.remove("hidden");t.style.background=bad?"#a51d1d":"#17243a";clearTimeout(t._timer);t._timer=setTimeout(()=>t.classList.add("hidden"),4500)}
 function authMessage(s,type="info"){$("authMessage").innerHTML=`<div class="message ${type==="error"?"error":type==="success"?"success":""}">${esc(s)}</div>`}
 function friendly(e){const c=e?.code||"";const m={"auth/invalid-credential":"E-mail ou mot de passe incorrect.","auth/invalid-email":"Adresse e-mail invalide.","auth/email-already-in-use":"Cette adresse e-mail possède déjà un compte.","auth/weak-password":"Le mot de passe doit contenir au moins 6 caractères.","auth/unauthorized-domain":"Ce domaine n'est pas autorisé dans Firebase Authentication.","auth/popup-closed-by-user":"La fenêtre Google a été fermée.","permission-denied":"Accès refusé par les règles Firestore.","unavailable":"Service indisponible. Réessayez."};return m[c]||e?.message||"Une erreur est survenue."}
 function isAdmin(){return!!currentUser&&((currentUser.email||"").toLowerCase()===ADMIN_EMAIL||(currentProfile?.role==="administrateur"&&currentProfile?.status==="accepted"))}
-function isProfessor(){return!!currentUser&&currentProfile?.role==="professeur"&&currentProfile?.status==="accepted"}
-function isStudent(){return["eleve","etudiant"].includes(String(currentProfile?.role||"").toLowerCase())}
+function isProfessor(){return!!currentProfile&&(currentProfile.role==="professeur"&&currentProfile.status==="accepted")}
+function isStudent(){return!!currentProfile&&["eleve","etudiant"].includes(String(currentProfile?.role||"").toLowerCase())}
 function approved(){return!!currentProfile&&(isAdmin()||(currentProfile.status==="accepted"&&["professeur","eleve","etudiant"].includes(currentProfile.role)))}
 function roleName(r){return({administrateur:"Administrateur",professeur:"Professeur",eleve:"Élève",etudiant:"Étudiant"})[r]||r||"Utilisateur"}
 function stopTimer(){if(timerInterval){clearInterval(timerInterval);timerInterval=null}}
@@ -214,7 +217,9 @@ try{
 authMessage("Création du compte en cours…");
 const credential=await createUserWithEmailAndPassword(auth,email,password);
 const profileData={uid:credential.user.uid,email:credential.user.email||email,nom,prenom,telephone,role,status:"attente",updatedAt:stamp()};
-if(role==="professeur")profileData.specialite=specialite;else{profileData.niveau=niveau;profileData.classeId=classeId}
+if(role==="professeur")profileData.specialite=specialite;
+else{profileData.niveau=niveau;profileData.classeId=classeId;}
+
 await setDoc(doc(db,"users",credential.user.uid),{...profileData,createdAt:stamp()},{merge:true});
 await sendEmailVerification(credential.user);
 await signOut(auth);
@@ -222,12 +227,20 @@ $("loginPassword").value="";
 $("registrationFields").classList.add("hidden");
 registrationVisible=false;
 btn.textContent="Créer un compte";
-authMessage("Compte créé avec succès. Vérifiez votre e-mail. En attente d'approbation admin.","success");
-}catch(e){console.error(e);authMessage(friendly(e),"error")}finally{registrationBusy=false;btn.disabled=false}
+authMessage("Compte créé avec succès. Vérifiez votre e-mail. Votre demande sera examinée par l'administrateur.","success");
+}catch(e){console.error(e);authMessage(friendly(e),"error")}
+finally{registrationBusy=false;btn.disabled=false}
 });
 
-$("googleBtn").addEventListener("click",async()=>{try{await signInWithPopup(auth,googleProvider)}catch(e){authMessage(friendly(e),"error")}});
-$("resetBtn").addEventListener("click",async()=>{const email=$("loginEmail").value.trim();if(!email)return authMessage("Saisissez votre adresse e-mail.","error");try{await sendPasswordResetEmail(auth,email);authMessage("E-mail de réinitialisation envoyé si le compte existe.","success")}catch(e){authMessage(friendly(e),"error")}});
+$("googleBtn").addEventListener("click",async()=>{
+try{await signInWithPopup(auth,googleProvider)}catch(e){authMessage(friendly(e),"error")}
+});
+$("resetBtn").addEventListener("click",async()=>{
+const email=$("loginEmail").value.trim();
+if(!email)return authMessage("Saisissez votre adresse e-mail.","error");
+try{await sendPasswordResetEmail(auth,email);authMessage("Un e-mail de réinitialisation a été envoyé si le compte existe.","success")}
+catch(e){authMessage(friendly(e),"error")}
+});
 $("logoutBtn").addEventListener("click",async()=>{if(confirm("Voulez-vous vous déconnecter ?")){stopTimer();await signOut(auth)}});
 $("refreshBtn").addEventListener("click",()=>openPage(currentPage));
 
@@ -241,29 +254,23 @@ const modules=[
 {id:"matieres",title:"Matières",collection:"matieres",fields:[["nom","Nom"],["code","Code matière"],["description","Description"]]},
 {id:"cours",title:"Cours",collection:"cours",fields:[["nom","Titre"],["description","Description"],["matiereId","Code matière"],["classeId","Code de classe"]]},
 {id:"annees",title:"Années académiques",collection:"annees_academiques",fields:[["nom","Nom"],["debut","Date de début"],["fin","Date de fin"],["statut","Statut"]]},
-{id:"affectations",title:"Affectations",collection:"affectations",fields:[["professeurUid","Compte professeur"],["classeId","Code de classe"],["matiereId","Code matière"]]},
-{id:"inscriptions",title:"Inscriptions",collection:"inscriptions",fields:[["etudiantId","Compte étudiant"],["eleveId","Compte élève"],["classeId","Code de classe"]]},
+{id:"affectations",title:"Affectations",collection:"affectations",fields:[["professeurUid","Compte professeur"],["classeId","Code de classe"],["matiereId","Code matière"],["coursId","Code cours"]]},
+{id:"inscriptions",title:"Élèves / Classes",collection:"inscriptions",fields:[["etudiantId","Compte étudiant"],["eleveId","Compte élève"],["classeId","Code de classe"],["anneeAcademique","Année académique"],["statut","Statut"]]},
 {id:"devoirs",title:"Devoirs",collection:"devoirs",fields:[["titre","Titre"],["description","Description"],["classeId","Code de classe"],["dateLimite","Date limite"]]},
-{id:"examens",title:"Examens",collection:"examens",fields:[["titre","Titre"],["description","Description"],["classeId","Code de classe"],["dateDebut","Date début"],["dateLimite","Date fin"],["dureeMinutes","Durée min"]]},
-{id:"remises",title:"Remises / Corrections",collection:"remises",fields:[["devoirId","Code devoir"],["contenu","Travail remis"],["note100","Note /100"],["commentaire","Commentaire"]]},
-{id:"resultats",title:"Résultats",collection:"resultats",fields:[["etudiantId","Compte élève"],["classeId","Code classe"],["matiereId","Code matière"],["note20","Note /20"],["note100","Note /100"],["commentaire","Commentaire"]]},
+{id:"examens",title:"Examens",collection:"examens",fields:[["titre","Titre de l'examen"],["description","Description"],["classeId","Code de classe"],["dateDebut","Date et heure de début"],["dateLimite","Date et heure de fin"],["dureeMinutes","Durée en minutes"]]},
+{id:"remises",title:"Remises / Corrections",collection:"remises",fields:[["devoirId","Code devoir"],["etudiantId","Compte élève"],["classeId","Code classe"],["contenu","Travail remis"],["note100","Note sur 100"],["commentaire","Commentaire"],["statut","Statut"]]},
+{id:"resultats",title:"Résultats",collection:"resultats",fields:[["etudiantId","Compte élève"],["classeId","Code classe"],["matiereId","Code matière"],["note100","Note sur 100"],["note20","Note sur 20"],["commentaire","Commentaire"]]},
 {id:"videos",title:"Vidéos",collection:"videos",fields:[["titre","Titre"],["classeId","Code classe"],["url","Lien vidéo"],["description","Description"]]},
-{id:"documents",title:"Documents",collection:"documents",fields:[["titre","Titre"],["classeId","Code classe"],["url","Lien document"],["description","Description"]]},
-{id:"statistiques",title:"Statistiques",collection:"statistiques",fields:[["nom","Nom"],["valeur","Valeur"]]},
-{id:"configuration",title:"Configuration",collection:"configuration",fields:[["nom","Nom"],["valeur","Valeur"]]}
+{id:"documents",title:"Documents",collection:"documents",fields:[["titre","Titre"],["classeId","Code classe"],["url","Lien du document"],["description","Description"]]},
+{id:"statistiques",title:"Statistiques",collection:"statistiques",fields:[["nom","Nom"],["description","Description"],["valeur","Valeur"]]},
+{id:"configuration",title:"Configuration",collection:"configuration",fields:[["nom","Nom"],["valeur","Valeur"],["description","Description"]]}
 ];
 
 const navItems=[
-["accueil","🏠 Accueil"],
+["accueil","🏠 Accueil"],["etudiants","🎓 Étudiants"],["eleves","👨‍🎓 Élèves"],["professeurs","👨‍🏫 Professeurs"],["departements","🏢 Départements"],["filieres","📚 Filières"],["classes","🏫 Classes"],["affectations","🔗 Affectations"],["inscriptions","📋 Inscriptions"],["matieres","📖 Matières"],["cours","📝 Cours"],
 ["horaire_cours","🗓️ Horaire des cours"],
 ["horaire_examens","📝 Horaire des examens"],
-["devoirs","📑 Devoirs"],["examens","⏱️ Examens"],["notes_cours","📒 Notes de cours"],
-["remises","📥 Remises / Corrections"],["bulletin","🎓 Mon bulletin"],
-["resultats","📊 Résultats"],["videos","🎬 Vidéos"],["documents","📄 Documents"],
-["etudiants","🎓 Étudiants"],["eleves","👨‍🎓 Élèves"],["professeurs","👨‍🏫 Professeurs"],
-["departements","🏢 Départements"],["filieres","📚 Filières"],["classes","🏫 Classes"],
-["affectations","🔗 Affectations"],["inscriptions","📋 Inscriptions"],["matieres","📖 Matières"],
-["cours","📝 Cours"],["annees","📅 Années"],["statistiques","📈 Statistiques"],["configuration","⚙️ Configuration"]
+["annees","📅 Années académiques"],["devoirs","📑 Devoirs"],["examens","⏱️ Examens"],["notes_cours","📒 Notes de cours"],["remises","📥 Remises / Corrections"],["bulletin","🎓 Mon bulletin"],["resultats","📊 Résultats"],["videos","🎬 Vidéos"],["documents","📄 Documents"],["statistiques","📈 Statistiques"],["configuration","⚙️ Configuration"]
 ];
 
 const studentPages=["accueil","devoirs","examens","notes_cours","remises","resultats","bulletin","videos","documents","horaire_cours","horaire_examens"];
@@ -271,23 +278,17 @@ const teacherPages=studentPages.filter(p=>p!=="bulletin");
 
 function buildNavigation(){
 const n=$("navigation");n.innerHTML="";
-navItems.filter(([id])=>{
-if(id==="bulletin")return ["eleve","etudiant"].includes(currentProfile?.role);
-if(isAdmin())return true;
-if(currentProfile?.role==="professeur")return teacherPages.includes(id);
-return studentPages.includes(id);
-}).forEach(([id,label])=>{
-const b=document.createElement("button");b.className="nav-btn"+(id===currentPage?" active":"");b.textContent=label;b.onclick=()=>openPage(id);n.appendChild(b);
+navItems.filter(([id])=>id==="bulletin"?["eleve","etudiant"].includes(currentProfile?.role):isAdmin()||(currentProfile?.role==="professeur"?teacherPages:studentPages).includes(id)).forEach(([id,label])=>{
+const b=document.createElement("button");b.className="nav-btn"+(id===currentPage?" active":"");b.textContent=label;b.onclick=()=>openPage(id);n.appendChild(b)
 });
-if(isAdmin()){
-for(const [id,label] of [["utilisateurs","👥 Utilisateurs"],["sauvegarde","💾 Sauvegarde"]]){
-const b=document.createElement("button");b.className="nav-btn"+(id===currentPage?" active":"");b.textContent=label;b.onclick=()=>openPage(id);n.appendChild(b);
-}
+if(isAdmin())for(const [id,label] of [["utilisateurs","👥 Utilisateurs"],["sauvegarde","💾 Sauvegarde"]]){
+const b=document.createElement("button");b.className="nav-btn"+(id===currentPage?" active":"");b.textContent=label;b.onclick=()=>openPage(id);n.appendChild(b)
 }
 }
 
 async function openPage(page){
 if(!approved())return;
+if(!isAdmin()&&!(currentProfile?.role==="professeur"?teacherPages:studentPages).includes(page)){toast("Accès non autorisé.",true);return;}
 try{
 stopTimer();currentPage=page;buildNavigation();
 const mod=modules.find(m=>m.id===page);
@@ -303,82 +304,107 @@ if(page==="bulletin")return await renderBulletin();
 if(page==="utilisateurs")return await renderUsers();
 if(page==="sauvegarde")return await renderBackup();
 if(mod)return await renderModule(mod);
-}catch(e){console.error(e);$("pageContent").innerHTML='<div class="card"><b>Erreur :</b> '+esc(friendly(e))+'</div>'}
+}catch(e){
+console.error(e);
+$("pageContent").innerHTML='<div class="card"><b>Erreur de navigation :</b> '+esc(friendly(e))+'</div>';
+}
 }
 window.goPage=p=>openPage(p);
 
 function dash(icon,title,desc,page){return`<div class="dash-card"><div style="font-size:27px">${icon}</div><h3>${esc(title)}</h3><p>${esc(desc)}</p><button class="btn secondary" onclick="window.goPage('${page}')">Ouvrir →</button></div>`}
 async function renderDashboard(){
 const name=currentProfile?.nom||currentUser?.displayName||currentUser?.email||"Utilisateur";
-let html=`<div class="card welcome"><h3>Bienvenue, ${esc(name)} !</h3><p>Espace académique — ${esc(roleName(currentProfile.role))}</p></div>`;
+let html=`<div class="card welcome"><h3>Bienvenue, ${esc(name)} !</h3><p>Votre espace académique — ${esc(roleName(currentProfile.role))}</p></div>`;
 if(isAdmin()){
 const names=["etudiants","eleves","professeurs","classes","matieres","devoirs","examens"],counts=await Promise.all(names.map(async n=>(await getDocs(collection(db,n))).size));
 const waiting=await getDocs(query(collection(db,"users"),where("status","==","attente")));
-html+=`<div class="stats-grid">${[["Étudiants",Math.max(counts[0],counts[1])],["Professeurs",counts[2]],["Classes",counts[3]],["Matières",counts[4]],["Devoirs",counts[5]],["Examens",counts[6]],["En attente",waiting.size]].map(x=>`<div class="stat"><small>${esc(x[0])}</small><strong>${x[1]}</strong></div>`).join("")}</div>`;
-html+='<div class="dashboard-grid">'+dash("👥","Utilisateurs","Approuver les comptes et rôles.","utilisateurs")+dash("🏫","Classes","Gérer les classes.","classes")+dash("🗓️","Horaire des cours","Gérer les emplois du temps.","horaire_cours")+dash("⏱️","Examens","Créer des examens chronométrés.","examens")+dash("📒","Notes de cours","Publier cours et photos.","notes_cours")+dash("📥","Corrections","Suivre les remises.","remises")+dash("💾","Sauvegarde","Exporter les données.","sauvegarde")+'</div>';
+html+=`<div class="stats-grid">${[["Étudiants",Math.max(counts[0],counts[1])],["Professeurs",counts[2]],["Classes",counts[3]],["Matières",counts[4]],["Devoirs",counts[5]],["Examens",counts[6]],["Comptes en attente",waiting.size]].map(x=>`<div class="stat"><small>${esc(x[0])}</small><strong>${x[1]}</strong></div>`).join("")}</div>`;
+html+='<div class="dashboard-grid">'+dash("👥","Utilisateurs","Approuver les comptes et attribuer les rôles.","utilisateurs")+dash("🏫","Classes","Organiser les classes.","classes")+dash("🎓","Étudiants","Gérer les dossiers.","etudiants")+dash("👨‍🏫","Professeurs","Gérer les professeurs.","professeurs")+dash("⏱️","Examens","Créer des QCU et des questions ouvertes.","examens")+dash("📒","Notes de cours","Publier texte et photos.","notes_cours")+dash("📥","Corrections","Consulter les remises.","remises")+dash("💾","Sauvegarde","Exporter les données.","sauvegarde")+'</div>';
 }else if(currentProfile.role==="professeur"){
-html+='<div class="dashboard-grid">'+dash("🗓️","Horaire des cours","Consulter l'horaire des cours.","horaire_cours")+dash("📝","Horaire des examens","Gérer l'horaire des examens.","horaire_examens")+dash("📑","Devoirs","Publier des devoirs.","devoirs")+dash("⏱️","Examens","Créer et corriger des examens.","examens")+dash("📒","Notes de cours","Partager des cours.","notes_cours")+dash("📥","Corrections","Corriger les travaux d'élèves.","remises")+dash("📊","Résultats","Saisir les notes.","resultats")+'</div>';
+html+='<div class="dashboard-grid">'
++dash("📑","Devoirs","Créer et gérer les devoirs.","devoirs")
++dash("⏱️","Examens","Créer des QCU et questions ouvertes.","examens")
++dash("📒","Notes de cours","Publier les cours.","notes_cours")
++dash("📥","Corrections","Corriger les travaux et examens.","remises")
++dash("📊","Résultats","Consulter les notes.","resultats")
++dash("🗓️","Horaire des cours","Consulter les horaires.","horaire_cours")
++dash("📝","Horaire des examens","Consulter et créer les examens.","horaire_examens")
++'</div>';
 }else{
-html+='<div class="dashboard-grid">'+dash("🗓️","Horaire des cours","Consulter votre emploi du temps.","horaire_cours")+dash("📝","Horaire des examens","Consulter les dates d'examens.","horaire_examens")+dash("📑","Mes devoirs","Consulter et remettre les devoirs.","devoirs")+dash("⏱️","Examens","Passer les examens.","examens")+dash("📒","Notes de cours","Lire et copier les cours.","notes_cours")+dash("📊","Mes résultats","Voir vos notes.","resultats")+dash("🎓","Mon bulletin","Consulter et imprimer votre bulletin.","bulletin")+'</div>';
+html+='<div class="dashboard-grid">'
++dash("📑","Mes devoirs","Consulter les devoirs.","devoirs")
++dash("⏱️","Examens","Passer les examens.","examens")
++dash("📒","Notes de cours","Lire et copier les cours.","notes_cours")
++dash("📥","Mes remises","Consulter les travaux.","remises")
++dash("📊","Mes résultats","Voir les notes.","resultats")
++dash("🎓","Mon bulletin","Consulter et imprimer mon bulletin scolaire.","bulletin")
++dash("🗓️","Horaire des cours","Consulter l'emploi du temps.","horaire_cours")
++dash("📝","Horaire des examens","Consulter le calendrier des examens.","horaire_examens")
++'</div>';
 }
 $("pageContent").innerHTML=html;
 }
 
-function canEditModule(id){return isAdmin()||(["devoirs","examens","notes_cours"].includes(id)&&isProfessor())||(id==="remises"&&approved())||(id==="resultats"&&isProfessor())}
+function canEditModule(id){return isAdmin()||(["devoirs","examens","notes_cours"].includes(id)&&currentProfile.role==="professeur")||(["remises"].includes(id)&&["professeur","eleve","etudiant"].includes(currentProfile.role))||(id==="resultats"&&currentProfile.role==="professeur")}
 
 async function renderModule(m){
 let records=[];
-const cl=currentProfile?.classeId;
 if(isAdmin())records=(await getDocs(collection(db,m.collection))).docs.map(d=>({id:d.id,...d.data()}));
-else if(["devoirs","examens","videos","documents","notes_cours"].includes(m.id)&&cl){
-records=(await getDocs(query(collection(db,m.collection),where("classeId","==",cl)))).docs.map(d=>({id:d.id,...d.data()}));
-}else if(m.id==="remises"||m.id==="resultats"){
-const q=isProfessor()?query(collection(db,m.collection),where("professeurUid","==",currentUser.uid)):query(collection(db,m.collection),where("etudiantId","==",currentUser.uid));
-records=(await getDocs(q)).docs.map(d=>({id:d.id,...d.data()}));
+else if(["devoirs","examens","videos","documents","notes_cours"].includes(m.id)){
+const cl=currentProfile.classeId;if(cl)records=(await getDocs(query(collection(db,m.collection),where("classeId","==",cl)))).docs.map(d=>({id:d.id,...d.data()}))
+}else if(m.id==="remises"){
+const q=currentProfile.role==="professeur"?query(collection(db,m.collection),where("professeurUid","==",currentUser.uid)):query(collection(db,m.collection),where("etudiantId","==",currentUser.uid));records=(await getDocs(q)).docs.map(d=>({id:d.id,...d.data()}))
+}else if(m.id==="resultats"){
+const q=currentProfile.role==="professeur"?query(collection(db,m.collection),where("professeurUid","==",currentUser.uid)):query(collection(db,m.collection),where("etudiantId","==",currentUser.uid));records=(await getDocs(q)).docs.map(d=>({id:d.id,...d.data()}))
 }
 $("pageContent").innerHTML=`<div class="card"><div class="page-head"><div><h3>${esc(m.title)}</h3><p class="muted">${records.length} enregistrement(s)</p></div>${canEditModule(m.id)?'<button id="addRecord" class="btn primary">＋ Ajouter</button>':""}</div><div id="recordFormArea"></div><div class="table-wrap"><table><thead><tr><th>Informations</th><th>Actions</th></tr></thead><tbody>${records.map(r=>`<tr><td>${m.fields.map(([k,l])=>r[k]!==undefined&&r[k]!==""?`<div><b>${esc(l)} :</b> ${esc(r[k])}</div>`:"").join("")||esc(r.titre||r.id)}</td><td><div class="actions">${canEditModule(m.id)?`<button class="btn secondary" data-edit="${esc(r.id)}">Modifier</button>`:""}${isAdmin()?`<button class="btn danger" data-del="${esc(r.id)}">Supprimer</button>`:""}</div></td></tr>`).join("")||'<tr><td colspan="2">Aucun enregistrement.</td></tr>'}</tbody></table></div></div>`;
 if($("addRecord"))$("addRecord").onclick=()=>recordForm(m,null);
 $("pageContent").querySelectorAll("[data-edit]").forEach(b=>b.onclick=()=>recordForm(m,records.find(r=>r.id===b.dataset.edit)));
-$("pageContent").querySelectorAll("[data-del]").forEach(b=>b.onclick=async()=>{if(confirm("Supprimer ?"))try{await deleteDoc(doc(db,m.collection,b.dataset.del));toast("Supprimé.");await openPage(m.id)}catch(e){toast(friendly(e),true)}})
+$("pageContent").querySelectorAll("[data-del]").forEach(b=>b.onclick=async()=>{if(confirm("Supprimer cet enregistrement ?"))try{await deleteDoc(doc(db,m.collection,b.dataset.del));toast("Supprimé.");await openPage(m.id)}catch(e){toast(friendly(e),true)}})
 }
 
 function recordForm(m,r){
 const area=$("recordFormArea");if(!area)return;
 const isExam=m.id==="examens";
-area.innerHTML=`<div class="card"><h3>${r?"Modifier":"Ajouter"} — ${esc(m.title)}</h3><form id="dataForm"><div class="form-grid">${m.fields.filter(([k])=>!(isExam&&k==="questionsJSON")).map(([k,l])=>{
+area.innerHTML=`<div class="card"><h3>${r?"Modifier":"Ajouter"} — ${esc(m.title)}</h3><form id="dataForm"><div class="form-grid">${m.fields.filter(([k])=>!(isExam&&k=== "questionsJSON")).map(([k,l])=>{
 const value=r?.[k]??"",long=["description","contenu","commentaire"].includes(k),num=["note100","note20","dureeMinutes","noteMax"].includes(k),type=["dateLimite","dateDebut"].includes(k)?"datetime-local":num?"number":"text";
 let formattedValue=value;if(type==="datetime-local"&&value)formattedValue=String(value).slice(0,16);
 return`<div class="field ${long?"full":""}"><label>${esc(l)}</label>${long?`<textarea name="${esc(k)}">${esc(value)}</textarea>`:`<input name="${esc(k)}" type="${type}" value="${esc(formattedValue)}" ${num?'min="0"':''} ${isExam&&k==="titre"?"required":""} ${isExam&&k==="classeId"?"required":""}>`}</div>`
-}).join("")}</div>${isExam?examBuilder():""}<div class="actions"><button class="btn primary" type="submit">Enregistrer</button><button class="btn secondary" id="cancelForm" type="button">Annuler</button></div></form></div>`;
+}).join("")}</div>${isExam?examBuilder(r):""}<div class="actions"><button class="btn primary" type="submit">Enregistrer</button><button class="btn secondary" id="cancelForm" type="button">Annuler</button></div></form></div>`;
 $("cancelForm").onclick=()=>area.innerHTML="";
 if(isExam)setupQuestionBuilder(parseQuestions(r||{}));
 $("dataForm").onsubmit=async e=>{
 e.preventDefault();const fd=new FormData(e.currentTarget),data={};
 for(const[k,v]of fd.entries())data[k]=String(v).trim();
-if(["devoirs","examens","remises","resultats","affectations"].includes(m.id)&&isProfessor()){data.professeurUid=currentUser.uid;data.professeurId=currentUser.uid}
-if(m.id==="remises"&&!isAdmin()&&!isProfessor()){data.etudiantId=currentUser.uid;data.statut="soumis";delete data.note100;delete data.commentaire}
+if(["devoirs","examens","remises","resultats","affectations"].includes(m.id)){
+if(currentProfile.role==="professeur"){data.professeurUid=currentUser.uid;data.professeurId=currentUser.uid}
+}
+if(m.id==="remises"&&!isAdmin()&&currentProfile.role!=="professeur"){
+data.etudiantId=currentUser.uid;data.statut="soumis";delete data.note100;delete data.commentaire;
+}
 if(isExam){
-let questions;try{questions=readBuilderQuestions()}catch(error){return toast(error?.message||"Vérifiez les questions.",true)}
+let questions;
+try{questions=readBuilderQuestions()}catch(error){return toast(error?.message||"Vérifiez les questions.",true)}
 if(!questions.length)return toast("Ajoutez au moins une question.",true);
 data.questionsJSON=JSON.stringify(questions);data.dureeMinutes=Math.floor(Number(data.dureeMinutes||30));data.noteMax=questions.reduce((s,q)=>s+Number(q.points||0),0);data.statut="publie";data.professeurUid=isAdmin()?(data.professeurUid||currentUser.uid):currentUser.uid;data.professeurId=isAdmin()?(data.professeurId||currentUser.uid):currentUser.uid;
 }
-try{data.updatedAt=stamp();if(r)await updateDoc(doc(db,m.collection,r.id),data);else{data.createdAt=stamp();await addDoc(collection(db,m.collection),data)}toast("Enregistré.");await openPage(m.id)}
+try{data.updatedAt=stamp();if(r)await updateDoc(doc(db,m.collection,r.id),data);else{data.createdAt=stamp();await addDoc(collection(db,m.collection),data)}toast("Enregistrement effectué.");await openPage(m.id)}
 catch(err){toast(friendly(err),true)}
 }
 }
 
 function examBuilder(){
-return`<div class="full"><div class="notice">Types de questions : QCU ou question ouverte.</div><div class="field"><label>Type de question</label><select id="newQuestionType"><option value="qcm">QCU</option><option value="ecrit">Question ouverte</option></select></div><button class="btn secondary" id="addQuestion" type="button">＋ Ajouter une question</button><div id="questionBuilder"></div></div>`
+return`<div class="full"><div class="notice">Types : QCU (une seule bonne réponse) ou question ouverte.</div><div class="field"><label>Type de la prochaine question</label><select id="newQuestionType"><option value="qcm">QCU</option><option value="ecrit">Question ouverte</option></select></div><button class="btn secondary" id="addQuestion" type="button">＋ Ajouter une question</button><div id="questionBuilder"></div></div>`
 }
 let builderQuestions=[];
 function setupQuestionBuilder(qs){
-builderQuestions=(qs||[]).map(q=>({...q,options:Array.isArray(q.options)?[...q.options]:["Option A","Option B"]}));
+builderQuestions=(qs||[]).map(q=>({...q,options:Array.isArray(q.options)?[...q.options]:["Option A","Option B","Option C"]}));
 drawQuestionBuilder();
-$("addQuestion").onclick=()=>{builderQuestions.push({type:$("newQuestionType").value,question:"",points:1,options:["Option A","Option B"],correctAnswer:"Option A"});drawQuestionBuilder()}
+$("addQuestion").onclick=()=>{builderQuestions.push({type:$("newQuestionType").value,question:"",points:1,options:["Option A","Option B","Option C"],correctAnswer:"Option A"});drawQuestionBuilder()}
 }
 function drawQuestionBuilder(){
 const area=$("questionBuilder");if(!area)return;
-area.innerHTML=builderQuestions.map((q,i)=>`<div class="exam-question"><div class="page-head"><h4>Question ${i+1}</h4><button type="button" class="btn danger" data-remove-q="${i}">Supprimer</button></div><div class="field"><label>Type</label><select data-qtype="${i}"><option value="qcm" ${q.type==="qcm"?"selected":""}>QCU</option><option value="ecrit" ${q.type==="ecrit"?"selected":""}>Ouverte</option></select></div><div class="field"><label>Texte</label><textarea data-qtext="${i}" required>${esc(q.question||"")}</textarea></div><div class="field"><label>Points</label><input data-qpoints="${i}" type="number" min="0.5" step="0.5" value="${Number(q.points)||1}"></div>${q.type==="qcm"?`<div class="field"><label>Options (lignes)</label><textarea data-qopts="${i}">${esc((q.options||[]).join("\n"))}</textarea><label>Bonne réponse</label><select data-qcorrect="${i}">${(q.options||[]).map(o=>`<option value="${esc(o)}" ${String(o)===String(q.correctAnswer)?"selected":""}>${esc(o)}</option>`).join("")}</select></div>`:""}</div>`).join("");
+area.innerHTML=builderQuestions.map((q,i)=>`<div class="exam-question"><h4>Question ${i+1}</h4><button type="button" class="btn danger" data-remove-q="${i}">Supprimer</button><div class="field"><label>Type</label><select data-qtype="${i}"><option value="qcm" ${q.type==="qcm"?"selected":""}>QCU</option><option value="ecrit" ${q.type==="ecrit"?"selected":""}>Ouverte</option></select></div><div class="field"><label>Question</label><textarea data-qtext="${i}" required>${esc(q.question||"")}</textarea></div><div class="field"><label>Points</label><input data-qpoints="${i}" type="number" min="0.5" step="0.5" value="${Number(q.points)||1}"></div>${q.type==="qcm"?`<div class="field"><label>Options (une par ligne)</label><textarea data-qopts="${i}">${esc((q.options||[]).join("\n"))}</textarea><label>Bonne réponse</label><select data-qcorrect="${i}">${(q.options||[]).map(o=>`<option value="${esc(o)}" ${String(o)===String(q.correctAnswer)?"selected":""}>${esc(o)}</option>`).join("")}</select></div>`:""}</div>`).join("");
 area.querySelectorAll("[data-qtype]").forEach(el=>el.onchange=()=>{builderQuestions[Number(el.dataset.qtype)].type=el.value;drawQuestionBuilder()});
 area.querySelectorAll("[data-qtext]").forEach(el=>el.oninput=()=>builderQuestions[Number(el.dataset.qtext)].question=el.value);
 area.querySelectorAll("[data-qpoints]").forEach(el=>el.oninput=()=>builderQuestions[Number(el.dataset.qpoints)].points=Number(el.value));
@@ -390,28 +416,29 @@ function readBuilderQuestions(){
 return builderQuestions.map(q=>({...q,question:String(q.question||"").trim(),points:Number(q.points)||1}))
 }
 function parseQuestions(exam){
-try{const v=exam.questionsJSON;const q=Array.isArray(v)?v:JSON.parse(v||"[]");return Array.isArray(q)?q:[]}catch{return[]}
+try{const q=typeof exam.questionsJSON==="string"?JSON.parse(exam.questionsJSON):exam.questionsJSON;return Array.isArray(q)?q:[]}catch{return[]}
 }
 function fmtTime(ms){const s=Math.max(0,Math.ceil(ms/1000));return`${String(Math.floor(s/60)).padStart(2,"0")}:${String(s%60).padStart(2,"0")}`}
 function available(e){const n=Date.now(),s=e.dateDebut?new Date(e.dateDebut).getTime():0,f=e.dateLimite?new Date(e.dateLimite).getTime():Infinity;return n>=s&&n<=f}
 
 async function renderExams(){
 stopTimer();
-if(isAdmin()||isProfessor())return renderTeacherExams();
-const cl=currentProfile?.classeId;
-if(!cl){$("pageContent").innerHTML='<div class="card">Classe non définie.</div>';return}
+if(isAdmin()||currentProfile.role==="professeur")return renderTeacherExams();
+const cl=currentProfile.classeId;
+if(!cl){$("pageContent").innerHTML='<div class="card"><h3>Examens</h3><div class="notice">Votre compte n’est pas associé à une classe.</div></div>';return}
 const snap=await getDocs(query(collection(db,"examens"),where("classeId","==",cl))),exams=snap.docs.map(d=>({id:d.id,...d.data()}));
-let attempts=[];try{attempts=(await getDocs(query(collection(db,"tentatives_examens"),where("eleveUid","==",currentUser.uid)))).docs.map(d=>({id:d.id,...d.data()}))}catch(e){console.warn(e)}
-$("pageContent").innerHTML=`<div class="card"><h3>Mes examens</h3><div class="table-wrap"><table><thead><tr><th>Examen</th><th>Durée</th><th>Résultat</th><th>Action</th></tr></thead><tbody>${exams.map(e=>{const a=attempts.find(x=>x.examenId===e.id&&x.statut==="termine"),ongoing=attempts.find(x=>x.examenId===e.id&&x.statut==="en_cours");return`<tr><td><b>${esc(e.titre)}</b></td><td>${Number(e.dureeMinutes\vert{}\vert{}30)} min</td><td>${a?`${Number(a.noteObtenue||0)} / ${Number(a.noteMax||e.noteMax||0)}`:ongoing?"En cours":"Non commencé"}</td><td>${a?"Terminado":available(e)?`<button class="btn primary" data-start="${esc(e.id)}">${ongoing?"Reprendre":"Commencer"}</button>`:"Hors période"}</td></tr>`}).join("")||'<tr><td colspan="4">Aucun examen.</td></tr>'}</tbody></table></div></div>`;
+let attempts=[];try{attempts=(await getDocs(query(collection(db,"tentatives_examens"),where("etudiantId","==",currentUser.uid)))).docs.map(d=>({id:d.id,...d.data()}))}catch(e){console.warn(e)}
+$("pageContent").innerHTML=`<div class="card"><h3>Mes examens</h3><div class="table-wrap"><table><thead><tr><th>Examen</th><th>Durée</th><th>Résultat</th><th>Action</th></tr></thead><tbody>${exams.map(e=>{const a=attempts.find(x=>x.examenId===e.id&&x.statut==="termine"),ongoing=attempts.find(x=>x.examenId===e.id&&x.statut==="en_cours");return`<tr><td><b>${esc(e.titre)}</b></td><td>${Number(e.dureeMinutes\vert{}\vert{}30)} min</td><td>${a?`${Number(a.noteObtenue||0)} / ${Number(a.noteMax||e.noteMax||0)}`:ongoing?"En cours":"Non commencé"}</td><td>${a?"Terminé":available(e)?`<button class="btn primary" data-start="${esc(e.id)}">${ongoing?"Reprendre":"Commencer"}</button>`:"Hors période"}</td></tr>`}).join("")||'<tr><td colspan="4">Aucun examen.</td></tr>'}</tbody></table></div></div>`;
 $("pageContent").querySelectorAll("[data-start]").forEach(b=>b.onclick=()=>startExam(exams.find(e=>e.id===b.dataset.start),attempts.find(a=>a.examenId===b.dataset.start&&a.statut==="en_cours")))
 }
 
 async function renderTeacherExams(){
 const snap=isAdmin()?await getDocs(collection(db,"examens")):await getDocs(query(collection(db,"examens"),where("professeurId","==",currentUser.uid)));
 const exams=snap.docs.map(d=>({id:d.id,...d.data()}));
-$("pageContent").innerHTML=`<div class="card"><div class="page-head"><div><h3>Gestion des examens</h3></div><button id="createExam" class="btn primary">＋ Créer</button></div><div class="table-wrap"><table><thead><tr><th>Titre</th><th>Classe</th><th>Durée</th><th>Actions</th></tr></thead><tbody>${exams.map(e=>`<tr><td>${esc(e.titre)}</td><td>${esc(e.classeId)}</td><td>${Number(e.dureeMinutes||30)} min</td><td><div class="actions"><button class="btn secondary" data-edit-exam="${esc(e.id)}">Modifier</button><button class="btn primary" data-attempts="${esc(e.id)}">Tentatives</button></div></td></tr>`).join("")||'<tr><td colspan="4">Aucun examen.</td></tr>'}</tbody></table></div><div id="recordFormArea"></div><div id="examExtra"></div></div>`;
+$("pageContent").innerHTML=`<div class="card"><div class="page-head"><div><h3>Gestion des examens</h3></div><button id="createExam" class="btn primary">＋ Créer</button></div><div class="table-wrap"><table><thead><tr><th>Titre</th><th>Classe</th><th>Durée</th><th>Actions</th></tr></thead><tbody>${exams.map(e=>`<tr><td>${esc(e.titre)}</td><td>${esc(e.classeId)}</td><td>${Number(e.dureeMinutes||30)} min</td><td><div class="actions"><button class="btn secondary" data-edit-exam="${esc(e.id)}">Modifier</button><button class="btn primary" data-attempts="${esc(e.id)}">Tentatives</button>${isAdmin()?`<button class="btn danger" data-delete-exam="${esc(e.id)}">Supprimer</button>`:""}</div></td></tr>`).join("")||'<tr><td colspan="4">Aucun examen.</td></tr>'}</tbody></table></div><div id="recordFormArea"></div><div id="examExtra"></div></div>`;
 $("createExam").onclick=()=>recordForm(modules.find(x=>x.id==="examens"),null);
 $("pageContent").querySelectorAll("[data-edit-exam]").forEach(b=>b.onclick=()=>recordForm(modules.find(m=>m.id==="examens"),exams.find(x=>x.id===b.dataset.editExam)));
+$("pageContent").querySelectorAll("[data-delete-exam]").forEach(b=>b.onclick=async()=>{if(confirm("Supprimer ?"))try{await deleteDoc(doc(db,"examens",b.dataset.deleteExam));await renderTeacherExams()}catch(e){toast(friendly(e),true)}});
 $("pageContent").querySelectorAll("[data-attempts]").forEach(b=>b.onclick=()=>showAttempts(exams.find(x=>x.id===b.dataset.attempts)))
 }
 
@@ -419,138 +446,150 @@ async function showAttempts(exam){
 const area=$("examExtra");area.innerHTML='<div class="card">Chargement…</div>';
 try{
 const snap=await getDocs(query(collection(db,"tentatives_examens"),where("examenId","==",exam.id))),rows=snap.docs.map(d=>({id:d.id,...d.data()}));
-area.innerHTML=`<div class="card"><h3>Tentatives</h3><div class="table-wrap"><table><thead><tr><th>Élève</th><th>Note</th><th>Statut</th></tr></thead><tbody>${rows.map(a=>`<tr><td>${esc(a.etudiantEmail\vert{}\vert{}a.eleveUid)}</td><td>${Number(a.noteObtenue||0)} / ${Number(a.noteMax\vert{}\vert{}exam.noteMax\vert{}\vert{}0)}</td><td>${esc(a.statut)}</td></tr>`).join("")||'<tr><td colspan="3">Aucune tentative.</td></tr>'}</tbody></table></div></div>`;
+area.innerHTML=`<div class="card"><h3>Tentatives — ${esc(exam.titre)}</h3><div class="table-wrap"><table><thead><tr><th>Étudiant</th><th>Note</th><th>Statut</th><th>Action</th></tr></thead><tbody>${rows.map(a=>`<tr><td>${esc(a.etudiantEmail||a.etudiantId)}</td><td>${Number(a.noteObtenue\vert{}\vert{}0)} /${Number(a.noteMax||exam.noteMax||0)}</td><td>${esc(a.statut)}</td><td>${a.statut==="termine"&&a.correctionManuelle?`<button class="btn primary" data-grade="${esc(a.id)}">Corriger</button>`:"—"}</td></tr>`).join("")||'<tr><td colspan="4">Aucune tentative.</td></tr>'}</tbody></table></div><div id="gradeArea"></div></div>`;
+area.querySelectorAll("[data-grade]").forEach(b=>b.onclick=()=>gradeAttempt(rows.find(a=>a.id===b.dataset.grade),exam))
 }catch(e){area.innerHTML=`<div class="notice">${esc(friendly(e))}</div>`}
 }
 
+async function gradeAttempt(a,exam){
+const qs=parseQuestions(exam),answers=a.reponses||{},indices=qs.map((q,i)=>q.type==="ecrit"?i:-1).filter(i=>i>=0),area=$("gradeArea");
+area.innerHTML=`<h3>Correction</h3><form id="gradeForm">${indices.map(i=>`<div class="exam-question"><h4>${esc(qs[i].question)}</h4><p><b>Réponse :</b> ${esc(answers[i]\vert{}\vert{}"")}</p><label>Note (max ${Number(qs[i].points)||1})</label><input type="number" name="g${i}" min="0" max="${Number(qs[i].points)\vert{}\vert{}1}" step="0.5" value="${Number((a.notesEcrites||{})[i]||0)}" required></div>`).join("")}<div class="field"><label>Commentaire</label><textarea name="commentaire">${esc(a.commentaire||"")}</textarea></div><button class="btn primary">Enregistrer</button></form>`;
+$("gradeForm").onsubmit=async e=>{e.preventDefault();const fd=new FormData(e.currentTarget),notes={};let score=0;for(const i of indices){const n=Number(fd.get("g"+i));notes[i]=n;score+=n}
+try{await updateDoc(doc(db,"tentatives_examens",a.id),{notesEcrites:notes,noteEcrite:score,noteObtenue:(Number(a.noteQCM||0)+score),correctionManuelle:false,commentaire:String(fd.get("commentaire")||""),updatedAt:stamp()});toast("Corrigé.");await showAttempts(exam)}catch(err){toast(friendly(err),true)}
+}
+}
+
 async function startExam(exam,existing){
-if(!exam||!available(exam))return toast("Examen indisponible.",true);
 const qs=parseQuestions(exam);if(!qs.length)return toast("Examen vide.",true);
 let attempt=existing;
 if(!attempt){
-if(!confirm(`Commencer « ${exam.titre} » ?`))return;
-const start=Date.now(),duration=Math.max(1,Number(exam.dureeMinutes||30))*60000,data={examenId:exam.id,titre:exam.titre||"",eleveUid:currentUser.uid,etudiantId:currentUser.uid,classeId:exam.classeId||"",debutMs:start,finMs:start+duration,statut:"en_cours",reponses:{},createdAt:stamp(),updatedAt:stamp()};
-try{const ref=await addDoc(collection(db,"tentatives_examens"),data);attempt={id:ref.id,...data}}catch(e){return toast(friendly(e),true)}
+if(!confirm(`Commencer ${exam.titre} ?`))return;
+const start=Date.now(),duration=Math.max(1,Number(exam.dureeMinutes||30))*60000,data={examenId:exam.id,titre:exam.titre||"",etudiantId:currentUser.uid,etudiantEmail:currentUser.email||"",classeId:exam.classeId||"",debutMs:start,finMs:start+duration,statut:"en_cours",reponses:{},createdAt:stamp()};
+const ref=await addDoc(collection(db,"tentatives_examens"),data);attempt={id:ref.id,...data}
 }
 activeExam=exam;activeAttempt=attempt;answerCache={...(attempt.reponses||{})};renderExamAttempt()
 }
 
 function renderExamAttempt(){
-stopTimer();const exam=activeExam,a=activeAttempt,qs=parseQuestions(exam);if(!exam||!a)return;
-$("pageTitle").textContent=exam.titre||"Examen";
-$("pageContent").innerHTML=`<div class="card"><div class="page-head"><h3>${esc(exam.titre)}</h3><button class="btn secondary" id="leaveExam">Quitter</button></div><div id="examTimer" class="timer">--:--</div><form id="answerForm">${qs.map((q,i)=>`<div class="exam-question"><h4>Question ${i+1}</h4><p>${esc(q.question)}</p>${q.type==="qcm"?(q.options||[]).map(o=>`<label class="exam-option"><input type="radio" name="q${i}" value="${esc(o)}" ${String(answerCache[i]??"")===String(o)?"checked":""}><span>${esc(o)}</span></label>`).join(""):`<textarea name="q${i}">${esc(answerCache[i]||"")}</textarea>`}</div>`).join("")}<button id="submitExam" class="btn primary block">Remettre</button></form></div>`;
+stopTimer();const exam=activeExam,a=activeAttempt,qs=parseQuestions(exam);
+$("pageTitle").textContent=exam.titre;
+$("pageContent").innerHTML=`<div class="card"><div class="page-head"><h3>${esc(exam.titre)}</h3><button class="btn secondary" id="leaveExam">Quitter</button></div><div id="examTimer" class="timer">--:--</div><form id="answerForm">${qs.map((q,i)=>`<div class="exam-question"><h4>Question ${i+1}</h4><p>${esc(q.question)}</p>${q.type==="qcm"?(q.options||[]).map(o=>`<label class="exam-option"><input type="radio" name="q${i}" value="${esc(o)}" ${String(answerCache[i])===String(o)?"checked":""}><span>${esc(o)}</span></label>`).join(""):`<textarea name="q${i}">${esc(answerCache[i]||"")}</textarea>`}</div>`).join("")}<button id="submitExam" class="btn primary block">Remettre</button></form></div>`;
 $("leaveExam").onclick=async()=>{if(confirm("Quitter ?")){await saveAnswers(false);stopTimer();activeExam=null;activeAttempt=null;await openPage("examens")}};
-const form=$("answerForm");form.oninput=()=>saveAnswers(false);form.onsubmit=async e=>{e.preventDefault();if(confirm("Remettre l'examen ?"))await submitExam(false)};
+const form=$("answerForm");form.oninput=()=>saveAnswers(false);form.onchange=()=>saveAnswers(false);
+form.onsubmit=async e=>{e.preventDefault();if(confirm("Remettre l'examen ?"))await submitExam(false)};
 updateTimer();timerInterval=setInterval(updateTimer,1000)
 }
 
-function collectAnswers(){const form=$("answerForm");if(!form)return answerCache;const fd=new FormData(form),out={};parseQuestions(activeExam).forEach((q,i)=>{const v=fd.get("q"+i);if(v!==null)out[i]=String(v).trim()});return out}
-function saveAnswers(showError){
+function saveAnswers(){
 if(!activeAttempt||!$("answerForm"))return Promise.resolve();
-answerCache=collectAnswers();const answers={...answerCache},id=activeAttempt.id;
-saveQueue=saveQueue.then(()=>updateDoc(doc(db,"tentatives_examens",id),{reponses:answers,updatedAt:stamp()})).catch(e=>{if(showError)toast("Erreur sauvegarde",true)});
-return saveQueue
+const fd=new FormData($("answerForm"));parseQuestions(activeExam).forEach((q,i)=>{const v=fd.get("q"+i);if(v!==null)answerCache[i]=String(v)});
+return updateDoc(doc(db,"tentatives_examens",activeAttempt.id),{reponses:answerCache,updatedAt:stamp()}).catch(e=>console.warn(e))
 }
+
 function updateTimer(){
 if(!activeAttempt||!$("examTimer"))return;
-const left=Number(activeAttempt.finMs)-Date.now();$("examTimer").textContent="⏱ "+fmtTime(left);
+const left=Number(activeAttempt.finMs)-Date.now();$("examTimer").textContent="⏱ Temps : "+fmtTime(left);
 if(left<=0){stopTimer();submitExam(true)}
 }
+
 async function submitExam(auto){
 if(!activeExam||!activeAttempt)return;
-const exam=activeExam,a=activeAttempt,qs=parseQuestions(exam);if($("answerForm"))answerCache=collectAnswers();const answers={...answerCache};stopTimer();
-try{
-await saveQueue;let score=0,maxQCM=0;
-qs.forEach((q,i)=>{if(q.type!=="qcm")return;const pts=Number(q.points)||1;maxQCM+=pts;if(String(q.correctAnswer).trim().toLowerCase()===String(answers[i]).trim().toLowerCase())score+=pts});
+const exam=activeExam,a=activeAttempt,qs=parseQuestions(exam);
+if($("answerForm")){const fd=new FormData($("answerForm"));qs.forEach((q,i)=>{const v=fd.get("q"+i);if(v!==null)answerCache[i]=String(v)})}
+stopTimer();
+let score=0,notesQCM={};
+qs.forEach((q,i)=>{if(q.type!=="qcm")return;const pts=Number(q.points)||1,good=String(q.correctAnswer||"").trim().toLowerCase(),given=String(answerCache[i]||"").trim().toLowerCase();notesQCM[i]=given===good?pts:0;score+=notesQCM[i]});
+const hasWritten=qs.some((q,i)=>q.type==="ecrit"&&String(answerCache[i]||"").trim());
 const max=qs.reduce((s,q)=>s+(Number(q.points)||1),0);
-await updateDoc(doc(db,"tentatives_examens",a.id),{reponses:answers,noteObtenue:score,noteMax:max,statut:"termine",dateRemise:stamp(),updatedAt:stamp()});
+await updateDoc(doc(db,"tentatives_examens",a.id),{reponses:answerCache,notesQCM,noteQCM:score,noteEcrite:0,noteObtenue:score,noteMax:max,correctionManuelle:hasWritten,statut:"termine",updatedAt:stamp()});
 activeExam=null;activeAttempt=null;answerCache={};
-$("pageContent").innerHTML=`<div class="card"><h3>Examen remis</h3><p>Note : ${score} / ${max}</p><button class="btn primary" onclick="window.goPage('examens')">Retour</button></div>`;
-}catch(e){toast(friendly(e),true)}
+$("pageContent").innerHTML=`<div class="card"><h3>Examen remis</h3><p>Score QCU : ${score}</p><button class="btn primary" onclick="window.goPage('examens')">Retour</button></div>`;
+}
+
+async function compressPhoto(file){
+if(!file||!file.type.startsWith("image/"))throw Error("Image invalide.");
+const url=URL.createObjectURL(file);
+try{
+const img=new Image();await new Promise((res,rej)=>{img.onload=res;img.onerror=rej;img.src=url});
+const scale=Math.min(1,1000/Math.max(img.width,img.height)),c=document.createElement("canvas");c.width=img.width*scale;c.height=img.height*scale;c.getContext("2d").drawImage(img,0,0,c.width,c.height);
+return c.toDataURL("image/jpeg",0.6)
+}finally{URL.revokeObjectURL(url)}
 }
 
 async function renderNotesCours(){
-let notes=[];
+const teacher=isAdmin()||currentProfile.role==="professeur";let notes=[];
 if(isAdmin())notes=(await getDocs(collection(db,"notes_cours"))).docs.map(d=>({id:d.id,...d.data()}));
-else if(isProfessor())notes=(await getDocs(query(collection(db,"notes_cours"),where("professeurUid","==",currentUser.uid)))).docs.map(d=>({id:d.id,...d.data()}));
-else{const cl=currentProfile?.classeId;if(cl)notes=(await getDocs(query(collection(db,"notes_cours"),where("classeId","==",cl)))).docs.map(d=>({id:d.id,...d.data()}))}
-$("pageContent").innerHTML=`<div class="card"><div class="page-head"><div><h3>Notes de cours</h3></div>${isProfessor()||isAdmin()?'<button id="newNote" class="btn primary">＋ Ajouter</button>':""}</div><div id="noteFormArea"></div>${notes.map(n=>`<article class="course-note"><h3>${esc(n.titre)}</h3><p class="muted">Classe : ${esc(n.classeId)}</p><div class="course-text" id="noteText${esc(n.id)}">${esc(n.contenu\vert{}\vert{}"")}</div>${n.photoData?`<img src="${n.photoData}">`:""}<div class="actions"><button class="btn secondary" data-copy-note="${esc(n.id)}">Copier</button></div></article>`).join("")||'<div class="notice">Aucune note.</div>'}</div>`;
+else if(teacher)notes=(await getDocs(query(collection(db,"notes_cours"),where("professeurUid","==",currentUser.uid)))).docs.map(d=>({id:d.id,...d.data()}));
+else{const cl=currentProfile.classeId;if(cl)notes=(await getDocs(query(collection(db,"notes_cours"),where("classeId","==",cl)))).docs.map(d=>({id:d.id,...d.data()}))}
+$("pageContent").innerHTML=`<div class="card"><div class="page-head"><h3>Notes de cours</h3>${teacher?'<button id="newNote" class="btn primary">＋ Ajouter</button>':""}</div><div id="noteFormArea"></div>${notes.map(n=>`<article class="course-note"><h3>${esc(n.titre)}</h3><div class="course-text" id="noteText${esc(n.id)}">${esc(n.contenu\vert{}\vert{}"")}</div>${n.photoData?`<img src="${n.photoData}">`:""}<div class="actions"><button class="btn secondary" data-copy="${esc(n.id)}">Copier</button>${teacher&&n.professeurUid===currentUser.uid?`<button class="btn danger" data-del="${esc(n.id)}">Supprimer</button>`:""}</div></article>`).join("")||'<div class="notice">Aucune note.</div>'}</div>`;
 if($("newNote"))$("newNote").onclick=()=>noteForm(null);
-$("pageContent").querySelectorAll("[data-copy-note]").forEach(b=>b.onclick=async()=>{try{await navigator.clipboard.writeText($("noteText"+b.dataset.copyNote)?.innerText||"");toast("Copié.")}catch{toast("Erreur copie",true)}});
+$("pageContent").querySelectorAll("[data-copy]").forEach(b=>b.onclick=()=>navigator.clipboard.writeText($("noteText"+b.dataset.copy)?.innerText||"").then(()=>toast("Copié")));
+$("pageContent").querySelectorAll("[data-del]").forEach(b=>b.onclick=async()=>{if(confirm("Supprimer ?"))try{await deleteDoc(doc(db,"notes_cours",b.dataset.del));await renderNotesCours()}catch(e){toast(friendly(e),true)}})
 }
+
 function noteForm(n){
 const area=$("noteFormArea");
-area.innerHTML=`<div class="card"><h3>${n?"Modifier":"Nouvelle"} note</h3><form id="noteForm"><div class="field"><label>Titre *</label><input name="titre" required value="${esc(n?.titre||"")}"></div><div class="field"><label>Classe *</label><input name="classeId" required value="${esc(n?.classeId||currentProfile?.classeId||"")}"></div><div class="field"><label>Contenu</label><textarea name="contenu">${esc(n?.contenu||"")}</textarea></div><div class="actions"><button class="btn primary" type="submit">Enregistrer</button><button class="btn secondary" id="cancelNote" type="button">Annuler</button></div></form></div>`;
-$("cancelNote").onclick=()=>area.innerHTML="";
-$("noteForm").onsubmit=async e=>{e.preventDefault();const fd=new FormData(e.currentTarget);try{const data={titre:fd.get("titre"),classeId:fd.get("classeId"),contenu:fd.get("contenu"),professeurUid:currentUser.uid,updatedAt:stamp()};if(n)await updateDoc(doc(db,"notes_cours",n.id),data);else{data.createdAt=stamp();await addDoc(collection(db,"notes_cours"),data)}toast("Enregistré.");await renderNotesCours()}catch(err){toast(friendly(err),true)}};
+area.innerHTML=`<div class="card"><h3>Note</h3><form id="noteForm"><div class="field"><label>Titre *</label><input name="titre" required value="${esc(n?.titre||"")}"></div><div class="field"><label>Classe *</label><input name="classeId" required value="${esc(n?.classeId||currentProfile.classeId||"")}"></div><div class="field"><label>Contenu</label><textarea name="contenu">${esc(n?.contenu||"")}</textarea></div><div class="field"><label>Photo</label><input type="file" id="photoInput" accept="image/*"><div id="preview">${n?.photoData?`<img src="${n.photoData}" style="max-height:150px">`:""}</div></div><button class="btn primary">Enregistrer</button></form></div>`;
+let photo=n?.photoData||"";
+$("photoInput").onchange=async e=>{try{photo=await compressPhoto(e.target.files[0]);$("preview").innerHTML=`<img src="${photo}" style="max-height:150px">`}catch(err){toast(err.message,true)}};
+$("noteForm").onsubmit=async e=>{e.preventDefault();const fd=new FormData(e.currentTarget);
+try{await addDoc(collection(db,"notes_cours"),{titre:fd.get("titre"),classeId:fd.get("classeId"),contenu:fd.get("contenu"),photoData:photo,professeurUid:currentUser.uid,updatedAt:stamp(),createdAt:stamp()});toast("Enregistré.");await renderNotesCours()}catch(err){toast(friendly(err),true)}
+}
 }
 
 async function renderBulletin(){
 if(!["eleve","etudiant"].includes(currentProfile?.role)){$("pageContent").innerHTML='<div class="card">Réservé aux élèves.</div>';return}
-$("pageContent").innerHTML=`<div class="card"><h3>🎓 Mon bulletin</h3><p class="muted">Chargement…</p></div>`;
-try{
-const snap=await getDocs(query(collection(db,"resultats"),where("etudiantId","==",currentUser.uid)));
-const rows=snap.docs.map(d=>d.data());
-const valid=rows.map(r=>({matiere:r.matiereId||"Matière",note20:Number(r.note20)||0,commentaire:r.commentaire||""}));
-const avg=valid.length?valid.reduce((s,r)=>s+r.note20,0)/valid.length:null;
-$("pageContent").innerHTML=`<div class="card"><div class="page-head"><h3>🎓 Mon bulletin</h3><button onclick="window.print()" class="btn primary">Imprimer</button></div><p><b>Élève :</b> ${esc(currentProfile.nom||currentUser.email)}</p><p><b>Moyenne :</b> ${avg!==null?avg.toFixed(2)+"/20":"—"}</p><div class="table-wrap"><table><thead><tr><th>Matière</th><th>Note /20</th><th>Commentaire</th></tr></thead><tbody>${valid.map(r=>`<tr><td>${esc(r.matiere)}</td><td>${r.note20}/20</td><td>${esc(r.commentaire)}</td></tr>`).join("")||'<tr><td colspan="3">Aucun résultat.</td></tr>'}</tbody></table></div>`;
-}catch(e){$("pageContent").innerHTML=`<div class="card">${esc(friendly(e))}</div>`}
+const snap=await getDocs(query(collection(db,"resultats"),where("etudiantId","==",currentUser.uid))),rows=snap.docs.map(d=>d.data());
+$("pageContent").innerHTML=`<div class="card"><div class="page-head"><h3>Mon bulletin</h3><button id="printB" class="btn primary">Imprimer</button></div><div class="table-wrap"><table><thead><tr><th>Matière</th><th>Note /20</th><th>Commentaire</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.matiereId||"")}</td><td>${esc(r.note20\vert{}\vert{}"—")}</td><td>${esc(r.commentaire||"")}</td></tr>`).join("")||'<tr><td colspan="3">Aucun résultat.</td></tr>'}</tbody></table></div></div>`;
+$("printB").onclick=()=>window.print();
 }
 
-/* =====================================================
-   HORAIRES CFLP
-   ===================================================== */
 window.cflpScheduleState=window.cflpScheduleState||{};
 window.cflpScheduleCache=window.cflpScheduleCache||{};
+function isProfessor(){return currentProfile?.role==="professeur"}
 
 async function renderSchedule(page){
-const isCourse=page==="horaire_cours",colName=isCourse?"horaires_cours":"horaires_examens",title=isCourse?"Horaire des cours":"Horaire des examens";
+const isCourse=page==="horaire_cours",coll=isCourse?"horaires_cours":"horaires_examens";
 try{
-const [sSnap,cSnap,mSnap]=await Promise.all([getDocs(collection(db,colName)),getDocs(collection(db,"classes")),getDocs(collection(db,"matieres"])]);
-window.cflpScheduleCache[page]={records:sSnap.docs.map(d=>({id:d.id,...d.data()})),classes:cSnap.docs.map(d=>({id:d.id,...d.data()})),matieres:mSnap.docs.map(d=>({id:d.id,...d.data()}))};
-if(!window.cflpScheduleState[page])window.cflpScheduleState[page]={view:"table"};
+const [sch,cls,sub]=await Promise.all([getDocs(collection(db,coll)),getDocs(collection(db,"classes")),getDocs(collection(db,"matieres"))]);
+let teachers=[];if(isAdmin()||isProfessor()){const ts=await getDocs(collection(db,"users"));teachers=ts.docs.map(d=>({id:d.id,...d.data()})).filter(u=>u.role==="professeur")}
+window.cflpScheduleCache[page]={records:sch.docs.map(d=>({id:d.id,...d.data()})),classes:cls.docs.map(d=>({id:d.id,...d.data()})),matieres:sub.docs.map(d=>({id:d.id,...d.data()})),teachers};
 drawSchedulePage(page);
-}catch(e){$("pageContent").innerHTML=`<div class="card"><h3>${title}</h3><div class="notice">Erreur : ${esc(e.message)}</div></div>`}
+}catch(e){$("pageContent").innerHTML=`<div class="card">Erreur : ${esc(e.message)}</div>`}
 }
 
 function drawSchedulePage(page){
-const isCourse=page==="horaire_cours",title=isCourse?"Horaire des cours":"Horaire des examens",cache=window.cflpScheduleCache[page];if(!cache)return;
-let records=[...cache.records];
-if(isStudent()){
-const cl=currentProfile?.classeId;
-records=records.filter(r=>r.classeId===cl);
-}
-const canCreate=isAdmin()||(!isCourse&&isProfessor());
-$("pageContent").innerHTML=`<div class="card"><div class="page-head"><h3>${esc(title)}</h3>${canCreate?'<button class="btn primary" id="scheduleAdd">＋ Ajouter</button>':""}</div><div id="scheduleFormArea"></div><div class="table-wrap"><table><thead><tr><th>Date</th><th>Heure</th><th>Titre</th><th>Classe</th><th>Salle</th><th>Actions</th></tr></thead><tbody>${records.map(r=>`<tr><td>${esc(r.date)}</td><td>${esc(r.heureDebut)} -${esc(r.heureFin)}</td><td><b>${esc(r.titre)}</b></td><td>${esc(r.classeId)}</td><td>${esc(r.salle\vert{}\vert{}"—")}</td><td>${isAdmin()||r.professeurUid===currentUser.uid?`<button class="btn danger" data-del-sched="${esc(r.id)}">Supprimer</button>`:"—"}</td></tr>`).join("")||'<tr><td colspan="6">Aucun horaire.</td></tr>'}</tbody></table></div></div>`;
-if($("scheduleAdd"))$("scheduleAdd").onclick=()=>scheduleOpenForm(page,null);
-$("pageContent").querySelectorAll("[data-del-sched]").forEach(b=>b.onclick=async()=>{if(confirm("Supprimer ?")){await deleteDoc(doc(db,isCourse?"horaires_cours":"horaires_examens",b.dataset.delSched));toast("Supprimé.");await renderSchedule(page)}});
+const isCourse=page==="horaire_cours",cache=window.cflpScheduleCache[page];if(!cache)return;
+let recs=[...cache.records];
+if(isStudent()){const cl=currentProfile.classeId;recs=recs.filter(r=>r.classeId===cl)}
+$("pageContent").innerHTML=`<div class="card"><div class="page-head"><h3>${isCourse?"Horaire des cours":"Horaire des examens"}</h3>${isAdmin()||isProfessor()?`<button class="btn primary" id="addSch">＋ Ajouter</button>`:""}</div><div id="schForm"></div><div class="table-wrap"><table><thead><tr><th>Date</th><th>Heure</th><th>Titre</th><th>Classe</th><th>Salle</th><th>Actions</th></tr></thead><tbody>${recs.map(r=>`<tr><td>${esc(r.date)}</td><td>${esc(r.heureDebut)} -${esc(r.heureFin)}</td><td>${esc(r.titre)}</td><td>${esc(r.classeId)}</td><td>${esc(r.salle\vert{}\vert{}"—")}</td><td>${isAdmin()||r.professeurUid===currentUser.uid?`<button class="btn danger" data-dels="${esc(r.id)}">Supprimer</button>`:"—"}</td></tr>`).join("")||'<tr><td colspan="6">Aucun horaire.</td></tr>'}</tbody></table></div></div>`;
+if($("addSch"))$("addSch").onclick=()=>openSchForm(page,null);
+$("pageContent").querySelectorAll("[data-dels]").forEach(b=>b.onclick=async()=>{if(confirm("Supprimer ?"))try{await deleteDoc(doc(db,page==="horaire_cours"?"horaires_cours":"horaires_examens",b.dataset.dels));await renderSchedule(page)}catch(e){toast(friendly(e),true)}})
 }
 
-async function scheduleOpenForm(page,record){
-const isCourse=page==="horaire_cours",cache=window.cflpScheduleCache[page],area=$("scheduleFormArea");
-area.innerHTML=`<div class="card"><h3>${record?"Modifier":"Ajouter"} horaire</h3><form id="schedForm"><div class="field"><label>Titre *</label><input name="titre" required value="${esc(record?.titre||"")}"></div><div class="field"><label>Classe *</label><select name="classeId" required><option value="">Choisir</option>${cache.classes.map(c=>`<option value="${esc(c.id\vert{}\vert{}c.code)}">${esc(c.nom||c.code)}</option>`).join("")}</select></div><div class="field"><label>Date *</label><input name="date" type="date" required value="${esc(record?.date||"")}"></div><div class="field"><label>Heure début *</label><input name="heureDebut" type="time" required value="${esc(record?.heureDebut||"")}"></div><div class="field"><label>Heure fin *</label><input name="heureFin" type="time" required value="${esc(record?.heureFin||"")}"></div><div class="field"><label>Salle</label><input name="salle" value="${esc(record?.salle||"")}"></div><div class="actions"><button class="btn primary">Enregistrer</button><button class="btn secondary" id="cancelSched" type="button">Annuler</button></div></form></div>`;
-$("cancelSched").onclick=()=>area.innerHTML="";
-$("schedForm").onsubmit=async e=>{e.preventDefault();const fd=new FormData(e.currentTarget);
-const data={titre:fd.get("titre"),classeId:fd.get("classeId"),date:fd.get("date"),heureDebut:fd.get("heureDebut"),heureFin:fd.get("heureFin"),salle:fd.get("salle"),professeurUid:currentUser.uid,updatedAt:stamp()};
-try{await addDoc(collection(db,isCourse?"horaires_cours":"horaires_examens"),{...data,createdAt:stamp()});toast("Enregistré.");await renderSchedule(page)}catch(err){toast(friendly(err),true)}
-};
+function openSchForm(page,rec){
+const isCourse=page==="horaire_cours",cache=window.cflpScheduleCache[page];
+$("schForm").innerHTML=`<div class="card"><form id="sf"><div class="form-grid"><div class="field"><label>Titre</label><input name="titre" required value="${esc(rec?.titre||"")}"></div><div class="field"><label>Classe</label><select name="classeId">${cache.classes.map(c=>`<option value="${esc(c.id)}">${esc(c.nom||c.id)}</option>`).join("")}</select></div><div class="field"><label>Date</label><input type="date" name="date" required value="${esc(rec?.date||"")}"></div><div class="field"><label>Début</label><input type="time" name="heureDebut" required value="${esc(rec?.heureDebut||"")}"></div><div class="field"><label>Fin</label><input type="time" name="heureFin" required value="${esc(rec?.heureFin||"")}"></div><div class="field"><label>Salle</label><input name="salle" value="${esc(rec?.salle||"")}"></div></div><button class="btn primary">Enregistrer</button></form></div>`;
+$("sf").onsubmit=async e=>{e.preventDefault();const fd=new FormData(e.currentTarget);
+try{await addDoc(collection(db,isCourse?"horaires_cours":"horaires_examens"),{titre:fd.get("titre"),classeId:fd.get("classeId"),date:fd.get("date"),heureDebut:fd.get("heureDebut"),heureFin:fd.get("heureFin"),salle:fd.get("salle"),professeurUid:currentUser.uid,updatedAt:stamp(),createdAt:stamp()});toast("Enregistré.");await renderSchedule(page)}catch(err){toast(friendly(err),true)}
+}
 }
 
 async function renderUsers(){
 if(!isAdmin())return;
-const snap=await getDocs(collection(db,"users")),users=snap.docs.map(d=>({id:d.id,...d.data()}));
-$("pageContent").innerHTML=`<div class="card"><h3>Gestion des utilisateurs</h3><div class="table-wrap"><table><thead><tr><th>E-mail</th><th>Rôle</th><th>Statut</th><th>Action</th></tr></thead><tbody>${users.map(u=>`<tr><td>${esc(u.email)}</td><td><select data-role="${esc(u.id)}"><option value="eleve" ${u.role==="eleve"?"selected":""}>Élève</option><option value="etudiant" ${u.role==="etudiant"?"selected":""}>Étudiant</option><option value="professeur" ${u.role==="professeur"?"selected":""}>Professeur</option><option value="administrateur" ${u.role==="administrateur"?"selected":""}>Admin</option></select></td><td><select data-status="${esc(u.id)}"><option value="attente" ${u.status==="attente"?"selected":""}>En attente</option><option value="accepted" ${u.status==="accepted"?"selected":""}>Accepté</option><option value="refuse" ${u.status==="refuse"?"selected":""}>Refusé</option></select></td><td><button class="btn success" data-save-u="${esc(u.id)}">Enregistrer</button></td></tr>`).join("")}</tbody></table></div></div>`;
-$("pageContent").querySelectorAll("[data-save-u]").forEach(b=>b.onclick=async()=>{const id=b.dataset.saveU;const role=$(`[data-role="${id}"]`).value,status=$(`[data-status="${id}"]`).value;try{await updateDoc(doc(db,"users",id),{role,status,updatedAt:stamp()});toast("Mis à jour.");await renderUsers()}catch(e){toast(friendly(e),true)}});
+const us=(await getDocs(collection(db,"users"))).docs.map(d=>({id:d.id,...d.data()}));
+$("pageContent").innerHTML=`<div class="card"><h3>Utilisateurs</h3><div class="table-wrap"><table><thead><tr><th>E-mail</th><th>Rôle</th><th>Statut</th><th>Action</th></tr></thead><tbody>${us.map(u=>`<tr><td>${esc(u.email)}</td><td><select data-r="${esc(u.id)}"><option value="eleve" ${u.role==="eleve"?"selected":""}>Élève</option><option value="professeur" ${u.role==="professeur"?"selected":""}>Professeur</option><option value="administrateur" ${u.role==="administrateur"?"selected":""}>Admin</option></select></td><td><select data-s="${esc(u.id)}"><option value="attente" ${u.status==="attente"?"selected":""}>Attente</option><option value="accepted" ${u.status==="accepted"?"selected":""}>Accepté</option><option value="refuse" ${u.status==="refuse"?"selected":""}>Refusé</option></select></td><td><button class="btn primary" data-saveu="${esc(u.id)}">Enregistrer</button></td></tr>`).join("")}</tbody></table></div></div>`;
+$("pageContent").querySelectorAll("[data-saveu]").forEach(b=>b.onclick=async()=>{const id=b.dataset.saveu,role=$(`[data-r="${id}"]`).value,status=$(`[data-s="${id}"]`).value;try{await updateDoc(doc(db,"users",id),{role,status,updatedAt:stamp()});toast("Mis à jour.")}catch(e){toast(friendly(e),true)}})
 }
 
 async function renderBackup(){
 if(!isAdmin())return;
-$("pageContent").innerHTML='<div class="card"><h3>Sauvegarde</h3><button id="exportBtn" class="btn primary">Exporter JSON</button></div>';
-$("exportBtn").onclick=async()=>{const snap=await getDocs(collection(db,"classes"));const data=snap.docs.map(d=>d.data());const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="backup.json";a.click();toast("Export réussi.")};
+$("pageContent").innerHTML=`<div class="card"><h3>Sauvegarde</h3><button id="exp" class="btn primary">Exporter JSON</button></div>`;
+$("exp").onclick=async()=>{const snap=await getDocs(collection(db,"users"));const blob=new Blob([JSON.stringify(snap.docs.map(d=>d.data()),null,2)],{type:"application/json"});const url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="backup.json";a.click();URL.revokeObjectURL(url)}
 }
 
-window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();installPrompt=e;$("installBtn").textContent="📲 Installer";$("installBtn").disabled=false});
-$("installBtn").addEventListener("click",async()=>{if(installPrompt){await installPrompt.prompt();installPrompt=null}});
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();installPrompt=e;$("installBtn").disabled=false});
+$("installBtn").onclick=()=>installPrompt?.prompt();
 </script>
 </body>
 </html>
