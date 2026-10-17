@@ -163,7 +163,6 @@ function isAdmin(){return!!currentUser&&((currentUser.email||"").toLowerCase()==
 function isProfessor(){return!!currentProfile&&(currentProfile.role==="professeur"&&currentProfile.status==="accepted")}
 function isStudent(){return ["eleve","etudiant"].includes(String(currentProfile?.role||"").toLowerCase())}
 function approved(){return!!currentProfile&&(isAdmin()||(currentProfile.status==="accepted"&&["professeur","eleve","etudiant"].includes(currentProfile.role)))}
-function roleName(r){return({administrateur:"Administrateur",professeur:"Professeur",eleve:"Élève",etudiant:"Étudiant"})[r]||r||"Utilisateur"}
 function stopTimer(){if(timerInterval){clearInterval(timerInterval);timerInterval=null}}
 
 async function ensureProfile(user){
@@ -179,11 +178,35 @@ await updateDoc(ref,{role:"administrateur",status:"accepted",email:user.email||A
 return p;
 }
 
+async function checkAppOpenState(){
+  if(isAdmin()) return true;
+  try{
+    const snap=await getDoc(doc(db,"configuration","app_state"));
+    if(snap.exists()){
+      const data=snap.data();
+      if(data.ferme===true){
+        return false;
+      }
+    }
+  }catch(e){
+    console.warn("Impossible de vérifier l'état d'ouverture de l'application", e);
+  }
+  return true;
+}
+
 let loginLock=false;
 async function completeLogin(user){
 if(loginLock)return;loginLock=true;currentUser=user;
 try{
 currentProfile=await ensureProfile(user);
+
+const isOpen = await checkAppOpenState();
+if(!isOpen && !isAdmin()){
+await signOut(auth);currentUser=null;currentProfile=null;
+authMessage("L'application est actuellement fermée pour maintenance par l'administrateur. Veuillez réessayer ultérieurement.", "error");
+return;
+}
+
 if(!approved()){
 const status=currentProfile.status;await signOut(auth);currentUser=null;currentProfile=null;
 authMessage(status==="refuse"?"Votre demande a été refusée. Contactez l'administrateur.":"Votre compte attend l'approbation de l'administrateur.",status==="refuse"?"error":"info");return;
@@ -324,23 +347,23 @@ $("logoutBtn").addEventListener("click",async()=>{if(confirm("Voulez-vous vous d
 $("refreshBtn").addEventListener("click",()=>openPage(currentPage));
 
 const modules=[
-{id:"etudiants",title:"Étudiants",collection:"etudiants",fields:[["nom","Nom"],["prenom","Prénom"],["email","E-mail"],["telephone","Téléphone"],["classeId","Code de classe"]]},
-{id:"eleves",title:"Élèves",collection:"eleves",fields:[["nom","Nom"],["prenom","Prénom"],["email","E-mail"],["telephone","Téléphone"],["classeId","Code de classe"]]},
+{id:"etudiants",title:"Étudiants",collection:"etudiants",fields:[["nom","Nom"],["prenom","Prénom"],["email","E-mail"],["telephone","Téléphone"],["classeId","Classe"]]},
+{id:"eleves",title:"Élèves",collection:"eleves",fields:[["nom","Nom"],["prenom","Prénom"],["email","E-mail"],["telephone","Téléphone"],["classeId","Classe"]]},
 {id:"professeurs",title:"Professeurs",collection:"professeurs",fields:[["nom","Nom"],["prenom","Prénom"],["email","E-mail"],["telephone","Téléphone"],["specialite","Spécialité"]]},
 {id:"departements",title:"Départements",collection:"departements",fields:[["nom","Nom"],["code","Code du département"],["description","Description"]]},
 {id:"filieres",title:"Filières",collection:"filieres",fields:[["nom","Nom"],["description","Description"],["departementId","Code du département"]]},
 {id:"classes",title:"Classes",collection:"classes",fields:[["nom","Nom de la classe"],["niveau","Niveau"],["filiereId","Code de filière"],["anneeAcademique","Année académique"]]},
 {id:"matieres",title:"Matières",collection:"matieres",fields:[["nom","Nom"],["code","Code matière"],["description","Description"]]},
-{id:"cours",title:"Cours",collection:"cours",fields:[["nom","Titre"],["description","Description"],["matiereId","Code matière"],["classeId","Code de classe"]]},
+{id:"cours",title:"Cours",collection:"cours",fields:[["nom","Titre"],["description","Description"],["matiereId","Code matière"],["classeId","Classe"]]},
 {id:"annees",title:"Années académiques",collection:"annees_academiques",fields:[["nom","Nom"],["debut","Date de début"],["fin","Date de fin"],["statut","Statut"]]},
-{id:"affectations",title:"Affectations",collection:"affectations",fields:[["professeurUid","Compte professeur"],["classeId","Code de classe"],["matiereId","Code matière"],["coursId","Code cours"]]},
-{id:"inscriptions",title:"Élèves / Classes",collection:"inscriptions",fields:[["etudiantId","Compte étudiant"],["eleveId","Compte élève"],["classeId","Code de classe"],["anneeAcademique","Année académique"],["statut","Statut"]]},
-{id:"devoirs",title:"Devoirs",collection:"devoirs",fields:[["titre","Titre"],["description","Description"],["classeId","Code de classe"],["dateLimite","Date limite"]]},
-{id:"examens",title:"Examens",collection:"examens",fields:[["titre","Titre de l'examen"],["description","Description"],["classeId","Code de classe"],["dateDebut","Date et heure de début"],["dateLimite","Date et heure de fin"],["dureeMinutes","Durée en minutes"]]},
-{id:"remises",title:"Remises / Corrections",collection:"remises",fields:[["devoirId","Code devoir"],["etudiantId","Compte élève"],["classeId","Code classe"],["contenu","Travail remis"],["note100","Note sur 100"],["commentaire","Commentaire"],["statut","Statut"]]},
-{id:"resultats",title:"Résultats",collection:"resultats",fields:[["etudiantId","Compte élève"],["classeId","Code classe"],["matiereId","Code matière"],["note100","Note sur 100"],["note20","Note sur 20"],["commentaire","Commentaire"]]},
-{id:"videos",title:"Vidéos",collection:"videos",fields:[["titre","Titre"],["classeId","Code classe"],["url","Lien vidéo"],["description","Description"]]},
-{id:"documents",title:"Documents",collection:"documents",fields:[["titre","Titre"],["classeId","Code classe"],["url","Lien du document"],["description","Description"]]},
+{id:"affectations",title:"Affectations",collection:"affectations",fields:[["professeurUid","Compte professeur"],["classeId","Classe"],["matiereId","Code matière"],["coursId","Code cours"]]},
+{id:"inscriptions",title:"Élèves / Classes",collection:"inscriptions",fields:[["etudiantId","Compte étudiant"],["eleveId","Compte élève"],["classeId","Classe"],["anneeAcademique","Année académique"],["statut","Statut"]]},
+{id:"devoirs",title:"Devoirs",collection:"devoirs",fields:[["titre","Titre"],["description","Description"],["classeId","Classe"],["dateLimite","Date limite"]]},
+{id:"examens",title:"Examens",collection:"examens",fields:[["titre","Titre de l'examen"],["description","Description"],["classeId","Classe"],["dateDebut","Date et heure de début"],["dateLimite","Date et heure de fin"],["dureeMinutes","Durée en minutes"]]},
+{id:"remises",title:"Remises / Corrections",collection:"remises",fields:[["devoirId","Code devoir"],["etudiantId","Compte élève"],["classeId","Classe"],["contenu","Travail remis"],["note100","Note sur 100"],["commentaire","Commentaire"],["statut","Statut"]]},
+{id:"resultats",title:"Résultats",collection:"resultats",fields:[["etudiantId","Compte élève"],["classeId","Classe"],["matiereId","Code matière"],["note100","Note sur 100"],["note20","Note sur 20"],["commentaire","Commentaire"]]},
+{id:"videos",title:"Vidéos",collection:"videos",fields:[["titre","Titre"],["classeId","Classe"],["url","Lien vidéo"],["description","Description"]]},
+{id:"documents",title:"Documents",collection:"documents",fields:[["titre","Titre"],["classeId","Classe"],["url","Lien du document"],["description","Description"]]},
 {id:"statistiques",title:"Statistiques",collection:"statistiques",fields:[["nom","Nom"],["description","Description"],["valeur","Valeur"]]},
 {id:"configuration",title:"Configuration",collection:"configuration",fields:[["nom","Nom"],["valeur","Valeur"],["description","Description"]]}
 ];
@@ -352,6 +375,25 @@ const navItems=[
 ];
 const studentPages=["accueil","devoirs","examens","notes_cours","remises","resultats","bulletin","videos","documents","horaire_cours","horaire_examens"];
 const teacherPages=studentPages.filter(p=>p!=="bulletin");
+
+let cacheNomsClasses = {};
+async function chargerNomsClasses() {
+  try {
+    const snap = await getDocs(collection(db, "classes"));
+    snap.docs.forEach(d => {
+      const data = d.data();
+      const nom = data.nom || data.code || d.id;
+      cacheNomsClasses[d.id] = nom;
+      if(data.code) cacheNomsClasses[data.code] = nom;
+    });
+  } catch(e) {
+    console.warn("Impossible de charger les noms de classes", e);
+  }
+}
+function nomClasseLisible(id) {
+  if(!id) return "—";
+  return cacheNomsClasses[id] || id;
+}
 
 function buildNavigation(){
 const n=$("navigation");n.innerHTML="";
@@ -373,9 +415,9 @@ if(!isAdmin()&&!(currentProfile?.role==="professeur"?teacherPages:studentPages).
 toast("Accès non autorisé.",true);return;
 }
 try{
-stopTimer();currentPage=page;buildNavigation();
+stopTimer();currentPage=page;await chargerNomsClasses();buildNavigation();
 const mod=modules.find(m=>m.id===page);
-const titles={accueil:"Tableau de bord",examens:"Examens chronométrés",notes_cours:"Notes de cours",utilisateurs:"Gestion des utilisateurs",sauvegarde:"Sauvegarde",horaire_cours:"Horaire des cours",horaire_examens:"Horaire des examens"};
+const titles={accueil:"Tableau de bord",examens:"Examens chronométrés",notes_cours:"Notes de cours",utilisateurs:"Gestion des utilisateurs",sauvegarde:"Sauvegarde",horaire_cours:"Horaire des cours",horaire_examens:"Horaire des examens",bulletin:"Mon bulletin"};
 $("pageTitle").textContent=titles[page]||mod?.title||page;
 $("pageContent").innerHTML='<div class="card">Chargement…</div>';
 if(page==="accueil")return await renderDashboard();
@@ -402,8 +444,24 @@ let html=`<div class="card welcome"><h3>Bienvenue, ${esc(name)} !</h3><p>Votre e
 if(isAdmin()){
 const names=["etudiants","eleves","professeurs","classes","matieres","devoirs","examens"],counts=await Promise.all(names.map(async n=>(await getDocs(collection(db,n))).size));
 const waiting=await getDocs(query(collection(db,"users"),where("status","==","attente")));
+
+let appOpenState = true;
+try{
+  const stSnap = await getDoc(doc(db,"configuration","app_state"));
+  if(stSnap.exists() && stSnap.data().ferme===true) appOpenState=false;
+}catch(e){}
+
 html+=`<div class="stats-grid">${[["Étudiants",Math.max(counts[0],counts[1])],["Professeurs",counts[2]],["Classes",counts[3]],["Matières",counts[4]],["Devoirs",counts[5]],["Examens",counts[6]],["Comptes en attente",waiting.size]].map(x=>`<div class="stat"><small>${esc(x[0])}</small><strong>${x[1]}</strong></div>`).join("")}</div>`;
-html+='<div class="dashboard-grid">'+dash("👥","Utilisateurs","Approuver les comptes et attribuer les rôles.","utilisateurs")+dash("🏫","Classes","Organiser les classes.","classes")+dash("🎓","Étudiants","Gérer les dossiers.","etudiants")+dash("👨‍🏫","Professeurs","Gérer les professeurs.","professeurs")+dash("⏱️","Examens","Créer des QCU et des questions ouvertes.","examens")+dash("📒","Notes de cours","Publier texte et photos.","notes_cours")+dash("📥","Corrections","Consulter les remises.","remises")+dash("💾","Sauvegarde","Exporter les données.","sauvegarde")+'</div>';
+
+html+=`<div class="card" style="border:1px solid var(--bd);background:#f8fafc;margin-bottom:16px">
+  <h3>⚙️ Contrôle d'ouverture de l'application</h3>
+  <p class="muted">État actuel : <strong style="color:${appOpenState?'var(--green)':'var(--red)'}">${appOpenState?'Application Ouverte':'Application Fermée (Maintenance)'}</strong></p>
+  <div class="actions">
+    <button class="btn ${appOpenState?'danger':'success'}" id="toggleAppStatusBtn">${appOpenState?'Fermer l\'application':'Ouvrir l\'application'}</button>
+  </div>
+</div>`;
+
+html+='<div class="dashboard-grid">'+dash("👥","Utilisateurs","Approuver les comptes et attribuer les rôles.","utilisateurs")+dash("🎓","Bulletins","Gérer et publier les bulletins scolaires.","bulletin")+dash("🏫","Classes","Organiser les classes.","classes")+dash("🎓","Étudiants","Gérer les dossiers.","etudiants")+dash("👨‍🏫","Professeurs","Gérer les professeurs.","professeurs")+dash("⏱️","Examens","Créer des QCU et des questions ouvertes.","examens")+dash("📒","Notes de cours","Publier texte et photos.","notes_cours")+dash("📥","Corrections","Consulter les remises.","remises")+dash("💾","Sauvegarde","Exporter les données.","sauvegarde")+'</div>';
 }else if(currentProfile.role==="professeur"){
 html+='<div class="dashboard-grid">'
 +dash("📑","Devoirs","Créer et gérer les devoirs.","devoirs")
@@ -411,6 +469,7 @@ html+='<div class="dashboard-grid">'
 +dash("📒","Notes de cours","Publier les cours.","notes_cours")
 +dash("📥","Corrections","Corriger les travaux et examens.","remises")
 +dash("📊","Résultats","Consulter les notes.","resultats")
++dash("🎓","Bulletins","Préparer les notes pour les bulletins.","bulletin")
 +'</div>';
 }else{
 html+='<div class="dashboard-grid">'
@@ -423,6 +482,22 @@ html+='<div class="dashboard-grid">'
 +'</div>';
 }
 $("pageContent").innerHTML=html;
+
+if($("toggleAppStatusBtn")){
+  $("toggleAppStatusBtn").onclick=async()=>{
+    try{
+      let appOpenState = true;
+      const stSnap = await getDoc(doc(db,"configuration","app_state"));
+      if(stSnap.exists() && stSnap.data().ferme===true) appOpenState=false;
+      const newState = !appOpenState;
+      await setDoc(doc(db,"configuration","app_state"),{ferme:!newState, updatedAt:stamp()}, {merge:true});
+      toast(newState?"Application ouverte avec succès.":"Application fermée pour maintenance.");
+      await renderDashboard();
+    }catch(e){
+      toast(friendly(e),true);
+    }
+  };
+}
 }
 function canEditModule(id){return isAdmin()||(["devoirs","examens","notes_cours"].includes(id)&&currentProfile.role==="professeur")||(["remises"].includes(id)&&["professeur","eleve","etudiant"].includes(currentProfile.role))||(id==="resultats"&&currentProfile.role==="professeur")}
 
@@ -436,7 +511,7 @@ const q=currentProfile.role==="professeur"?query(collection(db,m.collection),whe
 }else if(m.id==="resultats"){
 const q=currentProfile.role==="professeur"?query(collection(db,m.collection),where("professeurUid","==",currentUser.uid)):query(collection(db,m.collection),where("etudiantId","==",currentUser.uid));records=(await getDocs(q)).docs.map(d=>({id:d.id,...d.data()}))
 }
-$("pageContent").innerHTML=`<div class="card"><div class="page-head"><div><h3>${esc(m.title)}</h3><p class="muted">${records.length} enregistrement(s)</p></div>${canEditModule(m.id)?'<button id="addRecord" class="btn primary">＋ Ajouter</button>':""}</div><div id="recordFormArea"></div><div class="table-wrap"><table><thead><tr><th>Informations</th><th>Actions</th></tr></thead><tbody>${records.map(r=>`<tr><td>${m.fields.map(([k,l])=>r[k]!==undefined&&r[k]!==""?`<div><b>${esc(l)} :</b> ${esc(r[k])}</div>`:"").join("")||esc(r.titre||r.id)}</td><td><div class="actions">${canEditModule(m.id)?`<button class="btn secondary" data-edit="${esc(r.id)}">Modifier</button>`:""}${isAdmin()?`<button class="btn danger" data-del="${esc(r.id)}">Supprimer</button>`:""}</div></td></tr>`).join("")||'<tr><td colspan="2">Aucun enregistrement.</td></tr>'}</tbody></table></div></div>`;
+$("pageContent").innerHTML=`<div class="card"><div class="page-head"><div><h3>${esc(m.title)}</h3><p class="muted">${records.length} enregistrement(s)</p></div>${canEditModule(m.id)?'<button id="addRecord" class="btn primary">＋ Ajouter</button>':""}</div><div id="recordFormArea"></div><div class="table-wrap"><table><thead><tr><th>Informations</th><th>Actions</th></tr></thead><tbody>${records.map(r=>`<tr><td>${m.fields.map(([k,l])=>r[k]!==undefined&&r[k]!==""?`<div><b>${esc(l)} :</b> ${esc(k==="classeId"?nomClasseLisible(r[k]):r[k])}</div>`:"").join("")||esc(r.titre||r.id)}</td><td><div class="actions">${canEditModule(m.id)?`<button class="btn secondary" data-edit="${esc(r.id)}">Modifier</button>`:""}${isAdmin()?`<button class="btn danger" data-del="${esc(r.id)}">Supprimer</button>`:""}</div></td></tr>`).join("")||'<tr><td colspan="2">Aucun enregistrement.</td></tr>'}</tbody></table></div></div>`;
 if($("addRecord"))$("addRecord").onclick=()=>recordForm(m,null);
 $("pageContent").querySelectorAll("[data-edit]").forEach(b=>b.onclick=()=>recordForm(m,records.find(r=>r.id===b.dataset.edit)));
 $("pageContent").querySelectorAll("[data-del]").forEach(b=>b.onclick=async()=>{if(confirm("Supprimer cet enregistrement ?"))try{await deleteDoc(doc(db,m.collection,b.dataset.del));toast("Supprimé.");await openPage(m.id)}catch(e){toast(friendly(e),true)}})
@@ -528,7 +603,7 @@ $("pageContent").querySelectorAll("[data-start]").forEach(b=>b.onclick=()=>start
 async function renderTeacherExams(){
 const snap=isAdmin()?await getDocs(collection(db,"examens")):await getDocs(query(collection(db,"examens"),where("professeurId","==",currentUser.uid)));
 const exams=snap.docs.map(d=>({id:d.id,...d.data()}));
-$("pageContent").innerHTML=`<div class="card"><div class="page-head"><div><h3>Gestion des examens</h3><p class="muted">QCU, questions ouvertes ou examen mélangé.</p></div><button id="createExam" class="btn primary">＋ Créer un examen</button></div><div class="notice">Ajoutez vos questions à l'aide du formulaire. Choisissez QCU pour des propositions avec une bonne réponse, ou question ouverte pour une réponse écrite. Les QCU sont corrigés automatiquement ; les questions ouvertes sont corrigées par le professeur.</div><div class="table-wrap"><table><thead><tr><th>Examen</th><th>Classe</th><th>Durée</th><th>Questions</th><th>Actions</th></tr></thead><tbody>${exams.map(e=>`<tr><td>${esc(e.titre)}</td><td>${esc(e.classeId)}</td><td>${Number(e.dureeMinutes||30)} min</td><td>${parseQuestions(e).length}</td><td><div class="actions"><button class="btn secondary" data-edit-exam="${esc(e.id)}">Modifier</button><button class="btn primary" data-attempts="${esc(e.id)}">Tentatives</button>${isAdmin()?`<button class="btn danger" data-delete-exam="${esc(e.id)}">Supprimer</button>`:""}</div></td></tr>`).join("")||'<tr><td colspan="5">Aucun examen créé.</td></tr>'}</tbody></table></div><div id="recordFormArea"></div><div id="examExtra"></div></div>`;
+$("pageContent").innerHTML=`<div class="card"><div class="page-head"><div><h3>Gestion des examens</h3><p class="muted">QCU, questions ouvertes ou examen mélangé.</p></div><button id="createExam" class="btn primary">＋ Créer un examen</button></div><div class="notice">Ajoutez vos questions à l'aide du formulaire. Choisissez QCU pour des propositions avec une bonne réponse, ou question ouverte pour une réponse écrite. Les QCU sont corrigés automatiquement ; les questions ouvertes sont corrigées par le professeur.</div><div class="table-wrap"><table><thead><tr><th>Examen</th><th>Classe</th><th>Durée</th><th>Questions</th><th>Actions</th></tr></thead><tbody>${exams.map(e=>`<tr><td>${esc(e.titre)}</td><td>${esc(nomClasseLisible(e.classeId))}</td><td>${Number(e.dureeMinutes||30)} min</td><td>${parseQuestions(e).length}</td><td><div class="actions"><button class="btn secondary" data-edit-exam="${esc(e.id)}">Modifier</button><button class="btn primary" data-attempts="${esc(e.id)}">Tentatives</button>${isAdmin()?`<button class="btn danger" data-delete-exam="${esc(e.id)}">Supprimer</button>`:""}</div></td></tr>`).join("")||'<tr><td colspan="5">Aucun examen créé.</td></tr>'}</tbody></table></div><div id="recordFormArea"></div><div id="examExtra"></div></div>`;
 $("createExam").onclick=()=>{const m=modules.find(x=>x.id==="examens");if(!m)return toast("Le module examens est introuvable.",true);recordForm(m,null)};
 $("pageContent").querySelectorAll("[data-edit-exam]").forEach(b=>b.onclick=()=>{const e=exams.find(x=>x.id===b.dataset.editExam);recordForm(modules.find(m=>m.id==="examens"),e)});
 $("pageContent").querySelectorAll("[data-delete-exam]").forEach(b=>b.onclick=async()=>{if(confirm("Supprimer cet examen ?"))try{await deleteDoc(doc(db,"examens",b.dataset.deleteExam));toast("Examen supprimé.");await renderExams()}catch(e){toast(friendly(e),true)}});
@@ -625,7 +700,7 @@ else{
 const cl=currentProfile.classeId||(currentProfile.classIds||[])[0];if(!cl){$("pageContent").innerHTML='<div class="card">Votre compte n’est pas encore associé à une classe. Contactez l’administrateur.</div>';return}
 notes=(await getDocs(query(collection(db,"notes_cours"),where("classeId","==",cl)))).docs.map(d=>({id:d.id,...d.data()}))
 }
-$("pageContent").innerHTML=`<div class="card"><div class="page-head"><div><h3>Notes de cours</h3><p class="muted">${teacher?"Publier du texte ou une photo de cours.":"Lire et copier les cours."}</p></div>${teacher?'<button id="newNote" class="btn primary">＋ Ajouter une note</button>':""}</div><div id="noteFormArea"></div>${notes.map(n=>`<article class="course-note"><h3>${esc(n.titre)}</h3><p class="muted">Classe : ${esc(n.classeId)} · ${esc(n.matiereId||"")}</p><div class="course-text" id="noteText${esc(n.id)}">${esc(n.contenu||"")}</div>${n.photoData?`<img src="${n.photoData}" alt="Photo du cours">`:""}<div class="actions"><button class="btn secondary" data-copy-note="${esc(n.id)}">Copier le texte</button>${teacher&&(isAdmin()||n.professeurUid===currentUser.uid)?`<button class="btn secondary" data-edit-note="${esc(n.id)}">Modifier</button><button class="btn danger" data-del-note="${esc(n.id)}">Supprimer</button>`:""}</div></article>`).join("")||'<div class="notice">Aucune note de cours.</div>'}</div>`;
+$("pageContent").innerHTML=`<div class="card"><div class="page-head"><div><h3>Notes de cours</h3><p class="muted">${teacher?"Publier du texte ou une photo de cours.":"Lire et copier les cours."}</p></div>${teacher?'<button id="newNote" class="btn primary">＋ Ajouter une note</button>':""}</div><div id="noteFormArea"></div>${notes.map(n=>`<article class="course-note"><h3>${esc(n.titre)}</h3><p class="muted">Classe : ${esc(nomClasseLisible(n.classeId))} · ${esc(n.matiereId||"")}</p><div class="course-text" id="noteText${esc(n.id)}">${esc(n.contenu||"")}</div>${n.photoData?`<img src="${n.photoData}" alt="Photo du cours">`:""}<div class="actions"><button class="btn secondary" data-copy-note="${esc(n.id)}">Copier le texte</button>${teacher&&(isAdmin()||n.professeurUid===currentUser.uid)?`<button class="btn secondary" data-edit-note="${esc(n.id)}">Modifier</button><button class="btn danger" data-del-note="${esc(n.id)}">Supprimer</button>`:""}</div></article>`).join("")||'<div class="notice">Aucune note de cours.</div>'}</div>`;
 if(teacher)$("newNote").onclick=()=>noteForm(null);
 $("pageContent").querySelectorAll("[data-copy-note]").forEach(b=>b.onclick=async()=>{const t=$("noteText"+b.dataset.copyNote)?.innerText||"";try{await navigator.clipboard.writeText(t);toast("Texte copié.")}catch{toast("Sélectionnez le texte puis choisissez Copier.",true)}});
 $("pageContent").querySelectorAll("[data-edit-note]").forEach(b=>b.onclick=()=>noteForm(notes.find(n=>n.id===b.dataset.editNote)));
@@ -643,7 +718,7 @@ area.innerHTML=`<div class="card">
 
 <div class="form-grid">
 <div class="field">
-<label>Code de classe *</label>
+<label>Classe *</label>
 <input name="classeId" required value="${esc(n?.classeId||currentProfile.classeId||"")}">
 </div>
 <div class="field">
@@ -762,222 +837,275 @@ btn.disabled=false;
 };
 }
 
-/* BULLETIN SCOLAIRE — consultation personnelle et impression PDF */
+/* BULLETIN SCOLAIRE — consultation, préparation et publication admin */
 async function renderBulletin(){
-  if(!["eleve","etudiant"].includes(currentProfile?.role)){
+  const isAdm = isAdmin();
+  const isProf = isProfessor();
+  const isStd = ["eleve","etudiant"].includes(currentProfile?.role);
+
+  if(!isAdm && !isProf && !isStd){
     $("pageContent").innerHTML=`
       <div class="card">
         <h3>Bulletin scolaire</h3>
-        <div class="notice">
-          Cette page est réservée aux élèves et aux étudiants.
-        </div>
+        <div class="notice">Accès non autorisé.</div>
       </div>`;
     return;
   }
 
+  if(isAdm || isProf){
+    $("pageContent").innerHTML=`
+      <div class="card">
+        <div class="page-head">
+          <div>
+            <h3>🎓 Gestion des bulletins scolaires</h3>
+            <p class="muted">Préparez et publiez les bulletins pour les élèves.</p>
+          </div>
+          <button id="newBulletinBtn" class="btn primary">＋ Préparer un bulletin</button>
+        </div>
+        <div id="bulletinFormArea"></div>
+        <div id="bulletinsListContainer">Chargement des bulletins…</div>
+      </div>`;
+
+    await loadTeacherAdminBulletins();
+    return;
+  }
+
+  // Espace Élève / Étudiant
   $("pageContent").innerHTML=`
     <div class="card">
       <h3>🎓 Mon bulletin scolaire</h3>
-      <p class="muted">Chargement de vos résultats personnels…</p>
+      <p class="muted">Chargement de vos bulletins publiés…</p>
     </div>`;
 
   try{
     const snap=await getDocs(query(
-      collection(db,"resultats"),
-      where("etudiantId","==",currentUser.uid)
+      collection(db,"bulletins"),
+      where("etudiantId","==",currentUser.uid),
+      where("publie","==",true)
     ));
 
-    const rows=snap.docs.map(d=>({
-      id:d.id,
-      ...d.data()
-    }));
+    const rows=snap.docs.map(d=>({id:d.id,...d.data()}));
 
-    const validRows=rows.map(r=>{
-      const has20=r.note20!==undefined&&r.note20!==null&&r.note20!=="";
-      const has100=r.note100!==undefined&&r.note100!==null&&r.note100!=="";
+    if(rows.length===0){
+      $("pageContent").innerHTML=`
+        <div class="card">
+          <h3>🎓 Mon bulletin scolaire</h3>
+          <div class="notice">Aucun bulletin publié n'est disponible pour le moment.</div>
+        </div>`;
+      return;
+    }
 
-      let note20=null;
-      let note100=null;
-
-      if(has20&&Number.isFinite(Number(r.note20))){
-        note20=Number(r.note20);
-      }else if(has100&&Number.isFinite(Number(r.note100))){
-        note20=Number(r.note100)/5;
-      }
-
-      if(has100&&Number.isFinite(Number(r.note100))){
-        note100=Number(r.note100);
-      }else if(note20!==null){
-        note100=note20*5;
-      }
-
-      return {
-        matiere:String(r.matiereId||r.matiere||"Matière non précisée"),
-        classe:String(r.classeId||currentProfile.classeId||"—"),
-        periode:String(r.periode||r.trimestre||r.semestre||r.anneeAcademique||"—"),
-        note20,
-        note100,
-        commentaire:String(r.commentaire||"")
-      };
-    });
-
-    const graded=validRows.filter(r=>r.note20!==null);
-    const average=graded.length
-      ?graded.reduce((sum,r)=>sum+r.note20,0)/graded.length
-      :null;
-
-    const studentName=[
-      currentProfile.prenom||currentUser.displayName||"",
-      currentProfile.nom||""
-    ].filter(Boolean).join(" ")||currentUser.email||"Élève";
-
-    const escPrint=v=>esc(v);
-    const averageText=average===null?"Non disponible":average.toFixed(2)+"/20";
-    const resultText=average===null
-      ?"Notes non disponibles"
-      :average>=10?"Moyenne générale : "+average.toFixed(2)+"/20"
-      :"Moyenne générale : "+average.toFixed(2)+"/20";
-
-    const tableRows=validRows.map(r=>`
-      <tr>
-        <td>${escPrint(r.matiere)}</td>
-        <td>${escPrint(r.classe)}</td>
-        <td>${escPrint(r.periode)}</td>
-        <td>${r.note20===null?"—":r.note20.toFixed(2)+"/20"}</td>
-        <td>${r.note100===null?"—":r.note100.toFixed(2)+"/100"}</td>
-        <td>${escPrint(r.commentaire||"—")}</td>
-      </tr>
-    `).join("");
+    const bulletin=rows[0]; // On affiche le bulletin le plus récent ou autorisé
+    const studentName=[currentProfile.prenom||"", currentProfile.nom||""].filter(Boolean).join(" ")||currentUser.email;
 
     $("pageContent").innerHTML=`
       <div class="card">
         <div class="page-head">
           <div>
-            <h3>🎓 Mon bulletin scolaire</h3>
-            <p class="muted">Consultez vos notes et imprimez votre bulletin.</p>
+            <h3>🎓 Mon bulletin scolaire (${esc(bulletin.periode||"Trimestre")})</h3>
+            <p class="muted">Classe : ${esc(nomClasseLisible(bulletin.classeId))}</p>
           </div>
-          <button id="downloadBulletin" class="btn primary">
-            📄 Télécharger / Imprimer en PDF
-          </button>
+          <button id="printBulletinBtn" class="btn primary">📄 Imprimer / PDF</button>
         </div>
 
-        <div id="bulletinDocument">
+        <div id="printArea">
           <div class="notice">
             <b>Centre de Formation Le Pédagogue</b><br>
-            Bulletin scolaire
+            Bulletin officiel — ${esc(bulletin.anneeAcademique||"2026")}
           </div>
-
-          <div class="card">
-            <p><b>Nom de l'élève :</b> ${escPrint(studentName)}</p>
-            <p><b>E-mail :</b> ${escPrint(currentUser.email||"—")}</p>
-            <p><b>Classe :</b> ${escPrint(currentProfile.classeId||"—")}</p>
-            <p><b>Année académique :</b> ${escPrint(currentProfile.anneeAcademique||"—")}</p>
-          </div>
-
-          <div class="stats-grid">
-            <div class="stat">
-              <small>Matières avec note</small>
-              <strong>${graded.length}</strong>
-            </div>
-            <div class="stat">
-              <small>Moyenne générale</small>
-              <strong>${average===null?"—":average.toFixed(2)+"/20"}</strong>
-            </div>
-          </div>
-
+          <p><b>Élève :</b> ${esc(studentName)}</p>
+          <p><b>Moyenne générale :</b> <strong>${esc(bulletin.moyenne||"—")} / 20</strong></p>
+          <p><b>Appréciation générale :</b> ${esc(bulletin.appreciation||"—")}</p>
+          
           <div class="table-wrap">
             <table>
               <thead>
-                <tr>
-                  <th>Matière</th>
-                  <th>Classe</th>
-                  <th>Période</th>
-                  <th>Note /20</th>
-                  <th>Note /100</th>
-                  <th>Commentaire</th>
-                </tr>
+                <tr><th>Matière</th><th>Note /20</th><th>Coefficient</th><th>Appréciation</th></tr>
               </thead>
               <tbody>
-                ${tableRows||'<tr><td colspan="6">Aucun résultat publié pour votre compte.</td></tr>'}
+                ${(bulletin.matieres||[]).map(m=>`
+                  <tr>
+                    <td>${esc(m.nom)}</td>
+                    <td>${esc(m.note)} / 20</td>
+                    <td>${esc(m.coefficient||1)}</td>
+                    <td>${esc(m.appreciation||"—")}</td>
+                  </tr>
+                `).join("")||'<tr><td colspan="4">Aucune note détaillée.</td></tr>'}
               </tbody>
             </table>
           </div>
-
-          <div class="notice">
-            ${escPrint(resultText)}<br>
-            <small>
-              Ce bulletin reprend les résultats enregistrés dans le système.
-              Les décisions officielles doivent être validées par l'établissement.
-            </small>
-          </div>
-
-          <p class="muted">
-            Édité le ${new Date().toLocaleDateString("fr-FR")}
-          </p>
         </div>
       </div>`;
 
-    $("downloadBulletin").onclick=()=>{
-      const printWindow=window.open("","_blank");
-
-      if(!printWindow){
-        toast("Autorisez les fenêtres contextuelles du navigateur puis réessayez.",true);
-        return;
-      }
-
-      const content=$("bulletinDocument").innerHTML;
-
-      printWindow.document.open();
-      printWindow.document.write(`<!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Bulletin scolaire - ${escPrint(studentName)}</title>
-<style>
-body{font-family:Arial,sans-serif;color:#17243a;margin:24px;line-height:1.5}
-h3{color:#0f3d91}
-.notice{background:#edf3fc;padding:12px;border-radius:8px;margin:12px 0}
-.card{border:1px solid #dce4f0;border-radius:8px;padding:12px;margin:12px 0}
-.stats-grid{display:flex;gap:12px;margin:12px 0}
-.stat{border:1px solid #dce4f0;padding:12px;flex:1}
-.stat strong{display:block;font-size:20px;color:#0f3d91}
-.table-wrap{width:100%;overflow:visible}
-table{width:100%;border-collapse:collapse}
-th,td{border:1px solid #cbd5e1;padding:8px;text-align:left;font-size:12px;overflow-wrap:anywhere}
-th{background:#edf3fc;color:#0f3d91}
-.muted{color:#64748b}
-@page{size:A4 portrait;margin:12mm}
-@media print{body{margin:0}.card,.notice,table{break-inside:avoid}}
-</style>
-</head>
-<body>
-${content}
-<script>
-window.onload=function(){
-  setTimeout(function(){window.print()},500);
-};
-<\/script>
-</body>
-</html>`);
-      printWindow.document.close();
+    $("printBulletinBtn").onclick=()=>{
+      const w=window.open("","_blank");
+      if(!w)return toast("Autorisez les fenêtres pop-up.",true);
+      w.document.write(`<!DOCTYPE html><html><head><title>Bulletin</title><style>body{font-family:Arial;padding:20px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccc;padding:8px;text-align:left}</style></head><body>${$("printArea").innerHTML}<script>window.onload=()=>window.print()<\/script></body></html>`);
+      w.document.close();
     };
 
   }catch(e){
-    console.error("Erreur bulletin :",e);
-    $("pageContent").innerHTML=`
-      <div class="card">
-        <h3>Impossible de charger le bulletin</h3>
-        <div class="message error">${esc(friendly(e))}</div>
-        <p class="muted">
-          Vérifiez les règles Firestore et assurez-vous que les résultats
-          utilisent l'identifiant du compte élève dans le champ etudiantId.
-        </p>
-        <button class="btn secondary" onclick="window.goPage('bulletin')">
-          Réessayer
-        </button>
-      </div>`;
+    $("pageContent").innerHTML=`<div class="card"><h3>Erreur</h3><div class="message error">${esc(friendly(e))}</div></div>`;
   }
+}
+
+async function loadTeacherAdminBulletins(){
+  try{
+    const snap = await getDocs(collection(db,"bulletins"));
+    const bulletins = snap.docs.map(d=>({id:d.id,...d.data()}));
+
+    const container = $("bulletinsListContainer");
+    if(!container) return;
+
+    container.innerHTML=`
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Élève / UID</th>
+              <th>Classe</th>
+              <th>Période</th>
+              <th>Moyenne</th>
+              <th>Statut publication</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${bulletins.map(b=>`
+              <tr>
+                <td>${esc(b.etudiantEmail||b.etudiantId)}</td>
+                <td>${esc(nomClasseLisible(b.classeId))}</td>
+                <td>${esc(b.periode||"—")}</td>
+                <td><b>${esc(b.moyenne||"—")} / 20</b></td>
+                <td>${b.publie?'<span class="badge">Publié</span>':'<span class="badge wait">Préparé (Non publié)</span>'}</td>
+                <td>
+                  <div class="actions">
+                    <button class="btn secondary" data-edit-bulletin="${esc(b.id)}">Modifier</button>
+                    ${isAdmin()?`<button class="btn ${b.publie?'danger':'success'}" data-toggle-pub="${esc(b.id)}" data-current-pub="${!!b.publie}">${b.publie?'Retirer':'Publier'}</button>`:""}
+                    <button class="btn danger" data-del-bulletin="${esc(b.id)}">Supprimer</button>
+                  </div>
+                </td>
+              </tr>
+            `).join("")||'<tr><td colspan="6">Aucun bulletin préparé.</td></tr>'}
+          </tbody>
+        </table>
+      </div>`;
+
+    if($("newBulletinBtn")){
+      $("newBulletinBtn").onclick=()=>openBulletinForm(null);
+    }
+
+    container.querySelectorAll("[data-edit-bulletin]").forEach(b=>{
+      b.onclick=()=>openBulletinForm(bulletins.find(x=>x.id===b.dataset.editBulletin));
+    });
+
+    container.querySelectorAll("[data-del-bulletin]").forEach(b=>{
+      b.onclick=async()=>{
+        if(confirm("Supprimer ce bulletin ?")){
+          try{
+            await deleteDoc(doc(db,"bulletins",b.dataset.delBulletin));
+            toast("Bulletin supprimé.");
+            await loadTeacherAdminBulletins();
+          }catch(e){toast(friendly(e),true)}
+        }
+      };
+    });
+
+    container.querySelectorAll("[data-toggle-pub]").forEach(b=>{
+      b.onclick=async()=>{
+        const id=b.dataset.togglePub;
+        const currentPub=b.dataset.currentPub==="true";
+        try{
+          await updateDoc(doc(db,"bulletins",id),{publie:!currentPub, updatedAt:stamp()});
+          toast(!currentPub?"Bulletin publié avec succès.Publication retirée.":"Publication retirée.");
+          await loadTeacherAdminBulletins();
+        }catch(e){toast(friendly(e),true)}
+      };
+    });
+
+  }catch(e){
+    $("bulletinsListContainer").innerHTML=`<div class="notice">Erreur de chargement des bulletins : ${esc(friendly(e))}</div>`;
+  }
+}
+
+async function openBulletinForm(b){
+  const area=$("bulletinFormArea");
+  if(!area) return;
+
+  let students=[];
+  try{
+    const us=await getDocs(collection(db,"users"));
+    students=us.docs.map(d=>({id:d.id,...d.data()})).filter(u=>["eleve","etudiant"].includes(u.role));
+  }catch(e){}
+
+  area.innerHTML=`
+    <div class="card" style="border:2px solid var(--bd)">
+      <h3>${b?"Modifier":"Préparer"} un bulletin scolaire</h3>
+      <form id="bulletinForm">
+        <div class="form-grid">
+          <div class="field">
+            <label>Élève ou Étudiant *</label>
+            <select name="etudiantId" required>
+              <option value="">Sélectionner un élève</option>
+              ${students.map(s=>`<option value="${esc(s.id)}" ${b?.etudiantId===s.id?"selected":""}>${esc([s.nom,s.prenom].filter(Boolean).join(" ")||(s.email||s.id))}</option>`)}
+            </select>
+          </div>
+          <div class="field">
+            <label>Classe *</label>
+            <input name="classeId" value="${esc(b?.classeId||"")}" required placeholder="Ex. NS4">
+          </div>
+          <div class="field">
+            <label>Période / Trimestre *</label>
+            <input name="periode" value="${esc(b?.periode||"1er Trimestre")}" required>
+          </div>
+          <div class="field">
+            <label>Moyenne générale (/20) *</label>
+            <input name="moyenne" type="number" step="0.01" max="20" min="0" value="${esc(b?.moyenne||"")}" required>
+          </div>
+          <div class="field full">
+            <label>Appréciation générale</label>
+            <textarea name="appreciation">${esc(b?.appreciation||"")}</textarea>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn primary" type="submit">Enregistrer</button>
+          <button class="btn secondary" id="cancelBulletinForm" type="button">Annuler</button>
+        </div>
+      </form>
+    </div>`;
+
+  $("cancelBulletinForm").onclick=()=>area.innerHTML="";
+  $("bulletinForm").onsubmit=async e=>{
+    e.preventDefault();
+    const fd=new FormData(e.currentTarget);
+    const etudiantId=String(fd.get("etudiantId")||"").trim();
+    const st=students.find(x=>x.id===etudiantId);
+
+    const data={
+      etudiantId,
+      etudiantEmail:st?.email||"",
+      classeId:String(fd.get("classeId")||"").trim(),
+      periode:String(fd.get("periode")||"").trim(),
+      moyenne:Number(fd.get("moyenne")||0),
+      appreciation:String(fd.get("appreciation")||"").trim(),
+      publie: b?!!b.publie:false, // Seul l'admin peut publier via le bouton dédié
+      updatedAt:stamp()
+    };
+
+    try{
+      if(b){
+        await updateDoc(doc(db,"bulletins",b.id),data);
+      }else{
+        data.createdAt=stamp();
+        await addDoc(collection(db,"bulletins"),data);
+      }
+      toast("Bulletin enregistré.");
+      area.innerHTML="";
+      await loadTeacherAdminBulletins();
+    }catch(err){
+      toast(friendly(err),true);
+    }
+  };
 }
 
 /* =====================================================
@@ -1005,9 +1133,7 @@ function scheduleTimeRange(r){
 }
 
 function scheduleClassName(id){
-  const classes=window.cflpScheduleCache.classes||[];
-  const c=classes.find(x=>x.id===id||x.code===id);
-  return c ? (c.nom||c.code||c.id) : (id||"Non définie");
+  return nomClasseLisible(id);
 }
 
 function scheduleSubjectName(id){
@@ -1126,7 +1252,7 @@ function drawSchedulePage(page){
     String(a.heureDebut||"").localeCompare(String(b.heureDebut||""))
   );
 
-  const canCreate=isCourse?isAdmin():(isAdmin()||isProfessor());
+  const canCreate = isCourse ? isAdmin() : (isAdmin() || isProfessor());
 
   $("pageContent").innerHTML=`
     <div class="card">
@@ -1800,7 +1926,7 @@ async function renderBackup(){
 if(!isAdmin())return;
 $("pageContent").innerHTML='<div class="card"><h3>Sauvegarde JSON</h3><p>Exporter les collections Firestore accessibles à votre compte.</p><button id="exportBtn" class="btn primary">Exporter les données</button><div class="notice">Le fichier peut contenir des données personnelles. Conservez-le en sécurité.</div></div>';
 $("exportBtn").onclick=async()=>{
-const names=["users","etudiants","eleves","professeurs","departements","filieres","classes","matieres","cours","annees_academiques","affectations","inscriptions","devoirs","examens","tentatives_examens","notes_cours","remises","resultats","videos","documents","statistiques","configuration"],backup={application:"Centre de Formation Le Pédagogue",projectId:firebaseConfig.projectId,exportedAt:new Date().toISOString(),collections:{}};
+const names=["users","etudiants","eleves","professeurs","departements","filieres","classes","matieres","cours","annees_academiques","affectations","inscriptions","devoirs","examens","tentatives_examens","notes_cours","remises","resultats","videos","documents","bulletins","statistiques","configuration"],backup={application:"Centre de Formation Le Pédagogue",projectId:firebaseConfig.projectId,exportedAt:new Date().toISOString(),collections:{}};
 try{for(const name of names){const s=await getDocs(collection(db,name));backup.collections[name]=s.docs.map(d=>({id:d.id,...d.data()}))}
 const blob=new Blob([JSON.stringify(backup,null,2)],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="sauvegarde-le-pedagogue-"+new Date().toISOString().slice(0,10)+".json";a.click();URL.revokeObjectURL(url);toast("Export terminé.")}
 catch(e){toast(friendly(e),true)}
