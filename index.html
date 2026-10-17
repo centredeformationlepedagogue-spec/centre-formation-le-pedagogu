@@ -25,7 +25,6 @@
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
 }
-
 #pageContent .table-wrap:has(th:nth-child(8)) th,
 #pageContent .table-wrap:has(th:nth-child(8)) td {
   padding: 5px 6px;
@@ -33,20 +32,16 @@
   line-height: 1.3;
   vertical-align: middle;
 }
-
 #pageContent .table-wrap:has(th:nth-child(8)) th {
   white-space: nowrap;
 }
-
 #pageContent .table-wrap:has(th:nth-child(8)) .actions {
   gap: 4px;
 }
-
 #pageContent .table-wrap:has(th:nth-child(8)) .actions .btn {
   font-size: 10px;
   padding: 5px 6px;
 }
-
 #pageContent .table-wrap:has(th:nth-child(8)) select {
   min-width: 95px;
   padding: 5px;
@@ -69,6 +64,14 @@
 
 <div id="registrationFields" class="hidden">
 <div class="notice">Remplissez les informations ci-dessous pour créer votre compte. L'administrateur devra approuver votre demande.</div>
+<div class="field">
+<label for="regEmail">Adresse e-mail *</label>
+<input id="regEmail" type="email" autocomplete="email" required>
+</div>
+<div class="field">
+<label for="regPassword">Mot de passe (6 caractères min.) *</label>
+<input id="regPassword" type="password" autocomplete="new-password" required>
+</div>
 <div class="field">
 <label for="regRole">Type de compte</label>
 <select id="regRole" required>
@@ -251,14 +254,14 @@ registrationVisible=true;
 $("registrationFields").classList.remove("hidden");
 updateRegistrationFields();
 btn.textContent="Valider et créer mon compte";
-$("regNom").focus();
+$("regEmail").focus();
 return;
 }
 
 if(registrationBusy)return;
 
-const email=$("loginEmail").value.trim();
-const password=$("loginPassword").value;
+const email=$("regEmail").value.trim();
+const password=$("regPassword").value;
 const role=$("regRole").value;
 const nom=$("regNom").value.trim();
 const prenom=$("regPrenom").value.trim();
@@ -320,7 +323,7 @@ createdAt:stamp()
 await sendEmailVerification(credential.user);
 await signOut(auth);
 
-$("loginPassword").value="";
+$("regPassword").value="";
 $("registrationFields").classList.add("hidden");
 registrationVisible=false;
 btn.textContent="Créer un compte";
@@ -896,7 +899,7 @@ async function renderBulletin(){
       return;
     }
 
-    const bulletin=rows[0]; // On affiche le bulletin le plus récent ou autorisé
+    const bulletin=rows[0];
     const studentName=[currentProfile.prenom||"", currentProfile.nom||""].filter(Boolean).join(" ")||currentUser.email;
 
     $("pageContent").innerHTML=`
@@ -1018,7 +1021,7 @@ async function loadTeacherAdminBulletins(){
         const currentPub=b.dataset.currentPub==="true";
         try{
           await updateDoc(doc(db,"bulletins",id),{publie:!currentPub, updatedAt:stamp()});
-          toast(!currentPub?"Bulletin publié avec succès.Publication retirée.":"Publication retirée.");
+          toast(!currentPub?"Bulletin publié avec succès.":"Publication retirée.");
           await loadTeacherAdminBulletins();
         }catch(e){toast(friendly(e),true)}
       };
@@ -1089,7 +1092,7 @@ async function openBulletinForm(b){
       periode:String(fd.get("periode")||"").trim(),
       moyenne:Number(fd.get("moyenne")||0),
       appreciation:String(fd.get("appreciation")||"").trim(),
-      publie: b?!!b.publie:false, // Seul l'admin peut publier via le bouton dédié
+      publie: b?!!b.publie:false,
       updatedAt:stamp()
     };
 
