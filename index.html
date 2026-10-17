@@ -163,6 +163,7 @@ function isAdmin(){return!!currentUser&&((currentUser.email||"").toLowerCase()==
 function isProfessor(){return!!currentProfile&&(currentProfile.role==="professeur"&&currentProfile.status==="accepted")}
 function isStudent(){return ["eleve","etudiant"].includes(String(currentProfile?.role||"").toLowerCase())}
 function approved(){return!!currentProfile&&(isAdmin()||(currentProfile.status==="accepted"&&["professeur","eleve","etudiant"].includes(currentProfile.role)))}
+function roleName(r){return({administrateur:"Administrateur",professeur:"Professeur",eleve:"Élève",etudiant:"Étudiant"})[r]||r||"Utilisateur"}
 function stopTimer(){if(timerInterval){clearInterval(timerInterval);timerInterval=null}}
 
 async function ensureProfile(user){
