@@ -1157,14 +1157,16 @@ function scheduleTeacherName(id){
 }
 
 function scheduleCanManage(page,r){
-  if(page==="horaire_cours")return isAdmin();
-  if(page==="horaire_examens"){
-    return isAdmin() ||
-      (isProfessor() && (
-        r?.professeurUid===currentUser.uid ||
-        r?.createdBy===currentUser.uid
-      ));
+  // Se administratè a sèlman ki ka jere orè yo.
+  // Pwofesè ak elèv ka konsilte orè yo.
+  if(page==="horaire_cours"){
+    return isAdmin();
   }
+
+  if(page==="horaire_examens"){
+    return isAdmin();
+  }
+
   return false;
 }
 
@@ -1256,8 +1258,7 @@ function drawSchedulePage(page){
     String(a.heureDebut||"").localeCompare(String(b.heureDebut||""))
   );
 
-  const canCreate = isCourse ? isAdmin() : (isAdmin() || isProfessor());
-
+  const canCreate = isAdmin();
   $("pageContent").innerHTML=`
     <div class="card">
       <div class="page-head">
