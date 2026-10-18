@@ -377,8 +377,32 @@ const navItems=[
 ["horaire_examens","📝 Horaire des examens"],
 ["annees","📅 Années académiques"],["devoirs","📑 Devoirs"],["examens","⏱️ Examens"],["notes_cours","📒 Notes de cours"],["remises","📥 Remises / Corrections"],["bulletin","🎓 Mon bulletin"],["resultats","📊 Résultats"],["videos","🎬 Vidéos"],["documents","📄 Documents"],["statistiques","📈 Statistiques"],["configuration","⚙️ Configuration"]
 ];
-const studentPages=["accueil","devoirs","examens","notes_cours","remises","resultats","bulletin","videos","documents","horaire_cours","horaire_examens"];
-const teacherPages=studentPages.filter(p=>p!=="bulletin");
+const studentPages=[
+  "accueil",
+  "devoirs",
+  "examens",
+  "notes_cours",
+  "remises",
+  "resultats",
+  "bulletin",
+  "videos",
+  "documents",
+  "horaire_cours",
+  "horaire_examens"
+];
+
+const teacherPages=[
+  "accueil",
+  "devoirs",
+  "examens",
+  "notes_cours",
+  "remises",
+  "resultats",
+  "videos",
+  "documents",
+  "horaire_cours",
+  "horaire_examens"
+];
 
 let cacheNomsClasses = {};
 async function chargerNomsClasses() {
