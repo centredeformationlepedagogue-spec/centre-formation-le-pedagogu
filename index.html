@@ -527,27 +527,228 @@ if($("toggleAppStatusBtn")){
   };
 }
 }
-function canEditModule(id){return isAdmin()||(["devoirs","examens","notes_cours"].includes(id)&&currentProfile.role==="professeur")||(["remises"].includes(id)&&["professeur","eleve","etudiant"].includes(currentProfile.role))||(id==="resultats"&&currentProfile.role==="professeur")}
+function canAddModule(id){
+  const role = currentProfile?.role;
 
+  return isAdmin()
+    || (["devoirs","examens","notes_cours"].includes(id)
+        && role === "professeur")
+    || (id === "remises"
+        && ["professeur","eleve","etudiant"].includes(role))
+    || (id === "resultats" && role === "professeur");
+}
+
+function canEditModule(id){
+  const role = currentProfile?.role;
+
+  return isAdmin()
+    || (["devoirs","examens","notes_cours","remises"].includes(id)
+        && role === "professeur")
+    || (id === "resultats" && role === "professeur");
+}
 async function renderModule(m){
-let records=[];
-if(isAdmin())records=(await getDocs(collection(db,m.collection))).docs.map(d=>({id:d.id,...d.data()}));
-else if(["devoirs","examens","videos","documents","notes_cours"].includes(m.id)){
-const cl=currentProfile.classeId;if(cl)records=(await getDocs(query(collection(db,m.collection),where("classeId","==",cl)))).docs.map(d=>({id:d.id,...d.data()}))
-}else if(m.id==="remises"){
-const q=currentProfile.role==="professeur"?query(collection(db,m.collection),where("professeurUid","==",currentUser.uid)):query(collection(db,m.collection),where("etudiantId","==",currentUser.uid));records=(await getDocs(q)).docs.map(d=>({id:d.id,...d.data()}))
-}else if(m.id==="resultats"){
-const q=currentProfile.role==="professeur"?query(collection(db,m.collection),where("professeurUid","==",currentUser.uid)):query(collection(db,m.collection),where("etudiantId","==",currentUser.uid));records=(await getDocs(q)).docs.map(d=>({id:d.id,...d.data()}))
+  let records = [];
+  const role = currentProfile?.role;
+  const uid = currentUser?.uid;
+
+  if(isAdmin()){
+    records = (await getDocs(collection(db,m.collection)))
+      .docs.map(d=>({id:d.id,...d.data()}));
+
+  }else if(
+    ["devoirs","examens","videos","documents","notes_cours"].includes(m.id)
+  ){
+    const cl = currentProfile?.classeId;
+
+    if(cl){
+      records = (await getDocs(
+        query(
+          collection(db,m.collection),
+          where("classeId","==",cl)
+        )
+      )).docs.map(d=>({id:d.id,...d.data()}));
+    }
+
+  }else if(m.id==="remises"){
+    let q;
+
+    if(role==="professeur"){
+      // Remises associees au compte du professeur.
+      q = query(
+        collection(db,m.collection),
+        where("professeurUid","==",uid)
+      );
+    }else{
+      // Un eleve ne consulte que ses propres remises.
+      q = query(
+        collection(db,m.collection),
+        where("etudiantId","==",uid)
+      );
+    }
+
+    records = (await getDocs(q))
+      .docs.map(d=>({id:d.id,...d.data()}));
+
+  }else if(m.id==="resultats"){
+    const q = role==="professeur"
+      ? query(
+          collection(db,m.collection),
+          where("professeurUid","==",uid)
+        )
+      : query(
+          collection(db,m.collection),
+          where("etudiantId","==",uid)
+        );
+
+    records = (await getDocs(q))
+      .docs.map(d=>({id:d.id,...d.data()}));
+  }
+
+  const canAdd = typeof canAddModule==="function"
+    ? canAddModule(m.id)
+    : canEditModule(m.id);
+
+  const canEdit = canEditModule(m.id);
+
+  $("pageContent").innerHTML = `
+    <div class="card">
+      <div class="page-head">
+        <div>
+          <h3>${esc(m.title)}</h3>
+          <p class="muted">${records.length} enregistrement(s)</p>
+        </div>
+        ${
+          canAdd
+            ? '<button id="addRecord" class="btn primary">＋ Ajouter</button>'
+            : ""
+        }
+      </div>
+
+      <div id="recordFormArea"></div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Informations</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${
+              records.map(r=>`
+                <tr>
+                  <td>
+                    ${
+                      m.fields.map(([k,l])=>
+                        r[k]!==undefined && r[k]!==""
+                          ? `<div><b>${esc(l)} :</b> ${
+                              esc(k==="classeId"
+                                ? nomClasseLisible(r[k])
+                                : r[k])
+                            }</div>`
+                          : ""
+                      ).join("") || esc(r.titre||r.id)
+                    }
+                  </td>
+                  <td>
+                    <div class="actions">
+                      ${
+                        canEdit &&
+                        (m.id!=="remises" ||
+                         role==="professeur" ||
+                         isAdmin())
+                          ? `<button class="btn secondary"
+                               data-edit="${esc(r.id)}">Modifier</button>`
+                          : ""
+                      }
+                      ${
+                        isAdmin()
+                          ? `<button class="btn danger"
+                               data-del="${esc(r.id)}">Supprimer</button>`
+                          : ""
+                      }
+                    </div>
+                  </td>
+                </tr>
+              `).join("") ||
+              '<tr><td colspan="2">Aucun enregistrement.</td></tr>'
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+
+  if($("addRecord")){
+    $("addRecord").onclick = ()=>{
+      if(!canAdd){
+        toast("Vous n'êtes pas autorisé à ajouter cet enregistrement.",true);
+        return;
+      }
+      recordForm(m,null);
+    };
+  }
+
+  $("pageContent").querySelectorAll("[data-edit]")
+    .forEach(b=>{
+      b.onclick = ()=>{
+        const record = records.find(r=>r.id===b.dataset.edit);
+
+        if(!record)return;
+
+        if(
+          m.id==="remises" &&
+          !isAdmin() &&
+          role!=="professeur"
+        ){
+          toast(
+            "Vous ne pouvez pas modifier une remise déjà envoyée.",
+            true
+          );
+          return;
+        }
+
+        if(!canEdit){
+          toast("Vous n'êtes pas autorisé à modifier cet enregistrement.",true);
+          return;
+        }
+
+        recordForm(m,record);
+      };
+    });
+
+  $("pageContent").querySelectorAll("[data-del]")
+    .forEach(b=>{
+      b.onclick = async()=>{
+        if(!isAdmin())return;
+
+        if(confirm("Supprimer cet enregistrement ?")){
+          try{
+            await deleteDoc(doc(db,m.collection,b.dataset.del));
+            toast("Supprimé.");
+            await openPage(m.id);
+          }catch(e){
+            toast(friendly(e),true);
+          }
+        }
+      };
+    });
 }
-$("pageContent").innerHTML=`<div class="card"><div class="page-head"><div><h3>${esc(m.title)}</h3><p class="muted">${records.length} enregistrement(s)</p></div>${canEditModule(m.id)?'<button id="addRecord" class="btn primary">＋ Ajouter</button>':""}</div><div id="recordFormArea"></div><div class="table-wrap"><table><thead><tr><th>Informations</th><th>Actions</th></tr></thead><tbody>${records.map(r=>`<tr><td>${m.fields.map(([k,l])=>r[k]!==undefined&&r[k]!==""?`<div><b>${esc(l)} :</b> ${esc(k==="classeId"?nomClasseLisible(r[k]):r[k])}</div>`:"").join("")||esc(r.titre||r.id)}</td><td><div class="actions">${canEditModule(m.id)?`<button class="btn secondary" data-edit="${esc(r.id)}">Modifier</button>`:""}${isAdmin()?`<button class="btn danger" data-del="${esc(r.id)}">Supprimer</button>`:""}</div></td></tr>`).join("")||'<tr><td colspan="2">Aucun enregistrement.</td></tr>'}</tbody></table></div></div>`;
-if($("addRecord"))$("addRecord").onclick=()=>recordForm(m,null);
-$("pageContent").querySelectorAll("[data-edit]").forEach(b=>b.onclick=()=>recordForm(m,records.find(r=>r.id===b.dataset.edit)));
-$("pageContent").querySelectorAll("[data-del]").forEach(b=>b.onclick=async()=>{if(confirm("Supprimer cet enregistrement ?"))try{await deleteDoc(doc(db,m.collection,b.dataset.del));toast("Supprimé.");await openPage(m.id)}catch(e){toast(friendly(e),true)}})
-}
+
 
 function recordForm(m,r){
 const area=$("recordFormArea");if(!area)return;
 const isExam=m.id==="examens";
+  if(
+  m.id === "remises" &&
+  r &&
+  !isAdmin() &&
+  currentProfile?.role !== "professeur"
+){
+  toast("Vous ne pouvez pas modifier une remise déjà envoyée.", true);
+  return;
+}
 area.innerHTML=`<div class="card"><h3>${r?"Modifier":"Ajouter"} — ${esc(m.title)}</h3><form id="dataForm"><div class="form-grid">${m.fields.filter(([k])=>!(isExam&&k==="questionsJSON")).map(([k,l])=>{
 const value=r?.[k]??"",long=["description","contenu","commentaire"].includes(k),num=["note100","note20","dureeMinutes","noteMax"].includes(k),type=["dateLimite","dateDebut"].includes(k)?"datetime-local":num?"number":"text";
 let formattedValue=value;if(type==="datetime-local"&&value)formattedValue=String(value).slice(0,16);
