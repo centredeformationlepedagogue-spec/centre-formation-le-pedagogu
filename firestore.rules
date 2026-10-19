@@ -1,0 +1,769 @@
+
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // =========================================
+    // IDANTITE AK WÒL
+    // =========================================
+
+    function connected() {
+      return request.auth != null;
+    }
+
+    function profileExists() {
+      return connected()
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+
+    function myProfile() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function isAdmin() {
+      return connected() &&
+        (
+          request.auth.token.email == "centredeformationlepedagogue@gmail.com"
+          ||
+          (
+            profileExists()
+            && myProfile().get("role", "") == "administrateur"
+            && myProfile().get("status", "") == "accepted"
+          )
+        );
+    }
+
+    function isAccepted() {
+      return profileExists()
+        && myProfile().get("status", "") == "accepted";
+    }
+
+    function isTeacher() {
+      return isAccepted()
+        && myProfile().get("role", "") == "professeur";
+    }
+
+    function isStudent() {
+      return isAccepted()
+        && myProfile().get("role", "") in ["eleve", "etudiant"];
+    }
+
+    function appIsClosed() {
+      return exists(/databases/$(database)/documents/configuration/app_state)
+        && get(/databases/$(database)/documents/configuration/app_state)
+             .data.get("ferme", false) == true;
+    }
+
+    function canUseApp() {
+      return isAdmin() || (!appIsClosed() && isAccepted());
+    }
+
+    // Klas ki nan pwofil itilizatè a.
+    // HTML la dwe mete classeId oswa classIds nan pwofil la.
+    function classAssigned(classId) {
+      return isAdmin()
+        || (
+          isAccepted()
+          && classId is string
+          && (
+            (
+              myProfile().get("classeId", "") == classId
+            )
+            ||
+            (
+              myProfile().get("classIds", []) is list
+              && classId in myProfile().get("classIds", [])
+            )
+          )
+        );
+    }
+
+    function ownsContent(data) {
+      return isTeacher()
+        && (
+          data.get("professeurUid", "") == request.auth.uid
+          || data.get("professeurId", "") == request.auth.uid
+        );
+    }
+
+    // Konpatibilite pou ansyen dokiman ki pa gen chan piblikasyon.
+    // Pou egzije piblikasyon toutbon, HTML la dwe mete epi filtre
+    // statut = "publie" oswa publie = true.
+    function isPublished(data) {
+      return data.get("statut", "publie") == "publie"
+        && data.get("publie", true) == true;
+    }
+
+    function validNewProfile(uid) {
+      return connected()
+        && request.auth.uid == uid
+        && request.resource.data.get("uid", "") == uid
+        && request.resource.data.get("status", "") == "attente"
+        && request.resource.data.get("role", "")
+             in ["eleve", "etudiant", "professeur"];
+    }
+
+    // Verifye ke elèv la soumèt travay pou yon devwa ki egziste
+    // epi ki koresponn ak menm klas la.
+    function validStudentSubmission(data) {
+      return isStudent()
+        && data.get("etudiantId", "") == request.auth.uid
+        && data.get("classeId", "") is string
+        && classAssigned(data.get("classeId", ""))
+        && data.get("devoirId", "") is string
+        && exists(
+          /databases/$(database)/documents/devoirs/$(data.devoirId)
+        )
+        && get(
+          /databases/$(database)/documents/devoirs/$(data.devoirId)
+        ).data.get("classeId", "") == data.get("classeId", "")
+        && isPublished(
+          get(
+            /databases/$(database)/documents/devoirs/$(data.devoirId)
+          ).data
+        );
+    }
+
+    // =========================================
+    // PWOFIL
+    // =========================================
+
+    match /users/{uid} {
+      allow create: if isAdmin() || validNewProfile(uid);
+
+      allow read: if isAdmin()
+        || (connected() && request.auth.uid == uid);
+
+      allow update: if isAdmin()
+        || (
+          connected()
+          && request.auth.uid == uid
+          && request.resource.data.diff(resource.data)
+               .affectedKeys()
+               .hasOnly([
+                 "displayName",
+                 "photoURL",
+                 "lastLogin",
+                 "nom",
+                 "prenom",
+                 "telephone",
+                 "niveau",
+                 "specialite"
+               ])
+        );
+
+      allow delete: if isAdmin();
+    }
+
+    // =========================================
+    // KONFIGIRASYON
+    // =========================================
+
+    match /configuration/{id} {
+      allow read: if canUseApp() || id == "app_state";
+      allow create, update, delete: if isAdmin();
+    }
+
+    // =========================================
+    // AFEKTASYON
+    // =========================================
+
+    match /affectations/{id} {
+      allow read: if isAdmin()
+        || (
+          !appIsClosed()
+          && isTeacher()
+          && resource.data.get("professeurUid", "") == request.auth.uid
+        );
+
+      allow create, update, delete: if isAdmin();
+    }
+
+    // =========================================
+    // KLAS
+    // =========================================
+
+    match /classes/{id} {
+      allow read: if canUseApp();
+      allow create, update, delete: if isAdmin();
+    }
+
+    // =========================================
+    // ORÈ KOU AK ORÈ EGZAMEN
+    // ADMIN SÈLMAN KA EKRI
+    // =========================================
+
+    match /horaires_cours/{id} {
+      allow read: if isAdmin()
+        || (
+          !appIsClosed()
+          && (
+            isTeacher()
+            || (isStudent() && classAssigned(resource.data.get("classeId", "")))
+          )
+        );
+
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /horaires_examens/{id} {
+      allow read: if isAdmin()
+        || (
+          !appIsClosed()
+          && (
+            isTeacher()
+            || (isStudent() && classAssigned(resource.data.get("classeId", "")))
+          )
+        );
+
+      allow create, update, delete: if isAdmin();
+    }
+
+    // =========================================
+    // NÒT KOU
+    // =========================================
+
+    match /notes_cours/{id} {
+      allow read: if isAdmin()
+        || (
+          !appIsClosed()
+          && (
+            (isTeacher() && ownsContent(resource.data))
+            || (
+              isStudent()
+              && classAssigned(resource.data.get("classeId", ""))
+              && isPublished(resource.data)
+            )
+          )
+        );
+
+      allow create: if isAdmin()
+        || (
+          !appIsClosed()
+          && isTeacher()
+          && classAssigned(request.resource.data.get("classeId", ""))
+          && request.resource.data.get("professeurUid", "") == request.auth.uid
+        );
+
+      allow update: if isAdmin()
+        || (
+          !appIsClosed()
+          && ownsContent(resource.data)
+          && classAssigned(resource.data.get("classeId", ""))
+          && request.resource.data.get("professeurUid", "")
+               == resource.data.get("professeurUid", "")
+          && request.resource.data.get("classeId", "")
+               == resource.data.get("classeId", "")
+        );
+
+      allow delete: if isAdmin()
+        || (
+          !appIsClosed()
+          && ownsContent(resource.data)
+          && classAssigned(resource.data.get("classeId", ""))
+        );
+    }
+
+    // =========================================
+    // DEVWA
+    // =========================================
+
+    match /devoirs/{id} {
+      allow read: if isAdmin()
+        || (
+          !appIsClosed()
+          && (
+            (isTeacher() && ownsContent(resource.data))
+            || (
+              isStudent()
+              && classAssigned(resource.data.get("classeId", ""))
+              && isPublished(resource.data)
+            )
+          )
+        );
+
+      allow create: if isAdmin()
+        || (
+          !appIsClosed()
+          && ownsContent(request.resource.data)
+          && classAssigned(request.resource.data.get("classeId", ""))
+          && request.resource.data.get("professeurUid", "") == request.auth.uid
+        );
+
+      allow update: if isAdmin()
+        || (
+          !appIsClosed()
+          && ownsContent(resource.data)
+          && classAssigned(resource.data.get("classeId", ""))
+          && request.resource.data.get("professeurUid", "")
+               == resource.data.get("professeurUid", "")
+          && request.resource.data.get("classeId", "")
+               == resource.data.get("classeId", "")
+        );
+
+      allow delete: if isAdmin()
+        || (
+          !appIsClosed()
+          && ownsContent(resource.data)
+          && classAssigned(resource.data.get("classeId", ""))
+        );
+    }
+
+    // =========================================
+    // EGZAMEN
+    // =========================================
+
+    match /examens/{id} {
+      allow read: if isAdmin()
+        || (
+          !appIsClosed()
+          && (
+            (isTeacher() && ownsContent(resource.data))
+            || (
+              isStudent()
+              && classAssigned(resource.data.get("classeId", ""))
+              && isPublished(resource.data)
+            )
+          )
+        );
+
+      allow create: if isAdmin()
+        || (
+          !appIsClosed()
+          && isTeacher()
+          && classAssigned(request.resource.data.get("classeId", ""))
+          && (
+            request.resource.data.get("professeurUid", "") == request.auth.uid
+            || request.resource.data.get("professeurId", "") == request.auth.uid
+          )
+        );
+
+      allow update: if isAdmin()
+        || (
+          !appIsClosed()
+          && ownsContent(resource.data)
+          && classAssigned(resource.data.get("classeId", ""))
+          && request.resource.data.get("classeId", "")
+               == resource.data.get("classeId", "")
+          && (
+            request.resource.data.get("professeurUid", "") == request.auth.uid
+            || request.resource.data.get("professeurId", "") == request.auth.uid
+          )
+        );
+
+      allow delete: if isAdmin()
+        || (
+          !appIsClosed()
+          && ownsContent(resource.data)
+          && classAssigned(resource.data.get("classeId", ""))
+        );
+    }
+
+    // =========================================
+    // VIDEYO AK DOKIMAN
+    // =========================================
+
+    match /videos/{id} {
+      allow read: if isAdmin()
+        || (
+          !appIsClosed()
+          && (
+            (isTeacher() && ownsContent(resource.data))
+            || (
+              isStudent()
+              && classAssigned(resource.data.get("classeId", ""))
+              && isPublished(resource.data)
+            )
+          )
+        );
+
+      allow create: if isAdmin()
+        || (
+          !appIsClosed()
+          && isTeacher()
+          && classAssigned(request.resource.data.get("classeId", ""))
+          && (
+            request.resource.data.get("professeurUid", "") == request.auth.uid
+            || request.resource.data.get("professeurId", "") == request.auth.uid
+          )
+        );
+
+      allow update: if isAdmin()
+        || (
+          !appIsClosed()
+          && ownsContent(resource.data)
+          && classAssigned(resource.data.get("classeId", ""))
+          && request.resource.data.get("classeId", "")
+               == resource.data.get("classeId", "")
+        );
+
+      allow delete: if isAdmin()
+        || (
+          !appIsClosed()
+          && ownsContent(resource.data)
+          && classAssigned(resource.data.get("classeId", ""))
+        );
+    }
+
+    match /documents/{id} {
+      allow read: if isAdmin()
+        || (
+          !appIsClosed()
+          && (
+            (isTeacher() && ownsContent(resource.data))
+            || (
+              isStudent()
+              && classAssigned(resource.data.get("classeId", ""))
+              && isPublished(resource.data)
+            )
+          )
+        );
+
+      allow create: if isAdmin()
+        || (
+          !appIsClosed()
+          && isTeacher()
+          && classAssigned(request.resource.data.get("classeId", ""))
+          && (
+            request.resource.data.get("professeurUid", "") == request.auth.uid
+            || request.resource.data.get("professeurId", "") == request.auth.uid
+          )
+        );
+
+      allow update: if isAdmin()
+        || (
+          !appIsClosed()
+          && ownsContent(resource.data)
+          && classAssigned(resource.data.get("classeId", ""))
+          && request.resource.data.get("classeId", "")
+               == resource.data.get("classeId", "")
+        );
+
+      allow delete: if isAdmin()
+        || (
+          !appIsClosed()
+          && ownsContent(resource.data)
+          && classAssigned(resource.data.get("classeId", ""))
+        );
+    }
+
+    // =========================================
+    // REMIZ DEVWA
+    // ELÈV KA SOUMÈT TRAVAY PA LI
+    // =========================================
+
+    match /remises/{id} {
+      allow read: if isAdmin()
+        || (
+          !appIsClosed()
+          && (
+            (
+              isStudent()
+              && resource.data.get("etudiantId", "") == request.auth.uid
+            )
+            || (
+              isTeacher()
+              && (
+                ownsContent(resource.data)
+                || classAssigned(resource.data.get("classeId", ""))
+              )
+            )
+          )
+        );
+
+      allow create: if isAdmin()
+        || (
+          !appIsClosed()
+          && validStudentSubmission(request.resource.data)
+          && request.resource.data.get("statut", "") == "soumis"
+          && !request.resource.data.keys().hasAny(["note100", "commentaire"])
+        )
+        || (
+          !appIsClosed()
+          && isTeacher()
+          && classAssigned(request.resource.data.get("classeId", ""))
+          && request.resource.data.get("professeurUid", "") == request.auth.uid
+        );
+
+      // Elèv pa ka modifye yon remiz ki deja anrejistre.
+      // Pwofesè a ka korije sèlman remiz ki nan klas li otorize.
+      allow update: if isAdmin()
+        || (
+          !appIsClosed()
+          && isTeacher()
+          && classAssigned(resource.data.get("classeId", ""))
+          && (
+            ownsContent(resource.data)
+            || resource.data.get("professeurUid", "") == request.auth.uid
+          )
+        );
+
+      allow delete: if isAdmin()
+        || (
+          !appIsClosed()
+          && isTeacher()
+          && ownsContent(resource.data)
+        );
+    }
+
+    // =========================================
+    // REZILTA
+    // =========================================
+
+    match /resultats/{id} {
+      allow read: if isAdmin()
+        || (
+          !appIsClosed()
+          && (
+            (
+              isStudent()
+              && resource.data.get("etudiantId", "") == request.auth.uid
+            )
+            || (
+              isTeacher()
+              && (
+                ownsContent(resource.data)
+                || classAssigned(resource.data.get("classeId", ""))
+              )
+            )
+          )
+        );
+
+      allow create: if isAdmin()
+        || (
+          !appIsClosed()
+          && isTeacher()
+          && classAssigned(request.resource.data.get("classeId", ""))
+          && (
+            request.resource.data.get("professeurUid", "") == request.auth.uid
+            || request.resource.data.get("professeurId", "") == request.auth.uid
+          )
+        );
+
+      allow update, delete: if isAdmin()
+        || (
+          !appIsClosed()
+          && isTeacher()
+          && ownsContent(resource.data)
+          && classAssigned(resource.data.get("classeId", ""))
+        );
+    }
+
+    // =========================================
+    // BULLETEN
+    // =========================================
+
+    match /bulletins/{id} {
+      allow read: if isAdmin()
+        || (
+          !appIsClosed()
+          && isTeacher()
+          && (
+            ownsContent(resource.data)
+            || classAssigned(resource.data.get("classeId", ""))
+          )
+        )
+        || (
+          !appIsClosed()
+          && isStudent()
+          && resource.data.get("etudiantId", "") == request.auth.uid
+          && resource.data.get("publie", false) == true
+        );
+
+      // Pwofesè ka ekri sèlman bilten ki mare ak pwòp klas li
+      // epi ki make ak UID pa li.
+      allow create: if isAdmin()
+        || (
+          !appIsClosed()
+          && isTeacher()
+          && classAssigned(request.resource.data.get("classeId", ""))
+          && request.resource.data.get("professeurUid", "") == request.auth.uid
+        );
+
+      allow update, delete: if isAdmin()
+        || (
+          !appIsClosed()
+          && isTeacher()
+          && ownsContent(resource.data)
+          && classAssigned(resource.data.get("classeId", ""))
+        );
+    }
+
+    // =========================================
+    // TANTATIV EGZAMEN
+    // =========================================
+
+    match /tentatives_examens/{id} {
+      allow read: if isAdmin()
+        || (
+          !appIsClosed()
+          && (
+            (
+              isStudent()
+              && resource.data.get("etudiantId", "") == request.auth.uid
+            )
+            || (
+              isTeacher()
+              && classAssigned(resource.data.get("classeId", ""))
+            )
+          )
+        );
+
+      allow create: if !appIsClosed()
+        && isStudent()
+        && request.resource.data.get("etudiantId", "") == request.auth.uid
+        && request.resource.data.get("examenId", "") is string
+        && exists(
+          /databases/$(database)/documents/examens/$(request.resource.data.examenId)
+        )
+        && get(
+          /databases/$(database)/documents/examens/$(request.resource.data.examenId)
+        ).data.get("statut", "") == "publie"
+        && get(
+          /databases/$(database)/documents/examens/$(request.resource.data.examenId)
+        ).data.get("classeId", "") == request.resource.data.get("classeId", "")
+        && classAssigned(request.resource.data.get("classeId", ""));
+
+      // Elèv ka modifye repons li ak eta remiz la sèlman.
+      // Nòt ak koreksyon pa ka chanje nan navigatè elèv la.
+      allow update: if isAdmin()
+        || (
+          !appIsClosed()
+          && isStudent()
+          && resource.data.get("etudiantId", "") == request.auth.uid
+          && request.resource.data.get("etudiantId", "") == request.auth.uid
+          && request.resource.data.diff(resource.data)
+               .affectedKeys()
+               .hasOnly([
+                 "reponses",
+                 "updatedAt",
+                 "statut",
+                 "dateRemise",
+                 "remisAutomatiquement"
+               ])
+        )
+        || (
+          !appIsClosed()
+          && isTeacher()
+          && classAssigned(resource.data.get("classeId", ""))
+          && request.resource.data.get("etudiantId", "")
+               == resource.data.get("etudiantId", "")
+          && request.resource.data.get("examenId", "")
+               == resource.data.get("examenId", "")
+          && request.resource.data.diff(resource.data)
+               .affectedKeys()
+               .hasOnly([
+                 "notesEcrites",
+                 "noteEcrite",
+                 "noteObtenue",
+                 "noteMax",
+                 "commentaire",
+                 "correctionManuelle",
+                 "updatedAt"
+               ])
+        );
+
+      allow delete: if isAdmin();
+    }
+
+    // =========================================
+    // REPONS EGZAMEN
+    // =========================================
+
+    match /reponses_examens/{id} {
+      allow read: if isAdmin()
+        || (
+          !appIsClosed()
+          && (
+            (
+              isStudent()
+              && resource.data.get("etudiantId", "") == request.auth.uid
+            )
+            || (
+              isTeacher()
+              && classAssigned(resource.data.get("classeId", ""))
+            )
+          )
+        );
+
+      allow create: if !appIsClosed()
+        && isStudent()
+        && request.resource.data.get("etudiantId", "") == request.auth.uid
+        && classAssigned(request.resource.data.get("classeId", ""));
+
+      allow update: if !appIsClosed()
+        && isStudent()
+        && resource.data.get("etudiantId", "") == request.auth.uid
+        && request.resource.data.get("etudiantId", "") == request.auth.uid
+        && request.resource.data.diff(resource.data)
+             .affectedKeys()
+             .hasOnly(["reponse", "reponses", "updatedAt", "dateRemise"]);
+
+      allow delete: if isAdmin();
+    }
+
+    // =========================================
+    // KOREKSYON EGZAMEN
+    // =========================================
+
+    match /examens_corrections/{id} {
+      allow read: if isAdmin()
+        || (
+          !appIsClosed()
+          && isTeacher()
+          && (
+            ownsContent(resource.data)
+            || classAssigned(resource.data.get("classeId", ""))
+          )
+        );
+
+      allow create: if isAdmin()
+        || (
+          !appIsClosed()
+          && isTeacher()
+          && classAssigned(request.resource.data.get("classeId", ""))
+          && request.resource.data.get("professeurUid", "") == request.auth.uid
+        );
+
+      allow update, delete: if isAdmin()
+        || (
+          !appIsClosed()
+          && isTeacher()
+          && ownsContent(resource.data)
+          && classAssigned(resource.data.get("classeId", ""))
+        );
+    }
+
+    // =========================================
+    // LÒT KOLEKSYON APP LA
+    // EKRI YO REZÈVE POU ADMIN
+    // =========================================
+
+    match /{collection}/{id} {
+      allow read: if canUseApp()
+        && collection in [
+          "eleves",
+          "etudiants",
+          "professeurs",
+          "departements",
+          "filieres",
+          "matieres",
+          "cours",
+          "inscriptions",
+          "eleves_classes",
+          "corrections",
+          "annees_academiques",
+          "statistiques",
+          "sauvegardes"
+        ];
+
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Nenpòt lòt aksè pa otorize.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
