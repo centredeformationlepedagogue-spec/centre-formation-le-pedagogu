@@ -1,4 +1,4 @@
-const CACHE_NAME = "le-pedagogue-v3";
+const CACHE_NAME = "le-pedagogue-v4";
 
 const APP_FILES = [
   "./",
@@ -11,13 +11,15 @@ const APP_FILES = [
 self.addEventListener("install", event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(async cache => {
-      for (const file of APP_FILES) {
-        try {
-          await cache.add(file);
-        } catch (error) {
-          console.warn("Fichier non mis en cache :", file, error);
-        }
-      }
+      await Promise.all(
+        APP_FILES.map(async file => {
+          try {
+            await cache.add(file);
+          } catch (error) {
+            console.warn("Fichier non mis en cache :", file, error);
+          }
+        })
+      );
     })
   );
 
@@ -26,52 +28,79 @@ self.addEventListener("install", event => {
 
 self.addEventListener("activate", event => {
   event.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(
-        keys
-          .filter(key =>
-            key.startsWith("le-pedagogue-") &&
-            key !== CACHE_NAME
-          )
-          .map(key => caches.delete(key))
+    caches.keys()
+      .then(keys =>
+        Promise.all(
+          keys
+            .filter(key =>
+              key.startsWith("le-pedagogue-") &&
+              key !== CACHE_NAME
+            )
+            .map(key => caches.delete(key))
+        )
       )
-    ).then(() => self.clients.claim())
+      .then(() => self.clients.claim())
   );
 });
 
 self.addEventListener("fetch", event => {
-  if (event.request.method !== "GET") return;
+  const request = event.request;
 
-  const url = new URL(event.request.url);
+  if (request.method !== "GET") return;
+
+  const url = new URL(request.url);
 
   if (url.origin !== self.location.origin) return;
 
+  // Toujours demander la dernière version des pages HTML.
+  if (
+    request.mode === "navigate" ||
+    url.pathname.endsWith(".html") ||
+    url.pathname.endsWith("/")
+  ) {
+    event.respondWith(
+      fetch(request, { cache: "no-store" })
+        .then(response => {
+          if (response.ok) {
+            const copy = response.clone();
+
+            caches.open(CACHE_NAME)
+              .then(cache => cache.put(request, copy))
+              .catch(console.warn);
+          }
+
+          return response;
+        })
+        .catch(async () => {
+          const cached = await caches.match(request);
+
+          if (cached) return cached;
+
+          const index = await caches.match("./index.html");
+
+          return index || Response.error();
+        })
+    );
+
+    return;
+  }
+
+  // Pou lòt fichye yo, itilize rezo a an premye.
   event.respondWith(
-    fetch(event.request)
+    fetch(request)
       .then(response => {
-        if (response && response.ok) {
+        if (response.ok) {
           const copy = response.clone();
 
           caches.open(CACHE_NAME)
-            .then(cache => cache.put(event.request, copy))
-            .catch(error =>
-              console.warn("Erreur de cache :", error)
-            );
+            .then(cache => cache.put(request, copy))
+            .catch(console.warn);
         }
 
         return response;
       })
       .catch(async () => {
-        const cached = await caches.match(event.request);
-
-        if (cached) return cached;
-
-        if (event.request.mode === "navigate") {
-          const index = await caches.match("./index.html");
-          if (index) return index;
-        }
-
-        return Response.error();
+        return (await caches.match(request)) || Response.error();
       })
   );
 });
