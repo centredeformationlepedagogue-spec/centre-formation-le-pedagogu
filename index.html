@@ -2224,7 +2224,22 @@ async function renderUsers(){
               createdAt: stamp(),
               updatedAt: stamp()
             });
+const professeur = users.find(u => u.id === professeurUid);
 
+if (professeur) {
+  const anciennesClasses = Array.isArray(professeur.classIds)
+    ? professeur.classIds
+    : [];
+
+  const nouvellesClasses = [
+    ...new Set([...anciennesClasses, classeId])
+  ];
+
+  await updateDoc(doc(db, "users", professeurUid), {
+    classIds: nouvellesClasses,
+    updatedAt: stamp()
+  });
+}
             toast("Klas la afekte ak pwofesè a.");
             await renderUsers();
           } catch (e) {
