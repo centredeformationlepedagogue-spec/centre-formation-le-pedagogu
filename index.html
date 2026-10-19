@@ -527,25 +527,39 @@ if($("toggleAppStatusBtn")){
   };
 }
 }
+
 function canAddModule(id){
   const role = currentProfile?.role;
 
   return isAdmin()
-    || (["devoirs","examens","notes_cours","videos","documents"].includes(id)
-        && role === "professeur")
-    || (id === "remises"
-        && ["professeur","eleve","etudiant"].includes(role))
-    || (id === "resultats" && role === "professeur");
+    || (
+      ["devoirs","examens","notes_cours","videos","documents"].includes(id)
+      && role === "professeur"
+    )
+    || (
+      id === "remises"
+      && role === "professeur"
+    )
+    || (
+      id === "resultats"
+      && role === "professeur"
+    );
 }
 
 function canEditModule(id){
   const role = currentProfile?.role;
 
   return isAdmin()
-    || (["devoirs","examens","notes_cours","remises","videos","documents"].includes(id)
-        && role === "professeur")
-    || (id === "resultats" && role === "professeur");
+    || (
+      ["devoirs","examens","notes_cours","remises","videos","documents"].includes(id)
+      && role === "professeur"
+    )
+    || (
+      id === "resultats"
+      && role === "professeur"
+    );
 }
+
 async function renderModule(m){
   let records = [];
   const role = currentProfile?.role;
