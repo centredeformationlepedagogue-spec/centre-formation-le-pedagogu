@@ -453,60 +453,57 @@ service cloud.firestore {
     // ELÈV KA SOUMÈT TRAVAY PA LI
     // =========================================
 
-    match /remises/{id} {
-      allow read: if isAdmin()
-        || (
-          !appIsClosed()
-          && (
-            (
-              isStudent()
-              && resource.data.get("etudiantId", "") == request.auth.uid
-            )
-            || (
-              isTeacher()
-              && (
-                ownsContent(resource.data)
-                || classAssigned(resource.data.get("classeId", ""))
-              )
-            )
-          )
-        );
-
-      allow create: if isAdmin()
-        || (
-          !appIsClosed()
-          && validStudentSubmission(request.resource.data)
-          && request.resource.data.get("statut", "") == "soumis"
-          && !request.resource.data.keys().hasAny(["note100", "commentaire"])
+match /remises/{id} {
+  allow read: if isAdmin()
+    || (
+      !appIsClosed()
+      && (
+        (
+          isStudent()
+          && resource.data.get("etudiantId", "") == request.auth.uid
         )
         || (
-          !appIsClosed()
-          && isTeacher()
-          && classAssigned(request.resource.data.get("classeId", ""))
-          && request.resource.data.get("professeurUid", "") == request.auth.uid
-        );
-
-      // Elèv pa ka modifye yon remiz ki deja anrejistre.
-      // Pwofesè a ka korije sèlman remiz ki nan klas li otorize.
-      allow update: if isAdmin()
-        || (
-          !appIsClosed()
-          && isTeacher()
-          && classAssigned(resource.data.get("classeId", ""))
+          isTeacher()
           && (
             ownsContent(resource.data)
-            || resource.data.get("professeurUid", "") == request.auth.uid
+            || classAssigned(resource.data.get("classeId", ""))
           )
-        );
+        )
+      )
+    );
 
-      allow delete: if isAdmin()
-        || (
-          !appIsClosed()
-          && isTeacher()
-          && ownsContent(resource.data)
-        );
-    }
+  // Se administratè ak pwofesè otorize sèlman
+  // ki ka kreye yon remiz.
+  allow create: if isAdmin()
+    || (
+      !appIsClosed()
+      && isTeacher()
+      && classAssigned(request.resource.data.get("classeId", ""))
+      && request.resource.data.get("professeurUid", "") == request.auth.uid
+    );
 
+  // Elèv pa ka modifye remiz ki deja anrejistre.
+  // Pwofesè otorize yo ka korije remiz yo.
+  allow update: if isAdmin()
+    || (
+      !appIsClosed()
+      && isTeacher()
+      && classAssigned(resource.data.get("classeId", ""))
+      && (
+        ownsContent(resource.data)
+        || resource.data.get("professeurUid", "") == request.auth.uid
+      )
+    );
+
+  allow delete: if isAdmin()
+    || (
+      !appIsClosed()
+      && isTeacher()
+      && ownsContent(resource.data)
+    );
+}
+
+    
     // =========================================
     // REZILTA
     // =========================================
