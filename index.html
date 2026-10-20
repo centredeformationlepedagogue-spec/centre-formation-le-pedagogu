@@ -362,11 +362,43 @@ const modules=[
 {id:"annees",title:"Années académiques",collection:"annees_academiques",fields:[["nom","Nom"],["debut","Date de début"],["fin","Date de fin"],["statut","Statut"]]},
 {id:"affectations",title:"Affectations",collection:"affectations",fields:[["professeurUid","Compte professeur"],["classeId","Classe"],["matiereId","Code matière"],["coursId","Code cours"]]},
 {id:"inscriptions",title:"Élèves / Classes",collection:"inscriptions",fields:[["etudiantId","Compte étudiant"],["eleveId","Compte élève"],["classeId","Classe"],["anneeAcademique","Année académique"],["statut","Statut"]]},
-{id:"devoirs",title:"Devoirs",collection:"devoirs",fields:[["titre","Titre"],["description","Description"],["classeId","Classe"],["dateLimite","Date limite"]]},
-{id:"examens",title:"Examens",collection:"examens",fields:[["titre","Titre de l'examen"],["description","Description"],["classeId","Classe"],["dateDebut","Date et heure de début"],["dateLimite","Date et heure de fin"],["dureeMinutes","Durée en minutes"]]},
-{id:"remises",title:"Remises / Corrections",collection:"remises",fields:[["devoirId","Code devoir"],["etudiantId","Compte élève"],["classeId","Classe"],["contenu","Travail remis"],["note100","Note sur 100"],["commentaire","Commentaire"],["statut","Statut"]]},
-{id:"resultats",title:"Résultats",collection:"resultats",fields:[["etudiantId","Compte élève"],["classeId","Classe"],["matiereId","Code matière"],["note100","Note sur 100"],["note20","Note sur 20"],["commentaire","Commentaire"]]},
-{id:"videos",title:"Vidéos",collection:"videos",fields:[["titre","Titre"],["classeId","Classe"],["url","Lien vidéo"],["description","Description"]]},
+{id:"devoirs",title:"Devoirs",collection:"devoirs",fields:[
+  ["titre","Titre"],
+  ["description","Description"],
+  ["classeId","Classe"],
+  ["dateLimite","Date limite"]
+]},
+{id:"examens",title:"Examens",collection:"examens",fields:[
+  ["titre","Titre de l'examen"],
+  ["description","Description"],
+  ["classeId","Classe"],
+  ["dateDebut","Date et heure de début"],
+  ["dateLimite","Date et heure de fin"],
+  ["dureeMinutes","Durée en minutes"]
+]},
+{id:"remises",title:"Remises / Corrections",collection:"remises",fields:[
+  ["devoirId","Code devoir"],
+  ["etudiantId","Compte élève"],
+  ["classeId","Classe"],
+  ["contenu","Travail remis"],
+  ["note100","Note sur 100"],
+  ["commentaire","Commentaire"],
+  ["statut","Statut"]
+]},
+{id:"resultats",title:"Résultats",collection:"resultats",fields:[
+  ["etudiantId","Compte élève"],
+  ["classeId","Classe"],
+  ["matiereId","Code matière"],
+  ["note100","Note sur 100"],
+  ["note20","Note sur 20"],
+  ["commentaire","Commentaire"]
+]},
+{id:"videos",title:"Vidéos",collection:"videos",fields:[
+  ["titre","Titre"],
+  ["classeId","Classe"],
+  ["url","Lien vidéo"],
+  ["description","Description"]
+]},
 {id:"documents",title:"Documents",collection:"documents",fields:[["titre","Titre"],["classeId","Classe"],["url","Lien du document"],["description","Description"]]},
 {id:"statistiques",title:"Statistiques",collection:"statistiques",fields:[["nom","Nom"],["description","Description"],["valeur","Valeur"]]},
 {id:"configuration",title:"Configuration",collection:"configuration",fields:[["nom","Nom"],["valeur","Valeur"],["description","Description"]]}
