@@ -762,7 +762,7 @@ async function renderModule(m){
 }
 
 
-function recordForm(m,r){
+async function recordForm(m,r){
 const area=$("recordFormArea");if(!area)return;
 const isExam=m.id==="examens";
   if(
@@ -774,10 +774,36 @@ const isExam=m.id==="examens";
   toast("Vous ne pouvez pas modifier une remise déjà envoyée.", true);
   return;
 }
-area.innerHTML=`<div class="card"><h3>${r?"Modifier":"Ajouter"} — ${esc(m.title)}</h3><form id="dataForm"><div class="form-grid">${m.fields.filter(([k])=>!(isExam&&k==="questionsJSON")).map(([k,l])=>{
+
+// Chaje lis klas yo pou Pwofesè oswa Admin anvan nou desine fòm nan
+let classesDisponibles = [];
+try {
+  if (isAdmin()) {
+    const clsSnap = await getDocs(collection(db, "classes"));
+    classesDisponibles = clsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+  } else if (currentProfile?.role === "professeur") {
+    // Chèche afektasyon pwofesè a
+    const affSnap = await getDocs(query(collection(db, "affectations"), where("professeurUid", "==", currentUser.uid)));
+    const classIds = affSnap.docs.map(d => d.data().classeId);
+    if (classIds.length > 0) {
+      const clsSnap = await getDocs(collection(db, "classes"));
+      classesDisponibles = clsSnap.docs.map(d => ({ id: d.id, ...d.data() })).filter(c => classIds.includes(c.id) || classIds.includes(c.code));
+    }
+  }
+} catch(e) {
+  console.warn("Erreur chargement classes pour le formulaire", e);
+}
+
+area.innerHTML=`<div class="card"><h3>${r?"Modifier":"Ajouter"} — ${esc(m.title)}</h3><form id="dataForm"><div class="form-grid">${m.fields.filter(([k])=>!(isExam&&k===['questionsJSON'])).map(([k,l])=>{
 const value=r?.[k]??"",long=["description","contenu","commentaire"].includes(k),num=["note100","note20","dureeMinutes","noteMax"].includes(k),type=["dateLimite","dateDebut"].includes(k)?"datetime-local":num?"number":"text";
 let formattedValue=value;if(type==="datetime-local"&&value)formattedValue=String(value).slice(0,16);
-return`<div class="field ${long?"full":""}"><label>${esc(l)}</label>${long?`<textarea name="${esc(k)}">${esc(value)}</textarea>`:`<input name="${esc(k)}" type="${type}" value="${esc(formattedValue)}" ${num?'min="0"':''} ${isExam&&k==="titre"?"required":""} ${isExam&&k==="classeId"?"required":""}>`}</div>`
+
+// Si chan an se 'classeId' epi itilizatè a se yon pwofesè oswa admin, nou bay li yon select
+if (k === "classeId") {
+  return `<div class="field ${long?"full":""}"><label>${esc(l)} *</label><select name="classeId" required><option value="">-- Chwazi klas --</option>${classesDisponibles.map(c=>`<option value="${esc(c.id)}" ${value===c.id||value===c.code?"selected":""}>${esc(c.nom||c.code||c.id)}</option>`).join("")}</select></div>`;
+}
+
+return`<div class="field ${long?"full":""}"><label>${esc(l)}</label>${long?`<textarea name="${esc(k)}">${esc(value)}</textarea>`:`<input name="${esc(k)}" type="${type}" value="${esc(formattedValue)}" ${num?'min="0"':''} ${isExam&&k==="titre"?"required":""}>`}</div>`
 }).join("")}</div>${isExam?examBuilder(r):""}<div class="actions"><button class="btn primary" type="submit">Enregistrer</button><button class="btn secondary" id="cancelForm" type="button">Annuler</button></div></form></div>`;
 $("cancelForm").onclick=()=>area.innerHTML="";
 if(isExam)setupQuestionBuilder(parseQuestions(r||{}));
@@ -960,8 +986,26 @@ $("pageContent").querySelectorAll("[data-copy-note]").forEach(b=>b.onclick=async
 $("pageContent").querySelectorAll("[data-edit-note]").forEach(b=>b.onclick=()=>noteForm(notes.find(n=>n.id===b.dataset.editNote)));
 $("pageContent").querySelectorAll("[data-del-note]").forEach(b=>b.onclick=async()=>{if(confirm("Supprimer cette note ?"))try{await deleteDoc(doc(db,"notes_cours",b.dataset.delNote));await renderNotesCours();toast("Note supprimée.")}catch(e){toast(friendly(e),true)}})
 }
-function noteForm(n){
+async function noteForm(n){
 const area=$("noteFormArea");
+
+let classesDisponibles = [];
+try {
+  if (isAdmin()) {
+    const clsSnap = await getDocs(collection(db, "classes"));
+    classesDisponibles = clsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+  } else if (currentProfile?.role === "professeur") {
+    const affSnap = await getDocs(query(collection(db, "affectations"), where("professeurUid", "==", currentUser.uid)));
+    const classIds = affSnap.docs.map(d => d.data().classeId);
+    if (classIds.length > 0) {
+      const clsSnap = await getDocs(collection(db, "classes"));
+      classesDisponibles = clsSnap.docs.map(d => ({ id: d.id, ...d.data() })).filter(c => classIds.includes(c.id) || classIds.includes(c.code));
+    }
+  }
+} catch(e) {
+  console.warn("Erreur chargement classes note cours", e);
+}
+
 area.innerHTML=`<div class="card">
 <h3>${n?"Modifier":"Nouvelle"} note de cours</h3>
 <form id="noteForm">
@@ -973,7 +1017,10 @@ area.innerHTML=`<div class="card">
 <div class="form-grid">
 <div class="field">
 <label>Classe *</label>
-<input name="classeId" required value="${esc(n?.classeId||currentProfile.classeId||"")}">
+<select name="classeId" required>
+<option value="">-- Chwazi klas --</option>
+${classesDisponibles.map(c=>`<option value="${esc(c.id)}" ${n?.classeId===c.id||n?.classeId===c.code?"selected":""}>${esc(c.nom||c.code||c.id)}</option>`)}
+</select>
 </div>
 <div class="field">
 <label>Matière</label>
@@ -2204,7 +2251,6 @@ async function renderUsers(){
           }
 
           try {
-            // Chèche si afektasyon an deja egziste
             const q = query(
               collection(db, "affectations"),
               where("professeurUid", "==", professeurUid),
@@ -2217,7 +2263,6 @@ async function renderUsers(){
               return toast("Pwofesè sa a deja afekte nan klas sa a.", true);
             }
 
-            // Kreye afektasyon an
             await addDoc(collection(db, "affectations"), {
               professeurUid: professeurUid,
               classeId: classeId,
