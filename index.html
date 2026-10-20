@@ -1470,57 +1470,114 @@ async function renderSchedule(page){
   const collectionName=isCourse?"horaires_cours":"horaires_examens";
   const title=isCourse?"Horaire des cours":"Horaire des examens";
 
-  try{
-    const [scheduleSnap,classSnap,subjectSnap]=await Promise.all([
-      getDocs(collection(db,collectionName))
-        .catch(e=>{throw new Error(collectionName+" : "+e.code+" — "+e.message)}),
-      getDocs(collection(db,"classes"))
-        .catch(e=>{throw new Error("classes : "+e.code+" — "+e.message)}),
-      getDocs(collection(db,"matieres"))
-        .catch(e=>{throw new Error("matieres : "+e.code+" — "+e.message)})
-    ]);
+  try {
+  const [classSnap, subjectSnap] = await Promise.all([
+    getDocs(collection(db, "classes")),
+    getDocs(collection(db, "matieres"))
+  ]);
 
-    let teachers=[];
-    if(isAdmin()||isProfessor()){
-      try{
-        const teacherSnap=await getDocs(collection(db,"users"));
-        teachers=teacherSnap.docs
-          .map(d=>({id:d.id,...d.data()}))
-          .filter(u=>u.role==="professeur");
-      }catch(e){
-        console.warn("Liste des professeurs indisponible :",e);
-      }
+  const classes = classSnap.docs.map(d => ({
+    id: d.id,
+    ...d.data()
+  }));
+
+  let scheduleDocs = [];
+
+  if (isStudent()) {
+    const profileClassIds = [
+      currentProfile?.classeId,
+      ...(Array.isArray(currentProfile?.classIds)
+        ? currentProfile.classIds
+        : [])
+    ].filter(
+      id => typeof id === "string" && id.trim() !== ""
+    );
+
+    const uniqueClassIds = [...new Set(profileClassIds)];
+
+    // Pa janm mande tout orè yo pou yon elèv.
+    if (uniqueClassIds.length > 0) {
+      const snapshots = await Promise.all(
+        uniqueClassIds.map(classId =>
+          getDocs(
+            query(
+              collection(db, collectionName),
+              where("classeId", "==", classId)
+            )
+          )
+        )
+      );
+
+      const uniqueDocs = new Map();
+
+      snapshots.forEach(snap => {
+        snap.docs.forEach(docSnap => {
+          uniqueDocs.set(docSnap.id, docSnap);
+        });
+      });
+
+      scheduleDocs = [...uniqueDocs.values()];
     }
-
-    window.cflpScheduleCache[page]={
-      records:scheduleSnap.docs.map(d=>({id:d.id,...d.data()})),
-      classes:classSnap.docs.map(d=>({id:d.id,...d.data()})),
-      matieres:subjectSnap.docs.map(d=>({id:d.id,...d.data()})),
-      teachers
-    };
-
-    if(!window.cflpScheduleState[page]){
-      window.cflpScheduleState[page]={
-        view:"table",
-        month:new Date().getMonth(),
-        year:new Date().getFullYear()
-      };
-    }
-
-    drawSchedulePage(page);
-  }catch(e){
-    console.error("Erreur de chargement des horaires :", e);
-    $("pageContent").innerHTML = `
-      <div class="card">
-        <h3>${esc(title)}</h3>
-        <div class="notice">
-          <p>Impossible de charger les horaires.</p>
-          <p><strong>Erreur exacte :</strong></p>
-          <pre style="white-space:pre-wrap;overflow-wrap:anywhere;">${esc(e?.message || String(e))}</pre>
-        </div>
-      </div>
-    `;
+  } else {
+    const scheduleSnap = await getDocs(
+      collection(db, collectionName)
+    );
+    scheduleDocs = scheduleSnap.docs;
   }
+
+  let teachers = [];
+
+  if (isAdmin() || isProfessor()) {
+    try {
+      const teacherSnap = await getDocs(collection(db, "users"));
+
+      teachers = teacherSnap.docs
+        .map(d => ({ id: d.id, ...d.data() }))
+        .filter(u => u.role === "professeur");
+    } catch (e) {
+      console.warn(
+        "Liste des professeurs indisponible :",
+        e
+      );
+    }
+  }
+
+  window.cflpScheduleCache[page] = {
+    records: scheduleDocs.map(d => ({
+      id: d.id,
+      ...d.data()
+    })),
+    classes,
+    matieres: subjectSnap.docs.map(d => ({
+      id: d.id,
+      ...d.data()
+    })),
+    teachers
+  };
+
+  if (!window.cflpScheduleState[page]) {
+    window.cflpScheduleState[page] = {
+      view: "table",
+      month: new Date().getMonth(),
+      year: new Date().getFullYear()
+    };
+  }
+
+  drawSchedulePage(page);
+} catch (e) {
+  console.error("Erreur de chargement des horaires :", e);
+
+  $("pageContent").innerHTML = `
+    <div class="card">
+      <h3>${esc(title)}</h3>
+      <div class="notice">
+        <p>Impossible de charger les horaires.</p>
+        <p><strong>Erreur exacte :</strong></p>
+        <pre style="white-space:pre-wrap;overflow-wrap:anywhere;">${esc(e?.message || String(e))}</pre>
+      </div>
+    </div>
+  `;
+}
 }
 
 function drawSchedulePage(page){
