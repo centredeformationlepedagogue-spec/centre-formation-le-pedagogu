@@ -106,7 +106,9 @@
 </div>
 <div class="field" id="regClasseField">
 <label for="regClasse">Classe ou filière *</label>
-<input id="regClasse" type="text" placeholder="Ex. : NS4, Informatique..." required>
+<select id="regClasse" required>
+<option value="">Chargement des classes...</option>
+</select>
 </div>
 <div class="field full hidden" id="regSpecialiteField">
 <label for="regSpecialite">Spécialité ou matière enseignée *</label>
@@ -169,6 +171,25 @@ function approved(){return!!currentProfile&&(isAdmin()||(currentProfile.status==
 function roleName(r){return({administrateur:"Administrateur",professeur:"Professeur",eleve:"Élève",etudiant:"Étudiant"})[r]||r||"Utilisateur"}
 function stopTimer(){if(timerInterval){clearInterval(timerInterval);timerInterval=null}}
 
+// Cache de noms d'utilisateurs pou ranplase UID yo nan entèfas la
+let cacheNomsUtilisateurs = {};
+async function chargerNomsUtilisateurs() {
+  try {
+    const snap = await getDocs(collection(db, "users"));
+    snap.docs.forEach(d => {
+      const data = d.data();
+      const nomComplet = [data.nom, data.prenom].filter(Boolean).join(" ") || data.displayName || data.email || d.id;
+      cacheNomsUtilisateurs[d.id] = nomComplet;
+    });
+  } catch(e) {
+    console.warn("Impossible de charger les noms d'utilisateurs", e);
+  }
+}
+function nomUtilisateurLisible(uid) {
+  if(!uid) return "Non défini";
+  return cacheNomsUtilisateurs[uid] || uid;
+}
+
 async function ensureProfile(user){
 const ref=doc(db,"users",user.uid),snap=await getDoc(ref),email=(user.email||"").toLowerCase(),admin=email===ADMIN_EMAIL;
 if(!snap.exists()){
@@ -217,6 +238,8 @@ authMessage(status==="refuse"?"Votre demande a été refusée. Contactez l'admin
 }
 $("authScreen").classList.add("hidden");$("app").classList.remove("hidden");
 $("userInfo").textContent=`${currentProfile.nom||user.displayName||user.email} — ${roleName(currentProfile.role)}`;
+await chargerNomsClasses();
+await chargerNomsUtilisateurs();
 buildNavigation();await openPage("accueil");
 }catch(e){console.error(e);await signOut(auth).catch(()=>{});currentUser=null;currentProfile=null;authMessage("Impossible de charger le profil : "+friendly(e),"error")}
 finally{loginLock=false}
@@ -232,6 +255,21 @@ catch(err){authMessage(friendly(err),"error")}
 /* Inscription avec informations supplémentaires */
 let registrationVisible=false;
 let registrationBusy=false;
+
+async function chargerClassesInscription(){
+  const selectClasse = $("regClasse");
+  if(!selectClasse) return;
+  try {
+    const snap = await getDocs(collection(db, "classes"));
+    const classes = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    selectClasse.innerHTML = `<option value="">-- Chwazi yon klas --</option>` + classes.map(c => `
+      <option value="${esc(c.id)}">${esc(c.nom || c.code || c.niveau || c.id)}</option>
+    `).join("");
+  } catch(e) {
+    console.warn("Erreur chargement classes inscription", e);
+    selectClasse.innerHTML = `<option value="">Erreur de chargement des classes</option>`;
+  }
+}
 
 function updateRegistrationFields(){
 const role=$("regRole").value;
@@ -253,6 +291,7 @@ if(!registrationVisible){
 registrationVisible=true;
 $("registrationFields").classList.remove("hidden");
 updateRegistrationFields();
+await chargerClassesInscription();
 btn.textContent="Valider et créer mon compte";
 $("regEmail").focus();
 return;
@@ -475,7 +514,7 @@ if(!isAdmin()&&!(currentProfile?.role==="professeur"?teacherPages:studentPages).
 toast("Accès non autorisé.",true);return;
 }
 try{
-stopTimer();currentPage=page;await chargerNomsClasses();buildNavigation();
+stopTimer();currentPage=page;await chargerNomsClasses();await chargerNomsUtilisateurs();buildNavigation();
 const mod=modules.find(m=>m.id===page);
 const titles={accueil:"Tableau de bord",examens:"Examens chronométrés",notes_cours:"Notes de cours",utilisateurs:"Gestion des utilisateurs",sauvegarde:"Sauvegarde",horaire_cours:"Horaire des cours",horaire_examens:"Horaire des examens",bulletin:"Mon bulletin"};
 $("pageTitle").textContent=titles[page]||mod?.title||page;
@@ -697,15 +736,18 @@ async function renderModule(m){
                 <tr>
                   <td>
                     ${
-                      m.fields.map(([k,l])=>
-                        r[k]!==undefined && r[k]!==""
-                          ? `<div><b>${esc(l)} :</b> ${
-                              k==="url"
-                                ? `<a href="${esc(r[k])}" target="_blank" rel="noopener">Louvri lyen / Telechaje</a>`
-                                : esc(k==="classeId" ? nomClasseLisible(r[k]) : r[k])
-                            }</div>`
-                          : ""
-                      ).join("") || esc(r.titre||r.id)
+                      m.fields.map(([k,l])=>{
+                        if(r[k]===undefined || r[k]==="") return "";
+                        let val = r[k];
+                        if(k==="classeId") val = nomClasseLisible(val);
+                        else if(k==="professeurUid" || k==="professeurId" || k==="etudiantId") val = nomUtilisateurLisible(val);
+                        
+                        return `<div><b>${esc(l)} :</b> ${
+                          k==="url"
+                            ? `<a href="${esc(r[k])}" target="_blank" rel="noopener">Louvri lyen / Telechaje</a>`
+                            : esc(val)
+                        }</div>`;
+                      }).join("") || esc(r.titre||r.id)
                     }
                   </td>
                   <td>
@@ -813,36 +855,39 @@ const isExam=m.id==="examens";
   return;
 }
 
-// Chaje lis klas yo pou Pwofesè oswa Admin anvan nou desine fòm nan
 let classesDisponibles = [];
+let matieresDisponibles = [];
 try {
-  if (isAdmin()) {
-    const clsSnap = await getDocs(collection(db, "classes"));
-    classesDisponibles = clsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-  } else if (currentProfile?.role === "professeur") {
-    // Chèche afektasyon pwofesè a
+  const [clsSnap, matSnap] = await Promise.all([
+    getDocs(collection(db, "classes")),
+    getDocs(collection(db, "matieres"))
+  ]);
+  classesDisponibles = clsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+  matieresDisponibles = matSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+  if (!isAdmin() && currentProfile?.role === "professeur") {
     const affSnap = await getDocs(query(collection(db, "affectations"), where("professeurUid", "==", currentUser.uid)));
     const classIds = affSnap.docs.map(d => d.data().classeId);
     if (classIds.length > 0) {
-      const clsSnap = await getDocs(collection(db, "classes"));
-      classesDisponibles = clsSnap.docs.map(d => ({ id: d.id, ...d.data() })).filter(c => classIds.includes(c.id) || classIds.includes(c.code));
+      classesDisponibles = classesDisponibles.filter(c => classIds.includes(c.id) || classIds.includes(c.code));
     }
-  } else if (isStudent()) {
-    if (currentProfile?.classeId) {
-      classesDisponibles = [{ id: currentProfile.classeId, nom: nomClasseLisible(currentProfile.classeId) }];
-    }
+  } else if (isStudent() && currentProfile?.classeId) {
+    classesDisponibles = classesDisponibles.filter(c => c.id === currentProfile.classeId || c.code === currentProfile.classeId);
   }
 } catch(e) {
-  console.warn("Erreur chargement classes pour le formulaire", e);
+  console.warn("Erreur chargement données pour le formulaire", e);
 }
 
 area.innerHTML=`<div class="card"><h3>${r?"Modifier":"Ajouter"} — ${esc(m.title)}</h3><form id="dataForm"><div class="form-grid">${m.fields.filter(([k])=>!(isExam&&k===['questionsJSON'])).map(([k,l])=>{
 const value=r?.[k]??"",long=["description","contenu","commentaire"].includes(k),num=["note100","note20","dureeMinutes","noteMax"].includes(k),type=["dateLimite","dateDebut"].includes(k)?"datetime-local":num?"number":"text";
 let formattedValue=value;if(type==="datetime-local"&&value)formattedValue=String(value).slice(0,16);
 
-// Si chan an se 'classeId' epi itilizatè a se yon pwofesè oswa admin, nou bay li yon select
 if (k === "classeId") {
   return `<div class="field ${long?"full":""}"><label>${esc(l)} *</label><select name="classeId" required><option value="">-- Chwazi klas --</option>${classesDisponibles.map(c=>`<option value="${esc(c.id)}" ${value===c.id||value===c.code?"selected":""}>${esc(c.nom||c.code||c.id)}</option>`).join("")}</select></div>`;
+}
+
+if (k === "matiereId") {
+  return `<div class="field ${long?"full":""}"><label>${esc(l)}</label><select name="matiereId"><option value="">-- Chwazi matyè --</option>${matieresDisponibles.map(mat=>`<option value="${esc(mat.id)}" ${value===mat.id||value===mat.code?"selected":""}>${esc(mat.nom||mat.code||mat.id)}</option>`).join("")}</select></div>`;
 }
 
 if (m.id==="remises" && k==="etudiantId" && isStudent()) {
@@ -940,7 +985,7 @@ async function showAttempts(exam){
 const area=$("examExtra");area.innerHTML='<div class="card">Chargement des tentatives…</div>';
 try{
 const snap=await getDocs(query(collection(db,"tentatives_examens"),where("examenId","==",exam.id))),rows=snap.docs.map(d=>({id:d.id,...d.data()}));
-area.innerHTML=`<div class="card"><h3>Tentatives — ${esc(exam.titre)}</h3><div class="table-wrap"><table><thead><tr><th>Élève</th><th>Note</th><th>Statut</th><th>Action</th></tr></thead><tbody>${rows.map(a=>`<tr><td>${esc(a.etudiantEmail||a.etudiantId)}</td><td>${Number(a.noteObtenue||0)} / ${Number(a.noteMax||exam.noteMax||0)}</td><td>${esc(a.statut)}</td><td>${a.statut==="termine"&&a.correctionManuelle?`<button class="btn primary" data-grade="${esc(a.id)}">Corriger</button>`:"—"}</td></tr>`).join("")||'<tr><td colspan="4">Aucune tentative.</td></tr>'}</tbody></table></div><div id="gradeArea"></div></div>`;
+area.innerHTML=`<div class="card"><h3>Tentatives — ${esc(exam.titre)}</h3><div class="table-wrap"><table><thead><tr><th>Élève</th><th>Note</th><th>Statut</th><th>Action</th></tr></thead><tbody>${rows.map(a=>`<tr><td>${esc(nomUtilisateurLisible(a.etudiantId)||a.etudiantEmail)}</td><td>${Number(a.noteObtenue||0)} / ${Number(a.noteMax||exam.noteMax||0)}</td><td>${esc(a.statut)}</td><td>${a.statut==="termine"&&a.correctionManuelle?`<button class="btn primary" data-grade="${esc(a.id)}">Corriger</button>`:"—"}</td></tr>`).join("")||'<tr><td colspan="4">Aucune tentative.</td></tr>'}</tbody></table></div><div id="gradeArea"></div></div>`;
 area.querySelectorAll("[data-grade]").forEach(b=>b.onclick=()=>gradeAttempt(rows.find(a=>a.id===b.dataset.grade),exam))
 }catch(e){area.innerHTML=`<div class="notice">${esc(friendly(e))}</div>`}
 }
@@ -1036,20 +1081,24 @@ async function noteForm(n){
 const area=$("noteFormArea");
 
 let classesDisponibles = [];
+let matieresDisponibles = [];
 try {
-  if (isAdmin()) {
-    const clsSnap = await getDocs(collection(db, "classes"));
-    classesDisponibles = clsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-  } else if (currentProfile?.role === "professeur") {
+  const [clsSnap, matSnap] = await Promise.all([
+    getDocs(collection(db, "classes")),
+    getDocs(collection(db, "matieres"))
+  ]);
+  classesDisponibles = clsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+  matieresDisponibles = matSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+  if (!isAdmin() && currentProfile?.role === "professeur") {
     const affSnap = await getDocs(query(collection(db, "affectations"), where("professeurUid", "==", currentUser.uid)));
     const classIds = affSnap.docs.map(d => d.data().classeId);
     if (classIds.length > 0) {
-      const clsSnap = await getDocs(collection(db, "classes"));
-      classesDisponibles = clsSnap.docs.map(d => ({ id: d.id, ...d.data() })).filter(c => classIds.includes(c.id) || classIds.includes(c.code));
+      classesDisponibles = classesDisponibles.filter(c => classIds.includes(c.id) || classIds.includes(c.code));
     }
   }
 } catch(e) {
-  console.warn("Erreur chargement classes note cours", e);
+  console.warn("Erreur chargement données note cours", e);
 }
 
 area.innerHTML=`<div class="card">
@@ -1070,7 +1119,10 @@ ${classesDisponibles.map(c=>`<option value="${esc(c.id)}" ${n?.classeId===c.id||
 </div>
 <div class="field">
 <label>Matière</label>
-<input name="matiereId" value="${esc(n?.matiereId||"")}">
+<select name="matiereId">
+<option value="">-- Chwazi matyè --</option>
+${matieresDisponibles.map(mat=>`<option value="${esc(mat.id)}" ${n?.matiereId===mat.id||n?.matiereId===mat.code?"selected":""}>${esc(mat.nom||mat.code||mat.id)}</option>`)}
+</select>
 </div>
 </div>
 
@@ -1309,7 +1361,7 @@ async function loadTeacherAdminBulletins(){
         <table>
           <thead>
             <tr>
-              <th>Élève / UID</th>
+              <th>Élève / Nom</th>
               <th>Classe</th>
               <th>Période</th>
               <th>Moyenne</th>
@@ -1320,7 +1372,7 @@ async function loadTeacherAdminBulletins(){
           <tbody>
             ${bulletins.map(b=>`
               <tr>
-                <td>${esc(b.etudiantEmail||b.etudiantId)}</td>
+                <td>${esc(nomUtilisateurLisible(b.etudiantId)||b.etudiantEmail)}</td>
                 <td>${esc(nomClasseLisible(b.classeId))}</td>
                 <td>${esc(b.periode||"—")}</td>
                 <td><b>${esc(b.moyenne||"—")} / 20</b></td>
@@ -1490,13 +1542,7 @@ function scheduleSubjectName(id){
 }
 
 function scheduleTeacherName(id){
-  const teachers=window.cflpScheduleCache.teachers||[];
-  const t=teachers.find(x=>x.id===id||x.uid===id);
-  if(t)return [t.nom,t.prenom].filter(Boolean).join(" ")||t.email||id;
-  if(id===currentUser?.uid){
-    return currentProfile?.nom||currentUser?.displayName||currentUser?.email||id;
-  }
-  return id||"Non défini";
+  return nomUtilisateurLisible(id);
 }
 
 function scheduleCanManage(page,r){
@@ -1541,7 +1587,6 @@ async function renderSchedule(page){
 
     const uniqueClassIds = [...new Set(profileClassIds)];
 
-    // Pa janm mande tout orè yo pou yon elèv.
     if (uniqueClassIds.length > 0) {
       const snapshots = await Promise.all(
         uniqueClassIds.map(classId =>
@@ -2307,7 +2352,6 @@ async function renderUsers(){
     $("usersRoleFilter").onchange = filterUsers;
     filterUsers();
 
-    // SOVE KLAS YON ELEVE
     $("pageContent")
       .querySelectorAll("[data-classe-eleve]")
       .forEach(select => {
@@ -2336,7 +2380,6 @@ async function renderUsers(){
         };
       });
 
-    // AFEKTE YON KLAS AK YON PWOFESÈ
     $("pageContent")
       .querySelectorAll("[data-affecter-classe]")
       .forEach(button => {
@@ -2372,22 +2415,22 @@ async function renderUsers(){
               createdAt: stamp(),
               updatedAt: stamp()
             });
-const professeur = users.find(u => u.id === professeurUid);
+            const professeur = users.find(u => u.id === professeurUid);
 
-if (professeur) {
-  const anciennesClasses = Array.isArray(professeur.classIds)
-    ? professeur.classIds
-    : [];
+            if (professeur) {
+              const anciennesClasses = Array.isArray(professeur.classIds)
+                ? professeur.classIds
+                : [];
 
-  const nouvellesClasses = [
-    ...new Set([...anciennesClasses, classeId])
-  ];
+              const nouvellesClasses = [
+                ...new Set([...anciennesClasses, classeId])
+              ];
 
-  await updateDoc(doc(db, "users", professeurUid), {
-    classIds: nouvellesClasses,
-    updatedAt: stamp()
-  });
-}
+              await updateDoc(doc(db, "users", professeurUid), {
+                classIds: nouvellesClasses,
+                updatedAt: stamp()
+              });
+            }
             toast("Klas la afekte ak pwofesè a.");
             await renderUsers();
           } catch (e) {
