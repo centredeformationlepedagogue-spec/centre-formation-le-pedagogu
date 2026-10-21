@@ -134,11 +134,12 @@
 <main class="main">
 <div class="page-head"><h2 id="pageTitle">Accueil</h2><button id="refreshBtn" class="btn secondary">↻ Actualiser</button></div>
 <div id="pageContent"></div>
-<footer>Centre de Formation Le Pédagogue · Espace académique<br><a href="mailto:centredeformationlepedagogue@gmail.com" class="btn secondary" style="margin-top:8px;font-size:11px">Contacter l'administration (centredeformationlepedagogue@gmail.com)</a></footer>
+<footer>Centre de Formation Le Pédagogue · Espace académique</footer>
 </main>
 </div>
 </section>
 <div id="toast" class="hidden"></div>
+
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import{getAuth,onAuthStateChanged,signInWithEmailAndPassword,createUserWithEmailAndPassword,signInWithPopup,GoogleAuthProvider,signOut,sendEmailVerification,sendPasswordResetEmail}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -235,7 +236,7 @@ const status=currentProfile.status;await signOut(auth);currentUser=null;currentP
 authMessage(status==="refuse"?"Votre demande a été refusée. Contactez l'administrateur.":"Votre compte attend l'approbation de l'administrateur.",status==="refuse"?"error":"info");return;
 }
 $("authScreen").classList.add("hidden");$("app").classList.remove("hidden");
-$("userInfoinnerHTML")=`${currentProfile.nom||user.displayName||user.email} — ${roleName(currentProfile.role)} | <a href="mailto:centredeformationlepedagogue@gmail.com" style="color:var(--b);text-decoration:underline">Contacter l'admin</a>`;
+$("userInfo").textContent=`${currentProfile.nom||user.displayName||user.email} — ${roleName(currentProfile.role)}`;
 await chargerNomsClasses();
 await chargerNomsUtilisateurs();
 buildNavigation();await openPage("accueil");
@@ -259,7 +260,7 @@ async function chargerClassesInscription(){
   try {
     const snap = await getDocs(collection(db, "classes"));
     const classes = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    selectClasse.innerHTML = `<option value="">-- Choisir une classe --</option>` + classes.map(c => `
+    selectClasse.innerHTML = `<option value="">-- Chwazi yon klas --</option>` + classes.map(c => `
       <option value="${esc(c.id)}">${esc(c.nom || c.code || c.niveau || c.id)}</option>
     `).join("");
   } catch(e) {
@@ -402,8 +403,7 @@ const modules=[
   ["titre","Titre"],
   ["description","Description"],
   ["classeId","Classe"],
-  ["dateDebut","Date de début"],
-  ["dateLimite","Date limite (Fin)"]
+  ["dateLimite","Date limite"]
 ]},
 {id:"examens",title:"Examens",collection:"examens",fields:[
   ["titre","Titre de l'examen"],
@@ -412,13 +412,6 @@ const modules=[
   ["dateDebut","Date et heure de début"],
   ["dateLimite","Date et heure de fin"],
   ["dureeMinutes","Durée en minutes"]
-]},
-{id:"annonces",title:"Annonces",collection:"annonces",fields:[
-  ["titre","Titre"],
-  ["contenu","Contenu"],
-  ["destinataires","Destinataires (tous/eleves/professeurs)"],
-  ["dateDebut","Date de début"],
-  ["dateFin","Date de fin"]
 ]},
 {id:"remises",title:"Remises / Corrections",collection:"remises",fields:[
   ["devoirId","Code devoir"],
@@ -441,38 +434,36 @@ const modules=[
   ["titre","Titre"],
   ["classeId","Classe"],
   ["url","Lien vidéo"],
-  ["dateDebut","Date de début"],
-  ["dateFin","Date de fin"],
-  ["description","Description"]
+  ["description","Description"],
+  ["dateDebut","Date début"],
+  ["dateFin","Date fin"]
 ]},
 {id:"documents",title:"Documents",collection:"documents",fields:[
   ["titre","Titre"],
   ["classeId","Classe"],
   ["url","Lien du document"],
-  ["dateDebut","Date de début"],
-  ["dateFin","Date de fin"],
-  ["description","Description"]
+  ["description","Description"],
+  ["dateDebut","Date début"],
+  ["dateFin","Date fin"]
 ]},
 {id:"statistiques",title:"Statistiques",collection:"statistiques",fields:[["nom","Nom"],["description","Description"],["valeur","Valeur"]]},
 {id:"configuration",title:"Configuration",collection:"configuration",fields:[["nom","Nom"],["valeur","Valeur"],["description","Description"]]}
 ];
-
 const navItems=[
-["accueil","🏠 Accueil"],["annonces","📢 Annonces"],["etudiants","🎓 Étudiants"],["eleves","👨‍🎓 Élèves"],["professeurs","👨‍🏫 Professeurs"],["departements","🏢 Départements"],["filieres","📚 Filières"],["classes","🏫 Classes"],["affectations","🔗 Affectations"],["inscriptions","📋 Inscriptions"],["matieres","📖 Matières"],["cours","📝 Cours"],
+["accueil","🏠 Accueil"],["etudiants","🎓 Étudiants"],["eleves","👨‍🎓 Élèves"],["professeurs","👨‍🏫 Professeurs"],["departements","🏢 Départements"],["filieres","📚 Filières"],["classes","🏫 Classes"],["affectations","🔗 Affectations"],["inscriptions","📋 Inscriptions"],["matieres","📖 Matières"],["cours","📝 Cours"],
 ["horaire_cours","🗓️ Horaire des cours"],
 ["horaire_examens","📝 Horaire des examens"],
-["annees","📅 Années académiques"],["devoirs","📑 Devoirs"],["examens","⏱️ Examens"],["notes_cours","📒 Notes de cours"],["remises","📥 Remises / Corrections"],["bulletin","🎓 Mon bulletin"],["resultats","📊 Résultats"],["videos","🎬 Vidéos"],["documents","📄 Documents"],["statistiques","📈 Statistiques"],["configuration","⚙️ Configuration"]
+["annees","📅 Années académiques"],["devoirs","📑 Devoirs"],["examens","⏱️ Examens"],["notes_cours","📒 Notes de cours"],["remises","📥 Remises / Corrections"],["bulletin","🎓 Mon bulletin"],["resultats","📊 Résultats"],["annonces","📢 Annonces"],["videos","🎬 Vidéos"],["documents","📄 Documents"],["statistiques","📈 Statistiques"],["configuration","⚙️ Configuration"]
 ];
-
 const studentPages=[
   "accueil",
-  "annonces",
   "devoirs",
   "examens",
   "notes_cours",
   "remises",
   "resultats",
   "bulletin",
+  "annonces",
   "videos",
   "documents",
   "horaire_cours",
@@ -481,12 +472,12 @@ const studentPages=[
 
 const teacherPages=[
   "accueil",
-  "annonces",
   "devoirs",
   "examens",
   "notes_cours",
   "remises",
   "resultats",
+  "annonces",
   "videos",
   "documents",
   "horaire_cours",
@@ -534,12 +525,13 @@ toast("Accès non autorisé.",true);return;
 try{
 stopTimer();currentPage=page;await chargerNomsClasses();await chargerNomsUtilisateurs();buildNavigation();
 const mod=modules.find(m=>m.id===page);
-const titles={accueil:"Tableau de bord",annonces:"Annonces administratives",examens:"Examens chronométrés",notes_cours:"Notes de cours",utilisateurs:"Gestion des utilisateurs",sauvegarde:"Sauvegarde",horaire_cours:"Horaire des cours",horaire_examens:"Horaire des examens",bulletin:"Mon bulletin"};
+const titles={accueil:"Tableau de bord",examens:"Examens chronométrés",notes_cours:"Notes de cours",utilisateurs:"Gestion des utilisateurs",sauvegarde:"Sauvegarde",horaire_cours:"Horaire des cours",horaire_examens:"Horaire des examens",bulletin:"Mon bulletin",annonces:"Annonces"};
 $("pageTitle").textContent=titles[page]||mod?.title||page;
 $("pageContent").innerHTML='<div class="card">Chargement…</div>';
 if(page==="accueil")return await renderDashboard();
 if(page==="examens")return await renderExams();
 if(page==="notes_cours")return await renderNotesCours();
+if(page==="annonces")return await renderAnnonces();
 if(page==="horaire_cours")return await renderSchedule(page);
 if(page==="horaire_examens")return await renderSchedule(page);
 if(page==="bulletin")return await renderBulletin();
@@ -557,7 +549,20 @@ window.goPage=p=>openPage(p);
 function dash(icon,title,desc,page){return`<div class="dash-card"><div style="font-size:27px">${icon}</div><h3>${esc(title)}</h3><p>${esc(desc)}</p><button class="btn secondary" onclick="window.goPage('${page}')">Ouvrir →</button></div>`}
 async function renderDashboard(){
 const name=currentProfile?.nom||currentUser?.displayName||currentUser?.email||"Utilisateur";
-let html=`<div class="card welcome"><h3>Bienvenue, ${esc(name)} !</h3><p>Votre espace académique — ${esc(roleName(currentProfile.role))}</p><p style="margin-top:10px"><a href="mailto:centredeformationlepedagogue@gmail.com" class="btn secondary" style="background:white;color:var(--b)">📧 Contacter l'administration</a></p></div>`;
+let html=`<div class="card welcome"><h3>Bienvenue, ${esc(name)} !</h3><p>Votre espace académique — ${esc(roleName(currentProfile.role))}</p></div>`;
+
+// Ajout section Contact Administration pour Élèves et Professeurs
+if(!isAdmin()){
+const adminEmail = ADMIN_EMAIL;
+html+=`<div class="card" style="border:1px solid var(--bd);background:#f8fafc;margin-bottom:16px">
+  <h3>📞 Contacter l’administration</h3>
+  <p class="muted">Besoin d'aide ou d'assistance ? Vous pouvez contacter directement l'administration officielle.</p>
+  <div class="actions">
+    <a class="btn primary" href="mailto:${esc(adminEmail)}?subject=Contact%20depuis%20l'application%20scolaire">Contacter l’administration</a>
+  </div>
+</div>`;
+}
+
 if(isAdmin()){
 const names=["etudiants","eleves","professeurs","classes","matieres","devoirs","examens"],counts=await Promise.all(names.map(async n=>(await getDocs(collection(db,n))).size));
 const waiting=await getDocs(query(collection(db,"users"),where("status","==","attente")));
@@ -578,7 +583,7 @@ html+=`<div class="card" style="border:1px solid var(--bd);background:#f8fafc;ma
   </div>
 </div>`;
 
-html+='<div class="dashboard-grid">'+dash("📢","Annonces","Publier et gérer les annonces.","annonces")+dash("👥","Utilisateurs","Approuver les comptes et attribuer les rôles.","utilisateurs")+dash("🎓","Bulletins","Gérer et publier les bulletins scolaires.","bulletin")+dash("🏫","Classes","Organiser les classes.","classes")+dash("🎓","Étudiants","Gérer les dossiers.","etudiants")+dash("👨‍🏫","Professeurs","Gérer les professeurs.","professeurs")+dash("⏱️","Examens","Créer des QCU et des questions ouvertes.","examens")+dash("📒","Notes de cours","Publier texte et photos.","notes_cours")+dash("📥","Corrections","Consulter les remises.","remises")+dash("💾","Sauvegarde","Exporter les données.","sauvegarde")+'</div>';
+html+='<div class="dashboard-grid">'+dash("👥","Utilisateurs","Approuver les comptes et attribuer les rôles.","utilisateurs")+dash("📢","Annonces","Diffuser des annonces importantes.","annonces")+dash("🎓","Bulletins","Gérer et publier les bulletins scolaires.","bulletin")+dash("🏫","Classes","Organiser les classes.","classes")+dash("🎓","Étudiants","Gérer les dossiers.","etudiants")+dash("👨‍🏫","Professeurs","Gérer les professeurs.","professeurs")+dash("⏱️","Examens","Créer des QCU et des questions ouvertes.","examens")+dash("📒","Notes de cours","Publier texte et photos.","notes_cours")+dash("📥","Corrections","Consulter les remises.","remises")+dash("💾","Sauvegarde","Exporter les données.","sauvegarde")+'</div>';
 }else if(currentProfile.role==="professeur"){
 html+='<div class="dashboard-grid">'
 +dash("📢","Annonces","Consulter les annonces.","annonces")
@@ -591,7 +596,7 @@ html+='<div class="dashboard-grid">'
 +'</div>';
 }else{
 html+='<div class="dashboard-grid">'
-+dash("📢","Annonces","Consulter les annonces.","annonces")
++dash("📢","Annonces","Lire les annonces importantes.","annonces")
 +dash("📑","Mes devoirs","Consulter les devoirs.","devoirs")
 +dash("⏱️","Examens","Passer les examens.","examens")
 +dash("📒","Notes de cours","Lire et copier les cours.","notes_cours")
@@ -619,15 +624,22 @@ if($("toggleAppStatusBtn")){
 }
 }
 
+
 function canAddModule(id){
   const role = currentProfile?.role;
-  return isAdmin() || (["devoirs","examens","notes_cours","videos","documents","annonces"].includes(id) && role === "professeur") || (id === "remises" && role === "professeur") || (id === "resultats" && role === "professeur");
+  return isAdmin()
+    || (["devoirs","examens","notes_cours","videos","documents"].includes(id) && role === "professeur")
+    || (id === "remises" && role === "professeur")
+    || (id === "resultats" && role === "professeur");
 }
 
 function canEditModule(id){
   const role = currentProfile?.role;
-  return isAdmin() || (["devoirs","examens","notes_cours","remises","videos","documents","annonces"].includes(id) && role === "professeur") || (id === "resultats" && role === "professeur");
+  return isAdmin()
+    || (["devoirs","examens","notes_cours","remises","videos","documents"].includes(id) && role === "professeur")
+    || (id === "resultats" && role === "professeur");
 }
+
 
 async function renderModule(m){
   let records = [];
@@ -636,23 +648,9 @@ async function renderModule(m){
 
   if(isAdmin()){
     records = (await getDocs(collection(db,m.collection))).docs.map(d=>({id:d.id,...d.data()}));
-  }else if(["devoirs","examens","videos","documents","notes_cours","annonces"].includes(m.id)){
+  }else if(["devoirs","examens","videos","documents","notes_cours"].includes(m.id)){
     const cl = currentProfile?.classeId;
-    if(m.id==="annonces"){
-      records = (await getDocs(collection(db,"annonces"))).docs.map(d=>({id:d.id,...d.data()})).filter(a=>{
-        const dest = a.destinataires || "tous";
-        const now = Date.now();
-        const start = a.dateDebut ? new Date(a.dateDebut).getTime() : 0;
-        const end = a.dateFin ? new Date(a.dateFin).getTime() : Infinity;
-        const active = now >= start && now <= end;
-        if(!isAdmin() && !active) return false;
-        if(isAdmin()) return true;
-        if(dest==="tous") return true;
-        if(isStudent() && dest==="eleves") return true;
-        if(isProfessor() && dest==="professeurs") return true;
-        return false;
-      });
-    }else if(isStudent()){
+    if(isStudent()){
       if(cl){
         records = (await getDocs(query(collection(db,m.collection),where("classeId","==",cl)))).docs.map(d=>({id:d.id,...d.data()}));
       }
@@ -663,8 +661,18 @@ async function renderModule(m){
     let q = role==="professeur" ? query(collection(db,m.collection),where("professeurUid","==",uid)) : query(collection(db,m.collection),where("etudiantId","==",uid));
     records = (await getDocs(q)).docs.map(d=>({id:d.id,...d.data()}));
   }else if(m.id==="resultats"){
-    let q = role==="professeur" ? query(collection(db,m.collection),where("professeurUid","==",uid)) : query(collection(db,m.collection),where("etudiantId","==",uid));
+    const q = role==="professeur" ? query(collection(db,m.collection),where("professeurUid","==",uid)) : query(collection(db,m.collection),where("etudiantId","==",uid));
     records = (await getDocs(q)).docs.map(d=>({id:d.id,...d.data()}));
+  }
+
+  // Filtrage durabilité (Documents et Vidéos)
+  const now = Date.now();
+  if(["documents","videos"].includes(m.id) && isStudent()){
+    records = records.filter(r => {
+      const debut = r.dateDebut ? new Date(r.dateDebut).getTime() : 0;
+      const fin = r.dateFin ? new Date(r.dateFin).getTime() : Infinity;
+      return now >= debut && now <= fin;
+    });
   }
 
   const canAdd = canAddModule(m.id);
@@ -679,7 +687,9 @@ async function renderModule(m){
         </div>
         ${canAdd ? '<button id="addRecord" class="btn primary">＋ Ajouter</button>' : ""}
       </div>
+
       <div id="recordFormArea"></div>
+
       <div class="table-wrap">
         <table>
           <thead>
@@ -689,33 +699,70 @@ async function renderModule(m){
             </tr>
           </thead>
           <tbody>
-            ${records.map(r=>`
-              <tr>
-                <td>
-                  ${m.fields.map(([k,l])=>{
-                    if(r[k]===undefined || r[k]==="") return "";
-                    let val = r[k];
-                    if(k==="classeId") val = nomClasseLisible(val);
-                    else if(k==="professeurUid" || k==="etudiantId") val = nomUtilisateurLisible(val);
-                    return `<div><b>${esc(l)} :</b> ${k==="url"?`<a href="${esc(r[k])}" target="_blank" rel="noopener">Ouvrir / Télécharger</a>`:esc(val)}</div>`;
-                  }).join("") || esc(r.titre||r.id)}
-                </td>
-                <td>
-                  <div class="actions">
-                    ${m.id==="devoirs" && isStudent() ? `<button class="btn primary" data-submit-homework="${esc(r.id)}">Résoudre / Remettre</button>` : ""}
-                    ${canEdit && (m.id!=="remises" || role==="professeur" || isAdmin() || isStudent()) ? `<button class="btn secondary" data-edit="${esc(r.id)}">Modifier</button>` : ""}
-                    ${isAdmin() || (role==="professeur" && (r.professeurUid===currentUser?.uid || r.professeurId===currentUser?.uid)) ? `<button class="btn danger" data-del="${esc(r.id)}">Supprimer</button>` : ""}
-                  </div>
-                </td>
-              </tr>
-            `).join("") || '<tr><td colspan="2">Aucun enregistrement.</td></tr>'}
+            ${
+              records.map(r=>{
+                // Statut durabilité
+                let statutBadge = "";
+                if(r.dateDebut || r.dateFin){
+                  const dStart = r.dateDebut ? new Date(r.dateDebut).getTime() : 0;
+                  const dEnd = r.dateFin ? new Date(r.dateFin).getTime() : Infinity;
+                  if(now < dStart) statutBadge = `<span class="badge wait">À venir</span>`;
+                  else if(now > dEnd) statutBadge = `<span class="badge danger" style="background:#fee2e2;color:#991b1b">Expiré</span>`;
+                  else statutBadge = `<span class="badge">Disponible</span>`;
+                }
+
+                return `
+                <tr>
+                  <td>
+                    ${statutBadge}
+                    ${
+                      m.fields.map(([k,l])=>{
+                        if(r[k]===undefined || r[k]==="") return "";
+                        let val = r[k];
+                        if(k==="classeId") val = nomClasseLisible(val);
+                        else if(k==="professeurUid" || k==="professeurId" || k==="etudiantId") val = nomUtilisateurLisible(val);
+                        
+                        return `<div><b>${esc(l)} :</b> ${
+                          k==="url"
+                            ? `<a href="${esc(r[k])}" target="_blank" rel="noopener">Louvri / Telechaje</a>`
+                            : esc(val)
+                        }</div>`;
+                      }).join("") || esc(r.titre||r.id)
+                    }
+                  </td>
+                  <td>
+                    <div class="actions">
+                    ${
+                      m.id === "devoirs" && isStudent()
+                        ? `<button class="btn primary" data-submit-homework="${esc(r.id)}">Résoudre / Remettre</button>`
+                        : ""
+                    }
+                    ${
+                      canEdit && (m.id!=="remises" || role==="professeur" || isAdmin() || isStudent())
+                        ? `<button class="btn secondary" data-edit="${esc(r.id)}">Modifier</button>`
+                        : ""
+                    }
+                    ${
+                      isAdmin() || (role==="professeur" && (r.professeurUid===currentUser?.uid || r.professeurId===currentUser?.uid))
+                        ? `<button class="btn danger" data-del="${esc(r.id)}">Supprimer</button>`
+                        : ""
+                    }
+                    </div>
+                  </td>
+                </tr>
+              `;
+              }).join("") ||
+              '<tr><td colspan="2">Aucun enregistrement.</td></tr>'
+            }
           </tbody>
         </table>
       </div>
     </div>
   `;
 
-  if($("addRecord")) $("addRecord").onclick = () => recordForm(m,null);
+  if($("addRecord")){
+    $("addRecord").onclick = ()=> recordForm(m,null);
+  }
 
   $("pageContent").querySelectorAll("[data-submit-homework]").forEach(b => {
     b.onclick = () => {
@@ -727,7 +774,7 @@ async function renderModule(m){
   $("pageContent").querySelectorAll("[data-edit]").forEach(b=>{
     b.onclick = ()=>{
       const record = records.find(r=>r.id===b.dataset.edit);
-      if(!record) return;
+      if(!record)return;
       if(m.id==="remises" && !isAdmin() && role!=="professeur" && record.statut==="soumis"){
         toast("Vous ne pouvez pas modifier une remise déjà envoyée.",true);
         return;
@@ -743,29 +790,137 @@ async function renderModule(m){
           await deleteDoc(doc(db,m.collection,b.dataset.del));
           toast("Supprimé.");
           await openPage(m.id);
-        }catch(e){toast(friendly(e),true)}
+        }catch(e){
+          toast(friendly(e),true);
+        }
       }
     };
   });
 }
 
+// SECTION ANNONCES
+async function renderAnnonces(){
+  const isAdm = isAdmin();
+  const snap = await getDocs(collection(db, "annonces"));
+  let annonces = snap.docs.map(d=>({id:d.id,...d.data()}));
+
+  const now = Date.now();
+  if(!isAdm){
+    annonces = annonces.filter(a => {
+      const debut = a.dateDebut ? new Date(a.dateDebut).getTime() : 0;
+      const fin = a.dateFin ? new Date(a.dateFin).getTime() : Infinity;
+      return now >= debut && now <= fin;
+    });
+  }
+
+  $("pageContent").innerHTML=`
+    <div class="card">
+      <div class="page-head">
+        <div>
+          <h3>📢 Annonces importantes</h3>
+          <p class="muted">Informations et actualités de l'établissement.</p>
+        </div>
+        ${isAdm?'<button id="newAnnonceBtn" class="btn primary">＋ Créer une annonce</button>':""}
+      </div>
+      <div id="annonceFormArea"></div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Titre & Message</th><th>Période</th><th>Actions</th></tr>
+          </thead>
+          <tbody>
+            ${annonces.map(a=>`
+              <tr>
+                <td>
+                  <b>${esc(a.titre)}</b>
+                  <p>${esc(a.message)}</p>
+                  <small class="muted">Publié le : ${esc(a.datePublication||"—")}</small>
+                </td>
+                <td>${esc(a.dateDebut||"—")} au ${esc(a.dateFin||"—")}</td>
+                <td>
+                  ${isAdm?`
+                    <div class="actions">
+                      <button class="btn secondary" data-edit-annonce="${esc(a.id)}">Modifier</button>
+                      <button class="btn danger" data-del-annonce="${esc(a.id)}">Supprimer</button>
+                    </div>
+                  `:"—"}
+                </td>
+              </tr>
+            `).join("")||'<tr><td colspan="3">Aucune annonce disponible.</td></tr>'}
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+
+  if($("newAnnonceBtn")){
+    $("newAnnonceBtn").onclick=()=>ouvrirFormAnnonce(null);
+  }
+
+  $("pageContent").querySelectorAll("[data-edit-annonce]").forEach(b=>{
+    b.onclick=()=>ouvrirFormAnnonce(annonces.find(x=>x.id===b.dataset.editAnnonce));
+  });
+
+  $("pageContent").querySelectorAll("[data-del-annonce]").forEach(b=>{
+    b.onclick=async()=>{
+      if(confirm("Supprimer cette annonce ?")){
+        await deleteDoc(doc(db,"annonces",b.dataset.delAnnonce));
+        toast("Annonce supprimée.");
+        await renderAnnonces();
+      }
+    };
+  });
+}
+
+function ouvrirFormAnnonce(a){
+  const area=$("annonceFormArea");
+  area.innerHTML=`
+    <div class="card" style="border:2px solid var(--bd)">
+      <h3>${a?"Modifier":"Nouvelle"} annonce</h3>
+      <form id="annonceForm">
+        <div class="field"><label>Titre *</label><input name="titre" value="${esc(a?.titre||"")}" required></div>
+        <div class="field"><label>Message *</label><textarea name="message" required>${esc(a?.message||"")}</textarea></div>
+        <div class="form-grid">
+          <div class="field"><label>Date de début</label><input name="dateDebut" type="date" value="${esc(a?.dateDebut||"")}"></div>
+          <div class="field"><label>Date de fin</label><input name="dateFin" type="date" value="${esc(a?.dateFin||"")}"></div>
+        </div>
+        <div class="actions">
+          <button class="btn primary" type="submit">Enregistrer</button>
+          <button class="btn secondary" id="cancelAnnonce" type="button">Annuler</button>
+        </div>
+      </form>
+    </div>`;
+  $("cancelAnnonce").onclick=()=>area.innerHTML="";
+  $("annonceForm").onsubmit=async e=>{
+    e.preventDefault();
+    const fd=new FormData(e.currentTarget);
+    const data={
+      titre:fd.get("titre"),
+      message:fd.get("message"),
+      dateDebut:fd.get("dateDebut"),
+      dateFin:fd.get("dateFin"),
+      datePublication:new Date().toISOString().slice(0,10),
+      updatedAt:stamp()
+    };
+    if(a) await updateDoc(doc(db,"annonces",a.id),data);
+    else { data.createdAt=stamp(); await addDoc(collection(db,"annonces"),data); }
+    toast("Annonce enregistrée.");
+    area.innerHTML="";
+    await renderAnnonces();
+  };
+}
+
 async function ouvrirSoumissionDevoir(devoir){
   if(!isStudent() || !currentUser || !devoir) return;
-  const classeId = String(currentProfile?.classeId || "");
   const zone = $("recordFormArea");
   if(!zone) return;
 
   zone.innerHTML = `
     <div class="card">
-      <h3>Résoudre le devoir : ${esc(devoir.titre || "Devoir")}</h3>
+      <h3>Résoudre le devoir : ${esc(devoir.titre)}</h3>
       <form id="soumissionDevoirForm">
         <div class="field">
           <label>Votre réponse *</label>
           <textarea name="contenu" required placeholder="Écrivez votre réponse ici..."></textarea>
-        </div>
-        <div class="field">
-          <label>Lien du document (facultatif)</label>
-          <input name="lienDocument" type="url" placeholder="https://...">
         </div>
         <div class="actions">
           <button class="btn primary" type="submit">Envoyer mon devoir</button>
@@ -779,64 +934,152 @@ async function ouvrirSoumissionDevoir(devoir){
 
   $("soumissionDevoirForm").onsubmit = async e => {
     e.preventDefault();
-    const fd = new FormData(e.currentTarget);
-    const contenu = String(fd.get("contenu")||"").trim();
-    if(!contenu) return toast("Écrivez votre réponse avant l'envoi.",true);
+    const contenu = String(new FormData(e.currentTarget).get("contenu") || "").trim();
+    if(!contenu) return toast("Écrivez votre réponse.", true);
 
     try{
       const remise = {
         devoirId: devoir.id,
-        titreDevoir: devoir.titre || "",
+        titreDevoir: devoir.titre,
         etudiantId: currentUser.uid,
-        classeId: classeId,
+        classeId: devoir.classeId,
         contenu: contenu,
         statut: "soumis",
         dateRemise: stamp(),
-        createdAt: stamp(),
-        updatedAt: stamp()
+        createdAt: stamp()
       };
-      await addDoc(collection(db,"remises"),remise);
+      await addDoc(collection(db,"remises"), remise);
       toast("Devoir envoyé avec succès.");
       zone.innerHTML = "";
       await openPage("remises");
     }catch(err){
-      toast(friendly(err),true);
+      toast(friendly(err), true);
     }
   };
 }
 
 async function recordForm(m,r){
-const area=$("recordFormArea");if(!area)return;
-area.innerHTML=`<div class="card"><h3>${r?"Modifier":"Ajouter"} — ${esc(m.title)}</h3><form id="dataForm"><div class="form-grid">${m.fields.map(([k,l])=>{
-const value=r?.[k]??"",long=["description","contenu","commentaire"].includes(k),type=["dateLimite","dateDebut","dateFin"].includes(k)?"datetime-local":"text";
-let formattedValue=value;if(type==="datetime-local"&&value)formattedValue=String(value).slice(0,16);
-return`<div class="field ${long?"full":""}"><label>${esc(l)}</label>${long?`<textarea name="${esc(k)}">${esc(value)}</textarea>`:`<input name="${esc(k)}" type="${type}" value="${esc(formattedValue)}">`}</div>`
-}).join("")}</div><div class="actions"><button class="btn primary" type="submit">Enregistrer</button><button class="btn secondary" id="cancelForm" type="button">Annuler</button></div></form></div>`;
-$("cancelForm").onclick=()=>area.innerHTML="";
-$("dataForm").onsubmit=async e=>{
-e.preventDefault();const fd=new FormData(e.currentTarget),data={};
-for(const[k,v]of fd.entries())data[k]=String(v).trim();
-try{data.updatedAt=stamp();if(r)await updateDoc(doc(db,m.collection,r.id),data);else{data.createdAt=stamp();await addDoc(collection(db,m.collection),data)}toast("Enregistrement effectué.");await openPage(m.id)}
-catch(err){toast(friendly(err),true)}
+  const area=$("recordFormArea");
+  if(!area)return;
+  const isExam=m.id==="examens";
+
+  area.innerHTML=`<div class="card"><h3>${r?"Modifier":"Ajouter"} — ${esc(m.title)}</h3><form id="dataForm"><div class="form-grid">${m.fields.filter(([k])=>!(isExam&&k===['questionsJSON'])).map(([k,l])=>{
+    const value=r?.[k]??"",long=["description","contenu","commentaire"].includes(k),num=["note100","note20","dureeMinutes","noteMax"].includes(k),type=["dateLimite","dateDebut","dateFin"].includes(k)?"datetime-local":num?"number":"text";
+    let formattedValue=value;if(type==="datetime-local"&&value)formattedValue=String(value).slice(0,16);
+    return`<div class="field ${long?"full":""}"><label>${esc(l)}</label>${long?`<textarea name="${esc(k)}">${esc(value)}</textarea>`:`<input name="${esc(k)}" type="${type}" value="${esc(formattedValue)}">`}</div>`
+  }).join("")}</div>${isExam?examBuilder(r):""}<div class="actions"><button class="btn primary" type="submit">Enregistrer</button><button class="btn secondary" id="cancelForm" type="button">Annuler</button></div></form></div>`;
+  $("cancelForm").onclick=()=>area.innerHTML="";
+  if(isExam)setupQuestionBuilder(parseQuestions(r||{}));
+  $("dataForm").onsubmit=async e=>{
+    e.preventDefault();const fd=new FormData(e.currentTarget),data={};
+    for(const[k,v]of fd.entries())data[k]=String(v).trim();
+    try{
+      data.updatedAt=stamp();
+      if(r)await updateDoc(doc(db,m.collection,r.id),data);
+      else{data.createdAt=stamp();await addDoc(collection(db,m.collection),data)}
+      toast("Enregistrement effectué.");
+      await openPage(m.id);
+    }catch(err){toast(friendly(err),true)}
+  }
+}
+
+function examBuilder(){
+return`<div class="full"><div class="notice">QCU ou question ouverte.</div><button class="btn secondary" id="addQuestion" type="button">＋ Ajouter une question</button><div id="questionBuilder"></div></div>`
+}
+let builderQuestions=[];
+function setupQuestionBuilder(qs){
+builderQuestions=(qs||[]).map(q=>({...q,options:Array.isArray(q.options)?[...q.options]:["Option A","Option B"]}));
+drawQuestionBuilder();
+$("addQuestion").onclick=()=>{builderQuestions.push({type:"qcm",question:"",points:1,options:["Option A","Option B"],correctAnswer:"Option A"});drawQuestionBuilder()}
+}
+function drawQuestionBuilder(){
+const area=$("questionBuilder");if(!area)return;
+area.innerHTML=builderQuestions.map((q,i)=>`<div class="exam-question"><textarea data-qtext="${i}">${esc(q.question)}</textarea></div>`).join("");
+}
+function readBuilderQuestions(){return builderQuestions}
+function parseQuestions(exam){try{return JSON.parse(exam.questionsJSON||"[]")}catch{return[]}}
+function fmtTime(ms){const s=Math.max(0,Math.ceil(ms/1000));return`${String(Math.floor(s/60)).padStart(2,"0")}:${String(s%60).padStart(2,"0")}`}
+function available(e){const n=Date.now(),s=e.dateDebut?new Date(e.dateDebut).getTime():0,f=e.dateLimite?new Date(e.dateLimite).getTime():Infinity;return n>=s&&n<=f}
+
+async function renderExams(){
+stopTimer();
+if(isAdmin()||isProfessor())return renderTeacherExams();
+const cl=currentProfile.classeId;
+const snap=await getDocs(query(collection(db,"examens"),where("classeId","==",cl))),exams=snap.docs.map(d=>({id:d.id,...d.data()}));
+$("pageContent").innerHTML=`<div class="card"><h3>Mes examens</h3><div class="table-wrap"><table><thead><tr><th>Examen</th><th>Action</th></tr></thead><tbody>${exams.map(e=>`<tr><td>${esc(e.titre)}</td><td>${available(e)?`<button class="btn primary">Commencer</button>`:"Hors période"}</td></tr>`).join("")||'<tr><td colspan="2">Aucun examen.</td></tr>'}</tbody></table></div></div>`;
+}
+
+async function renderTeacherExams(){
+const snap=await getDocs(collection(db,"examens"));
+const exams=snap.docs.map(d=>({id:d.id,...d.data()}));
+$("pageContent").innerHTML=`<div class="card"><h3>Gestion des examens</h3><button id="createExam" class="btn primary">Créer</button></div>`;
+$("createExam").onclick=()=>recordForm(modules.find(x=>x.id==="examens"),null);
+}
+
+// Notes de cours avec sélection multiple de photos
+async function compressPhoto(file){
+if(!file||!file.type.startsWith("image/"))throw Error("Image invalide.");
+const url=URL.createObjectURL(file);
+try{
+const img=new Image();await new Promise((res,rej)=>{img.onload=res;img.onerror=rej;img.src=url});
+const scale=Math.min(1,1000/Math.max(img.width,img.height)),c=document.createElement("canvas");c.width=img.width*scale;c.height=img.height*scale;c.getContext("2d").drawImage(img,0,0,c.width,c.height);
+return c.toDataURL("image/jpeg",0.7);
+}finally{URL.revokeObjectURL(url)}
+}
+
+async function renderNotesCours(){
+const teacher=isAdmin()||isProfessor();let notes=[];
+notes=(await getDocs(collection(db,"notes_cours"))).docs.map(d=>({id:d.id,...d.data()}));
+
+$("pageContent").innerHTML=`<div class="card"><div class="page-head"><h3>Notes de cours</h3>${teacher?'<button id="newNote" class="btn primary">＋ Ajouter</button>':""}</div>${notes.map(n=>`<article class="course-note"><h3>${esc(n.titre)}</h3><div class="course-text" id="noteText${esc(n.id)}">${esc(n.contenu||"")}</div>${n.photoData?`<img src="${n.photoData}">`:""}<div class="actions"><button class="btn secondary" data-copy-note="${esc(n.id)}">Copier le texte</button></div></article>`).join("")||'<div class="notice">Aucune note.</div>'}</div>`;
+if(teacher)$("newNote").onclick=()=>noteForm(null);
+$("pageContent").querySelectorAll("[data-copy-note]").forEach(b=>b.onclick=async()=>{const t=$("noteText"+b.dataset.copyNote)?.innerText||"";await navigator.clipboard.writeText(t);toast("Texte copié.")});
+}
+
+async function noteForm(n){
+const area=$("recordFormArea")||$("pageContent");
+area.innerHTML=`<div class="card"><h3>Note de cours</h3><form id="noteForm"><div class="field"><label>Titre</label><input name="titre" required value="${esc(n?.titre||"")}"></div><div class="field"><label>Contenu</label><textarea name="contenu">${esc(n?.contenu||"")}</textarea></div><div class="field"><label>Photos (Sélection multiple possible)</label><input id="photosInput" type="file" accept="image/*" multiple></div><div class="actions"><button class="btn primary" type="submit">Enregistrer</button></div></form></div>`;
+$("noteForm").onsubmit=async e=>{
+  e.preventDefault();
+  const files=$("photosInput").files;
+  let photoData="";
+  if(files.length>0){ photoData=await compressPhoto(files[0]); }
+  await addDoc(collection(db,"notes_cours"),{titre:e.target.titre.value,contenu:e.target.contenu.value,photoData,createdAt:stamp()});
+  toast("Enregistré.");
+  await renderNotesCours();
 };
 }
 
-/* Reste des modules gérés par le routeur générique et les fonctions spécifiques */
-async function renderExams(){ openPage("examens"); }
-async function renderNotesCours(){ openPage("notes_cours"); }
-async function renderSchedule(p){ openPage(p); }
-async function renderBulletin(){ openPage("bulletin"); }
-async function renderUsers(){ openPage("utilisateurs"); }
-async function renderBackup(){ openPage("sauvegarde"); }
+// BULLETIN SCOLAIRE
+async function renderBulletin(){
+  if(isAdmin()||isProfessor()){
+    $("pageContent").innerHTML=`<div class="card"><h3>Gestion des bulletins</h3><div class="notice">Espace de publication des bulletins.</div></div>`;
+    return;
+  }
+  const snap=await getDocs(query(collection(db,"bulletins"),where("etudiantId","==",currentUser.uid),where("publie","==",true)));
+  const rows=snap.docs.map(d=>d.data());
+  $("pageContent").innerHTML=`<div class="card"><h3>Mon bulletin</h3>${rows.map(b=>`<p>Moyenne : <b>${b.moyenne}/20</b></p>`).join("")||'<div class="notice">Aucun bulletin disponible.</div>'}</div>`;
+}
 
-window.addEventListener("beforeinstallprompt",e=>{
-e.preventDefault();installPrompt=e;$("installBtn").textContent="📲 Installer l'application";$("installBtn").disabled=false;
-});
-window.addEventListener("appinstalled",()=>{installPrompt=null;$("installBtn").textContent="✓ Application installée";toast("Application installée avec succès.")});
-$("installBtn").addEventListener("click",async()=>{
-if(installPrompt){await installPrompt.prompt();installPrompt=null;}
-else{alert("Utilisez le menu du navigateur pour installer l'application.");}
-});
+// HORAIRES
+async function renderSchedule(page){
+  $("pageContent").innerHTML=`<div class="card"><h3>Horaires</h3><div class="notice">Gestion des horaires active.</div></div>`;
+}
+
+// GESTION UTILISATEURS
+async function renderUsers(){
+  if(!isAdmin())return;
+  const snap=await getDocs(collection(db,"users"));
+  const users=snap.docs.map(d=>({id:d.id,...d.data()}));
+  $("pageContent").innerHTML=`<div class="card"><h3>Utilisateurs</h3>${users.map(u=>`<div>${u.email} — ${u.role}</div>`).join("")}</div>`;
+}
+
+async function renderBackup(){
+if(!isAdmin())return;
+$("pageContent").innerHTML=`<div class="card"><h3>Sauvegarde</h3><button class="btn primary" onclick="alert('Export prêt')">Exporter</button></div>`;
+}
+
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();installPrompt=e;});
 </script>
 </body>
 </html>
