@@ -599,6 +599,7 @@ if($("toggleAppStatusBtn")){
 }
 }
 
+
 function canAddModule(id){
   const role = currentProfile?.role;
 
@@ -609,7 +610,7 @@ function canAddModule(id){
     )
     || (
       id === "remises"
-      && (role === "professeur" || isStudent())
+      && role === "professeur"
     )
     || (
       id === "resultats"
@@ -626,14 +627,11 @@ function canEditModule(id){
       && role === "professeur"
     )
     || (
-      id === "remises"
-      && isStudent()
-    )
-    || (
       id === "resultats"
       && role === "professeur"
     );
 }
+
 
 async function renderModule(m){
   let records = [];
@@ -752,6 +750,14 @@ async function renderModule(m){
                   </td>
                   <td>
                     <div class="actions">
+                    ${
+  m.id === "devoirs" && isStudent()
+    ? `<button class="btn primary"
+         data-submit-homework="${esc(r.id)}">
+         Résoudre / Remettre
+       </button>`
+    : ""
+}
                       ${
                         canEdit &&
                         (m.id!=="remises" ||
@@ -788,6 +794,18 @@ async function renderModule(m){
       recordForm(m,null);
     };
   }
+
+  $("pageContent")
+    .querySelectorAll("[data-submit-homework]")
+    .forEach(b => {
+      b.onclick = () => {
+        const devoir = records.find(
+          r => r.id === b.dataset.submitHomework
+        );
+        if(devoir) ouvrirSoumissionDevoir(devoir);
+      };
+    });
+
 
   $("pageContent").querySelectorAll("[data-edit]")
     .forEach(b=>{
@@ -838,6 +856,109 @@ async function renderModule(m){
         }
       };
     });
+}
+
+
+async function ouvrirSoumissionDevoir(devoir){
+  if(!isStudent() || !currentUser || !devoir){
+    toast("Action non autorisée.",true);
+    return;
+  }
+
+  const classeId = String(currentProfile?.classeId || "");
+  if(!classeId || String(devoir.classeId || "") !== classeId){
+    toast("Ce devoir n'appartient pas à votre classe.",true);
+    return;
+  }
+
+  const titre = devoir.titre || "Devoir";
+  const zone = $("recordFormArea");
+  if(!zone) return;
+
+  zone.innerHTML = `
+    <div class="card">
+      <h3>Résoudre le devoir : ${esc(titre)}</h3>
+      <form id="soumissionDevoirForm">
+        <div class="field">
+          <label>Votre réponse *</label>
+          <textarea name="contenu" required
+            placeholder="Écrivez votre réponse ici..."></textarea>
+        </div>
+        <div class="field">
+          <label>Lien du document (facultatif)</label>
+          <input name="lienDocument" type="url"
+            placeholder="https://...">
+        </div>
+        <div class="actions">
+          <button class="btn primary" type="submit">
+            Envoyer mon devoir
+          </button>
+          <button class="btn secondary" id="annulerSoumission"
+            type="button">Annuler</button>
+        </div>
+      </form>
+    </div>
+  `;
+
+  $("annulerSoumission").onclick = () => {
+    zone.innerHTML = "";
+  };
+
+  $("soumissionDevoirForm").onsubmit = async e => {
+    e.preventDefault();
+
+    const form = e.currentTarget;
+    const contenu = String(
+      new FormData(form).get("contenu") || ""
+    ).trim();
+    const lienDocument = String(
+      new FormData(form).get("lienDocument") || ""
+    ).trim();
+
+    if(!contenu){
+      toast("Écrivez votre réponse avant l'envoi.",true);
+      return;
+    }
+
+    const bouton = form.querySelector('button[type="submit"]');
+    bouton.disabled = true;
+    bouton.textContent = "Envoi en cours...";
+
+    try{
+      const remise = {
+        devoirId: devoir.id,
+        titreDevoir: titre,
+        etudiantId: currentUser.uid,
+        etudiantEmail: currentUser.email || "",
+        classeId: classeId,
+        contenu: contenu,
+        statut: "soumis",
+        dateRemise: stamp(),
+        createdAt: stamp(),
+        updatedAt: stamp()
+      };
+
+      if(devoir.professeurUid){
+        remise.professeurUid = devoir.professeurUid;
+      }
+      if(devoir.professeurId){
+        remise.professeurId = devoir.professeurId;
+      }
+      if(lienDocument){
+        remise.lienDocument = lienDocument;
+      }
+
+      await addDoc(collection(db,"remises"),remise);
+      toast("Devoir envoyé avec succès.");
+      zone.innerHTML = "";
+      await openPage("remises");
+    }catch(err){
+      console.error("Erreur soumission devoir :",err);
+      toast(friendly(err),true);
+      bouton.disabled = false;
+      bouton.textContent = "Envoyer mon devoir";
+    }
+  };
 }
 
 
