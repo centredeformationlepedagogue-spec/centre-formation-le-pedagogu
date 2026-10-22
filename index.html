@@ -405,7 +405,9 @@ const modules=[
   ["titre","Titre"],
   ["description","Description"],
   ["classeId","Classe"],
-  ["dateLimite","Date limite"]
+  ["dateDebut","Date et heure de début"],
+  ["dateLimite","Date limite"],
+  ["dureeMinutes","Durée autorisée (minutes)"]
 ]},
 {id:"examens",title:"Examens",collection:"examens",fields:[
   ["titre","Titre de l'examen"],
@@ -698,6 +700,15 @@ async function renderModule(m){
       .docs.map(d=>({id:d.id,...d.data()}));
   }
 
+  // Fetch student remises to check single-submission status for devoirs
+  let studentRemises = [];
+  if(isStudent() && m.id==="devoirs"){
+    try {
+      const remSnap = await getDocs(query(collection(db,"remises"), where("etudiantId","==",uid)));
+      studentRemises = remSnap.docs.map(d=>d.data());
+    }catch(err){console.warn(err);}
+  }
+
   const canAdd = typeof canAddModule==="function"
     ? canAddModule(m.id)
     : canEditModule(m.id);
@@ -730,7 +741,12 @@ async function renderModule(m){
           </thead>
           <tbody>
             ${
-              records.map(r=>`
+              records.map(r=>{
+                let alreadySubmitted = false;
+                if(isStudent() && m.id==="devoirs"){
+                  alreadySubmitted = studentRemises.some(sr => sr.devoirId === r.id);
+                }
+                return `
                 <tr>
                   <td>
                     ${
@@ -747,17 +763,17 @@ async function renderModule(m){
                         }</div>`;
                       }).join("") || esc(r.titre||r.id)
                     }
+                    ${isStudent() && m.id==="devoirs" ? `<div style="margin-top:6px;"><span class="badge ${alreadySubmitted?'':'wait'}">${alreadySubmitted?'Déjà remis':'Non remis'}</span></div>`:''}
                   </td>
                   <td>
                     <div class="actions">
                     ${
-  m.id === "devoirs" && isStudent()
-    ? `<button class="btn primary"
-         data-submit-homework="${esc(r.id)}">
-         Résoudre / Remettre
-       </button>`
-    : ""
-}
+                      m.id === "devoirs" && isStudent()
+                        ? (alreadySubmitted
+                            ? `<span class="badge">Déjà remis</span>`
+                            : `<button class="btn primary" data-submit-homework="${esc(r.id)}">Résoudre / Remettre</button>`)
+                        : ""
+                    }
                       ${
                         canEdit &&
                         (m.id!=="remises" ||
@@ -776,7 +792,7 @@ async function renderModule(m){
                     </div>
                   </td>
                 </tr>
-              `).join("") ||
+              `;}).join("") ||
               '<tr><td colspan="2">Aucun enregistrement.</td></tr>'
             }
           </tbody>
@@ -871,13 +887,29 @@ async function ouvrirSoumissionDevoir(devoir){
     return;
   }
 
+  // Double check uniqueness on Firestore before opening form
+  try {
+    const existingRemiseSnap = await getDocs(query(collection(db,"remises"), where("devoirId","==",devoir.id), where("etudiantId","==",currentUser.uid)));
+    if(!existingRemiseSnap.empty){
+      toast("Vous avez déjà soumis une réponse pour ce devoir.", true);
+      await openPage("devoirs");
+      return;
+    }
+  } catch(err){console.warn(err);}
+
   const titre = devoir.titre || "Devoir";
   const zone = $("recordFormArea");
   if(!zone) return;
 
+  let hasTimer = Number(devoir.dureeMinutes || 0) > 0;
+  let durationMs = Number(devoir.dureeMinutes || 30) * 60000;
+  let startTime = Date.now();
+  let homeworkTimerInterval = null;
+
   zone.innerHTML = `
     <div class="card">
       <h3>Résoudre le devoir : ${esc(titre)}</h3>
+      ${hasTimer?`<div id="homeworkTimer" class="timer">⏱ Temps restant : --:--</div>`:""}
       <form id="soumissionDevoirForm">
         <div class="field">
           <label>Votre réponse *</label>
@@ -890,7 +922,7 @@ async function ouvrirSoumissionDevoir(devoir){
             placeholder="https://...">
         </div>
         <div class="actions">
-          <button class="btn primary" type="submit">
+          <button class="btn primary" type="submit" id="submitHomeworkBtn">
             Envoyer mon devoir
           </button>
           <button class="btn secondary" id="annulerSoumission"
@@ -900,12 +932,31 @@ async function ouvrirSoumissionDevoir(devoir){
     </div>
   `;
 
+  if(hasTimer && $("homeworkTimer")){
+    const updateHomeworkTimer = () => {
+      let left = durationMs - (Date.now() - startTime);
+      let s = Math.max(0, Math.ceil(left / 1000));
+      $("homeworkTimer"].textContent = "⏱ Temps restant : " + String(Math.floor(s/60)).padStart(2,"0") + ":" + String(s%60).padStart(2,"0");
+      $("homeworkTimer").classList.toggle("warning", left <= 60000);
+      if(left <= 0){
+        clearInterval(homeworkTimerInterval);
+        toast("Temps écoulé ! Envoi automatique du devoir...", true);
+        $("soumissionDevoirForm").requestSubmit();
+      }
+    };
+    updateHomeworkTimer();
+    homeworkTimerInterval = setInterval(updateHomeworkTimer, 1000);
+  }
+
   $("annulerSoumission").onclick = () => {
+    if(homeworkTimerInterval) clearInterval(homeworkTimerInterval);
     zone.innerHTML = "";
   };
 
+  let isSubmitting = false;
   $("soumissionDevoirForm").onsubmit = async e => {
     e.preventDefault();
+    if(isSubmitting) return;
 
     const form = e.currentTarget;
     const contenu = String(
@@ -920,11 +971,24 @@ async function ouvrirSoumissionDevoir(devoir){
       return;
     }
 
-    const bouton = form.querySelector('button[type="submit"]');
-    bouton.disabled = true;
-    bouton.textContent = "Envoi en cours...";
+    isSubmitting = true;
+    const bouton = $("submitHomeworkBtn") || form.querySelector('button[type="submit"]');
+    if(bouton){
+      bouton.disabled = true;
+      bouton.textContent = "Envoi en cours...";
+    }
+    if(homeworkTimerInterval) clearInterval(homeworkTimerInterval);
 
     try{
+      // Final atomic uniqueness check
+      const checkSnap = await getDocs(query(collection(db,"remises"), where("devoirId","==",devoir.id), where("etudiantId","==",currentUser.uid)));
+      if(!checkSnap.empty){
+        toast("Vous avez déjà remis ce devoir.", true);
+        zone.innerHTML = "";
+        await openPage("devoirs");
+        return;
+      }
+
       const remise = {
         devoirId: devoir.id,
         titreDevoir: titre,
@@ -951,12 +1015,15 @@ async function ouvrirSoumissionDevoir(devoir){
       await addDoc(collection(db,"remises"),remise);
       toast("Devoir envoyé avec succès.");
       zone.innerHTML = "";
-      await openPage("remises");
+      await openPage("devoirs");
     }catch(err){
       console.error("Erreur soumission devoir :",err);
       toast(friendly(err),true);
-      bouton.disabled = false;
-      bouton.textContent = "Envoyer mon devoir";
+      isSubmitting = false;
+      if(bouton){
+        bouton.disabled = false;
+        bouton.textContent = "Envoyer mon devoir";
+      }
     }
   };
 }
@@ -1097,7 +1164,7 @@ const snap=isAdmin()?await getDocs(collection(db,"examens")):await getDocs(query
 const exams=snap.docs.map(d=>({id:d.id,...d.data()}));
 $("pageContent").innerHTML=`<div class="card"><div class="page-head"><div><h3>Gestion des examens</h3><p class="muted">QCU, questions ouvertes ou examen mélangé.</p></div><button id="createExam" class="btn primary">＋ Créer un examen</button></div><div class="notice">Ajoutez vos questions à l'aide du formulaire. Choisissez QCU pour des propositions avec une bonne réponse, ou question ouverte pour une réponse écrite. Les QCU sont corrigés automatiquement ; les questions ouvertes sont corrigées par le professeur.</div><div class="table-wrap"><table><thead><tr><th>Examen</th><th>Classe</th><th>Durée</th><th>Questions</th><th>Actions</th></tr></thead><tbody>${exams.map(e=>`<tr><td>${esc(e.titre)}</td><td>${esc(nomClasseLisible(e.classeId))}</td><td>${Number(e.dureeMinutes||30)} min</td><td>${parseQuestions(e).length}</td><td><div class="actions"><button class="btn secondary" data-edit-exam="${esc(e.id)}">Modifier</button><button class="btn primary" data-attempts="${esc(e.id)}">Tentatives</button><button class="btn danger" data-delete-exam="${esc(e.id)}">Supprimer</button></div></td></tr>`).join("")||'<tr><td colspan="5">Aucun examen créé.</td></tr>'}</tbody></table></div><div id="recordFormArea"></div><div id="examExtra"></div></div>`;
 $("createExam").onclick=()=>{const m=modules.find(x=>x.id==="examens");if(!m)return toast("Le module examens est introuvable.",true);recordForm(m,null)};
-$("pageContent").querySelectorAll("[data-edit-exam]").forEach(b=>b.onclick=()=>{const e=exams.find(x=>x.id===b.dataset.editExam);recordForm(modules.find(m=>m.id==="examens"),e)});
+$("pageContent").querySelectorAll("[data-edit-exam]").forEach(b=>b.onclick=()=>recordForm(modules.find(m=>m.id==="examens"),exams.find(x=>x.id===b.dataset.editExam)));
 $("pageContent").querySelectorAll("[data-delete-exam]").forEach(b=>b.onclick=async()=>{if(confirm("Supprimer cet examen ?"))try{await deleteDoc(doc(db,"examens",b.dataset.deleteExam));toast("Examen supprimé.");await renderExams()}catch(e){toast(friendly(e),true)}});
 $("pageContent").querySelectorAll("[data-attempts]").forEach(b=>b.onclick=()=>showAttempts(exams.find(x=>x.id===b.dataset.attempts)))
 }
@@ -1171,7 +1238,7 @@ $("backExams").onclick=()=>openPage("examens")
 }catch(e){console.error(e);if($("submitExam"))$("submitExam").disabled=false;toast("La remise a échoué : "+friendly(e),true)}
 }
 
-/* Notes de cours : texte et photo */
+/* Notes de cours : texte et photos multiples */
 async function compressPhoto(file){
 if(!file||!file.type.startsWith("image/"))throw Error("Choisissez une image valide.");
 if(file.size>12*1024*1024)throw Error("Photo trop grande : choisissez une image de moins de 12 Mo.");
@@ -1192,7 +1259,10 @@ else{
 const cl=currentProfile.classeId||(currentProfile.classIds||[])[0];if(!cl){$("pageContent").innerHTML='<div class="card">Votre compte n’est pas encore associé à une classe. Contactez l’administrateur.</div>';return}
 notes=(await getDocs(query(collection(db,"notes_cours"),where("classeId","==",cl)))).docs.map(d=>({id:d.id,...d.data()}))
 }
-$("pageContent").innerHTML=`<div class="card"><div class="page-head"><div><h3>Notes de cours</h3><p class="muted">${teacher?"Publier du texte ou une photo de cours.":"Lire et copier les cours."}</p></div>${teacher?'<button id="newNote" class="btn primary">＋ Ajouter une note</button>':""}</div><div id="noteFormArea"></div>${notes.map(n=>`<article class="course-note"><h3>${esc(n.titre)}</h3><p class="muted">Classe : ${esc(nomClasseLisible(n.classeId))} · ${esc(n.matiereId||"")}</p><div class="course-text" id="noteText${esc(n.id)}">${esc(n.contenu||"")}</div>${n.photoData?`<img src="${n.photoData}" alt="Photo du cours">`:""}<div class="actions"><button class="btn secondary" data-copy-note="${esc(n.id)}">Copier le texte</button>${teacher&&(isAdmin()||n.professeurUid===currentUser.uid)?`<button class="btn secondary" data-edit-note="${esc(n.id)}">Modifier</button><button class="btn danger" data-del-note="${esc(n.id)}">Supprimer</button>`:""}</div></article>`).join("")||'<div class="notice">Aucune note de cours.</div>'}</div>`;
+$("pageContent").innerHTML=`<div class="card"><div class="page-head"><div><h3>Notes de cours</h3><p class="muted">${teacher?"Publier du texte ou des photos de cours.":"Lire et copier les cours."}</p></div>${teacher?'<button id="newNote" class="btn primary">＋ Ajouter une note</button>':""}</div><div id="noteFormArea"></div>${notes.map(n=>{
+let photosArr = Array.isArray(n.photosData)?n.photosData:(n.photoData?[n.photoData]:[]);
+return `<article class="course-note"><h3>${esc(n.titre)}</h3><p class="muted">Classe : ${esc(nomClasseLisible(n.classeId))} · ${esc(n.matiereId||"")}</p><div class="course-text" id="noteText${esc(n.id)}">${esc(n.contenu||"")}</div>${photosArr.map(p=>`<img src="${p}" alt="Photo du cours">`).join("")}<div class="actions"><button class="btn secondary" data-copy-note="${esc(n.id)}">Copier le texte</button>${teacher&&(isAdmin()||n.professeurUid===currentUser.uid)?`<button class="btn secondary" data-edit-note="${esc(n.id)}">Modifier</button><button class="btn danger" data-del-note="${esc(n.id)}">Supprimer</button>`:""}</div></article>`;
+}).join("")||'<div class="notice">Aucune note de cours.</div>'}</div>`;
 if(teacher)$("newNote").onclick=()=>noteForm(null);
 $("pageContent").querySelectorAll("[data-copy-note]").forEach(b=>b.onclick=async()=>{const t=$("noteText"+b.dataset.copyNote)?.innerText||"";try{await navigator.clipboard.writeText(t);toast("Texte copié.")}catch{toast("Sélectionnez le texte puis choisissez Copier.",true)}});
 $("pageContent").querySelectorAll("[data-edit-note]").forEach(b=>b.onclick=()=>noteForm(notes.find(n=>n.id===b.dataset.editNote)));
@@ -1221,6 +1291,8 @@ try {
 } catch(e) {
   console.warn("Erreur chargement données note cours", e);
 }
+
+let existingPhotos = Array.isArray(n?.photosData)?n.photosData:(n?.photoData?[n.photoData]:[]);
 
 area.innerHTML=`<div class="card">
 <h3>${n?"Modifier":"Nouvelle"} note de cours</h3>
@@ -1253,24 +1325,16 @@ ${matieresDisponibles.map(mat=>`<option value="${esc(mat.id)}" ${n?.matiereId===
 </div>
 
 <div class="field">
-<label>Photo de page (facultatif)</label>
+<label>Photos / Pages jointes multiples</label>
 
 <div class="actions">
-<button class="btn primary" id="capturePhotoBtn" type="button">📸 Capture écran / Prendre une photo</button>
-<button class="btn secondary" id="choosePhotoBtn" type="button">🖼️ Choisir une photo</button>
+<button class="btn primary" id="choosePhotosBtn" type="button">🖼️ Sélectionner des photos (multiples)</button>
 </div>
 
-<input id="capturePhotoInput" type="file" accept="image/*" capture="environment" hidden>
-<input id="choosePhotoInput" type="file" accept="image/*" hidden>
+<input id="choosePhotosInput" type="file" accept="image/*" multiple hidden>
 
-<div id="photoPreview">
-${n?.photoData?`<img src="${n.photoData}" style="max-width:100%;max-height:200px">`:""}
+<div id="photosPreview" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;">
 </div>
-
-<label>
-<input id="removePhoto" type="checkbox" style="width:auto">
-Retirer la photo actuelle
-</label>
 </div>
 
 <div class="actions">
@@ -1280,37 +1344,49 @@ Retirer la photo actuelle
 </form>
 </div>`;
 
-let photo="";
+let selectedPhotos=[...existingPhotos];
+
+function renderPhotoPreviews(){
+  const prev=$("photosPreview");
+  if(!prev)return;
+  if(selectedPhotos.length===0){
+    prev.innerHTML='<p class="muted">Aucune photo sélectionnée.</p>';
+    return;
+  }
+  prev.innerHTML=selectedPhotos.map((p,idx)=>`
+    <div style="position:relative;border:1px solid var(--bd);border-radius:6px;padding:4px;background:#fff">
+      <img src="${p}" style="width:90px;height:90px;object-fit:cover;display:block;border-radius:4px">
+      <button type="button" class="btn danger" style="position:absolute;top:2px;right:2px;padding:2px 6px;font-size:10px;" data-remove-img="${idx}">×</button>
+    </div>
+  `).join("");
+  prev.querySelectorAll("[data-remove-img]").forEach(b=>{
+    b.onclick=()=>{
+      const i=Number(b.dataset.removeImg);
+      selectedPhotos.splice(i,1);
+      renderPhotoPreviews();
+    };
+  });
+}
+renderPhotoPreviews();
 
 $("cancelNote").onclick=()=>area.innerHTML="";
+$("choosePhotosBtn").onclick=()=>$("choosePhotosInput").click();
 
-$("capturePhotoBtn").onclick=()=>$("capturePhotoInput").click();
-$("choosePhotoBtn").onclick=()=>$("choosePhotoInput").click();
-
-async function handlePhoto(input){
-const file=input.files?.[0];
-if(!file)return;
-try{
-photo=await compressPhoto(file);
-$("photoPreview").innerHTML=
-`<img src="${photo}" alt="Aperçu de la photo du cours" style="max-width:100%;max-height:200px">`;
-$("removePhoto").checked=false;
-}catch(e){
-photo="";
-toast(e.message||"Impossible de charger cette image.",true);
-}finally{
-input.value="";
-}
-}
-
-$("capturePhotoInput").onchange=async()=>handlePhoto($("capturePhotoInput"));
-$("choosePhotoInput").onchange=async()=>handlePhoto($("choosePhotoInput"));
-
-$("removePhoto").onchange=()=>{
-if($("removePhoto").checked){
-photo="";
-$("photoPreview").innerHTML="";
-}
+$("choosePhotosInput").onchange=async e=>{
+  const files=e.target.files;
+  if(!files||files.length===0)return;
+  toast("Compression des images en cours...");
+  for(let file of files){
+    try{
+      const compressed=await compressPhoto(file);
+      selectedPhotos.push(compressed);
+    }catch(err){
+      toast(err.message||"Erreur de lecture d'une image.",true);
+    }
+  }
+  e.target.value="";
+  renderPhotoPreviews();
+  toast("Images ajoutées avec succès.");
 };
 
 $("noteForm").onsubmit=async e=>{
@@ -1325,6 +1401,7 @@ titre:String(fd.get("titre")||"").trim(),
 classeId:String(fd.get("classeId")||"").trim(),
 matiereId:String(fd.get("matiereId")||"").trim(),
 contenu:String(fd.get("contenu")||"").trim(),
+photosData:selectedPhotos,
 professeurUid:isAdmin()?(n?.professeurUid||currentUser.uid):currentUser.uid,
 updatedAt:stamp()
 };
@@ -1332,12 +1409,8 @@ updatedAt:stamp()
 if(!data.titre||!data.classeId)
 throw Error("Le titre et la classe sont obligatoires.");
 
-if($("removePhoto").checked)data.photoData="";
-else if(photo)data.photoData=photo;
-else if(n?.photoData)data.photoData=n.photoData;
-
-if(!data.contenu&&!data.photoData)
-throw Error("Ajoutez le texte ou une photo.");
+if(!data.contenu&&selectedPhotos.length===0)
+throw Error("Ajoutez le texte ou au moins une photo.");
 
 if(n){
 await updateDoc(doc(db,"notes_cours",n.id),data);
