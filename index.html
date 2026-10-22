@@ -171,6 +171,7 @@ function approved(){return!!currentProfile&&(isAdmin()||(currentProfile.status==
 function roleName(r){return({administrateur:"Administrateur",professeur:"Professeur",eleve:"Élève",etudiant:"Étudiant"})[r]||r||"Utilisateur"}
 function stopTimer(){if(timerInterval){clearInterval(timerInterval);timerInterval=null}}
 
+// Cache de noms d'utilisateurs pou ranplase UID yo nan entèfas la
 let cacheNomsUtilisateurs = {};
 async function chargerNomsUtilisateurs() {
   try {
@@ -251,6 +252,7 @@ try{authMessage("Connexion en cours…");await signInWithEmailAndPassword(auth,$
 catch(err){authMessage(friendly(err),"error")}
 });
 
+/* Inscription avec informations supplémentaires */
 let registrationVisible=false;
 let registrationBusy=false;
 
@@ -434,18 +436,9 @@ const modules=[
   ["titre","Titre"],
   ["classeId","Classe"],
   ["url","Lien vidéo"],
-  ["description","Description"],
-  ["dateDebut","Date début"],
-  ["dateFin","Date fin"]
+  ["description","Description"]
 ]},
-{id:"documents",title:"Documents",collection:"documents",fields:[
-  ["titre","Titre"],
-  ["classeId","Classe"],
-  ["url","Lien du document"],
-  ["description","Description"],
-  ["dateDebut","Date début"],
-  ["dateFin","Date fin"]
-]},
+{id:"documents",title:"Documents",collection:"documents",fields:[["titre","Titre"],["classeId","Classe"],["url","Lien du document"],["description","Description"]]},
 {id:"statistiques",title:"Statistiques",collection:"statistiques",fields:[["nom","Nom"],["description","Description"],["valeur","Valeur"]]},
 {id:"configuration",title:"Configuration",collection:"configuration",fields:[["nom","Nom"],["valeur","Valeur"],["description","Description"]]}
 ];
@@ -453,7 +446,7 @@ const navItems=[
 ["accueil","🏠 Accueil"],["etudiants","🎓 Étudiants"],["eleves","👨‍🎓 Élèves"],["professeurs","👨‍🏫 Professeurs"],["departements","🏢 Départements"],["filieres","📚 Filières"],["classes","🏫 Classes"],["affectations","🔗 Affectations"],["inscriptions","📋 Inscriptions"],["matieres","📖 Matières"],["cours","📝 Cours"],
 ["horaire_cours","🗓️ Horaire des cours"],
 ["horaire_examens","📝 Horaire des examens"],
-["annees","📅 Années académiques"],["devoirs","📑 Devoirs"],["examens","⏱️ Examens"],["notes_cours","📒 Notes de cours"],["remises","📥 Remises / Corrections"],["bulletin","🎓 Mon bulletin"],["resultats","📊 Résultats"],["annonces","📢 Annonces"],["videos","🎬 Vidéos"],["documents","📄 Documents"],["statistiques","📈 Statistiques"],["configuration","⚙️ Configuration"]
+["annees","📅 Années académiques"],["devoirs","📑 Devoirs"],["examens","⏱️ Examens"],["notes_cours","📒 Notes de cours"],["remises","📥 Remises / Corrections"],["bulletin","🎓 Mon bulletin"],["resultats","📊 Résultats"],["videos","🎬 Vidéos"],["documents","📄 Documents"],["statistiques","📈 Statistiques"],["configuration","⚙️ Configuration"]
 ];
 const studentPages=[
   "accueil",
@@ -463,7 +456,6 @@ const studentPages=[
   "remises",
   "resultats",
   "bulletin",
-  "annonces",
   "videos",
   "documents",
   "horaire_cours",
@@ -477,7 +469,6 @@ const teacherPages=[
   "notes_cours",
   "remises",
   "resultats",
-  "annonces",
   "videos",
   "documents",
   "horaire_cours",
@@ -525,13 +516,12 @@ toast("Accès non autorisé.",true);return;
 try{
 stopTimer();currentPage=page;await chargerNomsClasses();await chargerNomsUtilisateurs();buildNavigation();
 const mod=modules.find(m=>m.id===page);
-const titles={accueil:"Tableau de bord",examens:"Examens chronométrés",notes_cours:"Notes de cours",utilisateurs:"Gestion des utilisateurs",sauvegarde:"Sauvegarde",horaire_cours:"Horaire des cours",horaire_examens:"Horaire des examens",bulletin:"Mon bulletin",annonces:"Annonces"};
+const titles={accueil:"Tableau de bord",examens:"Examens chronométrés",notes_cours:"Notes de cours",utilisateurs:"Gestion des utilisateurs",sauvegarde:"Sauvegarde",horaire_cours:"Horaire des cours",horaire_examens:"Horaire des examens",bulletin:"Mon bulletin"};
 $("pageTitle").textContent=titles[page]||mod?.title||page;
 $("pageContent").innerHTML='<div class="card">Chargement…</div>';
 if(page==="accueil")return await renderDashboard();
 if(page==="examens")return await renderExams();
 if(page==="notes_cours")return await renderNotesCours();
-if(page==="annonces")return await renderAnnonces();
 if(page==="horaire_cours")return await renderSchedule(page);
 if(page==="horaire_examens")return await renderSchedule(page);
 if(page==="bulletin")return await renderBulletin();
@@ -550,19 +540,6 @@ function dash(icon,title,desc,page){return`<div class="dash-card"><div style="fo
 async function renderDashboard(){
 const name=currentProfile?.nom||currentUser?.displayName||currentUser?.email||"Utilisateur";
 let html=`<div class="card welcome"><h3>Bienvenue, ${esc(name)} !</h3><p>Votre espace académique — ${esc(roleName(currentProfile.role))}</p></div>`;
-
-// Ajout section Contact Administration pour Élèves et Professeurs
-if(!isAdmin()){
-const adminEmail = ADMIN_EMAIL;
-html+=`<div class="card" style="border:1px solid var(--bd);background:#f8fafc;margin-bottom:16px">
-  <h3>📞 Contacter l’administration</h3>
-  <p class="muted">Besoin d'aide ou d'assistance ? Vous pouvez contacter directement l'administration officielle.</p>
-  <div class="actions">
-    <a class="btn primary" href="mailto:${esc(adminEmail)}?subject=Contact%20depuis%20l'application%20scolaire">Contacter l’administration</a>
-  </div>
-</div>`;
-}
-
 if(isAdmin()){
 const names=["etudiants","eleves","professeurs","classes","matieres","devoirs","examens"],counts=await Promise.all(names.map(async n=>(await getDocs(collection(db,n))).size));
 const waiting=await getDocs(query(collection(db,"users"),where("status","==","attente")));
@@ -583,10 +560,9 @@ html+=`<div class="card" style="border:1px solid var(--bd);background:#f8fafc;ma
   </div>
 </div>`;
 
-html+='<div class="dashboard-grid">'+dash("👥","Utilisateurs","Approuver les comptes et attribuer les rôles.","utilisateurs")+dash("📢","Annonces","Diffuser des annonces importantes.","annonces")+dash("🎓","Bulletins","Gérer et publier les bulletins scolaires.","bulletin")+dash("🏫","Classes","Organiser les classes.","classes")+dash("🎓","Étudiants","Gérer les dossiers.","etudiants")+dash("👨‍🏫","Professeurs","Gérer les professeurs.","professeurs")+dash("⏱️","Examens","Créer des QCU et des questions ouvertes.","examens")+dash("📒","Notes de cours","Publier texte et photos.","notes_cours")+dash("📥","Corrections","Consulter les remises.","remises")+dash("💾","Sauvegarde","Exporter les données.","sauvegarde")+'</div>';
+html+='<div class="dashboard-grid">'+dash("👥","Utilisateurs","Approuver les comptes et attribuer les rôles.","utilisateurs")+dash("🎓","Bulletins","Gérer et publier les bulletins scolaires.","bulletin")+dash("🏫","Classes","Organiser les classes.","classes")+dash("🎓","Étudiants","Gérer les dossiers.","etudiants")+dash("👨‍🏫","Professeurs","Gérer les professeurs.","professeurs")+dash("⏱️","Examens","Créer des QCU et des questions ouvertes.","examens")+dash("📒","Notes de cours","Publier texte et photos.","notes_cours")+dash("📥","Corrections","Consulter les remises.","remises")+dash("💾","Sauvegarde","Exporter les données.","sauvegarde")+'</div>';
 }else if(currentProfile.role==="professeur"){
 html+='<div class="dashboard-grid">'
-+dash("📢","Annonces","Consulter les annonces.","annonces")
 +dash("📑","Devoirs","Créer et gérer les devoirs.","devoirs")
 +dash("⏱️","Examens","Créer des QCU et questions ouvertes.","examens")
 +dash("📒","Notes de cours","Publier les cours.","notes_cours")
@@ -596,7 +572,6 @@ html+='<div class="dashboard-grid">'
 +'</div>';
 }else{
 html+='<div class="dashboard-grid">'
-+dash("📢","Annonces","Lire les annonces importantes.","annonces")
 +dash("📑","Mes devoirs","Consulter les devoirs.","devoirs")
 +dash("⏱️","Examens","Passer les examens.","examens")
 +dash("📒","Notes de cours","Lire et copier les cours.","notes_cours")
@@ -627,17 +602,34 @@ if($("toggleAppStatusBtn")){
 
 function canAddModule(id){
   const role = currentProfile?.role;
+
   return isAdmin()
-    || (["devoirs","examens","notes_cours","videos","documents"].includes(id) && role === "professeur")
-    || (id === "remises" && role === "professeur")
-    || (id === "resultats" && role === "professeur");
+    || (
+      ["devoirs","examens","notes_cours","videos","documents"].includes(id)
+      && role === "professeur"
+    )
+    || (
+      id === "remises"
+      && role === "professeur"
+    )
+    || (
+      id === "resultats"
+      && role === "professeur"
+    );
 }
 
 function canEditModule(id){
   const role = currentProfile?.role;
+
   return isAdmin()
-    || (["devoirs","examens","notes_cours","remises","videos","documents"].includes(id) && role === "professeur")
-    || (id === "resultats" && role === "professeur");
+    || (
+      ["devoirs","examens","notes_cours","remises","videos","documents"].includes(id)
+      && role === "professeur"
+    )
+    || (
+      id === "resultats"
+      && role === "professeur"
+    );
 }
 
 
@@ -647,35 +639,69 @@ async function renderModule(m){
   const uid = currentUser?.uid;
 
   if(isAdmin()){
-    records = (await getDocs(collection(db,m.collection))).docs.map(d=>({id:d.id,...d.data()}));
-  }else if(["devoirs","examens","videos","documents","notes_cours"].includes(m.id)){
+    records = (await getDocs(collection(db,m.collection)))
+      .docs.map(d=>({id:d.id,...d.data()}));
+
+  }else if(
+    ["devoirs","examens","videos","documents","notes_cours"].includes(m.id)
+  ){
     const cl = currentProfile?.classeId;
+
     if(isStudent()){
       if(cl){
-        records = (await getDocs(query(collection(db,m.collection),where("classeId","==",cl)))).docs.map(d=>({id:d.id,...d.data()}));
+        records = (await getDocs(
+          query(
+            collection(db,m.collection),
+            where("classeId","==",cl)
+          )
+        )).docs.map(d=>({id:d.id,...d.data()}));
       }
     }else if(role==="professeur"){
-      records = (await getDocs(query(collection(db,m.collection),where("professeurUid","==",uid)))).docs.map(d=>({id:d.id,...d.data()}));
+      records = (await getDocs(
+        query(
+          collection(db,m.collection),
+          where("professeurUid","==",uid)
+        )
+      )).docs.map(d=>({id:d.id,...d.data()}));
     }
+
   }else if(m.id==="remises"){
-    let q = role==="professeur" ? query(collection(db,m.collection),where("professeurUid","==",uid)) : query(collection(db,m.collection),where("etudiantId","==",uid));
-    records = (await getDocs(q)).docs.map(d=>({id:d.id,...d.data()}));
+    let q;
+
+    if(role==="professeur"){
+      q = query(
+        collection(db,m.collection),
+        where("professeurUid","==",uid)
+      );
+    }else{
+      q = query(
+        collection(db,m.collection),
+        where("etudiantId","==",uid)
+      );
+    }
+
+    records = (await getDocs(q))
+      .docs.map(d=>({id:d.id,...d.data()}));
+
   }else if(m.id==="resultats"){
-    const q = role==="professeur" ? query(collection(db,m.collection),where("professeurUid","==",uid)) : query(collection(db,m.collection),where("etudiantId","==",uid));
-    records = (await getDocs(q)).docs.map(d=>({id:d.id,...d.data()}));
+    const q = role==="professeur"
+      ? query(
+          collection(db,m.collection),
+          where("professeurUid","==",uid)
+        )
+      : query(
+          collection(db,m.collection),
+          where("etudiantId","==",uid)
+        );
+
+    records = (await getDocs(q))
+      .docs.map(d=>({id:d.id,...d.data()}));
   }
 
-  // Filtrage durabilité (Documents et Vidéos)
-  const now = Date.now();
-  if(["documents","videos"].includes(m.id) && isStudent()){
-    records = records.filter(r => {
-      const debut = r.dateDebut ? new Date(r.dateDebut).getTime() : 0;
-      const fin = r.dateFin ? new Date(r.dateFin).getTime() : Infinity;
-      return now >= debut && now <= fin;
-    });
-  }
+  const canAdd = typeof canAddModule==="function"
+    ? canAddModule(m.id)
+    : canEditModule(m.id);
 
-  const canAdd = canAddModule(m.id);
   const canEdit = canEditModule(m.id);
 
   $("pageContent").innerHTML = `
@@ -685,7 +711,11 @@ async function renderModule(m){
           <h3>${esc(m.title)}</h3>
           <p class="muted">${records.length} enregistrement(s)</p>
         </div>
-        ${canAdd ? '<button id="addRecord" class="btn primary">＋ Ajouter</button>' : ""}
+        ${
+          canAdd
+            ? '<button id="addRecord" class="btn primary">＋ Ajouter</button>'
+            : ""
+        }
       </div>
 
       <div id="recordFormArea"></div>
@@ -700,21 +730,9 @@ async function renderModule(m){
           </thead>
           <tbody>
             ${
-              records.map(r=>{
-                // Statut durabilité
-                let statutBadge = "";
-                if(r.dateDebut || r.dateFin){
-                  const dStart = r.dateDebut ? new Date(r.dateDebut).getTime() : 0;
-                  const dEnd = r.dateFin ? new Date(r.dateFin).getTime() : Infinity;
-                  if(now < dStart) statutBadge = `<span class="badge wait">À venir</span>`;
-                  else if(now > dEnd) statutBadge = `<span class="badge danger" style="background:#fee2e2;color:#991b1b">Expiré</span>`;
-                  else statutBadge = `<span class="badge">Disponible</span>`;
-                }
-
-                return `
+              records.map(r=>`
                 <tr>
                   <td>
-                    ${statutBadge}
                     ${
                       m.fields.map(([k,l])=>{
                         if(r[k]===undefined || r[k]==="") return "";
@@ -724,7 +742,7 @@ async function renderModule(m){
                         
                         return `<div><b>${esc(l)} :</b> ${
                           k==="url"
-                            ? `<a href="${esc(r[k])}" target="_blank" rel="noopener">Louvri / Telechaje</a>`
+                            ? `<a href="${esc(r[k])}" target="_blank" rel="noopener">Louvri lyen / Telechaje</a>`
                             : esc(val)
                         }</div>`;
                       }).join("") || esc(r.titre||r.id)
@@ -733,25 +751,32 @@ async function renderModule(m){
                   <td>
                     <div class="actions">
                     ${
-                      m.id === "devoirs" && isStudent()
-                        ? `<button class="btn primary" data-submit-homework="${esc(r.id)}">Résoudre / Remettre</button>`
-                        : ""
-                    }
-                    ${
-                      canEdit && (m.id!=="remises" || role==="professeur" || isAdmin() || isStudent())
-                        ? `<button class="btn secondary" data-edit="${esc(r.id)}">Modifier</button>`
-                        : ""
-                    }
-                    ${
-                      isAdmin() || (role==="professeur" && (r.professeurUid===currentUser?.uid || r.professeurId===currentUser?.uid))
-                        ? `<button class="btn danger" data-del="${esc(r.id)}">Supprimer</button>`
-                        : ""
-                    }
+  m.id === "devoirs" && isStudent()
+    ? `<button class="btn primary"
+         data-submit-homework="${esc(r.id)}">
+         Résoudre / Remettre
+       </button>`
+    : ""
+}
+                      ${
+                        canEdit &&
+                        (m.id!=="remises" ||
+                         role==="professeur" ||
+                         isAdmin() || isStudent())
+                          ? `<button class="btn secondary"
+                               data-edit="${esc(r.id)}">Modifier</button>`
+                          : ""
+                      }
+                      ${
+                        isAdmin() || (role==="professeur" && (r.professeurUid===currentUser?.uid || r.professeurId===currentUser?.uid))
+                          ? `<button class="btn danger"
+                               data-del="${esc(r.id)}">Supprimer</button>`
+                          : ""
+                      }
                     </div>
                   </td>
                 </tr>
-              `;
-              }).join("") ||
+              `).join("") ||
               '<tr><td colspan="2">Aucun enregistrement.</td></tr>'
             }
           </tbody>
@@ -761,325 +786,1873 @@ async function renderModule(m){
   `;
 
   if($("addRecord")){
-    $("addRecord").onclick = ()=> recordForm(m,null);
-  }
-
-  $("pageContent").querySelectorAll("[data-submit-homework]").forEach(b => {
-    b.onclick = () => {
-      const devoir = records.find(r => r.id === b.dataset.submitHomework);
-      if(devoir) ouvrirSoumissionDevoir(devoir);
-    };
-  });
-
-  $("pageContent").querySelectorAll("[data-edit]").forEach(b=>{
-    b.onclick = ()=>{
-      const record = records.find(r=>r.id===b.dataset.edit);
-      if(!record)return;
-      if(m.id==="remises" && !isAdmin() && role!=="professeur" && record.statut==="soumis"){
-        toast("Vous ne pouvez pas modifier une remise déjà envoyée.",true);
+    $("addRecord").onclick = ()=>{
+      if(!canAdd){
+        toast("Vous n'êtes pas autorisé à ajouter cet enregistrement.",true);
         return;
       }
-      recordForm(m,record);
+      recordForm(m,null);
     };
-  });
+  }
 
-  $("pageContent").querySelectorAll("[data-del]").forEach(b=>{
-    b.onclick = async()=>{
-      if(confirm("Supprimer cet enregistrement ?")){
-        try{
-          await deleteDoc(doc(db,m.collection,b.dataset.del));
-          toast("Supprimé.");
-          await openPage(m.id);
-        }catch(e){
-          toast(friendly(e),true);
-        }
-      }
-    };
-  });
-}
-
-// SECTION ANNONCES
-async function renderAnnonces(){
-  const isAdm = isAdmin();
-  const snap = await getDocs(collection(db, "annonces"));
-  let annonces = snap.docs.map(d=>({id:d.id,...d.data()}));
-
-  const now = Date.now();
-  if(!isAdm){
-    annonces = annonces.filter(a => {
-      const debut = a.dateDebut ? new Date(a.dateDebut).getTime() : 0;
-      const fin = a.dateFin ? new Date(a.dateFin).getTime() : Infinity;
-      return now >= debut && now <= fin;
+  $("pageContent")
+    .querySelectorAll("[data-submit-homework]")
+    .forEach(b => {
+      b.onclick = () => {
+        const devoir = records.find(
+          r => r.id === b.dataset.submitHomework
+        );
+        if(devoir) ouvrirSoumissionDevoir(devoir);
+      };
     });
-  }
 
-  $("pageContent").innerHTML=`
-    <div class="card">
-      <div class="page-head">
-        <div>
-          <h3>📢 Annonces importantes</h3>
-          <p class="muted">Informations et actualités de l'établissement.</p>
-        </div>
-        ${isAdm?'<button id="newAnnonceBtn" class="btn primary">＋ Créer une annonce</button>':""}
-      </div>
-      <div id="annonceFormArea"></div>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr><th>Titre & Message</th><th>Période</th><th>Actions</th></tr>
-          </thead>
-          <tbody>
-            ${annonces.map(a=>`
-              <tr>
-                <td>
-                  <b>${esc(a.titre)}</b>
-                  <p>${esc(a.message)}</p>
-                  <small class="muted">Publié le : ${esc(a.datePublication||"—")}</small>
-                </td>
-                <td>${esc(a.dateDebut||"—")} au ${esc(a.dateFin||"—")}</td>
-                <td>
-                  ${isAdm?`
-                    <div class="actions">
-                      <button class="btn secondary" data-edit-annonce="${esc(a.id)}">Modifier</button>
-                      <button class="btn danger" data-del-annonce="${esc(a.id)}">Supprimer</button>
-                    </div>
-                  `:"—"}
-                </td>
-              </tr>
-            `).join("")||'<tr><td colspan="3">Aucune annonce disponible.</td></tr>'}
-          </tbody>
-        </table>
-      </div>
-    </div>`;
 
-  if($("newAnnonceBtn")){
-    $("newAnnonceBtn").onclick=()=>ouvrirFormAnnonce(null);
-  }
+  $("pageContent").querySelectorAll("[data-edit]")
+    .forEach(b=>{
+      b.onclick = ()=>{
+        const record = records.find(r=>r.id===b.dataset.edit);
 
-  $("pageContent").querySelectorAll("[data-edit-annonce]").forEach(b=>{
-    b.onclick=()=>ouvrirFormAnnonce(annonces.find(x=>x.id===b.dataset.editAnnonce));
-  });
+        if(!record)return;
 
-  $("pageContent").querySelectorAll("[data-del-annonce]").forEach(b=>{
-    b.onclick=async()=>{
-      if(confirm("Supprimer cette annonce ?")){
-        await deleteDoc(doc(db,"annonces",b.dataset.delAnnonce));
-        toast("Annonce supprimée.");
-        await renderAnnonces();
-      }
-    };
-  });
+        if(
+          m.id==="remises" &&
+          !isAdmin() &&
+          role!=="professeur" &&
+          record.statut==="soumis"
+        ){
+          toast(
+            "Vous ne pouvez pas modifier une remise déjà envoyée.",
+            true
+          );
+          return;
+        }
+
+        if(!canEdit){
+          toast("Vous n'êtes pas autorisé à modifier cet enregistrement.",true);
+          return;
+        }
+
+        recordForm(m,record);
+      };
+    });
+
+  $("pageContent").querySelectorAll("[data-del]")
+    .forEach(b=>{
+      b.onclick = async()=>{
+        const record = records.find(r=>r.id===b.dataset.del);
+        if(!isAdmin() && (!record || (record.professeurUid!==currentUser?.uid && record.professeurId!==currentUser?.uid && record.etudiantId!==currentUser?.uid))){
+          toast("Action non autorisée.", true);
+          return;
+        }
+
+        if(confirm("Supprimer cet enregistrement ?")){
+          try{
+            await deleteDoc(doc(db,m.collection,b.dataset.del));
+            toast("Supprimé.");
+            await openPage(m.id);
+          }catch(e){
+            toast(friendly(e),true);
+          }
+        }
+      };
+    });
 }
 
-function ouvrirFormAnnonce(a){
-  const area=$("annonceFormArea");
-  area.innerHTML=`
-    <div class="card" style="border:2px solid var(--bd)">
-      <h3>${a?"Modifier":"Nouvelle"} annonce</h3>
-      <form id="annonceForm">
-        <div class="field"><label>Titre *</label><input name="titre" value="${esc(a?.titre||"")}" required></div>
-        <div class="field"><label>Message *</label><textarea name="message" required>${esc(a?.message||"")}</textarea></div>
-        <div class="form-grid">
-          <div class="field"><label>Date de début</label><input name="dateDebut" type="date" value="${esc(a?.dateDebut||"")}"></div>
-          <div class="field"><label>Date de fin</label><input name="dateFin" type="date" value="${esc(a?.dateFin||"")}"></div>
-        </div>
-        <div class="actions">
-          <button class="btn primary" type="submit">Enregistrer</button>
-          <button class="btn secondary" id="cancelAnnonce" type="button">Annuler</button>
-        </div>
-      </form>
-    </div>`;
-  $("cancelAnnonce").onclick=()=>area.innerHTML="";
-  $("annonceForm").onsubmit=async e=>{
-    e.preventDefault();
-    const fd=new FormData(e.currentTarget);
-    const data={
-      titre:fd.get("titre"),
-      message:fd.get("message"),
-      dateDebut:fd.get("dateDebut"),
-      dateFin:fd.get("dateFin"),
-      datePublication:new Date().toISOString().slice(0,10),
-      updatedAt:stamp()
-    };
-    if(a) await updateDoc(doc(db,"annonces",a.id),data);
-    else { data.createdAt=stamp(); await addDoc(collection(db,"annonces"),data); }
-    toast("Annonce enregistrée.");
-    area.innerHTML="";
-    await renderAnnonces();
-  };
-}
 
 async function ouvrirSoumissionDevoir(devoir){
-  if(!isStudent() || !currentUser || !devoir) return;
+  if(!isStudent() || !currentUser || !devoir){
+    toast("Action non autorisée.",true);
+    return;
+  }
+
+  const classeId = String(currentProfile?.classeId || "");
+  if(!classeId || String(devoir.classeId || "") !== classeId){
+    toast("Ce devoir n'appartient pas à votre classe.",true);
+    return;
+  }
+
+  const titre = devoir.titre || "Devoir";
   const zone = $("recordFormArea");
   if(!zone) return;
 
   zone.innerHTML = `
     <div class="card">
-      <h3>Résoudre le devoir : ${esc(devoir.titre)}</h3>
+      <h3>Résoudre le devoir : ${esc(titre)}</h3>
       <form id="soumissionDevoirForm">
         <div class="field">
           <label>Votre réponse *</label>
-          <textarea name="contenu" required placeholder="Écrivez votre réponse ici..."></textarea>
+          <textarea name="contenu" required
+            placeholder="Écrivez votre réponse ici..."></textarea>
+        </div>
+        <div class="field">
+          <label>Lien du document (facultatif)</label>
+          <input name="lienDocument" type="url"
+            placeholder="https://...">
         </div>
         <div class="actions">
-          <button class="btn primary" type="submit">Envoyer mon devoir</button>
-          <button class="btn secondary" id="annulerSoumission" type="button">Annuler</button>
+          <button class="btn primary" type="submit">
+            Envoyer mon devoir
+          </button>
+          <button class="btn secondary" id="annulerSoumission"
+            type="button">Annuler</button>
         </div>
       </form>
     </div>
   `;
 
-  $("annulerSoumission").onclick = () => zone.innerHTML = "";
+  $("annulerSoumission").onclick = () => {
+    zone.innerHTML = "";
+  };
 
   $("soumissionDevoirForm").onsubmit = async e => {
     e.preventDefault();
-    const contenu = String(new FormData(e.currentTarget).get("contenu") || "").trim();
-    if(!contenu) return toast("Écrivez votre réponse.", true);
+
+    const form = e.currentTarget;
+    const contenu = String(
+      new FormData(form).get("contenu") || ""
+    ).trim();
+    const lienDocument = String(
+      new FormData(form).get("lienDocument") || ""
+    ).trim();
+
+    if(!contenu){
+      toast("Écrivez votre réponse avant l'envoi.",true);
+      return;
+    }
+
+    const bouton = form.querySelector('button[type="submit"]');
+    bouton.disabled = true;
+    bouton.textContent = "Envoi en cours...";
 
     try{
       const remise = {
         devoirId: devoir.id,
-        titreDevoir: devoir.titre,
+        titreDevoir: titre,
         etudiantId: currentUser.uid,
-        classeId: devoir.classeId,
+        etudiantEmail: currentUser.email || "",
+        classeId: classeId,
         contenu: contenu,
         statut: "soumis",
         dateRemise: stamp(),
-        createdAt: stamp()
+        createdAt: stamp(),
+        updatedAt: stamp()
       };
-      await addDoc(collection(db,"remises"), remise);
+
+      if(devoir.professeurUid){
+        remise.professeurUid = devoir.professeurUid;
+      }
+      if(devoir.professeurId){
+        remise.professeurId = devoir.professeurId;
+      }
+      if(lienDocument){
+        remise.lienDocument = lienDocument;
+      }
+
+      await addDoc(collection(db,"remises"),remise);
       toast("Devoir envoyé avec succès.");
       zone.innerHTML = "";
       await openPage("remises");
     }catch(err){
-      toast(friendly(err), true);
+      console.error("Erreur soumission devoir :",err);
+      toast(friendly(err),true);
+      bouton.disabled = false;
+      bouton.textContent = "Envoyer mon devoir";
     }
   };
 }
 
-async function recordForm(m,r){
-  const area=$("recordFormArea");
-  if(!area)return;
-  const isExam=m.id==="examens";
 
-  area.innerHTML=`<div class="card"><h3>${r?"Modifier":"Ajouter"} — ${esc(m.title)}</h3><form id="dataForm"><div class="form-grid">${m.fields.filter(([k])=>!(isExam&&k===['questionsJSON'])).map(([k,l])=>{
-    const value=r?.[k]??"",long=["description","contenu","commentaire"].includes(k),num=["note100","note20","dureeMinutes","noteMax"].includes(k),type=["dateLimite","dateDebut","dateFin"].includes(k)?"datetime-local":num?"number":"text";
-    let formattedValue=value;if(type==="datetime-local"&&value)formattedValue=String(value).slice(0,16);
-    return`<div class="field ${long?"full":""}"><label>${esc(l)}</label>${long?`<textarea name="${esc(k)}">${esc(value)}</textarea>`:`<input name="${esc(k)}" type="${type}" value="${esc(formattedValue)}">`}</div>`
-  }).join("")}</div>${isExam?examBuilder(r):""}<div class="actions"><button class="btn primary" type="submit">Enregistrer</button><button class="btn secondary" id="cancelForm" type="button">Annuler</button></div></form></div>`;
-  $("cancelForm").onclick=()=>area.innerHTML="";
-  if(isExam)setupQuestionBuilder(parseQuestions(r||{}));
-  $("dataForm").onsubmit=async e=>{
-    e.preventDefault();const fd=new FormData(e.currentTarget),data={};
-    for(const[k,v]of fd.entries())data[k]=String(v).trim();
-    try{
-      data.updatedAt=stamp();
-      if(r)await updateDoc(doc(db,m.collection,r.id),data);
-      else{data.createdAt=stamp();await addDoc(collection(db,m.collection),data)}
-      toast("Enregistrement effectué.");
-      await openPage(m.id);
-    }catch(err){toast(friendly(err),true)}
+async function recordForm(m,r){
+const area=$("recordFormArea");if(!area)return;
+const isExam=m.id==="examens";
+  if(
+  m.id === "remises" &&
+  r &&
+  !isAdmin() &&
+  currentProfile?.role !== "professeur" &&
+  r.statut === "soumis"
+){
+  toast("Vous ne pouvez pas modifier une remise déjà envoyée.", true);
+  return;
+}
+
+let classesDisponibles = [];
+let matieresDisponibles = [];
+try {
+  const [clsSnap, matSnap] = await Promise.all([
+    getDocs(collection(db, "classes")),
+    getDocs(collection(db, "matieres"))
+  ]);
+  classesDisponibles = clsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+  matieresDisponibles = matSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+  if (!isAdmin() && currentProfile?.role === "professeur") {
+    const affSnap = await getDocs(query(collection(db, "affectations"), where("professeurUid", "==", currentUser.uid)));
+    const classIds = affSnap.docs.map(d => d.data().classeId);
+    if (classIds.length > 0) {
+      classesDisponibles = classesDisponibles.filter(c => classIds.includes(c.id) || classIds.includes(c.code));
+    }
+  } else if (isStudent() && currentProfile?.classeId) {
+    classesDisponibles = classesDisponibles.filter(c => c.id === currentProfile.classeId || c.code === currentProfile.classeId);
   }
+} catch(e) {
+  console.warn("Erreur chargement données pour le formulaire", e);
+}
+
+area.innerHTML=`<div class="card"><h3>${r?"Modifier":"Ajouter"} — ${esc(m.title)}</h3><form id="dataForm"><div class="form-grid">${m.fields.filter(([k])=>!(isExam&&k===['questionsJSON'])).map(([k,l])=>{
+const value=r?.[k]??"",long=["description","contenu","commentaire"].includes(k),num=["note100","note20","dureeMinutes","noteMax"].includes(k),type=["dateLimite","dateDebut"].includes(k)?"datetime-local":num?"number":"text";
+let formattedValue=value;if(type==="datetime-local"&&value)formattedValue=String(value).slice(0,16);
+
+if (k === "classeId") {
+  return `<div class="field ${long?"full":""}"><label>${esc(l)} *</label><select name="classeId" required><option value="">-- Chwazi klas --</option>${classesDisponibles.map(c=>`<option value="${esc(c.id)}" ${value===c.id||value===c.code?"selected":""}>${esc(c.nom||c.code||c.id)}</option>`).join("")}</select></div>`;
+}
+
+if (k === "matiereId") {
+  return `<div class="field ${long?"full":""}"><label>${esc(l)}</label><select name="matiereId"><option value="">-- Chwazi matyè --</option>${matieresDisponibles.map(mat=>`<option value="${esc(mat.id)}" ${value===mat.id||value===mat.code?"selected":""}>${esc(mat.nom||mat.code||mat.id)}</option>`).join("")}</select></div>`;
+}
+
+if (m.id==="remises" && k==="etudiantId" && isStudent()) {
+  return `<input type="hidden" name="etudiantId" value="${esc(currentUser.uid)}">`;
+}
+
+return`<div class="field ${long?"full":""}"><label>${esc(l)}</label>${long?`<textarea name="${esc(k)}">${esc(value)}</textarea>`:`<input name="${esc(k)}" type="${type}" value="${esc(formattedValue)}" ${num?'min="0"':''} ${isExam&&k==="titre"?"required":""}>`}</div>`
+}).join("")}</div>${isExam?examBuilder(r):""}<div class="actions"><button class="btn primary" type="submit">Enregistrer</button><button class="btn secondary" id="cancelForm" type="button">Annuler</button></div></form></div>`;
+$("cancelForm").onclick=()=>area.innerHTML="";
+if(isExam)setupQuestionBuilder(parseQuestions(r||{}));
+$("dataForm").onsubmit=async e=>{
+e.preventDefault();const fd=new FormData(e.currentTarget),data={};
+for(const[k,v]of fd.entries())data[k]=String(v).trim();
+if(["devoirs","examens","remises","resultats","affectations","videos","documents"].includes(m.id)){
+if(currentProfile.role==="professeur"){data.professeurUid=currentUser.uid;data.professeurId=currentUser.uid}
+}
+if(m.id==="remises"&&!isAdmin()&&currentProfile.role!=="professeur"){
+data.etudiantId=currentUser.uid;data.classeId=currentProfile.classeId||data.classeId||"";data.statut="soumis";delete data.note100;delete data.commentaire;
+}
+if(isExam){
+let questions;
+try{questions=readBuilderQuestions()}catch(error){console.error("Erreur questions examen :",error);return toast(error?.message||"Vérifiez les questions de l'examen.",true)}
+if(!questions||!questions.length)return toast("Ajoutez au moins une question avant d'enregistrer l'examen.",true);
+if(!data.titre||!data.classeId)return toast("Le titre de l'examen et le code de classe sont obligatoires.",true);
+const duration=Number(data.dureeMinutes||30);
+if(!Number.isFinite(duration)||duration<1)return toast("La durée doit être d'au moins une minute.",true);
+data.questionsJSON=JSON.stringify(questions);data.dureeMinutes=Math.floor(duration);data.noteMax=questions.reduce((s,q)=>s+Number(q.points||0),0);data.statut="publie";data.professeurUid=isAdmin()?(data.professeurUid||currentUser.uid):currentUser.uid;data.professeurId=isAdmin()?(data.professeurId||currentUser.uid):currentUser.uid;
+}
+try{data.updatedAt=stamp();if(r)await updateDoc(doc(db,m.collection,r.id),data);else{data.createdAt=stamp();await addDoc(collection(db,m.collection),data)}toast("Enregistrement effectué.");await openPage(m.id)}
+catch(err){console.error(err);toast(friendly(err),true)}
+}
 }
 
 function examBuilder(){
-return`<div class="full"><div class="notice">QCU ou question ouverte.</div><button class="btn secondary" id="addQuestion" type="button">＋ Ajouter une question</button><div id="questionBuilder"></div></div>`
+return`<div class="full"><div class="notice">Choisissez le type de chaque question : QCU (une seule bonne réponse) ou question ouverte (réponse écrite). Vous pouvez mélanger les deux types dans le même examen.</div><div class="field"><label>Type de la prochaine question</label><select id="newQuestionType"><option value="qcm">QCU — une seule bonne réponse</option><option value="ecrit">Question ouverte — réponse écrite</option></select></div><button class="btn secondary" id="addQuestion" type="button">＋ Ajouter une question</button><div id="questionBuilder"></div></div>`
 }
 let builderQuestions=[];
 function setupQuestionBuilder(qs){
-builderQuestions=(qs||[]).map(q=>({...q,options:Array.isArray(q.options)?[...q.options]:["Option A","Option B"]}));
+builderQuestions=(qs||[]).map(q=>({...q,options:Array.isArray(q.options)?[...q.options]:["Option A","Option B","Option C"]}));
 drawQuestionBuilder();
-$("addQuestion").onclick=()=>{builderQuestions.push({type:"qcm",question:"",points:1,options:["Option A","Option B"],correctAnswer:"Option A"});drawQuestionBuilder()}
+$("addQuestion").onclick=()=>{builderQuestions.push({type:$("newQuestionType").value,question:"",points:1,options:["Option A","Option B","Option C"],correctAnswer:"Option A"});drawQuestionBuilder()}
 }
 function drawQuestionBuilder(){
 const area=$("questionBuilder");if(!area)return;
-area.innerHTML=builderQuestions.map((q,i)=>`<div class="exam-question"><textarea data-qtext="${i}">${esc(q.question)}</textarea></div>`).join("");
+area.innerHTML=builderQuestions.map((q,i)=>`<div class="exam-question"><div class="page-head"><h4>Question ${i+1}</h4><button type="button" class="btn danger" data-remove-q="${i}">Supprimer</button></div><div class="field"><label>Type de question</label><select data-qtype="${i}"><option value="qcm" ${q.type==="qcm"?"selected":""}>QCU — choix unique</option><option value="ecrit" ${q.type==="ecrit"?"selected":""}>Question ouverte</option></select></div><div class="field"><label>Texte de la question</label><textarea data-qtext="${i}" required>${esc(q.question||"")}</textarea></div><div class="field"><label>Points</label><input data-qpoints="${i}" type="number" min="0.5" step="0.5" value="${Number(q.points)||1}"></div>${q.type==="qcm"?`<div class="field"><label>Propositions (une par ligne)</label><textarea data-qopts="${i}">${esc((q.options||[]).join("\n"))}</textarea><label>Choisissez la bonne réponse</label><select data-qcorrect="${i}">${(q.options||[]).map(o=>`<option value="${esc(o)}" ${String(o)===String(q.correctAnswer)?"selected":""}>${esc(o)}</option>`).join("")}</select></div>`:'<p class="muted">L’élève écrira sa réponse. Le professeur corrigera cette question.</p>'}</div>`).join("");
+area.querySelectorAll("[data-qtype]").forEach(el=>el.onchange=()=>{const i=Number(el.dataset.qtype);builderQuestions[i].type=el.value;drawQuestionBuilder()});
+area.querySelectorAll("[data-qtext]").forEach(el=>el.oninput=()=>builderQuestions[Number(el.dataset.qtext)].question=el.value);
+area.querySelectorAll("[data-qpoints]").forEach(el=>el.oninput=()=>builderQuestions[Number(el.dataset.qpoints)].points=Number(el.value));
+area.querySelectorAll("[data-qopts]").forEach(el=>el.onchange=()=>{const i=Number(el.dataset.qopts),old=builderQuestions[i].correctAnswer;builderQuestions[i].options=el.value.split("\n").map(x=>x.trim()).filter(Boolean);builderQuestions[i].correctAnswer=builderQuestions[i].options.includes(old)?old:builderQuestions[i].options[0]||"";drawQuestionBuilder()});
+area.querySelectorAll("[data-qcorrect]").forEach(el=>el.onchange=()=>builderQuestions[Number(el.dataset.qcorrect)].correctAnswer=el.value);
+area.querySelectorAll("[data-remove-q]").forEach(el=>el.onclick=()=>{builderQuestions.splice(Number(el.dataset.removeQ),1);drawQuestionBuilder()})
 }
-function readBuilderQuestions(){return builderQuestions}
-function parseQuestions(exam){try{return JSON.parse(exam.questionsJSON||"[]")}catch{return[]}}
+function readBuilderQuestions(){
+const result=builderQuestions.map(q=>({...q,question:String(q.question||"").trim(),points:Number(q.points)}));
+for(const q of result){
+if(!q.question||!Number.isFinite(q.points)||q.points<=0)throw new Error("Chaque question doit avoir un texte et un nombre de points positif.");
+if(q.type==="qcm"){
+q.options=(q.options||[]).map(x=>String(x).trim()).filter(Boolean);
+if(q.options.length<2)throw new Error("Chaque QCU doit contenir au moins deux propositions.");
+if(!q.options.includes(String(q.correctAnswer||"")))throw new Error("Choisissez une bonne réponse parmi les propositions.");
+}else if(q.type==="ecrit"){delete q.options;delete q.correctAnswer}
+else throw new Error("Type de question non valide.");
+}
+return result;
+}
+function parseQuestions(exam){
+try{const value=exam.questionsJSON;const q=Array.isArray(value)?value:JSON.parse(value||"[]");return Array.isArray(q)?q.filter(x=>x&&typeof x.question==="string"&&["qcm","ecrit"].includes(x.type)):[]}
+catch(e){console.warn("Questions d'examen invalides",e);return[]}
+}
 function fmtTime(ms){const s=Math.max(0,Math.ceil(ms/1000));return`${String(Math.floor(s/60)).padStart(2,"0")}:${String(s%60).padStart(2,"0")}`}
 function available(e){const n=Date.now(),s=e.dateDebut?new Date(e.dateDebut).getTime():0,f=e.dateLimite?new Date(e.dateLimite).getTime():Infinity;return n>=s&&n<=f}
 
 async function renderExams(){
 stopTimer();
 if(isAdmin()||isProfessor())return renderTeacherExams();
-const cl=currentProfile.classeId;
+const cl=currentProfile.classeId||(currentProfile.classIds||[])[0];
+if(!cl){$("pageContent").innerHTML='<div class="card"><h3>Examens</h3><div class="notice">Votre compte n’est pas encore associé à une classe. Contactez l’administrateur.</div></div>';return}
 const snap=await getDocs(query(collection(db,"examens"),where("classeId","==",cl))),exams=snap.docs.map(d=>({id:d.id,...d.data()}));
-$("pageContent").innerHTML=`<div class="card"><h3>Mes examens</h3><div class="table-wrap"><table><thead><tr><th>Examen</th><th>Action</th></tr></thead><tbody>${exams.map(e=>`<tr><td>${esc(e.titre)}</td><td>${available(e)?`<button class="btn primary">Commencer</button>`:"Hors période"}</td></tr>`).join("")||'<tr><td colspan="2">Aucun examen.</td></tr>'}</tbody></table></div></div>`;
+let attempts=[];try{attempts=(await getDocs(query(collection(db,"tentatives_examens"),where("etudiantId","==",currentUser.uid)))).docs.map(d=>({id:d.id,...d.data()}))}catch(e){console.warn(e)}
+$("pageContent").innerHTML=`<div class="card"><h3>Mes examens</h3><p class="muted">Le chronomètre commence lorsque vous démarrez l'examen.</p><div class="table-wrap"><table><thead><tr><th>Examen</th><th>Durée</th><th>Résultat</th><th>Action</th></tr></thead><tbody>${exams.map(e=>{const a=attempts.find(x=>x.examenId===e.id&&x.statut==="termine"),ongoing=attempts.find(x=>x.examenId===e.id&&x.statut==="en_cours");return`<tr><td><b>${esc(e.titre)}</b><div>${esc(e.description||"")}</div></td><td>${Number(e.dureeMinutes||30)} min</td><td>${a?`${Number(a.noteObtenue||0)} / ${Number(a.noteMax||e.noteMax||0)}`:ongoing?"En cours":"Non commencé"}</td><td>${a?"Terminé":available(e)?`<button class="btn primary" data-start="${esc(e.id)}">${ongoing?"Reprendre":"Commencer"}</button>`:"Hors période"}</td></tr>`}).join("")||'<tr><td colspan="4">Aucun examen pour votre classe.</td></tr>'}</tbody></table></div></div>`;
+$("pageContent").querySelectorAll("[data-start]").forEach(b=>b.onclick=()=>startExam(exams.find(e=>e.id===b.dataset.start),attempts.find(a=>a.examenId===b.dataset.start&&a.statut==="en_cours")))
 }
 
 async function renderTeacherExams(){
-const snap=await getDocs(collection(db,"examens"));
+const snap=isAdmin()?await getDocs(collection(db,"examens")):await getDocs(query(collection(db,"examens"),where("professeurId","==",currentUser.uid)));
 const exams=snap.docs.map(d=>({id:d.id,...d.data()}));
-$("pageContent").innerHTML=`<div class="card"><h3>Gestion des examens</h3><button id="createExam" class="btn primary">Créer</button></div>`;
-$("createExam").onclick=()=>recordForm(modules.find(x=>x.id==="examens"),null);
+$("pageContent").innerHTML=`<div class="card"><div class="page-head"><div><h3>Gestion des examens</h3><p class="muted">QCU, questions ouvertes ou examen mélangé.</p></div><button id="createExam" class="btn primary">＋ Créer un examen</button></div><div class="notice">Ajoutez vos questions à l'aide du formulaire. Choisissez QCU pour des propositions avec une bonne réponse, ou question ouverte pour une réponse écrite. Les QCU sont corrigés automatiquement ; les questions ouvertes sont corrigées par le professeur.</div><div class="table-wrap"><table><thead><tr><th>Examen</th><th>Classe</th><th>Durée</th><th>Questions</th><th>Actions</th></tr></thead><tbody>${exams.map(e=>`<tr><td>${esc(e.titre)}</td><td>${esc(nomClasseLisible(e.classeId))}</td><td>${Number(e.dureeMinutes||30)} min</td><td>${parseQuestions(e).length}</td><td><div class="actions"><button class="btn secondary" data-edit-exam="${esc(e.id)}">Modifier</button><button class="btn primary" data-attempts="${esc(e.id)}">Tentatives</button><button class="btn danger" data-delete-exam="${esc(e.id)}">Supprimer</button></div></td></tr>`).join("")||'<tr><td colspan="5">Aucun examen créé.</td></tr>'}</tbody></table></div><div id="recordFormArea"></div><div id="examExtra"></div></div>`;
+$("createExam").onclick=()=>{const m=modules.find(x=>x.id==="examens");if(!m)return toast("Le module examens est introuvable.",true);recordForm(m,null)};
+$("pageContent").querySelectorAll("[data-edit-exam]").forEach(b=>b.onclick=()=>{const e=exams.find(x=>x.id===b.dataset.editExam);recordForm(modules.find(m=>m.id==="examens"),e)});
+$("pageContent").querySelectorAll("[data-delete-exam]").forEach(b=>b.onclick=async()=>{if(confirm("Supprimer cet examen ?"))try{await deleteDoc(doc(db,"examens",b.dataset.deleteExam));toast("Examen supprimé.");await renderExams()}catch(e){toast(friendly(e),true)}});
+$("pageContent").querySelectorAll("[data-attempts]").forEach(b=>b.onclick=()=>showAttempts(exams.find(x=>x.id===b.dataset.attempts)))
 }
 
-// Notes de cours avec sélection multiple de photos
+async function showAttempts(exam){
+const area=$("examExtra");area.innerHTML='<div class="card">Chargement des tentatives…</div>';
+try{
+const snap=await getDocs(query(collection(db,"tentatives_examens"),where("examenId","==",exam.id))),rows=snap.docs.map(d=>({id:d.id,...d.data()}));
+area.innerHTML=`<div class="card"><h3>Tentatives — ${esc(exam.titre)}</h3><div class="table-wrap"><table><thead><tr><th>Élève</th><th>Note</th><th>Statut</th><th>Action</th></tr></thead><tbody>${rows.map(a=>`<tr><td>${esc(nomUtilisateurLisible(a.etudiantId)||a.etudiantEmail)}</td><td>${Number(a.noteObtenue||0)} / ${Number(a.noteMax||exam.noteMax||0)}</td><td>${esc(a.statut)}</td><td>${a.statut==="termine"&&a.correctionManuelle?`<button class="btn primary" data-grade="${esc(a.id)}">Corriger</button>`:"—"}</td></tr>`).join("")||'<tr><td colspan="4">Aucune tentative.</td></tr>'}</tbody></table></div><div id="gradeArea"></div></div>`;
+area.querySelectorAll("[data-grade]").forEach(b=>b.onclick=()=>gradeAttempt(rows.find(a=>a.id===b.dataset.grade),exam))
+}catch(e){area.innerHTML=`<div class="notice">${esc(friendly(e))}</div>`}
+}
+
+async function gradeAttempt(a,exam){
+const qs=parseQuestions(exam),answers=a.reponses||{},indices=qs.map((q,i)=>q.type==="ecrit"?i:-1).filter(i=>i>=0),area=$("gradeArea");
+area.innerHTML=`<h3>Correction des questions ouvertes</h3><form id="gradeForm">${indices.map(i=>`<div class="exam-question"><h4>${esc(qs[i].question)}</h4><p><b>Réponse :</b><br>${esc(answers[i]||"Aucune réponse")}</p><label>Note (maximum ${Number(qs[i].points)||1})</label><input type="number" name="g${i}" min="0" max="${Number(qs[i].points)||1}" step="0.5" value="${Number((a.notesEcrites||{})[i]||0)}" required></div>`).join("")}<div class="field"><label>Commentaire</label><textarea name="commentaire">${esc(a.commentaire||"")}</textarea></div><button class="btn primary">Enregistrer la correction</button></form>`;
+$("gradeForm").onsubmit=async e=>{e.preventDefault();const fd=new FormData(e.currentTarget),notes={};let score=0;for(const i of indices){const n=Number(fd.get("g"+i));if(n<0||n>Number(qs[i].points))return toast("Note supérieure au maximum.",true);notes[i]=n;score+=n}
+try{const noteQCM=Number(a.noteQCM||0),noteObtenue=noteQCM+score,max=qs.reduce((s,q)=>s+Number(q.points||1),0);await updateDoc(doc(db,"tentatives_examens",a.id),{notesEcrites:notes,noteEcrite:score,noteObtenue,noteMax:max,commentaire:String(fd.get("commentaire")||""),correctionManuelle:false,corrigePar:currentUser.uid,dateCorrection:stamp(),updatedAt:stamp()});toast("Correction enregistrée.");await showAttempts(exam)}catch(err){toast(friendly(err),true)}
+}
+}
+
+async function startExam(exam,existing){
+if(!exam||!available(exam))return toast("Cet examen n'est pas disponible actuellement.",true);
+const qs=parseQuestions(exam);if(!qs.length)return toast("Cet examen ne contient aucune question valide.",true);
+let attempt=existing;
+if(!attempt){
+if(!confirm(`Commencer « ${exam.titre} » ? Durée : ${Number(exam.dureeMinutes||30)} minutes.`))return;
+const start=Date.now(),duration=Math.max(1,Number(exam.dureeMinutes||30))*60000,data={examenId:exam.id,titre:exam.titre||"",etudiantId:currentUser.uid,etudiantEmail:currentUser.email||"",classeId:exam.classeId||"",professeurUid:exam.professeurUid||"",debutMs:start,finMs:start+duration,dureeMinutes:Number(exam.dureeMinutes||30),statut:"en_cours",reponses:{},createdAt:stamp(),updatedAt:stamp()};
+try{const ref=await addDoc(collection(db,"tentatives_examens"),data);attempt={id:ref.id,...data}}catch(e){return toast(friendly(e),true)}
+}
+activeExam=exam;activeAttempt=attempt;answerCache={...(attempt.reponses||{})};renderExamAttempt()
+}
+
+function renderExamAttempt(){
+stopTimer();const exam=activeExam,a=activeAttempt,qs=parseQuestions(exam);if(!exam||!a)return;
+$("pageTitle").textContent=exam.titre||"Examen";
+$("pageContent").innerHTML=`<div class="card"><div class="page-head"><div><h3>${esc(exam.titre)}</h3><p>${esc(exam.description||"Lisez les questions attentivement.")}</p></div><button class="btn secondary" id="leaveExam">Quitter l'écran</button></div><div id="examTimer" class="timer">--:--</div><div class="notice">Vos réponses sont enregistrées régulièrement. À la fin du temps, l'examen est remis automatiquement.</div><form id="answerForm">${qs.map((q,i)=>`<div class="exam-question"><h4>Question ${i+1} — ${Number(q.points)||1} point(s)</h4><p>${esc(q.question)}</p>${q.type==="qcm"?(q.options||[]).map(o=>`<label class="exam-option"><input type="radio" name="q${i}" value="${esc(o)}" ${String(answerCache[i]??"")===String(o)?"checked":""}><span>${esc(o)}</span></label>`).join(""):`<textarea name="q${i}" placeholder="Votre réponse…">${esc(answerCache[i]||"")}</textarea>`}</div>`).join("")}<button id="submitExam" class="btn primary block">Remettre mon examen</button></form></div>`;
+$("leaveExam").onclick=async()=>{if(confirm("Quitter ? Le chronomètre continuera.")){await saveAnswers(false);stopTimer();activeExam=null;activeAttempt=null;await openPage("examens")}};
+const form=$("answerForm");form.addEventListener("input",()=>saveAnswers(false));form.addEventListener("change",()=>saveAnswers(false));
+form.onsubmit=async e=>{e.preventDefault();if(confirm("Remettre définitivement l'examen ?"))await submitExam(false)};
+updateTimer();timerInterval=setInterval(updateTimer,1000)
+}
+
+function collectAnswers(){
+const form=$("answerForm");if(!form)return answerCache;
+const fd=new FormData(form),out={};parseQuestions(activeExam).forEach((q,i)=>{const v=fd.get("q"+i);if(v!==null&&String(v).trim())out[i]=String(v).trim()});return out
+}
+function saveAnswers(showError){
+if(!activeAttempt||!$("answerForm"))return Promise.resolve();
+answerCache=collectAnswers();const answers={...answerCache},id=activeAttempt.id;
+saveQueue=saveQueue.then(()=>updateDoc(doc(db,"tentatives_examens",id),{reponses:answers,updatedAt:stamp()})).catch(e=>{console.error(e);if(showError)toast("Erreur de sauvegarde : "+friendly(e),true)});
+return saveQueue
+}
+function updateTimer(){
+if(!activeAttempt||!$("examTimer"))return;
+const left=Number(activeAttempt.finMs)-Date.now();$("examTimer").textContent="⏱ Temps restant : "+fmtTime(left);$("examTimer").classList.toggle("warning",left<=60000);
+if(left<=0){stopTimer();submitExam(true)}
+}
+async function submitExam(auto){
+if(!activeExam||!activeAttempt)return;
+const exam=activeExam,a=activeAttempt,qs=parseQuestions(exam);if($("answerForm"))answerCache=collectAnswers();const answers={...answerCache};stopTimer();if($("submitExam"))$("submitExam").disabled=true;
+try{
+await saveQueue;let score=0,notesQCM={},maxQCM=0;
+qs.forEach((q,i)=>{if(q.type!=="qcm")return;const pts=Number(q.points)||1;maxQCM+=pts;const good=String(q.correctAnswer??"").trim().toLowerCase(),given=String(answers[i]??"").trim().toLowerCase();notesQCM[i]=given&&given===good?pts:0;score+=notesQCM[i]});
+const hasWritten=qs.some((q,i)=>q.type==="ecrit"&&String(answers[i]||"").trim());
+const max=qs.reduce((s,q)=>s+(Number(q.points)||1),0);
+await updateDoc(doc(db,"tentatives_examens",a.id),{reponses:answers,notesQCM,noteQCM:score,noteEcrite:0,noteObtenue:score,noteMax:max,correctionManuelle:hasWritten,statut:"termine",remisAutomatiquement:!!auto,dateRemise:stamp(),updatedAt:stamp()});
+activeExam=null;activeAttempt=null;answerCache={};
+$("pageContent").innerHTML=`<div class="card"><h3>Examen remis avec succès</h3><div class="notice">${auto?"Le temps est écoulé. Votre examen a été remis automatiquement.":"Votre examen a été remis."}</div><h2>Note QCU : ${score} / ${maxQCM}</h2><p>${hasWritten?"Les réponses écrites attendent la correction du professeur.":"Les questions ont été corrigées automatiquement."}</p><button class="btn primary" id="backExams">Retour aux examens</button></div>`;
+$("backExams").onclick=()=>openPage("examens")
+}catch(e){console.error(e);if($("submitExam"))$("submitExam").disabled=false;toast("La remise a échoué : "+friendly(e),true)}
+}
+
+/* Notes de cours : texte et photo */
 async function compressPhoto(file){
-if(!file||!file.type.startsWith("image/"))throw Error("Image invalide.");
+if(!file||!file.type.startsWith("image/"))throw Error("Choisissez une image valide.");
+if(file.size>12*1024*1024)throw Error("Photo trop grande : choisissez une image de moins de 12 Mo.");
 const url=URL.createObjectURL(file);
 try{
-const img=new Image();await new Promise((res,rej)=>{img.onload=res;img.onerror=rej;img.src=url});
-const scale=Math.min(1,1000/Math.max(img.width,img.height)),c=document.createElement("canvas");c.width=img.width*scale;c.height=img.height*scale;c.getContext("2d").drawImage(img,0,0,c.width,c.height);
-return c.toDataURL("image/jpeg",0.7);
+const img=new Image();await new Promise((res,rej)=>{img.onload=res;img.onerror=()=>rej(Error("Image illisible"));img.src=url});
+const scale=Math.min(1,1000/Math.max(img.width,img.height)),c=document.createElement("canvas");c.width=Math.max(1,Math.round(img.width*scale));c.height=Math.max(1,Math.round(img.height*scale));c.getContext("2d").drawImage(img,0,0,c.width,c.height);
+for(const q of [.7,.55,.4,.3]){const d=c.toDataURL("image/jpeg",q);if(d.length<300000)return d}
+throw Error("Photo trop volumineuse après compression.")
 }finally{URL.revokeObjectURL(url)}
 }
 
 async function renderNotesCours(){
 const teacher=isAdmin()||isProfessor();let notes=[];
-notes=(await getDocs(collection(db,"notes_cours"))).docs.map(d=>({id:d.id,...d.data()}));
-
-$("pageContent").innerHTML=`<div class="card"><div class="page-head"><h3>Notes de cours</h3>${teacher?'<button id="newNote" class="btn primary">＋ Ajouter</button>':""}</div>${notes.map(n=>`<article class="course-note"><h3>${esc(n.titre)}</h3><div class="course-text" id="noteText${esc(n.id)}">${esc(n.contenu||"")}</div>${n.photoData?`<img src="${n.photoData}">`:""}<div class="actions"><button class="btn secondary" data-copy-note="${esc(n.id)}">Copier le texte</button></div></article>`).join("")||'<div class="notice">Aucune note.</div>'}</div>`;
+if(isAdmin())notes=(await getDocs(collection(db,"notes_cours"))).docs.map(d=>({id:d.id,...d.data()}));
+else if(teacher)notes=(await getDocs(query(collection(db,"notes_cours"),where("professeurUid","==",currentUser.uid)))).docs.map(d=>({id:d.id,...d.data()}));
+else{
+const cl=currentProfile.classeId||(currentProfile.classIds||[])[0];if(!cl){$("pageContent").innerHTML='<div class="card">Votre compte n’est pas encore associé à une classe. Contactez l’administrateur.</div>';return}
+notes=(await getDocs(query(collection(db,"notes_cours"),where("classeId","==",cl)))).docs.map(d=>({id:d.id,...d.data()}))
+}
+$("pageContent").innerHTML=`<div class="card"><div class="page-head"><div><h3>Notes de cours</h3><p class="muted">${teacher?"Publier du texte ou une photo de cours.":"Lire et copier les cours."}</p></div>${teacher?'<button id="newNote" class="btn primary">＋ Ajouter une note</button>':""}</div><div id="noteFormArea"></div>${notes.map(n=>`<article class="course-note"><h3>${esc(n.titre)}</h3><p class="muted">Classe : ${esc(nomClasseLisible(n.classeId))} · ${esc(n.matiereId||"")}</p><div class="course-text" id="noteText${esc(n.id)}">${esc(n.contenu||"")}</div>${n.photoData?`<img src="${n.photoData}" alt="Photo du cours">`:""}<div class="actions"><button class="btn secondary" data-copy-note="${esc(n.id)}">Copier le texte</button>${teacher&&(isAdmin()||n.professeurUid===currentUser.uid)?`<button class="btn secondary" data-edit-note="${esc(n.id)}">Modifier</button><button class="btn danger" data-del-note="${esc(n.id)}">Supprimer</button>`:""}</div></article>`).join("")||'<div class="notice">Aucune note de cours.</div>'}</div>`;
 if(teacher)$("newNote").onclick=()=>noteForm(null);
-$("pageContent").querySelectorAll("[data-copy-note]").forEach(b=>b.onclick=async()=>{const t=$("noteText"+b.dataset.copyNote)?.innerText||"";await navigator.clipboard.writeText(t);toast("Texte copié.")});
+$("pageContent").querySelectorAll("[data-copy-note]").forEach(b=>b.onclick=async()=>{const t=$("noteText"+b.dataset.copyNote)?.innerText||"";try{await navigator.clipboard.writeText(t);toast("Texte copié.")}catch{toast("Sélectionnez le texte puis choisissez Copier.",true)}});
+$("pageContent").querySelectorAll("[data-edit-note]").forEach(b=>b.onclick=()=>noteForm(notes.find(n=>n.id===b.dataset.editNote)));
+$("pageContent").querySelectorAll("[data-del-note]").forEach(b=>b.onclick=async()=>{if(confirm("Supprimer cette note ?"))try{await deleteDoc(doc(db,"notes_cours",b.dataset.delNote));await renderNotesCours();toast("Note supprimée.")}catch(e){toast(friendly(e),true)}})
+}
+async function noteForm(n){
+const area=$("noteFormArea");
+
+let classesDisponibles = [];
+let matieresDisponibles = [];
+try {
+  const [clsSnap, matSnap] = await Promise.all([
+    getDocs(collection(db, "classes")),
+    getDocs(collection(db, "matieres"))
+  ]);
+  classesDisponibles = clsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+  matieresDisponibles = matSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+  if (!isAdmin() && currentProfile?.role === "professeur") {
+    const affSnap = await getDocs(query(collection(db, "affectations"), where("professeurUid", "==", currentUser.uid)));
+    const classIds = affSnap.docs.map(d => d.data().classeId);
+    if (classIds.length > 0) {
+      classesDisponibles = classesDisponibles.filter(c => classIds.includes(c.id) || classIds.includes(c.code));
+    }
+  }
+} catch(e) {
+  console.warn("Erreur chargement données note cours", e);
 }
 
-async function noteForm(n){
-const area=$("recordFormArea")||$("pageContent");
-area.innerHTML=`<div class="card"><h3>Note de cours</h3><form id="noteForm"><div class="field"><label>Titre</label><input name="titre" required value="${esc(n?.titre||"")}"></div><div class="field"><label>Contenu</label><textarea name="contenu">${esc(n?.contenu||"")}</textarea></div><div class="field"><label>Photos (Sélection multiple possible)</label><input id="photosInput" type="file" accept="image/*" multiple></div><div class="actions"><button class="btn primary" type="submit">Enregistrer</button></div></form></div>`;
+area.innerHTML=`<div class="card">
+<h3>${n?"Modifier":"Nouvelle"} note de cours</h3>
+<form id="noteForm">
+<div class="field">
+<label>Titre *</label>
+<input name="titre" required value="${esc(n?.titre||"")}">
+</div>
+
+<div class="form-grid">
+<div class="field">
+<label>Classe *</label>
+<select name="classeId" required>
+<option value="">-- Chwazi klas --</option>
+${classesDisponibles.map(c=>`<option value="${esc(c.id)}" ${n?.classeId===c.id||n?.classeId===c.code?"selected":""}>${esc(c.nom||c.code||c.id)}</option>`)}
+</select>
+</div>
+<div class="field">
+<label>Matière</label>
+<select name="matiereId">
+<option value="">-- Chwazi matyè --</option>
+${matieresDisponibles.map(mat=>`<option value="${esc(mat.id)}" ${n?.matiereId===mat.id||n?.matiereId===mat.code?"selected":""}>${esc(mat.nom||mat.code||mat.id)}</option>`)}
+</select>
+</div>
+</div>
+
+<div class="field">
+<label>Texte du cours</label>
+<textarea name="contenu" maxlength="12000">${esc(n?.contenu||"")}</textarea>
+</div>
+
+<div class="field">
+<label>Photo de page (facultatif)</label>
+
+<div class="actions">
+<button class="btn primary" id="capturePhotoBtn" type="button">📸 Capture écran / Prendre une photo</button>
+<button class="btn secondary" id="choosePhotoBtn" type="button">🖼️ Choisir une photo</button>
+</div>
+
+<input id="capturePhotoInput" type="file" accept="image/*" capture="environment" hidden>
+<input id="choosePhotoInput" type="file" accept="image/*" hidden>
+
+<div id="photoPreview">
+${n?.photoData?`<img src="${n.photoData}" style="max-width:100%;max-height:200px">`:""}
+</div>
+
+<label>
+<input id="removePhoto" type="checkbox" style="width:auto">
+Retirer la photo actuelle
+</label>
+</div>
+
+<div class="actions">
+<button class="btn primary" id="saveNote" type="submit">Enregistrer</button>
+<button class="btn secondary" id="cancelNote" type="button">Annuler</button>
+</div>
+</form>
+</div>`;
+
+let photo="";
+
+$("cancelNote").onclick=()=>area.innerHTML="";
+
+$("capturePhotoBtn").onclick=()=>$("capturePhotoInput").click();
+$("choosePhotoBtn").onclick=()=>$("choosePhotoInput").click();
+
+async function handlePhoto(input){
+const file=input.files?.[0];
+if(!file)return;
+try{
+photo=await compressPhoto(file);
+$("photoPreview").innerHTML=
+`<img src="${photo}" alt="Aperçu de la photo du cours" style="max-width:100%;max-height:200px">`;
+$("removePhoto").checked=false;
+}catch(e){
+photo="";
+toast(e.message||"Impossible de charger cette image.",true);
+}finally{
+input.value="";
+}
+}
+
+$("capturePhotoInput").onchange=async()=>handlePhoto($("capturePhotoInput"));
+$("choosePhotoInput").onchange=async()=>handlePhoto($("choosePhotoInput"));
+
+$("removePhoto").onchange=()=>{
+if($("removePhoto").checked){
+photo="";
+$("photoPreview").innerHTML="";
+}
+};
+
 $("noteForm").onsubmit=async e=>{
-  e.preventDefault();
-  const files=$("photosInput").files;
-  let photoData="";
-  if(files.length>0){ photoData=await compressPhoto(files[0]); }
-  await addDoc(collection(db,"notes_cours"),{titre:e.target.titre.value,contenu:e.target.contenu.value,photoData,createdAt:stamp()});
-  toast("Enregistré.");
-  await renderNotesCours();
+e.preventDefault();
+const btn=$("saveNote");
+btn.disabled=true;
+
+try{
+const fd=new FormData(e.currentTarget);
+const data={
+titre:String(fd.get("titre")||"").trim(),
+classeId:String(fd.get("classeId")||"").trim(),
+matiereId:String(fd.get("matiereId")||"").trim(),
+contenu:String(fd.get("contenu")||"").trim(),
+professeurUid:isAdmin()?(n?.professeurUid||currentUser.uid):currentUser.uid,
+updatedAt:stamp()
+};
+
+if(!data.titre||!data.classeId)
+throw Error("Le titre et la classe sont obligatoires.");
+
+if($("removePhoto").checked)data.photoData="";
+else if(photo)data.photoData=photo;
+else if(n?.photoData)data.photoData=n.photoData;
+
+if(!data.contenu&&!data.photoData)
+throw Error("Ajoutez le texte ou une photo.");
+
+if(n){
+await updateDoc(doc(db,"notes_cours",n.id),data);
+}else{
+data.createdAt=stamp();
+await addDoc(collection(db,"notes_cours"),data);
+}
+
+toast("Note enregistrée.");
+await renderNotesCours();
+
+}catch(err){
+toast(friendly(err),true);
+}finally{
+btn.disabled=false;
+}
 };
 }
 
-// BULLETIN SCOLAIRE
+/* BULLETIN SCOLAIRE — consultation, préparation et publication admin */
 async function renderBulletin(){
-  if(isAdmin()||isProfessor()){
-    $("pageContent").innerHTML=`<div class="card"><h3>Gestion des bulletins</h3><div class="notice">Espace de publication des bulletins.</div></div>`;
+  const isAdm = isAdmin();
+  const isProf = isProfessor();
+  const isStd = ["eleve","etudiant"].includes(currentProfile?.role);
+
+  if(!isAdm && !isProf && !isStd){
+    $("pageContent").innerHTML=`
+      <div class="card">
+        <h3>Bulletin scolaire</h3>
+        <div class="notice">Accès non autorisé.</div>
+      </div>`;
     return;
   }
-  const snap=await getDocs(query(collection(db,"bulletins"),where("etudiantId","==",currentUser.uid),where("publie","==",true)));
-  const rows=snap.docs.map(d=>d.data());
-  $("pageContent").innerHTML=`<div class="card"><h3>Mon bulletin</h3>${rows.map(b=>`<p>Moyenne : <b>${b.moyenne}/20</b></p>`).join("")||'<div class="notice">Aucun bulletin disponible.</div>'}</div>`;
+
+  if(isAdm || isProf){
+    $("pageContent").innerHTML=`
+      <div class="card">
+        <div class="page-head">
+          <div>
+            <h3>🎓 Gestion des bulletins scolaires</h3>
+            <p class="muted">Préparez et publiez les bulletins pour les élèves.</p>
+          </div>
+          <button id="newBulletinBtn" class="btn primary">＋ Préparer un bulletin</button>
+        </div>
+        <div id="bulletinFormArea"></div>
+        <div id="bulletinsListContainer">Chargement des bulletins…</div>
+      </div>`;
+
+    await loadTeacherAdminBulletins();
+    return;
+  }
+
+  // Espace Élève / Étudiant
+  $("pageContent").innerHTML=`
+    <div class="card">
+      <h3>🎓 Mon bulletin scolaire</h3>
+      <p class="muted">Chargement de vos bulletins publiés…</p>
+    </div>`;
+
+  try{
+    const snap=await getDocs(query(
+      collection(db,"bulletins"),
+      where("etudiantId","==",currentUser.uid),
+      where("publie","==",true)
+    ));
+
+    const rows=snap.docs.map(d=>({id:d.id,...d.data()}));
+
+    if(rows.length===0){
+      $("pageContent").innerHTML=`
+        <div class="card">
+          <h3>🎓 Mon bulletin scolaire</h3>
+          <div class="notice">Aucun bulletin publié n'est disponible pour le moment.</div>
+        </div>`;
+      return;
+    }
+
+    const bulletin=rows[0];
+    const studentName=[currentProfile.prenom||"", currentProfile.nom||""].filter(Boolean).join(" ")||currentUser.email;
+
+    $("pageContent").innerHTML=`
+      <div class="card">
+        <div class="page-head">
+          <div>
+            <h3>🎓 Mon bulletin scolaire (${esc(bulletin.periode||"Trimestre")})</h3>
+            <p class="muted">Classe : ${esc(nomClasseLisible(bulletin.classeId))}</p>
+          </div>
+          <button id="printBulletinBtn" class="btn primary">📄 Imprimer / PDF</button>
+        </div>
+
+        <div id="printArea">
+          <div class="notice">
+            <b>Centre de Formation Le Pédagogue</b><br>
+            Bulletin officiel — ${esc(bulletin.anneeAcademique||"2026")}
+          </div>
+          <p><b>Élève :</b> ${esc(studentName)}</p>
+          <p><b>Moyenne générale :</b> <strong>${esc(bulletin.moyenne||"—")} / 20</strong></p>
+          <p><b>Appréciation générale :</b> ${esc(bulletin.appreciation||"—")}</p>
+          
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Matière</th><th>Note /20</th><th>Coefficient</th><th>Appréciation</th></tr>
+              </thead>
+              <tbody>
+                ${(bulletin.matieres||[]).map(m=>`
+                  <tr>
+                    <td>${esc(m.nom)}</td>
+                    <td>${esc(m.note)} / 20</td>
+                    <td>${esc(m.coefficient||1)}</td>
+                    <td>${esc(m.appreciation||"—")}</td>
+                  </tr>
+                `).join("")||'<tr><td colspan="4">Aucune note détaillée.</td></tr>'}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>`;
+
+    $("printBulletinBtn").onclick=()=>{
+      const w=window.open("","_blank");
+      if(!w)return toast("Autorisez les fenêtres pop-up.",true);
+      w.document.write(`<!DOCTYPE html><html><head><title>Bulletin</title><style>body{font-family:Arial;padding:20px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccc;padding:8px;text-align:left}</style></head><body>${$("printArea").innerHTML}<script>window.onload=()=>window.print()<\/script></body></html>`);
+      w.document.close();
+    };
+
+  }catch(e){
+    $("pageContent").innerHTML=`<div class="card"><h3>Erreur</h3><div class="message error">${esc(friendly(e))}</div></div>`;
+  }
 }
 
-// HORAIRES
+async function loadTeacherAdminBulletins(){
+  try{
+    const snap = await getDocs(collection(db,"bulletins"));
+    const bulletins = snap.docs.map(d=>({id:d.id,...d.data()}));
+
+    const container = $("bulletinsListContainer");
+    if(!container) return;
+
+    container.innerHTML=`
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Élève / Nom</th>
+              <th>Classe</th>
+              <th>Période</th>
+              <th>Moyenne</th>
+              <th>Statut publication</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${bulletins.map(b=>`
+              <tr>
+                <td>${esc(nomUtilisateurLisible(b.etudiantId)||b.etudiantEmail)}</td>
+                <td>${esc(nomClasseLisible(b.classeId))}</td>
+                <td>${esc(b.periode||"—")}</td>
+                <td><b>${esc(b.moyenne||"—")} / 20</b></td>
+                <td>${b.publie?'<span class="badge">Publié</span>':'<span class="badge wait">Préparé (Non publié)</span>'}</td>
+                <td>
+                  <div class="actions">
+                    <button class="btn secondary" data-edit-bulletin="${esc(b.id)}">Modifier</button>
+                    ${isAdmin()?`<button class="btn ${b.publie?'danger':'success'}" data-toggle-pub="${esc(b.id)}" data-current-pub="${!!b.publie}">${b.publie?'Retirer':'Publier'}</button>`:""}
+                    <button class="btn danger" data-del-bulletin="${esc(b.id)}">Supprimer</button>
+                  </div>
+                </td>
+              </tr>
+            `).join("")||'<tr><td colspan="6">Aucun bulletin préparé.</td></tr>'}
+          </tbody>
+        </table>
+      </div>`;
+
+    if($("newBulletinBtn")){
+      $("newBulletinBtn").onclick=()=>openBulletinForm(null);
+    }
+
+    container.querySelectorAll("[data-edit-bulletin]").forEach(b=>{
+      b.onclick=()=>openBulletinForm(bulletins.find(x=>x.id===b.dataset.editBulletin));
+    });
+
+    container.querySelectorAll("[data-del-bulletin]").forEach(b=>{
+      b.onclick=async()=>{
+        if(confirm("Supprimer ce bulletin ?")){
+          try{
+            await deleteDoc(doc(db,"bulletins",b.dataset.delBulletin));
+            toast("Bulletin supprimé.");
+            await loadTeacherAdminBulletins();
+          }catch(e){toast(friendly(e),true)}
+        }
+      };
+    });
+
+    container.querySelectorAll("[data-toggle-pub]").forEach(b=>{
+      b.onclick=async()=>{
+        const id=b.dataset.togglePub;
+        const currentPub=b.dataset.currentPub==="true";
+        try{
+          await updateDoc(doc(db,"bulletins",id),{publie:!currentPub, updatedAt:stamp()});
+          toast(!currentPub?"Bulletin publié avec succès.":"Publication retirée.");
+          await loadTeacherAdminBulletins();
+        }catch(e){toast(friendly(e),true)}
+      };
+    });
+
+  }catch(e){
+    $("bulletinsListContainer").innerHTML=`<div class="notice">Erreur de chargement des bulletins : ${esc(friendly(e))}</div>`;
+  }
+}
+
+async function openBulletinForm(b){
+  const area=$("bulletinFormArea");
+  if(!area) return;
+
+  let students=[];
+  try{
+    const us=await getDocs(collection(db,"users"));
+    students=us.docs.map(d=>({id:d.id,...d.data()})).filter(u=>["eleve","etudiant"].includes(u.role));
+  }catch(e){}
+
+  area.innerHTML=`
+    <div class="card" style="border:2px solid var(--bd)">
+      <h3>${b?"Modifier":"Préparer"} un bulletin scolaire</h3>
+      <form id="bulletinForm">
+        <div class="form-grid">
+          <div class="field">
+            <label>Élève ou Étudiant *</label>
+            <select name="etudiantId" required>
+              <option value="">Sélectionner un élève</option>
+              ${students.map(s=>`<option value="${esc(s.id)}" ${b?.etudiantId===s.id?"selected":""}>${esc([s.nom,s.prenom].filter(Boolean).join(" ")||(s.email||s.id))}</option>`)}
+            </select>
+          </div>
+          <div class="field">
+            <label>Classe *</label>
+            <input name="classeId" value="${esc(b?.classeId||"")}" required placeholder="Ex. NS4">
+          </div>
+          <div class="field">
+            <label>Période / Trimestre *</label>
+            <input name="periode" value="${esc(b?.periode||"1er Trimestre")}" required>
+          </div>
+          <div class="field">
+            <label>Moyenne générale (/20) *</label>
+            <input name="moyenne" type="number" step="0.01" max="20" min="0" value="${esc(b?.moyenne||"")}" required>
+          </div>
+          <div class="field full">
+            <label>Appréciation générale</label>
+            <textarea name="appreciation">${esc(b?.appreciation||"")}</textarea>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn primary" type="submit">Enregistrer</button>
+          <button class="btn secondary" id="cancelBulletinForm" type="button">Annuler</button>
+        </div>
+      </form>
+    </div>`;
+
+  $("cancelBulletinForm").onclick=()=>area.innerHTML="";
+  $("bulletinForm").onsubmit=async e=>{
+    e.preventDefault();
+    const fd=new FormData(e.currentTarget);
+    const etudiantId=String(fd.get("etudiantId")||"").trim();
+    const st=students.find(x=>x.id===etudiantId);
+
+    const data={
+      etudiantId,
+      etudiantEmail:st?.email||"",
+      classeId:String(fd.get("classeId")||"").trim(),
+      periode:String(fd.get("periode")||"").trim(),
+      moyenne:Number(fd.get("moyenne")||0),
+      appreciation:String(fd.get("appreciation")||"").trim(),
+      publie: b?!!b.publie:false,
+      updatedAt:stamp()
+    };
+
+    try{
+      if(b){
+        await updateDoc(doc(db,"bulletins",b.id),data);
+      }else{
+        data.createdAt=stamp();
+        await addDoc(collection(db,"bulletins"),data);
+      }
+      toast("Bulletin enregistré.");
+      area.innerHTML="";
+      await loadTeacherAdminBulletins();
+    }catch(err){
+      toast(friendly(err),true);
+    }
+  };
+}
+
+/* =====================================================
+   HORAIRES CFLP : COURS ET EXAMENS
+   ===================================================== */
+
+window.cflpScheduleState = window.cflpScheduleState || {};
+window.cflpScheduleCache = window.cflpScheduleCache || {};
+
+function scheduleLabelDate(value){
+  if(!value)return "—";
+  const d=new Date(value+"T12:00:00");
+  return Number.isNaN(d.getTime())
+    ? value
+    : d.toLocaleDateString("fr-FR",{
+        weekday:"long",
+        day:"2-digit",
+        month:"long",
+        year:"numeric"
+      });
+}
+
+function scheduleTimeRange(r){
+  return `${esc(r.heureDebut||"—")} – ${esc(r.heureFin||"—")}`;
+}
+
+function scheduleClassName(id){
+  return nomClasseLisible(id);
+}
+
+function scheduleSubjectName(id){
+  const subjects=window.cflpScheduleCache.matieres||[];
+  const m=subjects.find(x=>x.id===id||x.code===id);
+  return m ? (m.nom||m.titre||m.code||m.id) : (id||"Non définie");
+}
+
+function scheduleTeacherName(id){
+  return nomUtilisateurLisible(id);
+}
+
+function scheduleCanManage(page,r){
+  if(page==="horaire_cours"){
+    return isAdmin();
+  }
+
+  if(page==="horaire_examens"){
+    return isAdmin();
+  }
+
+  return false;
+}
+
 async function renderSchedule(page){
-  $("pageContent").innerHTML=`<div class="card"><h3>Horaires</h3><div class="notice">Gestion des horaires active.</div></div>`;
+  const isCourse=page==="horaire_cours";
+  const collectionName=isCourse?"horaires_cours":"horaires_examens";
+  const title=isCourse?"Horaire des cours":"Horaire des examens";
+
+  try {
+  const [classSnap, subjectSnap] = await Promise.all([
+    getDocs(collection(db, "classes")),
+    getDocs(collection(db, "matieres"))
+  ]);
+
+  const classes = classSnap.docs.map(d => ({
+    id: d.id,
+    ...d.data()
+  }));
+
+  let scheduleDocs = [];
+
+  if (isStudent()) {
+    const profileClassIds = [
+      currentProfile?.classeId,
+      ...(Array.isArray(currentProfile?.classIds)
+        ? currentProfile.classIds
+        : [])
+    ].filter(
+      id => typeof id === "string" && id.trim() !== ""
+    );
+
+    const uniqueClassIds = [...new Set(profileClassIds)];
+
+    if (uniqueClassIds.length > 0) {
+      const snapshots = await Promise.all(
+        uniqueClassIds.map(classId =>
+          getDocs(
+            query(
+              collection(db, collectionName),
+              where("classeId", "==", classId)
+            )
+          )
+        )
+      );
+
+      const uniqueDocs = new Map();
+
+      snapshots.forEach(snap => {
+        snap.docs.forEach(docSnap => {
+          uniqueDocs.set(docSnap.id, docSnap);
+        });
+      });
+
+      scheduleDocs = [...uniqueDocs.values()];
+    }
+  } else {
+    const scheduleSnap = await getDocs(
+      collection(db, collectionName)
+    );
+    scheduleDocs = scheduleSnap.docs;
+  }
+
+  let teachers = [];
+
+  if (isAdmin() || isProfessor()) {
+    try {
+      const teacherSnap = await getDocs(collection(db, "users"));
+
+      teachers = teacherSnap.docs
+        .map(d => ({ id: d.id, ...d.data() }))
+        .filter(u => u.role === "professeur");
+    } catch (e) {
+      console.warn(
+        "Liste des professeurs indisponible :",
+        e
+      );
+    }
+  }
+
+  window.cflpScheduleCache[page] = {
+    records: scheduleDocs.map(d => ({
+      id: d.id,
+      ...d.data()
+    })),
+    classes,
+    matieres: subjectSnap.docs.map(d => ({
+      id: d.id,
+      ...d.data()
+    })),
+    teachers
+  };
+
+  if (!window.cflpScheduleState[page]) {
+    window.cflpScheduleState[page] = {
+      view: "table",
+      month: new Date().getMonth(),
+      year: new Date().getFullYear()
+    };
+  }
+
+  drawSchedulePage(page);
+} catch (e) {
+  console.error("Erreur de chargement des horaires :", e);
+
+  $("pageContent").innerHTML = `
+    <div class="card">
+      <h3>${esc(title)}</h3>
+      <div class="notice">
+        <p>Impossible de charger les horaires.</p>
+        <p><strong>Erreur exacte :</strong></p>
+        <pre style="white-space:pre-wrap;overflow-wrap:anywhere;">${esc(e?.message || String(e))}</pre>
+      </div>
+    </div>
+  `;
+}
 }
 
-// GESTION UTILISATEURS
+function drawSchedulePage(page){
+  const isCourse=page==="horaire_cours";
+  const title=isCourse?"Horaire des cours":"Horaire des examens";
+  const state=window.cflpScheduleState[page];
+  const cache=window.cflpScheduleCache[page];
+  if(!cache)return;
+
+  let records=[...cache.records];
+
+  if(isStudent()){
+    const allowed=new Set([
+      currentProfile.classeId,
+      ...(Array.isArray(currentProfile.classIds)?currentProfile.classIds:[])
+    ].filter(Boolean));
+
+    cache.classes.forEach(c=>{
+      if(allowed.has(c.id)||allowed.has(c.code)){
+        allowed.add(c.id);
+        if(c.code)allowed.add(c.code);
+      }
+    });
+
+    records=records.filter(r=>allowed.has(r.classeId));
+  }
+
+  records.sort((a,b)=>
+    String(a.date||"").localeCompare(String(b.date||""))||
+    String(a.heureDebut||"").localeCompare(String(b.heureDebut||""))
+  );
+
+  const canCreate = isAdmin();
+  $("pageContent").innerHTML=`
+    <div class="card">
+      <div class="page-head">
+        <div>
+          <h3>${isCourse?"🗓️":"📝"} ${esc(title)}</h3>
+          <p class="muted">
+            ${records.length} horaire(s) disponible(s)
+          </p>
+        </div>
+        ${canCreate?`
+          <button class="btn primary" id="scheduleAdd">
+            ＋ Ajouter un horaire
+          </button>`:""}
+      </div>
+
+      <div class="actions" style="margin-bottom:14px">
+        <button class="btn ${state.view==="table"?"primary":"secondary"}"
+          id="scheduleTableView">
+          Tableau par jour
+        </button>
+        <button class="btn ${state.view==="calendar"?"primary":"secondary"}"
+          id="scheduleCalendarView">
+          Calendrier mensuel
+        </button>
+      </div>
+
+      <div id="scheduleFormArea"></div>
+      <div id="scheduleDisplay"></div>
+    </div>`;
+
+  if($("scheduleAdd")){
+    $("scheduleAdd").onclick=()=>scheduleOpenForm(page,null);
+  }
+
+  $("scheduleTableView").onclick=()=>{
+    state.view="table";
+    drawSchedulePage(page);
+  };
+
+  $("scheduleCalendarView").onclick=()=>{
+    state.view="calendar";
+    drawSchedulePage(page);
+  };
+
+  const display=$("scheduleDisplay");
+
+  if(state.view==="table"){
+    display.innerHTML=`
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Jour / Date</th>
+              <th>Heure</th>
+              <th>Titre / Matière</th>
+              <th>Classe</th>
+              <th>Professeur</th>
+              <th>Salle</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${records.map(r=>`
+              <tr>
+                <td>${esc(scheduleLabelDate(r.date))}</td>
+                <td>${scheduleTimeRange(r)}</td>
+                <td>
+                  <b>${esc(r.titre||scheduleSubjectName(r.matiereId))}</b>
+                  <div class="muted">${esc(scheduleSubjectName(r.matiereId))}</div>
+                </td>
+                <td>${esc(scheduleClassName(r.classeId))}</td>
+                <td>${esc(scheduleTeacherName(r.professeurUid))}</td>
+                <td>${esc(r.salle||"—")}</td>
+                <td>
+                  <div class="actions">
+                    ${scheduleCanManage(page,r)?`
+                      <button class="btn secondary"
+                        data-schedule-edit="${esc(r.id)}">Modifier</button>
+                      <button class="btn danger"
+                        data-schedule-delete="${esc(r.id)}">Supprimer</button>
+                    `:"—"}
+                  </div>
+                </td>
+              </tr>
+            `).join("")||
+            '<tr><td colspan="7">Aucun horaire enregistré.</td></tr>'}
+          </tbody>
+        </table>
+      </div>`;
+  }else{
+    const first=new Date(state.year,state.month,1);
+    const last=new Date(state.year,state.month+1,0);
+    const monthName=first.toLocaleDateString("fr-FR",{
+      month:"long",year:"numeric"
+    });
+    const offset=(first.getDay()+6)%7;
+    const totalCells=Math.ceil((offset+last.getDate())/7)*7;
+
+    let calendar=`
+      <div class="page-head">
+        <button class="btn secondary" id="schedulePrevMonth">←</button>
+        <h3>${esc(monthName)}</h3>
+        <button class="btn secondary" id="scheduleNextMonth">→</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px">
+        ${["Lun","Mar","Mer","Jeu","Ven","Sam","Dim"].map(d=>`
+          <div style="text-align:center;font-weight:bold;padding:6px 1px;background:#edf3fc">
+            ${d}
+          </div>`).join("")}`;
+
+    for(let i=0;i<totalCells;i++){
+      const day=i-offset+1;
+      if(day<1||day>last.getDate()){
+        calendar+=`<div style="min-height:75px;border:1px solid var(--bd);border-radius:5px;background:#f8fafc"></div>`;
+        continue;
+      }
+
+      const dateKey=
+        `${state.year}-${String(state.month+1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
+
+      const dayRecords=records.filter(r=>r.date===dateKey);
+
+      calendar+=`
+        <div style="min-width:0;min-height:75px;padding:4px;border:1px solid var(--bd);border-radius:5px;background:white">
+          <b>${day}</b>
+          ${dayRecords.map(r=>`
+            <div style="margin-top:4px;padding:3px;background:#dbeafe;border-radius:4px;font-size:10px;overflow-wrap:anywhere">
+              <b>${esc(r.heureDebut||"")}</b>
+              <div>${esc(r.titre||scheduleSubjectName(r.matiereId))}</div>
+              <div>${esc(scheduleClassName(r.classeId))}</div>
+            </div>`).join("")}
+        </div>`;
+    }
+
+    calendar+="</div>";
+    display.innerHTML=calendar;
+
+    $("schedulePrevMonth").onclick=()=>{
+      state.month--;
+      if(state.month<0){state.month=11;state.year--}
+      drawSchedulePage(page);
+    };
+
+    $("scheduleNextMonth").onclick=()=>{
+      state.month++;
+      if(state.month>11){state.month=0;state.year++}
+      drawSchedulePage(page);
+    };
+  }
+
+  $("pageContent").querySelectorAll("[data-schedule-edit]").forEach(b=>{
+    b.onclick=()=>{
+      const record=cache.records.find(r=>r.id===b.dataset.scheduleEdit);
+      if(record)scheduleOpenForm(page,record);
+    };
+  });
+
+  $("pageContent").querySelectorAll("[data-schedule-delete]").forEach(b=>{
+    b.onclick=()=>scheduleDelete(page,b.dataset.scheduleDelete);
+  });
+}
+
+async function scheduleOpenForm(page,record){
+  const isCourse=page==="horaire_cours";
+
+  if(isCourse&&!isAdmin()){
+    return toast("La gestion des horaires de cours est réservée à l’administrateur.",true);
+  }
+
+  if(!isCourse&&!isAdmin()&&!isProfessor()){
+    return toast("Vous n’avez pas l’autorisation de gérer cet horaire.",true);
+  }
+
+  if(record&&!scheduleCanManage(page,record)){
+    return toast("Vous ne pouvez pas modifier cet horaire.",true);
+  }
+
+  const cache=window.cflpScheduleCache[page];
+  const area=$("scheduleFormArea");
+
+  const classOptions=cache.classes.map(c=>{
+    const value=c.code||c.id;
+    return `<option value="${esc(value)}"
+      ${record?.classeId===value||record?.classeId===c.id?"selected":""}>
+      ${esc(c.nom||c.code||c.id)}
+    </option>`;
+  }).join("");
+
+  const subjectOptions=cache.matieres.map(m=>{
+    const value=m.code||m.id;
+    return `<option value="${esc(value)}"
+      ${record?.matiereId===value||record?.matiereId===m.id?"selected":""}>
+      ${esc(m.nom||m.titre||m.code||m.id)}
+    </option>`;
+  }).join("");
+
+  const teacherOptions=cache.teachers.map(t=>{
+    const name=[t.nom,t.prenom].filter(Boolean).join(" ")||t.email||t.id;
+    return `<option value="${esc(t.id)}"
+      ${record?.professeurUid===t.id||(!record&&t.id===currentUser.uid)?"selected":""}>
+      ${esc(name)}
+    </option>`;
+  }).join("");
+
+  area.innerHTML=`
+    <div class="card" style="border:2px solid var(--bd)">
+      <h3>${record?"Modifier":"Créer"} — ${isCourse?"Horaire des cours":"Horaire des examens"}</h3>
+
+      <form id="scheduleForm">
+        <div class="form-grid">
+          <div class="field full">
+            <label>Titre du cours / examen *</label>
+            <input name="titre" maxlength="150"
+              value="${esc(record?.titre||"")}" required>
+          </div>
+
+          <div class="field">
+            <label>Classe *</label>
+            <select name="classeId" required>
+              <option value="">Choisir une classe</option>
+              ${classOptions}
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Matière</label>
+            <select name="matiereId">
+              <option value="">Choisir une matière</option>
+              ${subjectOptions}
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Professeur *</label>
+            <select name="professeurUid"
+              ${!isAdmin()?"disabled":""} required>
+              ${!isAdmin()?`
+                <option value="${esc(currentUser.uid)}" selected>
+                  ${esc(currentProfile?.nom||currentUser.email||"Mon compte")}
+                </option>`:`
+                <option value="">Choisir un professeur</option>
+                ${teacherOptions}`}
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Date *</label>
+            <input name="date" type="date"
+              value="${esc(record?.date||"")}" required>
+          </div>
+
+          <div class="field">
+            <label>Heure de début *</label>
+            <input name="heureDebut" type="time"
+              value="${esc(record?.heureDebut||"")}" required>
+          </div>
+
+          <div class="field">
+            <label>Heure de fin *</label>
+            <input name="heureFin" type="time"
+              value="${esc(record?.heureFin||"")}" required>
+          </div>
+
+          <div class="field">
+            <label>Salle</label>
+            <input name="salle" maxlength="80"
+              value="${esc(record?.salle||"")}"
+              placeholder="Ex. Salle 2">
+          </div>
+        </div>
+
+        <div class="actions">
+          <button type="submit" class="btn primary" id="scheduleSave">
+            Enregistrer
+          </button>
+          <button type="button" class="btn secondary" id="scheduleCancel">
+            Annuler
+          </button>
+        </div>
+      </form>
+    </div>`;
+
+  $("scheduleCancel").onclick=()=>area.innerHTML="";
+
+  $("scheduleForm").onsubmit=async e=>{
+    e.preventDefault();
+
+    const form=e.currentTarget;
+    const fd=new FormData(form);
+    const titre=String(fd.get("titre")||"").trim();
+    const classeId=String(fd.get("classeId")||"").trim();
+    const matiereId=String(fd.get("matiereId")||"").trim();
+    const date=String(fd.get("date")||"").trim();
+    const heureDebut=String(fd.get("heureDebut")||"").trim();
+    const heureFin=String(fd.get("heureFin")||"").trim();
+    const salle=String(fd.get("salle")||"").trim();
+
+    const professeurUid=isAdmin()
+      ? String(fd.get("professeurUid")||"").trim()
+      : currentUser.uid;
+
+    if(!titre||!classeId||!professeurUid||!date||!heureDebut||!heureFin){
+      return toast("Remplissez tous les champs obligatoires.",true);
+    }
+
+    if(heureFin<=heureDebut){
+      return toast("L’heure de fin doit être après l’heure de début.",true);
+    }
+
+    const btn=$("scheduleSave");
+    btn.disabled=true;
+    btn.textContent="Enregistrement…";
+
+    const collectionName=isCourse?"horaires_cours":"horaires_examens";
+
+    const data={
+      titre,
+      classeId,
+      matiereId,
+      professeurUid,
+      date,
+      heureDebut,
+      heureFin,
+      salle,
+      type:isCourse?"cours":"examen",
+      updatedAt:stamp()
+    };
+
+    try{
+      if(record){
+        if(!scheduleCanManage(page,record)){
+          throw new Error("Modification non autorisée.");
+        }
+        await updateDoc(doc(db,collectionName,record.id),data);
+      }else{
+        data.createdBy=currentUser.uid;
+        data.createdAt=stamp();
+        await addDoc(collection(db,collectionName),data);
+      }
+
+      toast("Horaire enregistré.");
+      await renderSchedule(page);
+    }catch(err){
+      console.error(err);
+      toast(friendly(err),true);
+      btn.disabled=false;
+      btn.textContent="Enregistrer";
+    }
+  };
+}
+
+async function scheduleDelete(page,id){
+  const isCourse=page==="horaire_cours";
+  const collectionName=isCourse?"horaires_cours":"horaires_examens";
+  const cache=window.cflpScheduleCache[page];
+  const record=cache?.records.find(r=>r.id===id);
+
+  if(!record)return toast("Horaire introuvable.",true);
+
+  if(!scheduleCanManage(page,record)){
+    return toast("Vous n’avez pas l’autorisation de supprimer cet horaire.",true);
+  }
+
+  if(!confirm("Voulez-vous vraiment supprimer cet horaire ?"))return;
+
+  try{
+    await deleteDoc(doc(db,collectionName,id));
+    toast("Horaire supprimé.");
+    await renderSchedule(page);
+  }catch(e){
+    console.error(e);
+    toast(friendly(e),true);
+  }
+}
+
+/* Gestion des utilisateurs : professeurs, élèves et classes affectées */
 async function renderUsers(){
-  if(!isAdmin())return;
-  const snap=await getDocs(collection(db,"users"));
-  const users=snap.docs.map(d=>({id:d.id,...d.data()}));
-  $("pageContent").innerHTML=`<div class="card"><h3>Utilisateurs</h3>${users.map(u=>`<div>${u.email} — ${u.role}</div>`).join("")}</div>`;
+  if(!isAdmin()) return;
+
+  try {
+    const [usersSnap, classesSnap, affectationsSnap, inscriptionsSnap,
+           etudiantsSnap, elevesSnap] = await Promise.all([
+      getDocs(collection(db,"users")),
+      getDocs(collection(db,"classes")),
+      getDocs(collection(db,"affectations")),
+      getDocs(collection(db,"inscriptions")),
+      getDocs(collection(db,"etudiants")),
+      getDocs(collection(db,"eleves"))
+    ]);
+
+    const users = usersSnap.docs.map(d=>({id:d.id,...d.data()}));
+    const classes = classesSnap.docs.map(d=>({id:d.id,...d.data()}));
+    const affectations = affectationsSnap.docs.map(d=>({id:d.id,...d.data()}));
+    const inscriptions = inscriptionsSnap.docs.map(d=>({id:d.id,...d.data()}));
+    const etudiants = etudiantsSnap.docs.map(d=>({id:d.id,...d.data()}));
+    const eleves = elevesSnap.docs.map(d=>({id:d.id,...d.data()}));
+
+    const classLabel = id => {
+      if(!id) return "";
+      const c = classes.find(x =>
+        x.id===id || x.code===id || x.nom===id
+      );
+      return c ? (c.nom || c.code || c.niveau || c.id) : String(id);
+    };
+
+    const profileIds = u => {
+      const email = String(u.email||"").toLowerCase().trim();
+      const linked = [...etudiants,...eleves].filter(p =>
+        (email && String(p.email||"").toLowerCase().trim()===email) ||
+        p.uid===u.id ||
+        p.userUid===u.id ||
+        p.userId===u.id
+      );
+      return [...new Set([u.id,...linked.map(p=>p.id)])];
+    };
+
+    const assignedClasses = u => {
+      const ids = profileIds(u);
+      let result = [];
+
+      if(u.role==="professeur"){
+        affectations
+          .filter(a=>ids.includes(a.professeurUid))
+          .forEach(a=>{
+            const label = classLabel(a.classeId);
+            if(label) result.push(label);
+          });
+      }
+
+      if(["eleve","etudiant"].includes(u.role)){
+        const linkedProfiles = [...etudiants,...eleves].filter(p =>
+          ids.includes(p.id)
+        );
+
+        linkedProfiles.forEach(p=>{
+          if(p.classeId) result.push(classLabel(p.classeId));
+        });
+
+        inscriptions
+          .filter(i=>
+            ids.includes(i.eleveId) ||
+            ids.includes(i.etudiantId)
+          )
+          .forEach(i=>{
+            if(i.classeId) result.push(classLabel(i.classeId));
+          });
+
+        if(u.classeId) result.push(classLabel(u.classeId));
+      }
+
+      return [...new Set(result.filter(Boolean))];
+    };
+
+    const roleLabel = role => ({
+      administrateur:"Administrateur",
+      professeur:"Professeur",
+      eleve:"Élève",
+      etudiant:"Étudiant"
+    })[role] || role || "Non défini";
+
+    const statusLabel = status => ({
+      accepted:"Accepté",
+      attente:"En attente",
+      refuse:"Refusé"
+    })[status] || status || "Non défini";
+
+    const userName = u =>
+      [u.nom,u.prenom].filter(Boolean).join(" ") || "Non renseigné";
+
+    $("pageContent").innerHTML = `
+      <div class="card">
+        <h3>Gestion des utilisateurs et des classes</h3>
+        <p class="muted">
+          Consultez les professeurs, les élèves et les classes auxquelles
+          ils sont affectés.
+        </p>
+
+        <div class="form-grid">
+          <div class="field">
+            <label>Rechercher un utilisateur</label>
+            <input id="usersSearch"
+              placeholder="Nom, e-mail, téléphone ou classe...">
+          </div>
+
+          <div class="field">
+            <label>Filtrer par rôle</label>
+            <select id="usersRoleFilter">
+              <option value="tous">Tous les utilisateurs</option>
+              <option value="professeur">Professeurs</option>
+              <option value="eleves">Élèves et étudiants</option>
+              <option value="administrateur">Administrateurs</option>
+            </select>
+          </div>
+        </div>
+
+        <p class="muted" id="usersCount"></p>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Nom et prénom</th>
+                <th>E-mail</th>
+                <th>Téléphone</th>
+                <th>Rôle</th>
+                <th>Classe(s) affectée(s)</th>
+                <th>Niveau / spécialité</th>
+                <th>Statut</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+
+            <tbody id="usersTableBody">
+              ${users.map(u=>{
+                const assigned = assignedClasses(u);
+                const classesText = assigned.length
+                  ? assigned.join(", ")
+                  : (u.classeId ? classLabel(u.classeId) : "Non affecté");
+
+                const searchText = [
+                  userName(u),u.email,u.telephone,
+                  roleLabel(u.role),classesText,
+                  u.niveau,u.specialite,statusLabel(u.status)
+                ].join(" ").toLowerCase();
+
+                return `
+                  <tr
+                    data-user-row="${esc(u.id)}"
+                    data-user-role="${esc(u.role||"")}"
+                    data-user-search="${esc(searchText)}">
+
+                    <td>${esc(userName(u))}</td>
+                    <td>${esc(u.email||"—")}</td>
+                    <td>${esc(u.telephone||"—")}</td>
+                    <td>${esc(roleLabel(u.role))}</td>
+                    <td>
+  ${
+    ["eleve","etudiant"].includes(u.role)
+      ? `
+        <select data-classe-eleve="${esc(u.id)}">
+          <option value="">-- Chwazi klas --</option>
+          ${classes.map(c => `
+            <option
+              value="${esc(c.id)}"
+              ${u.classeId===c.id ? "selected" : ""}
+            >
+              ${esc(c.nom || c.code || c.niveau || c.id)}
+            </option>
+          `).join("")}
+        </select>
+      `
+      : u.role==="professeur"
+        ? `
+          <span>${esc(classesText)}</span>
+          <select data-classe-prof="${esc(u.id)}">
+            <option value="">-- Chwazi klas --</option>
+            ${classes.map(c => `
+              <option value="${esc(c.id)}">
+                ${esc(c.nom || c.code || c.niveau || c.id)}
+              </option>
+            `).join("")}
+          </select>
+          <button
+            class="btn"
+            type="button"
+            data-affecter-classe="${esc(u.id)}"
+          >
+            Afekte klas
+          </button>
+        `
+        : esc(classesText)
+  }
+</td>
+                    <td>${esc(
+                      u.role==="professeur"
+                        ? (u.specialite||"—")
+                        : (u.niveau||"—")
+                    )}</td>
+
+                    <td>
+                      <select data-status="${esc(u.id)}">
+                        <option value="attente" ${u.status==="attente"?"selected":""}>En attente</option>
+                        <option value="accepted" ${u.status==="accepted"?"selected":""}>Accepté</option>
+                        <option value="refuse" ${u.status==="refuse"?"selected":""}>Refusé</option>
+                      </select>
+                    </td>
+
+                    <td>
+                      <div class="actions">
+                        <select data-role="${esc(u.id)}">
+                          <option value="eleve" ${u.role==="eleve"?"selected":""}>Élève</option>
+                          <option value="etudiant" ${u.role==="etudiant"?"selected":""}>Étudiant</option>
+                          <option value="professeur" ${u.role==="professeur"?"selected":""}>Professeur</option>
+                          ${u.role==="administrateur"
+                            ? '<option value="administrateur" selected>Administrateur</option>'
+                            : ""}
+                        </select>
+
+                        <button class="btn success"
+                          data-save-user="${esc(u.id)}">
+                          Enregistrer
+                        </button>
+
+                        ${u.id!==currentUser.uid
+                          ? `<button class="btn danger"
+                              data-del-user="${esc(u.id)}">
+                              Supprimer profil
+                            </button>`
+                          : ""}
+                      </div>
+                    </td>
+                  </tr>
+                `;
+              }).join("") ||
+              '<tr><td colspan="8">Aucun utilisateur.</td></tr>'}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `;
+
+    const filterUsers = () => {
+      const search = $("usersSearch").value.toLowerCase().trim();
+      const roleFilter = $("usersRoleFilter").value;
+      let visible = 0;
+
+      $("pageContent").querySelectorAll("[data-user-row]").forEach(row=>{
+        const role = row.dataset.userRole;
+        const text = row.dataset.userSearch || "";
+
+        const matchesSearch = text.includes(search);
+        const matchesRole =
+          roleFilter==="tous" ||
+          role===roleFilter ||
+          (roleFilter==="eleves" &&
+            ["eleve","etudiant"].includes(role));
+
+        const show = matchesSearch && matchesRole;
+        row.style.display = show ? "" : "none";
+        if(show) visible++;
+      });
+
+      $("usersCount").textContent =
+        visible + " utilisateur(s) affiché(s) sur " + users.length;
+    };
+
+    $("usersSearch").oninput = filterUsers;
+    $("usersRoleFilter").onchange = filterUsers;
+    filterUsers();
+
+    $("pageContent")
+      .querySelectorAll("[data-classe-eleve]")
+      .forEach(select => {
+        select.onchange = async () => {
+          const userId = select.dataset.classeEleve;
+          const classeId = select.value;
+
+          try {
+            if (!classeId) {
+              await updateDoc(doc(db, "users", userId), {
+                classeId: "",
+                updatedAt: stamp()
+              });
+            } else {
+              await updateDoc(doc(db, "users", userId), {
+                classeId: classeId,
+                updatedAt: stamp()
+              });
+            }
+
+            toast("Klas elèv la mete ajou.");
+          } catch (e) {
+            console.error(e);
+            toast(friendly(e), true);
+          }
+        };
+      });
+
+    $("pageContent")
+      .querySelectorAll("[data-affecter-classe]")
+      .forEach(button => {
+        button.onclick = async () => {
+          const professeurUid = button.dataset.affecterClasse;
+
+          const select = $("pageContent").querySelector(
+            `[data-classe-prof="${CSS.escape(professeurUid)}"]`
+          );
+
+          const classeId = select ? select.value : "";
+
+          if (!classeId) {
+            return toast("Chwazi yon klas anvan.", true);
+          }
+
+          try {
+            const q = query(
+              collection(db, "affectations"),
+              where("professeurUid", "==", professeurUid),
+              where("classeId", "==", classeId)
+            );
+
+            const deja = await getDocs(q);
+
+            if (!deja.empty) {
+              return toast("Pwofesè sa a deja afekte nan klas sa a.", true);
+            }
+
+            await addDoc(collection(db, "affectations"), {
+              professeurUid: professeurUid,
+              classeId: classeId,
+              createdAt: stamp(),
+              updatedAt: stamp()
+            });
+            const professeur = users.find(u => u.id === professeurUid);
+
+            if (professeur) {
+              const anciennesClasses = Array.isArray(professeur.classIds)
+                ? professeur.classIds
+                : [];
+
+              const nouvellesClasses = [
+                ...new Set([...anciennesClasses, classeId])
+              ];
+
+              await updateDoc(doc(db, "users", professeurUid), {
+                classIds: nouvellesClasses,
+                updatedAt: stamp()
+              });
+            }
+            toast("Klas la afekte ak pwofesè a.");
+            await renderUsers();
+          } catch (e) {
+            console.error(e);
+            toast(friendly(e), true);
+          }
+        };
+      });
+
+    $("pageContent").querySelectorAll("[data-save-user]")
+      .forEach(b=>b.onclick=async()=>{
+        const id = b.dataset.saveUser;
+        const role = $("pageContent")
+          .querySelector(`[data-role="${CSS.escape(id)}"]`).value;
+        const status = $("pageContent")
+          .querySelector(`[data-status="${CSS.escape(id)}"]`).value;
+
+        if(id===currentUser.uid &&
+          (role!=="administrateur" || status!=="accepted")){
+          return toast(
+            "Vous ne pouvez pas retirer votre propre accès ici.",true
+          );
+        }
+
+        if(role==="administrateur" && id!==currentUser.uid){
+          return toast(
+            "Le rôle administrateur ne peut pas être attribué depuis cette page.",true
+          );
+        }
+
+        try{
+          await updateDoc(doc(db,"users",id),{
+            role,
+            status,
+            updatedAt:stamp()
+          });
+          toast("Utilisateur mis à jour.");
+          await renderUsers();
+        }catch(e){
+          toast(friendly(e),true);
+        }
+      });
+
+    $("pageContent").querySelectorAll("[data-del-user]")
+      .forEach(b=>b.onclick=async()=>{
+        if(confirm(
+          "Supprimer le profil Firestore ? Le compte Auth ne sera pas supprimé."
+        )){
+          try{
+            await deleteDoc(doc(db,"users",b.dataset.delUser));
+            toast("Profil supprimé.");
+            await renderUsers();
+          }catch(e){
+            toast(friendly(e),true);
+          }
+        }
+      });
+
+  }catch(e){
+    console.error("Erreur Gestion des utilisateurs :",e);
+    toast("Impossible de charger les utilisateurs et les affectations. Vérifiez les règles Firestore.",true);
+  }
 }
 
 async function renderBackup(){
 if(!isAdmin())return;
-$("pageContent").innerHTML=`<div class="card"><h3>Sauvegarde</h3><button class="btn primary" onclick="alert('Export prêt')">Exporter</button></div>`;
+$("pageContent").innerHTML='<div class="card"><h3>Sauvegarde JSON</h3><p>Exporter les collections Firestore accessibles à votre compte.</p><button id="exportBtn" class="btn primary">Exporter les données</button><div class="notice">Le fichier peut contenir des données personnelles. Conservez-le en sécurité.</div></div>';
+$("exportBtn").onclick=async()=>{
+const names=["users","etudiants","eleves","professeurs","departements","filieres","classes","matieres","cours","annees_academiques","affectations","inscriptions","devoirs","examens","tentatives_examens","notes_cours","remises","resultats","videos","documents","bulletins","statistiques","configuration"],backup={application:"Centre de Formation Le Pédagogue",projectId:firebaseConfig.projectId,exportedAt:new Date().toISOString(),collections:{}};
+try{for(const name of names){const s=await getDocs(collection(db,name));backup.collections[name]=s.docs.map(d=>({id:d.id,...d.data()}))}
+const blob=new Blob([JSON.stringify(backup,null,2)],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="sauvegarde-le-pedagogue-"+new Date().toISOString().slice(0,10)+".json";a.click();URL.revokeObjectURL(url);toast("Export terminé.")}
+catch(e){toast(friendly(e),true)}
+}
 }
 
-window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();installPrompt=e;});
+/* Installation PWA — Android, Chrome et Samsung Internet */
+window.addEventListener("beforeinstallprompt",e=>{
+e.preventDefault();installPrompt=e;$("installBtn").textContent="📲 Installer l'application";$("installBtn").disabled=false;
+});
+window.addEventListener("appinstalled",()=>{installPrompt=null;$("installBtn").textContent="✓ Application installée";toast("Application installée avec succès.")});
+$("installBtn").addEventListener("click",async()=>{
+const btn=$("installBtn");
+const standalone=window.matchMedia("(display-mode: standalone)").matches||window.navigator.standalone===true;
+if(standalone){toast("L'application est déjà installée.");return}
+if(installPrompt){
+try{const promptEvent=installPrompt;await promptEvent.prompt();const result=await promptEvent.userChoice;installPrompt=null;if(result?.outcome==="accepted")btn.textContent="✓ Installation lancée";else btn.textContent="📲 Installer l'application"}
+catch(error){console.error("Erreur installation :",error);toast("Utilisez le menu ⋮ du navigateur pour installer l'application.",true)}
+return;
+}
+const ua=navigator.userAgent||"";
+if(/iPhone|iPad|iPod/i.test(ua)){alert("Pour installer l'application sur iPhone : ouvrez le site dans Safari, appuyez sur Partager, puis sur « Sur l'écran d'accueil ».");return}
+alert("Pour installer Centre de Formation Le Pédagogue :\n\n1. Ouvrez le site publié en HTTPS dans Chrome ou Samsung Internet.\n2. Appuyez sur le menu ⋮ du navigateur.\n3. Choisissez « Installer l'application » ou « Ajouter à l'écran d'accueil ».\n\nSi l'option n'apparaît pas, vérifiez que manifest.json, sw.js et les icônes PWA sont publiés à côté de index.html.");
+});
+
+/* Enregistrement et vérification du Service Worker */
+if("serviceWorker" in navigator){
+window.addEventListener("load",async()=>{
+try{const registration=await navigator.serviceWorker.register("./sw.js");console.log("Service Worker enregistré.");await registration.update().catch(error=>console.warn("Mise à jour du Service Worker différée :",error))}
+catch(error){console.error("Erreur Service Worker :",error)}
+});
+}
 </script>
 </body>
 </html>
