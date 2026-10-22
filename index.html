@@ -908,25 +908,58 @@ async function ouvrirSoumissionDevoir(devoir){
     <div class="card">
       <h3>Résoudre le devoir : ${esc(titre)}</h3>
       ${hasTimer?`<div id="homeworkTimer" class="timer">⏱ Temps restant : --:--</div>`:""}
-      <form id="soumissionDevoirForm">
-        <div class="field">
-          <label>Votre réponse *</label>
-          <textarea name="contenu" required
-            placeholder="Écrivez votre réponse ici..."></textarea>
-        </div>
-        <div class="field">
-          <label>Lien du document (facultatif)</label>
-          <input name="lienDocument" type="url"
-            placeholder="https://...">
-        </div>
-        <div class="actions">
-          <button class="btn primary" type="submit" id="submitHomeworkBtn">
-            Envoyer mon devoir
-          </button>
-          <button class="btn secondary" id="annulerSoumission"
-            type="button">Annuler</button>
-        </div>
-      </form>
+      
+<form id="soumissionDevoirForm">
+  ${parseQuestions(devoir).map((q,i)=>`
+    <div class="field">
+      <label>
+        Question ${i+1} — ${esc(q.question)}
+        (${Number(q.points)||1} point(s))
+      </label>
+
+      ${q.type==="qcm" ? `
+        ${(q.options||[]).map((option,j)=>`
+          <label style="display:block;margin:8px 0">
+            <input
+              type="radio"
+              name="reponse_${i}"
+              value="${esc(option)}"
+              required
+            >
+            ${esc(option)}
+          </label>
+        `).join("")}
+      ` : `
+        <textarea
+          name="reponse_${i}"
+          required
+          placeholder="Écrivez votre réponse ici..."
+        ></textarea>
+      `}
+    </div>
+  `).join("")}
+
+  <div class="field">
+    <label>Réponse complémentaire ou travail écrit (facultatif)</label>
+    <textarea name="contenu"
+      placeholder="Ajoutez une explication ou votre travail ici..."></textarea>
+  </div>
+
+  <div class="field">
+    <label>Lien du document (facultatif)</label>
+    <input name="lienDocument" type="url"
+      placeholder="https://...">
+  </div>
+
+  <div class="actions">
+    <button class="btn primary" type="submit" id="submitHomeworkBtn">
+      Envoyer mon devoir
+    </button>
+    <button class="btn secondary" id="annulerSoumission"
+      type="button">Annuler</button>
+  </div>
+</form>
+
     </div>
   `;
 
@@ -956,10 +989,29 @@ async function ouvrirSoumissionDevoir(devoir){
     e.preventDefault();
     if(isSubmitting) return;
 
-    const form = e.currentTarget;
-    const contenu = String(
-      new FormData(form).get("contenu") || ""
-    ).trim();
+    
+const form = e.currentTarget;
+const fd = new FormData(form);
+
+const contenu = String(fd.get("contenu") || "").trim();
+const lienDocument = String(fd.get("lienDocument") || "").trim();
+
+const reponses = [];
+
+for (const [key, value] of fd.entries()) {
+  if (key.startsWith("reponse_")) {
+    reponses.push({
+      index: Number(key.substring("reponse_".length)),
+      reponse: String(value).trim()
+    });
+  }
+}
+
+if (!contenu && reponses.length === 0) {
+  toast("Répondez aux questions avant l'envoi.", true);
+  return;
+}
+
     const lienDocument = String(
       new FormData(form).get("lienDocument") || ""
     ).trim();
@@ -993,6 +1045,7 @@ async function ouvrirSoumissionDevoir(devoir){
         etudiantEmail: currentUser.email || "",
         classeId: classeId,
         contenu: contenu,
+        reponsesJSON: JSON.stringify(reponses),
         statut: "soumis",
         dateRemise: stamp(),
         createdAt: stamp(),
@@ -1029,6 +1082,7 @@ async function ouvrirSoumissionDevoir(devoir){
 async function recordForm(m,r){
 const area=$("recordFormArea");if(!area)return;
 const isExam=m.id==="examens";
+  const isDevoir = m.id === "devoirs";
   if(
   m.id === "remises" &&
   r &&
@@ -1080,9 +1134,9 @@ if (m.id==="remises" && k==="etudiantId" && isStudent()) {
 }
 
 return`<div class="field ${long?"full":""}"><label>${esc(l)}</label>${long?`<textarea name="${esc(k)}">${esc(value)}</textarea>`:`<input name="${esc(k)}" type="${type}" value="${esc(formattedValue)}" ${num?'min="0"':''} ${isExam&&k==="titre"?"required":""}>`}</div>`
-}).join("")}</div>${isExam?examBuilder(r):""}<div class="actions"><button class="btn primary" type="submit">Enregistrer</button><button class="btn secondary" id="cancelForm" type="button">Annuler</button></div></form></div>`;
+}).join("")}</div>${isExam||isDevoir?examBuilder(r):""}<div class="actions"><button class="btn primary" type="submit">Enregistrer</button><button class="btn secondary" id="cancelForm" type="button">Annuler</button></div></form></div>`;
 $("cancelForm").onclick=()=>area.innerHTML="";
-if(isExam)setupQuestionBuilder(parseQuestions(r||{}));
+if(isExam || isDevoir) setupQuestionBuilder(parseQuestions(r || {}));
 $("dataForm").onsubmit=async e=>{
 e.preventDefault();const fd=new FormData(e.currentTarget),data={};
 for(const[k,v]of fd.entries())data[k]=String(v).trim();
@@ -1101,10 +1155,84 @@ const duration=Number(data.dureeMinutes||30);
 if(!Number.isFinite(duration)||duration<1)return toast("La durée doit être d'au moins une minute.",true);
 data.questionsJSON=JSON.stringify(questions);data.dureeMinutes=Math.floor(duration);data.noteMax=questions.reduce((s,q)=>s+Number(q.points||0),0);data.statut="publie";data.professeurUid=isAdmin()?(data.professeurUid||currentUser.uid):currentUser.uid;data.professeurId=isAdmin()?(data.professeurId||currentUser.uid):currentUser.uid;
 }
-try{data.updatedAt=stamp();if(r)await updateDoc(doc(db,m.collection,r.id),data);else{data.createdAt=stamp();await addDoc(collection(db,m.collection),data)}toast("Enregistrement effectué.");await openPage(m.id)}
-catch(err){console.error(err);toast(friendly(err),true)}
+
+try {
+  data.updatedAt = stamp();
+
+  if (m.id === "devoirs") {
+    let questions = [];
+
+    try {
+      questions = readBuilderQuestions();
+    } catch (error) {
+      console.error("Erreur questions devoir :", error);
+      return toast(error?.message || "Vérifiez les questions du devoir.", true);
+    }
+
+    if (!questions.length) {
+      return toast("Ajoutez au moins une question au devoir.", true);
+    }
+
+    if (!data.titre || !data.classeId) {
+      return toast("Le titre et la classe sont obligatoires.", true);
+    }
+
+    const correction = questions.map((q, index) => ({
+      index,
+      type: q.type,
+      correctAnswer: q.type === "qcm" ? q.correctAnswer : ""
+    }));
+
+    data.questionsJSON = JSON.stringify(
+      questions.map(q => {
+        const question = { ...q };
+        delete question.correctAnswer;
+        return question;
+      })
+    );
+
+    data.noteMax = questions.reduce(
+      (total, q) => total + Number(q.points || 0), 0
+    );
+
+    data.statut = "publie";
+
+    let devoirId;
+
+    if (r) {
+      devoirId = r.id;
+      await updateDoc(doc(db, m.collection, devoirId), data);
+    } else {
+      data.createdAt = stamp();
+      const nouveauDevoir = await addDoc(collection(db, m.collection), data);
+      devoirId = nouveauDevoir.id;
+    }
+
+    await setDoc(doc(db, "devoirs_corrections", devoirId), {
+      devoirId,
+      professeurUid: currentUser.uid,
+      correctionsJSON: JSON.stringify(correction),
+      updatedAt: stamp()
+    });
+
+  } else {
+    if (r) {
+      await updateDoc(doc(db, m.collection, r.id), data);
+    } else {
+      data.createdAt = stamp();
+      await addDoc(collection(db, m.collection), data);
+    }
+  }
+
+  toast("Enregistrement effectué.");
+  await openPage(m.id);
+
+} catch (err) {
+  console.error(err);
+  toast(friendly(err), true);
 }
 }
+
 
 function examBuilder(){
 return`<div class="full"><div class="notice">Choisissez le type de chaque question : QCU (une seule bonne réponse) ou question ouverte (réponse écrite). Vous pouvez mélanger les deux types dans le même examen.</div><div class="field"><label>Type de la prochaine question</label><select id="newQuestionType"><option value="qcm">QCU — une seule bonne réponse</option><option value="ecrit">Question ouverte — réponse écrite</option></select></div><button class="btn secondary" id="addQuestion" type="button">＋ Ajouter une question</button><div id="questionBuilder"></div></div>`
