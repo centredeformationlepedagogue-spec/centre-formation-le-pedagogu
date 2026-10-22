@@ -700,7 +700,6 @@ async function renderModule(m){
       .docs.map(d=>({id:d.id,...d.data()}));
   }
 
-  // Fetch student remises to check single-submission status for devoirs
   let studentRemises = [];
   if(isStudent() && m.id==="devoirs"){
     try {
@@ -763,7 +762,7 @@ async function renderModule(m){
                         }</div>`;
                       }).join("") || esc(r.titre||r.id)
                     }
-                    ${isStudent() && m.id==="devoirs" ? `<div style="margin-top:6px;"><span class="badge ${alreadySubmitted?'':'wait'}">${alreadySubmitted?'Déjà remis':'Non remis'}</span></div>`:''}
+                    ${isStudent() && m.id==="devoirs" ? `<div style="margin-top:6px;"><span class="badge ${alreadySubmitted?'':'wait'}">${alreadySubmitted?'Devoir déjà remis':'Non remis'}</span></div>`:''}
                   </td>
                   <td>
                     <div class="actions">
@@ -887,7 +886,6 @@ async function ouvrirSoumissionDevoir(devoir){
     return;
   }
 
-  // Double check uniqueness on Firestore before opening form
   try {
     const existingRemiseSnap = await getDocs(query(collection(db,"remises"), where("devoirId","==",devoir.id), where("etudiantId","==",currentUser.uid)));
     if(!existingRemiseSnap.empty){
@@ -936,7 +934,7 @@ async function ouvrirSoumissionDevoir(devoir){
     const updateHomeworkTimer = () => {
       let left = durationMs - (Date.now() - startTime);
       let s = Math.max(0, Math.ceil(left / 1000));
-      $("homeworkTimer"].textContent = "⏱ Temps restant : " + String(Math.floor(s/60)).padStart(2,"0") + ":" + String(s%60).padStart(2,"0");
+      $("homeworkTimer").textContent = "⏱ Temps restant : " + String(Math.floor(s/60)).padStart(2,"0") + ":" + String(s%60).padStart(2,"0");
       $("homeworkTimer").classList.toggle("warning", left <= 60000);
       if(left <= 0){
         clearInterval(homeworkTimerInterval);
@@ -980,7 +978,6 @@ async function ouvrirSoumissionDevoir(devoir){
     if(homeworkTimerInterval) clearInterval(homeworkTimerInterval);
 
     try{
-      // Final atomic uniqueness check
       const checkSnap = await getDocs(query(collection(db,"remises"), where("devoirId","==",devoir.id), where("etudiantId","==",currentUser.uid)));
       if(!checkSnap.empty){
         toast("Vous avez déjà remis ce devoir.", true);
@@ -1261,7 +1258,7 @@ notes=(await getDocs(query(collection(db,"notes_cours"),where("classeId","==",cl
 }
 $("pageContent").innerHTML=`<div class="card"><div class="page-head"><div><h3>Notes de cours</h3><p class="muted">${teacher?"Publier du texte ou des photos de cours.":"Lire et copier les cours."}</p></div>${teacher?'<button id="newNote" class="btn primary">＋ Ajouter une note</button>':""}</div><div id="noteFormArea"></div>${notes.map(n=>{
 let photosArr = Array.isArray(n.photosData)?n.photosData:(n.photoData?[n.photoData]:[]);
-return `<article class="course-note"><h3>${esc(n.titre)}</h3><p class="muted">Classe : ${esc(nomClasseLisible(n.classeId))} · ${esc(n.matiereId||"")}</p><div class="course-text" id="noteText${esc(n.id)}">${esc(n.contenu||"")}</div>${photosArr.map(p=>`<img src="${p}" alt="Photo du cours">`).join("")}<div class="actions"><button class="btn secondary" data-copy-note="${esc(n.id)}">Copier le texte</button>${teacher&&(isAdmin()||n.professeurUid===currentUser.uid)?`<button class="btn secondary" data-edit-note="${esc(n.id)}">Modifier</button><button class="btn danger" data-del-note="${esc(n.id)}">Supprimer</button>`:""}</div></article>`;
+return `<article class="course-note"><h3>${esc(n.titre)}</h3><p class="muted">Classe : ${esc(nomClasseLisible(n.classeId))} · ${esc(n.matiereId||"")}</p><div class="course-text" id="noteText${esc(n.id)}">${esc(n.contenu||"")}</div>${photosArr.map((p, pIdx)=>`<div style="margin:8px 0;"><img src="${p}" alt="Photo du cours"><br><a href="${p}" download="cours_${esc(n.titre)}_${pIdx+1}.jpg" class="btn secondary" style="font-size:11px;margin-top:4px;">📥 Télécharger cette image</a></div>`).join("")}<div class="actions"><button class="btn secondary" data-copy-note="${esc(n.id)}">Copier le texte</button>${teacher&&(isAdmin()||n.professeurUid===currentUser.uid)?`<button class="btn secondary" data-edit-note="${esc(n.id)}">Modifier</button><button class="btn danger" data-del-note="${esc(n.id)}">Supprimer</button>`:""}</div></article>`;
 }).join("")||'<div class="notice">Aucune note de cours.</div>'}</div>`;
 if(teacher)$("newNote").onclick=()=>noteForm(null);
 $("pageContent").querySelectorAll("[data-copy-note]").forEach(b=>b.onclick=async()=>{const t=$("noteText"+b.dataset.copyNote)?.innerText||"";try{await navigator.clipboard.writeText(t);toast("Texte copié.")}catch{toast("Sélectionnez le texte puis choisissez Copier.",true)}});
@@ -1463,7 +1460,6 @@ async function renderBulletin(){
     return;
   }
 
-  // Espace Élève / Étudiant
   $("pageContent").innerHTML=`
     <div class="card">
       <h3>🎓 Mon bulletin scolaire</h3>
@@ -1498,7 +1494,10 @@ async function renderBulletin(){
             <h3>🎓 Mon bulletin scolaire (${esc(bulletin.periode||"Trimestre")})</h3>
             <p class="muted">Classe : ${esc(nomClasseLisible(bulletin.classeId))}</p>
           </div>
-          <button id="printBulletinBtn" class="btn primary">📄 Imprimer / PDF</button>
+          <div>
+            <button id="printBulletinBtn" class="btn primary">📄 Imprimer / PDF</button>
+            <button id="downloadBulletinTxt" class="btn secondary">📥 Télécharger TXT</button>
+          </div>
         </div>
 
         <div id="printArea">
@@ -1535,6 +1534,18 @@ async function renderBulletin(){
       if(!w)return toast("Autorisez les fenêtres pop-up.",true);
       w.document.write(`<!DOCTYPE html><html><head><title>Bulletin</title><style>body{font-family:Arial;padding:20px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccc;padding:8px;text-align:left}</style></head><body>${$("printArea").innerHTML}<script>window.onload=()=>window.print()<\/script></body></html>`);
       w.document.close();
+    };
+
+    $("downloadBulletinTxt").onclick=()=>{
+      let content=`BULLETIN SCOLAIRE - CENTRE DE FORMATION LE PEDAGOGUE\n`;
+      content+=`Élève: ${studentName}\nPériode: ${bulletin.periode||""}\nMoyenne: ${bulletin.moyenne}/20\nAppréciation: ${bulletin.appreciation||""}\n`;
+      const blob = new Blob([content], {type:"text/plain;charset=utf-8"});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `bulletin_${studentName.replace(/\s+/g,'_')}.txt`;
+      a.click();
+      URL.revokeObjectURL(url);
     };
 
   }catch(e){
