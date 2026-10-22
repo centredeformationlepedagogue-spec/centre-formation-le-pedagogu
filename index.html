@@ -697,7 +697,22 @@ async function renderModule(m){
     records = (await getDocs(q))
       .docs.map(d=>({id:d.id,...d.data()}));
   }
+// Devwa: kache sa ki depase dat limit la pou elèv sèlman.
+// Devwa ki deja egziste san dat limit ap rete vizib.
+if (m.id === "devoirs" && isStudent()) {
+  const maintenant = Date.now();
 
+  records = records.filter(devoir => {
+    if (!devoir.dateLimite) return true;
+
+    const limite = new Date(devoir.dateLimite).getTime();
+
+    // Si dat la pa valab, pa kache devwa a otomatikman.
+    if (!Number.isFinite(limite)) return true;
+
+    return limite >= maintenant;
+  });
+}
   const canAdd = typeof canAddModule==="function"
     ? canAddModule(m.id)
     : canEditModule(m.id);
@@ -859,6 +874,7 @@ async function renderModule(m){
 }
 
 
+
 async function ouvrirSoumissionDevoir(devoir){
   if(!isStudent() || !currentUser || !devoir){
     toast("Action non autorisée.",true);
@@ -871,9 +887,48 @@ async function ouvrirSoumissionDevoir(devoir){
     return;
   }
 
+  if(!devoir.id){
+    toast("Impossible d'identifier ce devoir.",true);
+    return;
+  }
+
   const titre = devoir.titre || "Devoir";
   const zone = $("recordFormArea");
   if(!zone) return;
+
+  // Vérifie si l'élève a déjà envoyé ce devoir.
+  async function devoirDejaRemis(){
+    const snap = await getDocs(
+      query(
+        collection(db,"remises"),
+        where("etudiantId","==",currentUser.uid)
+      )
+    );
+
+    return snap.docs.some(d =>
+      String(d.data().devoirId || "") === String(devoir.id)
+    );
+  }
+
+  try{
+    if(await devoirDejaRemis()){
+      zone.innerHTML = `
+        <div class="card">
+          <h3>${esc(titre)}</h3>
+          <div class="notice">
+            Vous avez déjà envoyé ce devoir.
+            Vous ne pouvez l'envoyer qu'une seule fois.
+          </div>
+        </div>
+      `;
+      toast("Ou deja voye devwa sa a.",true);
+      return;
+    }
+  }catch(err){
+    console.error("Erreur vérification remise :",err);
+    toast("Impossible de vérifier si le devoir a déjà été envoyé. Réessayez.",true);
+    return;
+  }
 
   zone.innerHTML = `
     <div class="card">
@@ -908,9 +963,14 @@ async function ouvrirSoumissionDevoir(devoir){
     e.preventDefault();
 
     const form = e.currentTarget;
+    const bouton = form.querySelector('button[type="submit"]');
+
+    if(bouton.disabled) return;
+
     const contenu = String(
       new FormData(form).get("contenu") || ""
     ).trim();
+
     const lienDocument = String(
       new FormData(form).get("lienDocument") || ""
     ).trim();
@@ -920,11 +980,26 @@ async function ouvrirSoumissionDevoir(devoir){
       return;
     }
 
-    const bouton = form.querySelector('button[type="submit"]');
     bouton.disabled = true;
-    bouton.textContent = "Envoi en cours...";
+    bouton.textContent = "Vérification en cours...";
 
     try{
+      // Nouvelle vérification juste avant l'envoi.
+      if(await devoirDejaRemis()){
+        zone.innerHTML = `
+          <div class="card">
+            <div class="notice">
+              Vous avez déjà envoyé ce devoir.
+              Un deuxième envoi n'est pas autorisé.
+            </div>
+          </div>
+        `;
+        toast("Ou deja voye devwa sa a.",true);
+        return;
+      }
+
+      bouton.textContent = "Envoi en cours...";
+
       const remise = {
         devoirId: devoir.id,
         titreDevoir: titre,
@@ -941,25 +1016,33 @@ async function ouvrirSoumissionDevoir(devoir){
       if(devoir.professeurUid){
         remise.professeurUid = devoir.professeurUid;
       }
+
       if(devoir.professeurId){
         remise.professeurId = devoir.professeurId;
       }
+
       if(lienDocument){
         remise.lienDocument = lienDocument;
       }
 
       await addDoc(collection(db,"remises"),remise);
+
       toast("Devoir envoyé avec succès.");
       zone.innerHTML = "";
       await openPage("remises");
+
     }catch(err){
       console.error("Erreur soumission devoir :",err);
       toast(friendly(err),true);
-      bouton.disabled = false;
-      bouton.textContent = "Envoyer mon devoir";
+
+      if(form.isConnected){
+        bouton.disabled = false;
+        bouton.textContent = "Envoyer mon devoir";
+      }
     }
   };
 }
+
 
 
 async function recordForm(m,r){
@@ -1080,17 +1163,149 @@ catch(e){console.warn("Questions d'examen invalides",e);return[]}
 }
 function fmtTime(ms){const s=Math.max(0,Math.ceil(ms/1000));return`${String(Math.floor(s/60)).padStart(2,"0")}:${String(s%60).padStart(2,"0")}`}
 function available(e){const n=Date.now(),s=e.dateDebut?new Date(e.dateDebut).getTime():0,f=e.dateLimite?new Date(e.dateLimite).getTime():Infinity;return n>=s&&n<=f}
-
 async function renderExams(){
-stopTimer();
-if(isAdmin()||isProfessor())return renderTeacherExams();
-const cl=currentProfile.classeId||(currentProfile.classIds||[])[0];
-if(!cl){$("pageContent").innerHTML='<div class="card"><h3>Examens</h3><div class="notice">Votre compte n’est pas encore associé à une classe. Contactez l’administrateur.</div></div>';return}
-const snap=await getDocs(query(collection(db,"examens"),where("classeId","==",cl))),exams=snap.docs.map(d=>({id:d.id,...d.data()}));
-let attempts=[];try{attempts=(await getDocs(query(collection(db,"tentatives_examens"),where("etudiantId","==",currentUser.uid)))).docs.map(d=>({id:d.id,...d.data()}))}catch(e){console.warn(e)}
-$("pageContent").innerHTML=`<div class="card"><h3>Mes examens</h3><p class="muted">Le chronomètre commence lorsque vous démarrez l'examen.</p><div class="table-wrap"><table><thead><tr><th>Examen</th><th>Durée</th><th>Résultat</th><th>Action</th></tr></thead><tbody>${exams.map(e=>{const a=attempts.find(x=>x.examenId===e.id&&x.statut==="termine"),ongoing=attempts.find(x=>x.examenId===e.id&&x.statut==="en_cours");return`<tr><td><b>${esc(e.titre)}</b><div>${esc(e.description||"")}</div></td><td>${Number(e.dureeMinutes||30)} min</td><td>${a?`${Number(a.noteObtenue||0)} / ${Number(a.noteMax||e.noteMax||0)}`:ongoing?"En cours":"Non commencé"}</td><td>${a?"Terminé":available(e)?`<button class="btn primary" data-start="${esc(e.id)}">${ongoing?"Reprendre":"Commencer"}</button>`:"Hors période"}</td></tr>`}).join("")||'<tr><td colspan="4">Aucun examen pour votre classe.</td></tr>'}</tbody></table></div></div>`;
-$("pageContent").querySelectorAll("[data-start]").forEach(b=>b.onclick=()=>startExam(exams.find(e=>e.id===b.dataset.start),attempts.find(a=>a.examenId===b.dataset.start&&a.statut==="en_cours")))
+  stopTimer();
+
+  // Admin ak pwofesè yo kontinye itilize paj egzamen pa yo.
+  if(isAdmin() || isProfessor()){
+    return renderTeacherExams();
+  }
+
+  const cl = currentProfile.classeId ||
+             (currentProfile.classIds || [])[0];
+
+  if(!cl){
+    $("pageContent").innerHTML =
+      '<div class="card">Aucune classe assignée à votre profil.</div>';
+    return;
+  }
+
+  const snap = await getDocs(
+    query(
+      collection(db, "examens"),
+      where("classeId", "==", cl)
+    )
+  );
+
+  const exams = snap.docs.map(d => ({
+    id: d.id,
+    ...d.data()
+  }));
+
+  let attempts = [];
+
+  try{
+    attempts = (
+      await getDocs(
+        query(
+          collection(db, "tentatives_examens"),
+          where("etudiantId", "==", currentUser.uid)
+        )
+      )
+    ).docs.map(d => ({
+      id: d.id,
+      ...d.data()
+    }));
+  }catch(e){
+    console.warn(e);
+  }
+
+  // Kache egzamen ki depase dat limit la.
+  // Si pa gen dat limit oswa dat la pa valab,
+  // konsève egzamen an pou nou pa kache l pa erè.
+  const maintenant = Date.now();
+
+  const examensVisibles = exams.filter(exam => {
+    if(!exam.dateLimite) return true;
+
+    const limite = new Date(exam.dateLimite).getTime();
+
+    if(!Number.isFinite(limite)) return true;
+
+    return limite >= maintenant;
+  });
+
+  $("pageContent").innerHTML = `
+    <div class="card">
+      <h3>Mes examens</h3>
+      <p class="muted">
+        Le chronomètre commence lorsque vous démarrez l'examen.
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Examen</th>
+              <th>Durée</th>
+              <th>Résultat</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            ${
+              examensVisibles.map(e => {
+                const a = attempts.find(x =>
+                  x.examenId === e.id &&
+                  x.statut === "termine"
+                );
+
+                const ongoing = attempts.find(x =>
+                  x.examenId === e.id &&
+                  x.statut === "en_cours"
+                );
+
+                return `
+                  <tr>
+                    <td>
+                      <b>${esc(e.titre)}</b>
+                      <div>${esc(e.description || "")}</div>
+                    </td>
+
+                    <td>${Number(e.dureeMinutes || 30)} min</td>
+
+                    <td>
+                      ${
+                        a
+                          ? `${Number(a.noteObtenue || 0)} / ${Number(a.noteMax || e.noteMax || 0)}`
+                          : ongoing
+                            ? "En cours"
+                            : "Non commencé"
+                      }
+                    </td>
+
+                    <td>
+                      ${
+                        a
+                          ? "Terminé"
+                          : available(e)
+                            ? `<button class="btn primary" data-start="${esc(e.id)}">${ongoing ? "Reprendre" : "Commencer"}</button>`
+                            : "Hors période"
+                      }
+                    </td>
+                  </tr>
+                `;
+              }).join("")
+              || '<tr><td colspan="4">Aucun examen disponible pour votre classe.</td></tr>'
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+
+  $("pageContent").querySelectorAll("[data-start]").forEach(b => {
+    b.onclick = () => startExam(
+      examensVisibles.find(e => e.id === b.dataset.start),
+      attempts.find(a =>
+        a.examenId === b.dataset.start &&
+        a.statut === "en_cours"
+      )
+    );
+  });
 }
+
 
 async function renderTeacherExams(){
 const snap=isAdmin()?await getDocs(collection(db,"examens")):await getDocs(query(collection(db,"examens"),where("professeurId","==",currentUser.uid)));
@@ -1119,16 +1334,119 @@ try{const noteQCM=Number(a.noteQCM||0),noteObtenue=noteQCM+score,max=qs.reduce((
 }
 }
 
-async function startExam(exam,existing){
-if(!exam||!available(exam))return toast("Cet examen n'est pas disponible actuellement.",true);
-const qs=parseQuestions(exam);if(!qs.length)return toast("Cet examen ne contient aucune question valide.",true);
-let attempt=existing;
-if(!attempt){
-if(!confirm(`Commencer « ${exam.titre} » ? Durée : ${Number(exam.dureeMinutes||30)} minutes.`))return;
-const start=Date.now(),duration=Math.max(1,Number(exam.dureeMinutes||30))*60000,data={examenId:exam.id,titre:exam.titre||"",etudiantId:currentUser.uid,etudiantEmail:currentUser.email||"",classeId:exam.classeId||"",professeurUid:exam.professeurUid||"",debutMs:start,finMs:start+duration,dureeMinutes:Number(exam.dureeMinutes||30),statut:"en_cours",reponses:{},createdAt:stamp(),updatedAt:stamp()};
-try{const ref=await addDoc(collection(db,"tentatives_examens"),data);attempt={id:ref.id,...data}}catch(e){return toast(friendly(e),true)}
-}
-activeExam=exam;activeAttempt=attempt;answerCache={...(attempt.reponses||{})};renderExamAttempt()
+async function startExam(exam, existing){
+  if(!exam || !available(exam)){
+    return toast("Cet examen n'est pas disponible actuellement.", true);
+  }
+
+  if(!currentUser || !isStudent()){
+    return toast("Action non autorisée.", true);
+  }
+
+  const qs = parseQuestions(exam);
+
+  if(!qs.length){
+    return toast("Cet examen ne contient aucune question valide.", true);
+  }
+
+  let studentAttempts = [];
+
+  // Verifye tantativ elèv la deja genyen pou egzamen sa a.
+  // Si verifikasyon an echwe, pa kreye yon nouvo tantativ.
+  try{
+    const snap = await getDocs(
+      query(
+        collection(db, "tentatives_examens"),
+        where("etudiantId", "==", currentUser.uid)
+      )
+    );
+
+    studentAttempts = snap.docs.map(d => ({
+      id: d.id,
+      ...d.data()
+    })).filter(a => a.examenId === exam.id);
+
+  }catch(e){
+    console.warn(e);
+    return toast(
+      "Impossible de vérifier vos tentatives. Réessayez.",
+      true
+    );
+  }
+
+  // Si elèv la deja remèt egzamen sa a, li pa ka rekòmanse l.
+  const completedAttempt = studentAttempts.find(
+    a => a.statut === "termine"
+  );
+
+  if(completedAttempt){
+    return toast(
+      "Vous avez déjà remis cet examen. Vous ne pouvez pas le recommencer.",
+      true
+    );
+  }
+
+  // Si yon tantativ poko fini egziste, reprann li olye kreye yon lòt.
+  const ongoingAttempt = studentAttempts.find(
+    a => a.statut === "en_cours"
+  );
+
+  let attempt = ongoingAttempt || existing || null;
+
+  if(attempt && attempt.statut !== "en_cours"){
+    attempt = null;
+  }
+
+  if(!attempt){
+    if(!confirm(
+      `Commencer « ${exam.titre} » ? Durée : ${Number(exam.dureeMinutes || 30)} minutes.`
+    )){
+      return;
+    }
+
+    const start = Date.now();
+    const duree = Math.max(
+      1,
+      Number(exam.dureeMinutes || 30)
+    );
+
+    const data = {
+      examenId: exam.id,
+      titre: exam.titre || "",
+      etudiantId: currentUser.uid,
+      etudiantEmail: currentUser.email || "",
+      classeId: exam.classeId || "",
+      professeurUid: exam.professeurUid || "",
+      debutMs: start,
+      finMs: start + duree * 60000,
+      dureeMinutes: duree,
+      statut: "en_cours",
+      reponses: {},
+      createdAt: stamp(),
+      updatedAt: stamp()
+    };
+
+    try{
+      const ref = await addDoc(
+        collection(db, "tentatives_examens"),
+        data
+      );
+
+      attempt = {
+        id: ref.id,
+        ...data
+      };
+
+    }catch(e){
+      return toast(friendly(e), true);
+    }
+  }
+
+  activeExam = exam;
+  activeAttempt = attempt;
+  answerCache = { ...(attempt.reponses || {}) };
+
+  renderExamAttempt();
 }
 
 function renderExamAttempt(){
@@ -1157,18 +1475,60 @@ const left=Number(activeAttempt.finMs)-Date.now();$("examTimer").textContent="�
 if(left<=0){stopTimer();submitExam(true)}
 }
 async function submitExam(auto){
-if(!activeExam||!activeAttempt)return;
-const exam=activeExam,a=activeAttempt,qs=parseQuestions(exam);if($("answerForm"))answerCache=collectAnswers();const answers={...answerCache};stopTimer();if($("submitExam"))$("submitExam").disabled=true;
+  if(!activeExam || !activeAttempt) return;
+
+const exam = activeExam;
+const a = activeAttempt;
+
+// Anpeche plizyè remisyon youn apre lòt.
+if(a.statut !== "en_cours"){
+  return toast(
+    "Cet examen a déjà été remis ou n'est plus en cours.",
+    true
+  );
+}
+
+if(a._submitting) return;
+a._submitting = true;
+
+const qs = parseQuestions(exam);
+
+if($("answerForm")){
+  answerCache = collectAnswers();
+}
+
+const answers = {...answerCache};
+
+stopTimer();
+
+if($("submitExam")){
+  $("submitExam").disabled = true;
+}
 try{
 await saveQueue;let score=0,notesQCM={},maxQCM=0;
 qs.forEach((q,i)=>{if(q.type!=="qcm")return;const pts=Number(q.points)||1;maxQCM+=pts;const good=String(q.correctAnswer??"").trim().toLowerCase(),given=String(answers[i]??"").trim().toLowerCase();notesQCM[i]=given&&given===good?pts:0;score+=notesQCM[i]});
 const hasWritten=qs.some((q,i)=>q.type==="ecrit"&&String(answers[i]||"").trim());
 const max=qs.reduce((s,q)=>s+(Number(q.points)||1),0);
 await updateDoc(doc(db,"tentatives_examens",a.id),{reponses:answers,notesQCM,noteQCM:score,noteEcrite:0,noteObtenue:score,noteMax:max,correctionManuelle:hasWritten,statut:"termine",remisAutomatiquement:!!auto,dateRemise:stamp(),updatedAt:stamp()});
-activeExam=null;activeAttempt=null;answerCache={};
+a.statut = "termine";
+activeExam = null;
+activeAttempt = null;
+answerCache = {};
 $("pageContent").innerHTML=`<div class="card"><h3>Examen remis avec succès</h3><div class="notice">${auto?"Le temps est écoulé. Votre examen a été remis automatiquement.":"Votre examen a été remis."}</div><h2>Note QCU : ${score} / ${maxQCM}</h2><p>${hasWritten?"Les réponses écrites attendent la correction du professeur.":"Les questions ont été corrigées automatiquement."}</p><button class="btn primary" id="backExams">Retour aux examens</button></div>`;
 $("backExams").onclick=()=>openPage("examens")
-}catch(e){console.error(e);if($("submitExam"))$("submitExam").disabled=false;toast("La remise a échoué : "+friendly(e),true)}
+}catch(e){
+  console.error(e);
+
+  a._submitting = false;
+
+  if($("submitExam")){
+    $("submitExam").disabled = false;
+  }
+
+  toast(
+    "La remise a échoué : " + friendly(e),
+    true
+  );
 }
 
 /* Notes de cours : texte et photo */
