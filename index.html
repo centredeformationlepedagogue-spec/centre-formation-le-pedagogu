@@ -20,13 +20,33 @@
 .exam-question,.course-note{padding:15px;border:1px solid var(--bd);border-radius:10px;margin:12px 0;background:#fff}.exam-question h4{color:var(--b);margin:0 0 10px}.exam-option{display:flex;align-items:center;gap:8px;padding:8px;background:#f8faff;margin:5px 0;border-radius:6px}.exam-option input{width:auto}.exam-option span{flex:1}.timer{font-size:26px;text-align:center;padding:13px;background:#edf3fc;border:2px solid var(--bd);border-radius:10px;position:sticky;top:70px;z-index:3}.timer.warning{background:#fee2e2;color:#991b1b}.course-text{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.7}.course-note img{max-width:100%;max-height:600px;display:block;margin:12px auto}#toast{position:fixed;bottom:18px;right:18px;background:#17243a;color:white;padding:13px 16px;border-radius:8px;z-index:99;max-width:90%}footer{text-align:center;padding:20px;color:var(--mut);font-size:12px}
 @media(max-width:800px){.layout{display:block}.sidebar{width:100%;display:flex;flex-wrap:wrap;gap:3px}.sidebar-title{width:100%}.nav-btn{width:auto;flex:1 1 130px;font-size:13px}.main{padding:12px}.form-grid{grid-template-columns:1fr}.full{grid-column:auto}.topbar{position:static}.timer{top:5px}}
 /* Gestion des utilisateurs : affichage compact */
-#pageContent .table-wrap:has(th:nth-child(8)){max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+#pageContent .table-wrap:has(th:nth-child(8)) {
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
 #pageContent .table-wrap:has(th:nth-child(8)) th,
-#pageContent .table-wrap:has(th:nth-child(8)) td{padding:5px 6px;font-size:11px;line-height:1.3;vertical-align:middle}
-#pageContent .table-wrap:has(th:nth-child(8)) th{white-space:nowrap}
-#pageContent .table-wrap:has(th:nth-child(8)) .actions{gap:4px}
-#pageContent .table-wrap:has(th:nth-child(8)) .actions .btn{font-size:10px;padding:5px 6px}
-#pageContent .table-wrap:has(th:nth-child(8)) select{min-width:95px;padding:5px;font-size:11px}
+#pageContent .table-wrap:has(th:nth-child(8)) td {
+  padding: 5px 6px;
+  font-size: 11px;
+  line-height: 1.3;
+  vertical-align: middle;
+}
+#pageContent .table-wrap:has(th:nth-child(8)) th {
+  white-space: nowrap;
+}
+#pageContent .table-wrap:has(th:nth-child(8)) .actions {
+  gap: 4px;
+}
+#pageContent .table-wrap:has(th:nth-child(8)) .actions .btn {
+  font-size: 10px;
+  padding: 5px 6px;
+}
+#pageContent .table-wrap:has(th:nth-child(8)) select {
+  min-width: 95px;
+  padding: 5px;
+  font-size: 11px;
+}
 </style>
 </head>
 <body>
@@ -204,7 +224,20 @@ async function completeLogin(user){
 if(loginLock)return;loginLock=true;currentUser=user;
 try{
 currentProfile=await ensureProfile(user);
-  $("userInfo").textContent=`${currentProfile.nom||user.displayName||user.email} — ${roleName(currentProfile.role)}`;
+
+const isOpen = await checkAppOpenState();
+if(!isOpen && !isAdmin()){
+await signOut(auth);currentUser=null;currentProfile=null;
+authMessage("L'application est actuellement fermée pour maintenance par l'administrateur. Veuillez réessayer ultérieurement.", "error");
+return;
+}
+
+if(!approved()){
+const status=currentProfile.status;await signOut(auth);currentUser=null;currentProfile=null;
+authMessage(status==="refuse"?"Votre demande a été refusée. Contactez l'administrateur.":"Votre compte attend l'approbation de l'administrateur.",status==="refuse"?"error":"info");return;
+}
+$("authScreen").classList.add("hidden");$("app").classList.remove("hidden");
+$("userInfo").textContent=`${currentProfile.nom||user.displayName||user.email} — ${roleName(currentProfile.role)}`;
 await chargerNomsClasses();
 await chargerNomsUtilisateurs();
 buildNavigation();await openPage("accueil");
@@ -372,7 +405,9 @@ const modules=[
   ["titre","Titre"],
   ["description","Description"],
   ["classeId","Classe"],
-  ["dateLimite","Date limite"]
+  ["dateDebut","Date et heure de début"],
+  ["dateLimite","Date limite"],
+  ["dureeMinutes","Durée autorisée (minutes)"]
 ]},
 {id:"examens",title:"Examens",collection:"examens",fields:[
   ["titre","Titre de l'examen"],
@@ -441,7 +476,8 @@ const teacherPages=[
   "horaire_cours",
   "horaire_examens"
 ];
-  let cacheNomsClasses = {};
+
+let cacheNomsClasses = {};
 async function chargerNomsClasses() {
   try {
     const snap = await getDocs(collection(db, "classes"));
@@ -522,7 +558,7 @@ html+=`<div class="card" style="border:1px solid var(--bd);background:#f8fafc;ma
   <h3>⚙️ Contrôle d'ouverture de l'application</h3>
   <p class="muted">État actuel : <strong style="color:${appOpenState?'var(--green)':'var(--red)'}">${appOpenState?'Application Ouverte':'Application Fermée (Maintenance)'}</strong></p>
   <div class="actions">
-    <button class="btn ${appOpenState?'danger':'success'}" id="toggleAppStatusBtn">${appOpenState?'Fermer l\\'application':'Ouvrir l\\'application'}</button>
+    <button class="btn ${appOpenState?'danger':'success'}" id="toggleAppStatusBtn">${appOpenState?'Fermer l\'application':'Ouvrir l\'application'}</button>
   </div>
 </div>`;
 
@@ -565,6 +601,7 @@ if($("toggleAppStatusBtn")){
 }
 }
 
+
 function canAddModule(id){
   const role = currentProfile?.role;
 
@@ -596,7 +633,9 @@ function canEditModule(id){
       && role === "professeur"
     );
 }
-  async function renderModule(m){
+
+
+async function renderModule(m){
   let records = [];
   const role = currentProfile?.role;
   const uid = currentUser?.uid;
@@ -661,6 +700,15 @@ function canEditModule(id){
       .docs.map(d=>({id:d.id,...d.data()}));
   }
 
+  // Vérification de soumission unique pour les devoirs chez l'élève
+  let studentRemises = [];
+  if(isStudent() && m.id==="devoirs"){
+    try {
+      const remSnap = await getDocs(query(collection(db,"remises"), where("etudiantId","==",uid)));
+      studentRemises = remSnap.docs.map(d=>d.data());
+    }catch(err){console.warn(err);}
+  }
+
   const canAdd = typeof canAddModule==="function"
     ? canAddModule(m.id)
     : canEditModule(m.id);
@@ -693,7 +741,12 @@ function canEditModule(id){
           </thead>
           <tbody>
             ${
-              records.map(r=>`
+              records.map(r=>{
+                let alreadySubmitted = false;
+                if(isStudent() && m.id==="devoirs"){
+                  alreadySubmitted = studentRemises.some(sr => sr.devoirId === r.id);
+                }
+                return `
                 <tr>
                   <td>
                     ${
@@ -710,17 +763,17 @@ function canEditModule(id){
                         }</div>`;
                       }).join("") || esc(r.titre||r.id)
                     }
+                    ${isStudent() && m.id==="devoirs" ? `<div style="margin-top:6px;"><span class="badge ${alreadySubmitted?'':'wait'}">${alreadySubmitted?'Déjà remis':'Non remis'}</span></div>`:''}
                   </td>
                   <td>
                     <div class="actions">
                     ${
-  m.id === "devoirs" && isStudent()
-    ? `<button class="btn primary"
-         data-submit-homework="${esc(r.id)}">
-         Résoudre / Remettre
-       </button>`
-    : ""
-}
+                      m.id === "devoirs" && isStudent()
+                        ? (alreadySubmitted
+                            ? `<span class="badge">Déjà remis</span>`
+                            : `<button class="btn primary" data-submit-homework="${esc(r.id)}">Résoudre / Remettre</button>`)
+                        : ""
+                    }
                       ${
                         canEdit &&
                         (m.id!=="remises" ||
@@ -739,7 +792,7 @@ function canEditModule(id){
                     </div>
                   </td>
                 </tr>
-              `).join("") ||
+              `;}).join("") ||
               '<tr><td colspan="2">Aucun enregistrement.</td></tr>'
             }
           </tbody>
@@ -768,6 +821,7 @@ function canEditModule(id){
         if(devoir) ouvrirSoumissionDevoir(devoir);
       };
     });
+
 
   $("pageContent").querySelectorAll("[data-edit]")
     .forEach(b=>{
@@ -833,13 +887,29 @@ async function ouvrirSoumissionDevoir(devoir){
     return;
   }
 
+  // Vérification atomique préalable
+  try {
+    const existingSnap = await getDocs(query(collection(db,"remises"), where("devoirId","==",devoir.id), where("etudiantId","==",currentUser.uid)));
+    if(!existingSnap.empty){
+      toast("Vous avez déjà soumis une réponse pour ce devoir.", true);
+      await openPage("devoirs");
+      return;
+    }
+  } catch(err){console.warn(err);}
+
   const titre = devoir.titre || "Devoir";
   const zone = $("recordFormArea");
   if(!zone) return;
 
+  let hasTimer = Number(devoir.dureeMinutes || 0) > 0;
+  let durationMs = Number(devoir.dureeMinutes || 30) * 60000;
+  let startTime = Date.now();
+  let homeworkTimerInterval = null;
+
   zone.innerHTML = `
     <div class="card">
       <h3>Résoudre le devoir : ${esc(titre)}</h3>
+      ${hasTimer?`<div id="homeworkTimer" class="timer">⏱ Temps restant : --:--</div>`:""}
       <form id="soumissionDevoirForm">
         <div class="field">
           <label>Votre réponse *</label>
@@ -852,7 +922,7 @@ async function ouvrirSoumissionDevoir(devoir){
             placeholder="https://...">
         </div>
         <div class="actions">
-          <button class="btn primary" type="submit">
+          <button class="btn primary" type="submit" id="submitHomeworkBtn">
             Envoyer mon devoir
           </button>
           <button class="btn secondary" id="annulerSoumission"
@@ -862,12 +932,31 @@ async function ouvrirSoumissionDevoir(devoir){
     </div>
   `;
 
+  if(hasTimer && $("homeworkTimer")){
+    const updateHomeworkTimer = () => {
+      let left = durationMs - (Date.now() - startTime);
+      let s = Math.max(0, Math.ceil(left / 1000));
+      $("homeworkTimer").textContent = "⏱ Temps restant : " + String(Math.floor(s/60)).padStart(2,"0") + ":" + String(s%60).padStart(2,"0");
+      $("homeworkTimer").classList.toggle("warning", left <= 60000);
+      if(left <= 0){
+        clearInterval(homeworkTimerInterval);
+        toast("Temps écoulé ! Envoi automatique du devoir...", true);
+        $("soumissionDevoirForm").requestSubmit();
+      }
+    };
+    updateHomeworkTimer();
+    homeworkTimerInterval = setInterval(updateHomeworkTimer, 1000);
+  }
+
   $("annulerSoumission").onclick = () => {
+    if(homeworkTimerInterval) clearInterval(homeworkTimerInterval);
     zone.innerHTML = "";
   };
 
+  let isSubmitting = false;
   $("soumissionDevoirForm").onsubmit = async e => {
     e.preventDefault();
+    if(isSubmitting) return;
 
     const form = e.currentTarget;
     const contenu = String(
@@ -882,11 +971,24 @@ async function ouvrirSoumissionDevoir(devoir){
       return;
     }
 
-    const bouton = form.querySelector('button[type="submit"]');
-    bouton.disabled = true;
-    bouton.textContent = "Envoi en cours...";
+    isSubmitting = true;
+    const bouton = $("submitHomeworkBtn") || form.querySelector('button[type="submit"]');
+    if(bouton){
+      bouton.disabled = true;
+      bouton.textContent = "Envoi en cours...";
+    }
+    if(homeworkTimerInterval) clearInterval(homeworkTimerInterval);
 
     try{
+      // Double vérification finale anti-doublon
+      const checkSnap = await getDocs(query(collection(db,"remises"), where("devoirId","==",devoir.id), where("etudiantId","==",currentUser.uid)));
+      if(!checkSnap.empty){
+        toast("Vous avez déjà remis ce devoir.", true);
+        zone.innerHTML = "";
+        await openPage("devoirs");
+        return;
+      }
+
       const remise = {
         devoirId: devoir.id,
         titreDevoir: titre,
@@ -913,16 +1015,21 @@ async function ouvrirSoumissionDevoir(devoir){
       await addDoc(collection(db,"remises"),remise);
       toast("Devoir envoyé avec succès.");
       zone.innerHTML = "";
-      await openPage("remises");
+      await openPage("devoirs");
     }catch(err){
       console.error("Erreur soumission devoir :",err);
       toast(friendly(err),true);
-      bouton.disabled = false;
-      bouton.textContent = "Envoyer mon devoir";
+      isSubmitting = false;
+      if(bouton){
+        bouton.disabled = false;
+        bouton.textContent = "Envoyer mon devoir";
+      }
     }
   };
 }
-  async function recordForm(m,r){
+
+
+async function recordForm(m,r){
 const area=$("recordFormArea");if(!area)return;
 const isExam=m.id==="examens";
   if(
@@ -1038,7 +1145,7 @@ function parseQuestions(exam){
 try{const value=exam.questionsJSON;const q=Array.isArray(value)?value:JSON.parse(value||"[]");return Array.isArray(q)?q.filter(x=>x&&typeof x.question==="string"&&["qcm","ecrit"].includes(x.type)):[]}
 catch(e){console.warn("Questions d'examen invalides",e);return[]}
 }
-  function fmtTime(ms){const s=Math.max(0,Math.ceil(ms/1000));return`${String(Math.floor(s/60)).padStart(2,"0")}:${String(s%60).padStart(2,"0")}`}
+function fmtTime(ms){const s=Math.max(0,Math.ceil(ms/1000));return`${String(Math.floor(s/60)).padStart(2,"0")}:${String(s%60).padStart(2,"0")}`}
 function available(e){const n=Date.now(),s=e.dateDebut?new Date(e.dateDebut).getTime():0,f=e.dateLimite?new Date(e.dateLimite).getTime():Infinity;return n>=s&&n<=f}
 
 async function renderExams(){
@@ -1057,7 +1164,7 @@ const snap=isAdmin()?await getDocs(collection(db,"examens")):await getDocs(query
 const exams=snap.docs.map(d=>({id:d.id,...d.data()}));
 $("pageContent").innerHTML=`<div class="card"><div class="page-head"><div><h3>Gestion des examens</h3><p class="muted">QCU, questions ouvertes ou examen mélangé.</p></div><button id="createExam" class="btn primary">＋ Créer un examen</button></div><div class="notice">Ajoutez vos questions à l'aide du formulaire. Choisissez QCU pour des propositions avec une bonne réponse, ou question ouverte pour une réponse écrite. Les QCU sont corrigés automatiquement ; les questions ouvertes sont corrigées par le professeur.</div><div class="table-wrap"><table><thead><tr><th>Examen</th><th>Classe</th><th>Durée</th><th>Questions</th><th>Actions</th></tr></thead><tbody>${exams.map(e=>`<tr><td>${esc(e.titre)}</td><td>${esc(nomClasseLisible(e.classeId))}</td><td>${Number(e.dureeMinutes||30)} min</td><td>${parseQuestions(e).length}</td><td><div class="actions"><button class="btn secondary" data-edit-exam="${esc(e.id)}">Modifier</button><button class="btn primary" data-attempts="${esc(e.id)}">Tentatives</button><button class="btn danger" data-delete-exam="${esc(e.id)}">Supprimer</button></div></td></tr>`).join("")||'<tr><td colspan="5">Aucun examen créé.</td></tr>'}</tbody></table></div><div id="recordFormArea"></div><div id="examExtra"></div></div>`;
 $("createExam").onclick=()=>{const m=modules.find(x=>x.id==="examens");if(!m)return toast("Le module examens est introuvable.",true);recordForm(m,null)};
-$("pageContent").querySelectorAll("[data-edit-exam]").forEach(b=>b.onclick=()=>{const e=exams.find(x=>x.id===b.dataset.editExam);recordForm(modules.find(m=>m.id==="examens"),e)});
+$("pageContent").querySelectorAll("[data-edit-exam]").forEach(b=>b.onclick=()=>recordForm(modules.find(m=>m.id==="examens"),exams.find(x=>x.id===b.dataset.editExam)));
 $("pageContent").querySelectorAll("[data-delete-exam]").forEach(b=>b.onclick=async()=>{if(confirm("Supprimer cet examen ?"))try{await deleteDoc(doc(db,"examens",b.dataset.deleteExam));toast("Examen supprimé.");await renderExams()}catch(e){toast(friendly(e),true)}});
 $("pageContent").querySelectorAll("[data-attempts]").forEach(b=>b.onclick=()=>showAttempts(exams.find(x=>x.id===b.dataset.attempts)))
 }
@@ -1130,7 +1237,8 @@ $("pageContent").innerHTML=`<div class="card"><h3>Examen remis avec succès</h3>
 $("backExams").onclick=()=>openPage("examens")
 }catch(e){console.error(e);if($("submitExam"))$("submitExam").disabled=false;toast("La remise a échoué : "+friendly(e),true)}
 }
-  /* Notes de cours : texte et photo */
+
+/* Notes de cours : texte et photos multiples */
 async function compressPhoto(file){
 if(!file||!file.type.startsWith("image/"))throw Error("Choisissez une image valide.");
 if(file.size>12*1024*1024)throw Error("Photo trop grande : choisissez une image de moins de 12 Mo.");
@@ -1151,7 +1259,10 @@ else{
 const cl=currentProfile.classeId||(currentProfile.classIds||[])[0];if(!cl){$("pageContent").innerHTML='<div class="card">Votre compte n’est pas encore associé à une classe. Contactez l’administrateur.</div>';return}
 notes=(await getDocs(query(collection(db,"notes_cours"),where("classeId","==",cl)))).docs.map(d=>({id:d.id,...d.data()}))
 }
-$("pageContent").innerHTML=`<div class="card"><div class="page-head"><div><h3>Notes de cours</h3><p class="muted">${teacher?"Publier du texte ou une photo de cours.":"Lire et copier les cours."}</p></div>${teacher?'<button id="newNote" class="btn primary">＋ Ajouter une note</button>':""}</div><div id="noteFormArea"></div>${notes.map(n=>`<article class="course-note"><h3>${esc(n.titre)}</h3><p class="muted">Classe : ${esc(nomClasseLisible(n.classeId))} · ${esc(n.matiereId||"")}</p><div class="course-text" id="noteText${esc(n.id)}">${esc(n.contenu||"")}</div>${n.photoData?`<img src="${n.photoData}" alt="Photo du cours">`:""}<div class="actions"><button class="btn secondary" data-copy-note="${esc(n.id)}">Copier le texte</button>${teacher&&(isAdmin()||n.professeurUid===currentUser.uid)?`<button class="btn secondary" data-edit-note="${esc(n.id)}">Modifier</button><button class="btn danger" data-del-note="${esc(n.id)}">Supprimer</button>`:""}</div></article>`).join("")||'<div class="notice">Aucune note de cours.</div>'}</div>`;
+$("pageContent").innerHTML=`<div class="card"><div class="page-head"><div><h3>Notes de cours</h3><p class="muted">${teacher?"Publier du texte ou des photos de cours.":"Lire et copier les cours."}</p></div>${teacher?'<button id="newNote" class="btn primary">＋ Ajouter une note</button>':""}</div><div id="noteFormArea"></div>${notes.map(n=>{
+let photosArr = Array.isArray(n.photosData)?n.photosData:(n.photoData?[n.photoData]:[]);
+return `<article class="course-note"><h3>${esc(n.titre)}</h3><p class="muted">Classe : ${esc(nomClasseLisible(n.classeId))} · ${esc(n.matiereId||"")}</p><div class="course-text" id="noteText${esc(n.id)}">${esc(n.contenu||"")}</div>${photosArr.map(p=>`<img src="${p}" alt="Photo du cours">`).join("")}<div class="actions"><button class="btn secondary" data-copy-note="${esc(n.id)}">Copier le texte</button>${teacher&&(isAdmin()||n.professeurUid===currentUser.uid)?`<button class="btn secondary" data-edit-note="${esc(n.id)}">Modifier</button><button class="btn danger" data-del-note="${esc(n.id)}">Supprimer</button>`:""}</div></article>`;
+}).join("")||'<div class="notice">Aucune note de cours.</div>'}</div>`;
 if(teacher)$("newNote").onclick=()=>noteForm(null);
 $("pageContent").querySelectorAll("[data-copy-note]").forEach(b=>b.onclick=async()=>{const t=$("noteText"+b.dataset.copyNote)?.innerText||"";try{await navigator.clipboard.writeText(t);toast("Texte copié.")}catch{toast("Sélectionnez le texte puis choisissez Copier.",true)}});
 $("pageContent").querySelectorAll("[data-edit-note]").forEach(b=>b.onclick=()=>noteForm(notes.find(n=>n.id===b.dataset.editNote)));
@@ -1159,6 +1270,7 @@ $("pageContent").querySelectorAll("[data-del-note]").forEach(b=>b.onclick=async(
 }
 async function noteForm(n){
 const area=$("noteFormArea");
+
 let classesDisponibles = [];
 let matieresDisponibles = [];
 try {
@@ -1180,6 +1292,8 @@ try {
   console.warn("Erreur chargement données note cours", e);
 }
 
+let existingPhotos = Array.isArray(n?.photosData)?n.photosData:(n?.photoData?[n.photoData]:[]);
+
 area.innerHTML=`<div class="card">
 <h3>${n?"Modifier":"Nouvelle"} note de cours</h3>
 <form id="noteForm">
@@ -1187,6 +1301,7 @@ area.innerHTML=`<div class="card">
 <label>Titre *</label>
 <input name="titre" required value="${esc(n?.titre||"")}">
 </div>
+
 <div class="form-grid">
 <div class="field">
 <label>Classe *</label>
@@ -1203,26 +1318,25 @@ ${matieresDisponibles.map(mat=>`<option value="${esc(mat.id)}" ${n?.matiereId===
 </select>
 </div>
 </div>
+
 <div class="field">
 <label>Texte du cours</label>
 <textarea name="contenu" maxlength="12000">${esc(n?.contenu||"")}</textarea>
 </div>
+
 <div class="field">
-<label>Photo de page (facultatif)</label>
+<label>Photos / Pages jointes multiples</label>
+
 <div class="actions">
-<button class="btn primary" id="capturePhotoBtn" type="button">📸 Capture écran / Prendre une photo</button>
-<button class="btn secondary" id="choosePhotoBtn" type="button">🖼️ Choisir une photo</button>
+<button class="btn primary" id="choosePhotosBtn" type="button">🖼️ Sélectionner des photos (multiples)</button>
 </div>
-<input id="capturePhotoInput" type="file" accept="image/*" capture="environment" hidden>
-<input id="choosePhotoInput" type="file" accept="image/*" hidden>
-<div id="photoPreview">
-${n?.photoData?`<img src="${n.photoData}" style="max-width:100%;max-height:200px">`:""}
+
+<input id="choosePhotosInput" type="file" accept="image/*" multiple hidden>
+
+<div id="photosPreview" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;">
 </div>
-<label>
-<input id="removePhoto" type="checkbox" style="width:auto">
-Retirer la photo actuelle
-</label>
 </div>
+
 <div class="actions">
 <button class="btn primary" id="saveNote" type="submit">Enregistrer</button>
 <button class="btn secondary" id="cancelNote" type="button">Annuler</button>
@@ -1230,37 +1344,56 @@ Retirer la photo actuelle
 </form>
 </div>`;
 
-let photo="";
-$("cancelNote").onclick=()=>area.innerHTML="";
-$("capturePhotoBtn").onclick=()=>$("capturePhotoInput").click();
-$("choosePhotoBtn").onclick=()=>$("choosePhotoInput").click();
+let selectedPhotos=[...existingPhotos];
 
-async function handlePhoto(input){
-const file=input.files?.[0];
-if(!file)return;
-try{
-photo=await compressPhoto(file);
-$("photoPreview").innerHTML=`<img src="${photo}" alt="Aperçu de la photo du cours" style="max-width:100%;max-height:200px">`;
-$("removePhoto").checked=false;
-}catch(e){
-photo="";
-toast(e.message||"Impossible de charger cette image.",true);
-}finally{
-input.value="";
+function renderPhotoPreviews(){
+  const prev=$("photosPreview");
+  if(!prev)return;
+  if(selectedPhotos.length===0){
+    prev.innerHTML='<p class="muted">Aucune photo sélectionnée.</p>';
+    return;
+  }
+  prev.innerHTML=selectedPhotos.map((p,idx)=>`
+    <div style="position:relative;border:1px solid var(--bd);border-radius:6px;padding:4px;background:#fff">
+      <img src="${p}" style="width:90px;height:90px;object-fit:cover;display:block;border-radius:4px">
+      <button type="button" class="btn danger" style="position:absolute;top:2px;right:2px;padding:2px 6px;font-size:10px;" data-remove-img="${idx}">×</button>
+    </div>
+  `).join("");
+  prev.querySelectorAll("[data-remove-img]").forEach(b=>{
+    b.onclick=()=>{
+      const i=Number(b.dataset.removeImg);
+      selectedPhotos.splice(i,1);
+      renderPhotoPreviews();
+    };
+  });
 }
-}
-$("capturePhotoInput").onchange=async()=>handlePhoto($("capturePhotoInput"));
-$("choosePhotoInput").onchange=async()=>handlePhoto($("choosePhotoInput"));
-$("removePhoto").onchange=()=>{
-if($("removePhoto").checked){
-photo="";
-$("photoPreview").innerHTML="";
-}
+renderPhotoPreviews();
+
+$("cancelNote").onclick=()=>area.innerHTML="";
+$("choosePhotosBtn").onclick=()=>$("choosePhotosInput").click();
+
+$("choosePhotosInput").onchange=async e=>{
+  const files=e.target.files;
+  if(!files||files.length===0)return;
+  toast("Compression des images en cours...");
+  for(let file of files){
+    try{
+      const compressed=await compressPhoto(file);
+      selectedPhotos.push(compressed);
+    }catch(err){
+      toast(err.message||"Erreur de lecture d'une image.",true);
+    }
+  }
+  e.target.value="";
+  renderPhotoPreviews();
+  toast("Images ajoutées avec succès.");
 };
+
 $("noteForm").onsubmit=async e=>{
 e.preventDefault();
 const btn=$("saveNote");
 btn.disabled=true;
+
 try{
 const fd=new FormData(e.currentTarget);
 const data={
@@ -1268,20 +1401,32 @@ titre:String(fd.get("titre")||"").trim(),
 classeId:String(fd.get("classeId")||"").trim(),
 matiereId:String(fd.get("matiereId")||"").trim(),
 contenu:String(fd.get("contenu")||"").trim(),
+photosData:selectedPhotos,
 professeurUid:isAdmin()?(n?.professeurUid||currentUser.uid):currentUser.uid,
 updatedAt:stamp()
 };
-if(!data.titre||!data.classeId)throw Error("Le titre et la classe sont obligatoires.");
-if($("removePhoto").checked)data.photoData="";
-else if(photo)data.photoData=photo;
-else if(n?.photoData)data.photoData=n.photoData;
-if(!data.contenu&&!data.photoData)throw Error("Ajoutez le texte ou une photo.");
-if(n){await updateDoc(doc(db,"notes_cours",n.id),data)}
-else{data.createdAt=stamp();await addDoc(collection(db,"notes_cours"),data)}
+
+if(!data.titre||!data.classeId)
+throw Error("Le titre et la classe sont obligatoires.");
+
+if(!data.contenu&&selectedPhotos.length===0)
+throw Error("Ajoutez le texte ou au moins une photo.");
+
+if(n){
+await updateDoc(doc(db,"notes_cours",n.id),data);
+}else{
+data.createdAt=stamp();
+await addDoc(collection(db,"notes_cours"),data);
+}
+
 toast("Note enregistrée.");
 await renderNotesCours();
-}catch(err){toast(friendly(err),true)}
-finally{btn.disabled=false}
+
+}catch(err){
+toast(friendly(err),true);
+}finally{
+btn.disabled=false;
+}
 };
 }
 
@@ -1292,7 +1437,11 @@ async function renderBulletin(){
   const isStd = ["eleve","etudiant"].includes(currentProfile?.role);
 
   if(!isAdm && !isProf && !isStd){
-    $("pageContent").innerHTML=`<div class="card"><h3>Bulletin scolaire</h3><div class="notice">Accès non autorisé.</div></div>`;
+    $("pageContent").innerHTML=`
+      <div class="card">
+        <h3>Bulletin scolaire</h3>
+        <div class="notice">Accès non autorisé.</div>
+      </div>`;
     return;
   }
 
@@ -1309,10 +1458,12 @@ async function renderBulletin(){
         <div id="bulletinFormArea"></div>
         <div id="bulletinsListContainer">Chargement des bulletins…</div>
       </div>`;
+
     await loadTeacherAdminBulletins();
     return;
   }
 
+  // Espace Élève / Étudiant
   $("pageContent").innerHTML=`
     <div class="card">
       <h3>🎓 Mon bulletin scolaire</h3>
@@ -1320,11 +1471,20 @@ async function renderBulletin(){
     </div>`;
 
   try{
-    const snap=await getDocs(query(collection(db,"bulletins"),where("etudiantId","==",currentUser.uid),where("publie","==",true)));
+    const snap=await getDocs(query(
+      collection(db,"bulletins"),
+      where("etudiantId","==",currentUser.uid),
+      where("publie","==",true)
+    ));
+
     const rows=snap.docs.map(d=>({id:d.id,...d.data()}));
 
     if(rows.length===0){
-      $("pageContent").innerHTML=`<div class="card"><h3>🎓 Mon bulletin scolaire</h3><div class="notice">Aucun bulletin publié n'est disponible pour le moment.</div></div>`;
+      $("pageContent").innerHTML=`
+        <div class="card">
+          <h3>🎓 Mon bulletin scolaire</h3>
+          <div class="notice">Aucun bulletin publié n'est disponible pour le moment.</div>
+        </div>`;
       return;
     }
 
@@ -1340,16 +1500,30 @@ async function renderBulletin(){
           </div>
           <button id="printBulletinBtn" class="btn primary">📄 Imprimer / PDF</button>
         </div>
+
         <div id="printArea">
-          <div class="notice"><b>Centre de Formation Le Pédagogue</b><br>Bulletin officiel — ${esc(bulletin.anneeAcademique||"2026")}</div>
+          <div class="notice">
+            <b>Centre de Formation Le Pédagogue</b><br>
+            Bulletin officiel — ${esc(bulletin.anneeAcademique||"2026")}
+          </div>
           <p><b>Élève :</b> ${esc(studentName)}</p>
           <p><b>Moyenne générale :</b> <strong>${esc(bulletin.moyenne||"—")} / 20</strong></p>
           <p><b>Appréciation générale :</b> ${esc(bulletin.appreciation||"—")}</p>
+          
           <div class="table-wrap">
             <table>
-              <thead><tr><th>Matière</th><th>Note /20</th><th>Coefficient</th><th>Appréciation</th></tr></thead>
+              <thead>
+                <tr><th>Matière</th><th>Note /20</th><th>Coefficient</th><th>Appréciation</th></tr>
+              </thead>
               <tbody>
-                ${(bulletin.matieres||[]).map(m=>`<tr><td>${esc(m.nom)}</td><td>${esc(m.note)} / 20</td><td>${esc(m.coefficient||1)}</td><td>${esc(m.appreciation||"—")}</td></tr>`).join("")||'<tr><td colspan="4">Aucune note détaillée.</td></tr>'}
+                ${(bulletin.matieres||[]).map(m=>`
+                  <tr>
+                    <td>${esc(m.nom)}</td>
+                    <td>${esc(m.note)} / 20</td>
+                    <td>${esc(m.coefficient||1)}</td>
+                    <td>${esc(m.appreciation||"—")}</td>
+                  </tr>
+                `).join("")||'<tr><td colspan="4">Aucune note détaillée.</td></tr>'}
               </tbody>
             </table>
           </div>
@@ -1362,6 +1536,7 @@ async function renderBulletin(){
       w.document.write(`<!DOCTYPE html><html><head><title>Bulletin</title><style>body{font-family:Arial;padding:20px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccc;padding:8px;text-align:left}</style></head><body>${$("printArea").innerHTML}<script>window.onload=()=>window.print()<\/script></body></html>`);
       w.document.close();
     };
+
   }catch(e){
     $("pageContent").innerHTML=`<div class="card"><h3>Erreur</h3><div class="message error">${esc(friendly(e))}</div></div>`;
   }
@@ -1371,13 +1546,23 @@ async function loadTeacherAdminBulletins(){
   try{
     const snap = await getDocs(collection(db,"bulletins"));
     const bulletins = snap.docs.map(d=>({id:d.id,...d.data()}));
+
     const container = $("bulletinsListContainer");
     if(!container) return;
 
     container.innerHTML=`
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Élève / Nom</th><th>Classe</th><th>Période</th><th>Moyenne</th><th>Statut publication</th><th>Actions</th></tr></thead>
+          <thead>
+            <tr>
+              <th>Élève / Nom</th>
+              <th>Classe</th>
+              <th>Période</th>
+              <th>Moyenne</th>
+              <th>Statut publication</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
           <tbody>
             ${bulletins.map(b=>`
               <tr>
@@ -1386,25 +1571,51 @@ async function loadTeacherAdminBulletins(){
                 <td>${esc(b.periode||"—")}</td>
                 <td><b>${esc(b.moyenne||"—")} / 20</b></td>
                 <td>${b.publie?'<span class="badge">Publié</span>':'<span class="badge wait">Préparé (Non publié)</span>'}</td>
-                <td><div class="actions">
-                  <button class="btn secondary" data-edit-bulletin="${esc(b.id)}">Modifier</button>
-                  ${isAdmin()?`<button class="btn ${b.publie?'danger':'success'}" data-toggle-pub="${esc(b.id)}" data-current-pub="${!!b.publie}">${b.publie?'Retirer':'Publier'}</button>`:""}
-                  <button class="btn danger" data-del-bulletin="${esc(b.id)}">Supprimer</button>
-                </div></td>
-              </tr>`).join("")||'<tr><td colspan="6">Aucun bulletin préparé.</td></tr>'}
+                <td>
+                  <div class="actions">
+                    <button class="btn secondary" data-edit-bulletin="${esc(b.id)}">Modifier</button>
+                    ${isAdmin()?`<button class="btn ${b.publie?'danger':'success'}" data-toggle-pub="${esc(b.id)}" data-current-pub="${!!b.publie}">${b.publie?'Retirer':'Publier'}</button>`:""}
+                    <button class="btn danger" data-del-bulletin="${esc(b.id)}">Supprimer</button>
+                  </div>
+                </td>
+              </tr>
+            `).join("")||'<tr><td colspan="6">Aucun bulletin préparé.</td></tr>'}
           </tbody>
         </table>
       </div>`;
 
-    if($("newBulletinBtn"))$("newBulletinBtn").onclick=()=>openBulletinForm(null);
-    container.querySelectorAll("[data-edit-bulletin]").forEach(b=>b.onclick=()=>openBulletinForm(bulletins.find(x=>x.id===b.dataset.editBulletin)));
-    container.querySelectorAll("[data-del-bulletin]").forEach(b=>b.onclick=async()=>{
-      if(confirm("Supprimer ce bulletin ?"))try{await deleteDoc(doc(db,"bulletins",b.dataset.delBulletin));toast("Bulletin supprimé.");await loadTeacherAdminBulletins()}catch(e){toast(friendly(e),true)}
+    if($("newBulletinBtn")){
+      $("newBulletinBtn").onclick=()=>openBulletinForm(null);
+    }
+
+    container.querySelectorAll("[data-edit-bulletin]").forEach(b=>{
+      b.onclick=()=>openBulletinForm(bulletins.find(x=>x.id===b.dataset.editBulletin));
     });
-    container.querySelectorAll("[data-toggle-pub]").forEach(b=>b.onclick=async()=>{
-      const id=b.dataset.togglePub,currentPub=b.dataset.currentPub==="true";
-      try{await updateDoc(doc(db,"bulletins",id),{publie:!currentPub,updatedAt:stamp()});toast(!currentPub?"Bulletin publié avec succès.":"Publication retirée.");await loadTeacherAdminBulletins()}catch(e){toast(friendly(e),true)}
+
+    container.querySelectorAll("[data-del-bulletin]").forEach(b=>{
+      b.onclick=async()=>{
+        if(confirm("Supprimer ce bulletin ?")){
+          try{
+            await deleteDoc(doc(db,"bulletins",b.dataset.delBulletin));
+            toast("Bulletin supprimé.");
+            await loadTeacherAdminBulletins();
+          }catch(e){toast(friendly(e),true)}
+        }
+      };
     });
+
+    container.querySelectorAll("[data-toggle-pub]").forEach(b=>{
+      b.onclick=async()=>{
+        const id=b.dataset.togglePub;
+        const currentPub=b.dataset.currentPub==="true";
+        try{
+          await updateDoc(doc(db,"bulletins",id),{publie:!currentPub, updatedAt:stamp()});
+          toast(!currentPub?"Bulletin publié avec succès.":"Publication retirée.");
+          await loadTeacherAdminBulletins();
+        }catch(e){toast(friendly(e),true)}
+      };
+    });
+
   }catch(e){
     $("bulletinsListContainer").innerHTML=`<div class="notice">Erreur de chargement des bulletins : ${esc(friendly(e))}</div>`;
   }
@@ -1413,6 +1624,7 @@ async function loadTeacherAdminBulletins(){
 async function openBulletinForm(b){
   const area=$("bulletinFormArea");
   if(!area) return;
+
   let students=[];
   try{
     const us=await getDocs(collection(db,"users"));
@@ -1424,40 +1636,72 @@ async function openBulletinForm(b){
       <h3>${b?"Modifier":"Préparer"} un bulletin scolaire</h3>
       <form id="bulletinForm">
         <div class="form-grid">
-          <div class="field"><label>Élève ou Étudiant *</label>
-            <select name="etudiantId" required><option value="">Sélectionner un élève</option>
+          <div class="field">
+            <label>Élève ou Étudiant *</label>
+            <select name="etudiantId" required>
+              <option value="">Sélectionner un élève</option>
               ${students.map(s=>`<option value="${esc(s.id)}" ${b?.etudiantId===s.id?"selected":""}>${esc([s.nom,s.prenom].filter(Boolean).join(" ")||(s.email||s.id))}</option>`)}
             </select>
           </div>
-          <div class="field"><label>Classe *</label><input name="classeId" value="${esc(b?.classeId||"")}" required placeholder="Ex. NS4"></div>
-          <div class="field"><label>Période / Trimestre *</label><input name="periode" value="${esc(b?.periode||"1er Trimestre")}" required></div>
-          <div class="field"><label>Moyenne générale (/20) *</label><input name="moyenne" type="number" step="0.01" max="20" min="0" value="${esc(b?.moyenne||"")}" required></div>
-          <div class="field full"><label>Appréciation générale</label><textarea name="appreciation">${esc(b?.appreciation||"")}</textarea></div>
+          <div class="field">
+            <label>Classe *</label>
+            <input name="classeId" value="${esc(b?.classeId||"")}" required placeholder="Ex. NS4">
+          </div>
+          <div class="field">
+            <label>Période / Trimestre *</label>
+            <input name="periode" value="${esc(b?.periode||"1er Trimestre")}" required>
+          </div>
+          <div class="field">
+            <label>Moyenne générale (/20) *</label>
+            <input name="moyenne" type="number" step="0.01" max="20" min="0" value="${esc(b?.moyenne||"")}" required>
+          </div>
+          <div class="field full">
+            <label>Appréciation générale</label>
+            <textarea name="appreciation">${esc(b?.appreciation||"")}</textarea>
+          </div>
         </div>
-        <div class="actions"><button class="btn primary" type="submit">Enregistrer</button><button class="btn secondary" id="cancelBulletinForm" type="button">Annuler</button></div>
+        <div class="actions">
+          <button class="btn primary" type="submit">Enregistrer</button>
+          <button class="btn secondary" id="cancelBulletinForm" type="button">Annuler</button>
+        </div>
       </form>
     </div>`;
 
   $("cancelBulletinForm").onclick=()=>area.innerHTML="";
   $("bulletinForm").onsubmit=async e=>{
     e.preventDefault();
-    const fd=new FormData(e.currentTarget),etudiantId=String(fd.get("etudiantId")||"").trim(),st=students.find(x=>x.id===etudiantId);
+    const fd=new FormData(e.currentTarget);
+    const etudiantId=String(fd.get("etudiantId")||"").trim();
+    const st=students.find(x=>x.id===etudiantId);
+
     const data={
-      etudiantId,etudiantEmail:st?.email||"",
+      etudiantId,
+      etudiantEmail:st?.email||"",
       classeId:String(fd.get("classeId")||"").trim(),
       periode:String(fd.get("periode")||"").trim(),
       moyenne:Number(fd.get("moyenne")||0),
       appreciation:String(fd.get("appreciation")||"").trim(),
-      publie:b?!!b.publie:false,updatedAt:stamp()
+      publie: b?!!b.publie:false,
+      updatedAt:stamp()
     };
+
     try{
-      if(b)await updateDoc(doc(db,"bulletins",b.id),data);
-      else{data.createdAt=stamp();await addDoc(collection(db,"bulletins"),data)}
-      toast("Bulletin enregistré.");area.innerHTML="";await loadTeacherAdminBulletins();
-    }catch(err){toast(friendly(err),true)}
+      if(b){
+        await updateDoc(doc(db,"bulletins",b.id),data);
+      }else{
+        data.createdAt=stamp();
+        await addDoc(collection(db,"bulletins"),data);
+      }
+      toast("Bulletin enregistré.");
+      area.innerHTML="";
+      await loadTeacherAdminBulletins();
+    }catch(err){
+      toast(friendly(err),true);
+    }
   };
 }
-  /* =====================================================
+
+/* =====================================================
    HORAIRES CFLP : COURS ET EXAMENS
    ===================================================== */
 
@@ -1467,19 +1711,43 @@ window.cflpScheduleCache = window.cflpScheduleCache || {};
 function scheduleLabelDate(value){
   if(!value)return "—";
   const d=new Date(value+"T12:00:00");
-  return Number.isNaN(d.getTime())?value:d.toLocaleDateString("fr-FR",{weekday:"long",day:"2-digit",month:"long",year:"numeric"});
+  return Number.isNaN(d.getTime())
+    ? value
+    : d.toLocaleDateString("fr-FR",{
+        weekday:"long",
+        day:"2-digit",
+        month:"long",
+        year:"numeric"
+      });
 }
-function scheduleTimeRange(r){return `${esc(r.heureDebut||"—")} – ${esc(r.heureFin||"—")}`}
-function scheduleClassName(id){return nomClasseLisible(id)}
+
+function scheduleTimeRange(r){
+  return `${esc(r.heureDebut||"—")} – ${esc(r.heureFin||"—")}`;
+}
+
+function scheduleClassName(id){
+  return nomClasseLisible(id);
+}
+
 function scheduleSubjectName(id){
   const subjects=window.cflpScheduleCache.matieres||[];
   const m=subjects.find(x=>x.id===id||x.code===id);
   return m ? (m.nom||m.titre||m.code||m.id) : (id||"Non définie");
 }
-function scheduleTeacherName(id){return nomUtilisateurLisible(id)}
+
+function scheduleTeacherName(id){
+  return nomUtilisateurLisible(id);
+}
+
 function scheduleCanManage(page,r){
-  if(page==="horaire_cours")return isAdmin();
-  if(page==="horaire_examens")return isAdmin();
+  if(page==="horaire_cours"){
+    return isAdmin();
+  }
+
+  if(page==="horaire_examens"){
+    return isAdmin();
+  }
+
   return false;
 }
 
@@ -1489,50 +1757,112 @@ async function renderSchedule(page){
   const title=isCourse?"Horaire des cours":"Horaire des examens";
 
   try {
-    const [classSnap, subjectSnap] = await Promise.all([
-      getDocs(collection(db,"classes")),
-      getDocs(collection(db,"matieres"))
-    ]);
-    const classes=classSnap.docs.map(d=>({id:d.id,...d.data()}));
-    let scheduleDocs=[];
+  const [classSnap, subjectSnap] = await Promise.all([
+    getDocs(collection(db, "classes")),
+    getDocs(collection(db, "matieres"))
+  ]);
 
-    if(isStudent()){
-      const profileClassIds=[currentProfile?.classeId,...(Array.isArray(currentProfile?.classIds)?currentProfile.classIds:[])].filter(id=>typeof id==="string"&&id.trim()!=="");
-      const uniqueClassIds=[...new Set(profileClassIds)];
-      if(uniqueClassIds.length>0){
-        const snapshots=await Promise.all(uniqueClassIds.map(classId=>getDocs(query(collection(db,collectionName),where("classeId","==",classId)))));
-        const uniqueDocs=new Map();
-        snapshots.forEach(snap=>snap.docs.forEach(docSnap=>uniqueDocs.set(docSnap.id,docSnap)));
-        scheduleDocs=[...uniqueDocs.values()];
-      }
-    }else{
-      const scheduleSnap=await getDocs(collection(db,collectionName));
-      scheduleDocs=scheduleSnap.docs;
+  const classes = classSnap.docs.map(d => ({
+    id: d.id,
+    ...d.data()
+  }));
+
+  let scheduleDocs = [];
+
+  if (isStudent()) {
+    const profileClassIds = [
+      currentProfile?.classeId,
+      ...(Array.isArray(currentProfile?.classIds)
+        ? currentProfile.classIds
+        : [])
+    ].filter(
+      id => typeof id === "string" && id.trim() !== ""
+    );
+
+    const uniqueClassIds = [...new Set(profileClassIds)];
+
+    if (uniqueClassIds.length > 0) {
+      const snapshots = await Promise.all(
+        uniqueClassIds.map(classId =>
+          getDocs(
+            query(
+              collection(db, collectionName),
+              where("classeId", "==", classId)
+            )
+          )
+        )
+      );
+
+      const uniqueDocs = new Map();
+
+      snapshots.forEach(snap => {
+        snap.docs.forEach(docSnap => {
+          uniqueDocs.set(docSnap.id, docSnap);
+        });
+      });
+
+      scheduleDocs = [...uniqueDocs.values()];
     }
-
-    let teachers=[];
-    if(isAdmin()||isProfessor()){
-      try{
-        const teacherSnap=await getDocs(collection(db,"users"));
-        teachers=teacherSnap.docs.map(d=>({id:d.id,...d.data()})).filter(u=>u.role==="professeur");
-      }catch(e){console.warn("Liste des professeurs indisponible :",e)}
-    }
-
-    window.cflpScheduleCache[page]={
-      records:scheduleDocs.map(d=>({id:d.id,...d.data()})),
-      classes,
-      matieres:subjectSnap.docs.map(d=>({id:d.id,...d.data()})),
-      teachers
-    };
-
-    if(!window.cflpScheduleState[page]){
-      window.cflpScheduleState[page]={view:"table",month:new Date().getMonth(),year:new Date().getFullYear()};
-    }
-    drawSchedulePage(page);
-  }catch(e){
-    console.error("Erreur de chargement des horaires :",e);
-    $("pageContent").innerHTML=`<div class="card"><h3>${esc(title)}</h3><div class="notice"><p>Impossible de charger les horaires.</p><p><strong>Erreur exacte :</strong></p><pre style="white-space:pre-wrap;overflow-wrap:anywhere;">${esc(e?.message||String(e))}</pre></div></div>`;
+  } else {
+    const scheduleSnap = await getDocs(
+      collection(db, collectionName)
+    );
+    scheduleDocs = scheduleSnap.docs;
   }
+
+  let teachers = [];
+
+  if (isAdmin() || isProfessor()) {
+    try {
+      const teacherSnap = await getDocs(collection(db, "users"));
+
+      teachers = teacherSnap.docs
+        .map(d => ({ id: d.id, ...d.data() }))
+        .filter(u => u.role === "professeur");
+    } catch (e) {
+      console.warn(
+        "Liste des professeurs indisponible :",
+        e
+      );
+    }
+  }
+
+  window.cflpScheduleCache[page] = {
+    records: scheduleDocs.map(d => ({
+      id: d.id,
+      ...d.data()
+    })),
+    classes,
+    matieres: subjectSnap.docs.map(d => ({
+      id: d.id,
+      ...d.data()
+    })),
+    teachers
+  };
+
+  if (!window.cflpScheduleState[page]) {
+    window.cflpScheduleState[page] = {
+      view: "table",
+      month: new Date().getMonth(),
+      year: new Date().getFullYear()
+    };
+  }
+
+  drawSchedulePage(page);
+} catch (e) {
+  console.error("Erreur de chargement des horaires :", e);
+
+  $("pageContent").innerHTML = `
+    <div class="card">
+      <h3>${esc(title)}</h3>
+      <div class="notice">
+        <p>Impossible de charger les horaires.</p>
+        <p><strong>Erreur exacte :</strong></p>
+        <pre style="white-space:pre-wrap;overflow-wrap:anywhere;">${esc(e?.message || String(e))}</pre>
+      </div>
+    </div>
+  `;
+}
 }
 
 function drawSchedulePage(page){
@@ -1543,111 +1873,265 @@ function drawSchedulePage(page){
   if(!cache)return;
 
   let records=[...cache.records];
+
   if(isStudent()){
-    const allowed=new Set([currentProfile.classeId,...(Array.isArray(currentProfile.classIds)?currentProfile.classIds:[])].filter(Boolean));
+    const allowed=new Set([
+      currentProfile.classeId,
+      ...(Array.isArray(currentProfile.classIds)?currentProfile.classIds:[])
+    ].filter(Boolean));
+
     cache.classes.forEach(c=>{
-      if(allowed.has(c.id)||allowed.has(c.code)){allowed.add(c.id);if(c.code)allowed.add(c.code)}
+      if(allowed.has(c.id)||allowed.has(c.code)){
+        allowed.add(c.id);
+        if(c.code)allowed.add(c.code);
+      }
     });
+
     records=records.filter(r=>allowed.has(r.classeId));
   }
-  records.sort((a,b)=>String(a.date||"").localeCompare(String(b.date||""))||String(a.heureDebut||"").localeCompare(String(b.heureDebut||"")));
-  const canCreate=isAdmin();
 
+  records.sort((a,b)=>
+    String(a.date||"").localeCompare(String(b.date||""))||
+    String(a.heureDebut||"").localeCompare(String(b.heureDebut||""))
+  );
+
+  const canCreate = isAdmin();
   $("pageContent").innerHTML=`
     <div class="card">
       <div class="page-head">
-        <div><h3>${isCourse?"🗓️":"📝"} ${esc(title)}</h3><p class="muted">${records.length} horaire(s) disponible(s)</p></div>
-        ${canCreate?'<button class="btn primary" id="scheduleAdd">＋ Ajouter un horaire</button>':""}
+        <div>
+          <h3>${isCourse?"🗓️":"📝"} ${esc(title)}</h3>
+          <p class="muted">
+            ${records.length} horaire(s) disponible(s)
+          </p>
+        </div>
+        ${canCreate?`
+          <button class="btn primary" id="scheduleAdd">
+            ＋ Ajouter un horaire
+          </button>`:""}
       </div>
+
       <div class="actions" style="margin-bottom:14px">
-        <button class="btn ${state.view==="table"?"primary":"secondary"}" id="scheduleTableView">Tableau par jour</button>
-        <button class="btn ${state.view==="calendar"?"primary":"secondary"}" id="scheduleCalendarView">Calendrier mensuel</button>
+        <button class="btn ${state.view==="table"?"primary":"secondary"}"
+          id="scheduleTableView">
+          Tableau par jour
+        </button>
+        <button class="btn ${state.view==="calendar"?"primary":"secondary"}"
+          id="scheduleCalendarView">
+          Calendrier mensuel
+        </button>
       </div>
-      <div id="scheduleFormArea"></div><div id="scheduleDisplay"></div>
+
+      <div id="scheduleFormArea"></div>
+      <div id="scheduleDisplay"></div>
     </div>`;
 
-  if($("scheduleAdd"))$("scheduleAdd").onclick=()=>scheduleOpenForm(page,null);
-  $("scheduleTableView").onclick=()=>{state.view="table";drawSchedulePage(page)};
-  $("scheduleCalendarView").onclick=()=>{state.view="calendar";drawSchedulePage(page)};
+  if($("scheduleAdd")){
+    $("scheduleAdd").onclick=()=>scheduleOpenForm(page,null);
+  }
+
+  $("scheduleTableView").onclick=()=>{
+    state.view="table";
+    drawSchedulePage(page);
+  };
+
+  $("scheduleCalendarView").onclick=()=>{
+    state.view="calendar";
+    drawSchedulePage(page);
+  };
 
   const display=$("scheduleDisplay");
+
   if(state.view==="table"){
     display.innerHTML=`
-      <div class="table-wrap"><table>
-        <thead><tr><th>Jour / Date</th><th>Heure</th><th>Titre / Matière</th><th>Classe</th><th>Professeur</th><th>Salle</th><th>Actions</th></tr></thead>
-        <tbody>${records.map(r=>`
-          <tr>
-            <td>${esc(scheduleLabelDate(r.date))}</td>
-            <td>${scheduleTimeRange(r)}</td>
-            <td><b>${esc(r.titre||scheduleSubjectName(r.matiereId))}</b><div class="muted">${esc(scheduleSubjectName(r.matiereId))}</div></td>
-            <td>${esc(scheduleClassName(r.classeId))}</td>
-            <td>${esc(scheduleTeacherName(r.professeurUid))}</td>
-            <td>${esc(r.salle||"—")}</td>
-            <td><div class="actions">${scheduleCanManage(page,r)?`<button class="btn secondary" data-schedule-edit="${esc(r.id)}">Modifier</button><button class="btn danger" data-schedule-delete="${esc(r.id)}">Supprimer</button>`:"—"}</div></td>
-          </tr>`).join("")||'<tr><td colspan="7">Aucun horaire enregistré.</td></tr>'}
-        </tbody>
-      </table></div>`;
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Jour / Date</th>
+              <th>Heure</th>
+              <th>Titre / Matière</th>
+              <th>Classe</th>
+              <th>Professeur</th>
+              <th>Salle</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${records.map(r=>`
+              <tr>
+                <td>${esc(scheduleLabelDate(r.date))}</td>
+                <td>${scheduleTimeRange(r)}</td>
+                <td>
+                  <b>${esc(r.titre||scheduleSubjectName(r.matiereId))}</b>
+                  <div class="muted">${esc(scheduleSubjectName(r.matiereId))}</div>
+                </td>
+                <td>${esc(scheduleClassName(r.classeId))}</td>
+                <td>${esc(scheduleTeacherName(r.professeurUid))}</td>
+                <td>${esc(r.salle||"—")}</td>
+                <td>
+                  <div class="actions">
+                    ${scheduleCanManage(page,r)?`
+                      <button class="btn secondary"
+                        data-schedule-edit="${esc(r.id)}">Modifier</button>
+                      <button class="btn danger"
+                        data-schedule-delete="${esc(r.id)}">Supprimer</button>
+                    `:"—"}
+                  </div>
+                </td>
+              </tr>
+            `).join("")||
+            '<tr><td colspan="7">Aucun horaire enregistré.</td></tr>'}
+          </tbody>
+        </table>
+      </div>`;
   }else{
-    const first=new Date(state.year,state.month,1),last=new Date(state.year,state.month+1,0);
-    const monthName=first.toLocaleDateString("fr-FR",{month:"long",year:"numeric"});
-    const offset=(first.getDay()+6)%7,totalCells=Math.ceil((offset+last.getDate())/7)*7;
+    const first=new Date(state.year,state.month,1);
+    const last=new Date(state.year,state.month+1,0);
+    const monthName=first.toLocaleDateString("fr-FR",{
+      month:"long",year:"numeric"
+    });
+    const offset=(first.getDay()+6)%7;
+    const totalCells=Math.ceil((offset+last.getDate())/7)*7;
+
     let calendar=`
-      <div class="page-head"><button class="btn secondary" id="schedulePrevMonth">←</button><h3>${esc(monthName)}</h3><button class="btn secondary" id="scheduleNextMonth">→</button></div>
+      <div class="page-head">
+        <button class="btn secondary" id="schedulePrevMonth">←</button>
+        <h3>${esc(monthName)}</h3>
+        <button class="btn secondary" id="scheduleNextMonth">→</button>
+      </div>
       <div style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px">
-      ${["Lun","Mar","Mer","Jeu","Ven","Sam","Dim"].map(d=>`<div style="text-align:center;font-weight:bold;padding:6px 1px;background:#edf3fc">${d}</div>`).join("")}`;
+        ${["Lun","Mar","Mer","Jeu","Ven","Sam","Dim"].map(d=>`
+          <div style="text-align:center;font-weight:bold;padding:6px 1px;background:#edf3fc">
+            ${d}
+          </div>`).join("")}`;
 
     for(let i=0;i<totalCells;i++){
       const day=i-offset+1;
-      if(day<1||day>last.getDate()){calendar+='<div style="min-height:75px;border:1px solid var(--bd);border-radius:5px;background:#f8fafc"></div>';continue}
-      const dateKey=`${state.year}-${String(state.month+1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
+      if(day<1||day>last.getDate()){
+        calendar+=`<div style="min-height:75px;border:1px solid var(--bd);border-radius:5px;background:#f8fafc"></div>`;
+        continue;
+      }
+
+      const dateKey=
+        `${state.year}-${String(state.month+1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
+
       const dayRecords=records.filter(r=>r.date===dateKey);
-      calendar+=`<div style="min-width:0;min-height:75px;padding:4px;border:1px solid var(--bd);border-radius:5px;background:white"><b>${day}</b>${dayRecords.map(r=>`<div style="margin-top:4px;padding:3px;background:#dbeafe;border-radius:4px;font-size:10px;overflow-wrap:anywhere"><b>${esc(r.heureDebut||"")}</b><div>${esc(r.titre||scheduleSubjectName(r.matiereId))}</div><div>${esc(scheduleClassName(r.classeId))}</div></div>`).join("")}</div>`;
+
+      calendar+=`
+        <div style="min-width:0;min-height:75px;padding:4px;border:1px solid var(--bd);border-radius:5px;background:white">
+          <b>${day}</b>
+          ${dayRecords.map(r=>`
+            <div style="margin-top:4px;padding:3px;background:#dbeafe;border-radius:4px;font-size:10px;overflow-wrap:anywhere">
+              <b>${esc(r.heureDebut||"")}</b>
+              <div>${esc(r.titre||scheduleSubjectName(r.matiereId))}</div>
+              <div>${esc(scheduleClassName(r.classeId))}</div>
+            </div>`).join("")}
+        </div>`;
     }
-    calendar+="</div>";display.innerHTML=calendar;
-    $("schedulePrevMonth").onclick=()=>{state.month--;if(state.month<0){state.month=11;state.year--}drawSchedulePage(page)};
-    $("scheduleNextMonth").onclick=()=>{state.month++;if(state.month>11){state.month=0;state.year++}drawSchedulePage(page)};
+
+    calendar+="</div>";
+    display.innerHTML=calendar;
+
+    $("schedulePrevMonth").onclick=()=>{
+      state.month--;
+      if(state.month<0){state.month=11;state.year--}
+      drawSchedulePage(page);
+    };
+
+    $("scheduleNextMonth").onclick=()=>{
+      state.month++;
+      if(state.month>11){state.month=0;state.year++}
+      drawSchedulePage(page);
+    };
   }
 
-  $("pageContent").querySelectorAll("[data-schedule-edit]").forEach(b=>b.onclick=()=>{const record=cache.records.find(r=>r.id===b.dataset.scheduleEdit);if(record)scheduleOpenForm(page,record)});
-  $("pageContent").querySelectorAll("[data-schedule-delete]").forEach(b=>b.onclick=()=>scheduleDelete(page,b.dataset.scheduleDelete));
+  $("pageContent").querySelectorAll("[data-schedule-edit]").forEach(b=>{
+    b.onclick=()=>{
+      const record=cache.records.find(r=>r.id===b.dataset.scheduleEdit);
+      if(record)scheduleOpenForm(page,record);
+    };
+  });
+
+  $("pageContent").querySelectorAll("[data-schedule-delete]").forEach(b=>{
+    b.onclick=()=>scheduleDelete(page,b.dataset.scheduleDelete);
+  });
 }
 
 async function scheduleOpenForm(page,record){
   const isCourse=page==="horaire_cours";
-  if(isCourse&&!isAdmin())return toast("La gestion des horaires de cours est réservée à l’administrateur.",true);
-  if(!isCourse&&!isAdmin()&&!isProfessor())return toast("Vous n’avez pas l’autorisation de gérer cet horaire.",true);
-  if(record&&!scheduleCanManage(page,record))return toast("Vous ne pouvez pas modifier cet horaire.",true);
 
-  const cache=window.cflpScheduleCache[page],area=$("scheduleFormArea");
+  if(isCourse&&!isAdmin()){
+    return toast("La gestion des horaires de cours est réservée à l’administrateur.",true);
+  }
+
+  if(!isCourse&&!isAdmin()&&!isProfessor()){
+    return toast("Vous n’avez pas l’autorisation de gérer cet horaire.",true);
+  }
+
+  if(record&&!scheduleCanManage(page,record)){
+    return toast("Vous ne pouvez pas modifier cet horaire.",true);
+  }
+
+  const cache=window.cflpScheduleCache[page];
+  const area=$("scheduleFormArea");
+
   const classOptions=cache.classes.map(c=>{
     const value=c.code||c.id;
-    return `<option value="${esc(value)}" ${record?.classeId===value||record?.classeId===c.id?"selected":""}>${esc(c.nom||c.code||c.id)}</option>`;
+    return `<option value="${esc(value)}"
+      ${record?.classeId===value||record?.classeId===c.id?"selected":""}>
+      ${esc(c.nom||c.code||c.id)}
+    </option>`;
   }).join("");
+
   const subjectOptions=cache.matieres.map(m=>{
     const value=m.code||m.id;
-    return `<option value="${esc(value)}" ${record?.matiereId===value||record?.matiereId===m.id?"selected":""}>${esc(m.nom||m.titre||m.code||m.id)}</option>`;
+    return `<option value="${esc(value)}"
+      ${record?.matiereId===value||record?.matiereId===m.id?"selected":""}>
+      ${esc(m.nom||m.titre||m.code||m.id)}
+    </option>`;
   }).join("");
+
   const teacherOptions=cache.teachers.map(t=>{
     const name=[t.nom,t.prenom].filter(Boolean).join(" ")||t.email||t.id;
-    return `<option value="${esc(t.id)}" ${record?.professeurUid===t.id||(!record&&t.id===currentUser.uid)?"selected":""}>${esc(name)}</option>`;
+    return `<option value="${esc(t.id)}"
+      ${record?.professeurUid===t.id||(!record&&t.id===currentUser.uid)?"selected":""}>
+      ${esc(name)}
+    </option>`;
   }).join("");
 
   area.innerHTML=`
     <div class="card" style="border:2px solid var(--bd)">
       <h3>${record?"Modifier":"Créer"} — ${isCourse?"Horaire des cours":"Horaire des examens"}</h3>
+
       <form id="scheduleForm">
         <div class="form-grid">
-          <div class="field full"><label>Titre du cours / examen *</label><input name="titre" maxlength="150" value="${esc(record?.titre||"")}" required></div>
-          <div class="field"><label>Classe *</label><select name="classeId" required><option value="">Choisir une classe</option>${classOptions}</select></div>
-          <div class="field"><label>Matière</label><select name="matiereId"><option
-                        <option value="">Choisir une matière</option>
+          <div class="field full">
+            <label>Titre du cours / examen *</label>
+            <input name="titre" maxlength="150"
+              value="${esc(record?.titre||"")}" required>
+          </div>
+
+          <div class="field">
+            <label>Classe *</label>
+            <select name="classeId" required>
+              <option value="">Choisir une classe</option>
+              ${classOptions}
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Matière</label>
+            <select name="matiereId">
+              <option value="">Choisir une matière</option>
               ${subjectOptions}
             </select>
           </div>
 
           <div class="field">
             <label>Professeur *</label>
-            <select name="professeurUid" ${!isAdmin()?"disabled":""} required>
+            <select name="professeurUid"
+              ${!isAdmin()?"disabled":""} required>
               ${!isAdmin()?`
                 <option value="${esc(currentUser.uid)}" selected>
                   ${esc(currentProfile?.nom||currentUser.email||"Mon compte")}
@@ -1659,28 +2143,37 @@ async function scheduleOpenForm(page,record){
 
           <div class="field">
             <label>Date *</label>
-            <input name="date" type="date" value="${esc(record?.date||"")}" required>
+            <input name="date" type="date"
+              value="${esc(record?.date||"")}" required>
           </div>
 
           <div class="field">
             <label>Heure de début *</label>
-            <input name="heureDebut" type="time" value="${esc(record?.heureDebut||"")}" required>
+            <input name="heureDebut" type="time"
+              value="${esc(record?.heureDebut||"")}" required>
           </div>
 
           <div class="field">
             <label>Heure de fin *</label>
-            <input name="heureFin" type="time" value="${esc(record?.heureFin||"")}" required>
+            <input name="heureFin" type="time"
+              value="${esc(record?.heureFin||"")}" required>
           </div>
 
           <div class="field">
             <label>Salle</label>
-            <input name="salle" maxlength="80" value="${esc(record?.salle||"")}" placeholder="Ex. Salle 2">
+            <input name="salle" maxlength="80"
+              value="${esc(record?.salle||"")}"
+              placeholder="Ex. Salle 2">
           </div>
         </div>
 
         <div class="actions">
-          <button type="submit" class="btn primary" id="scheduleSave">Enregistrer</button>
-          <button type="button" class="btn secondary" id="scheduleCancel">Annuler</button>
+          <button type="submit" class="btn primary" id="scheduleSave">
+            Enregistrer
+          </button>
+          <button type="button" class="btn secondary" id="scheduleCancel">
+            Annuler
+          </button>
         </div>
       </form>
     </div>`;
@@ -1777,7 +2270,8 @@ async function scheduleDelete(page,id){
     toast(friendly(e),true);
   }
 }
-  /* Gestion des utilisateurs : professeurs, élèves et classes affectées */
+
+/* Gestion des utilisateurs : professeurs, élèves et classes affectées */
 async function renderUsers(){
   if(!isAdmin()) return;
 
@@ -1801,15 +2295,19 @@ async function renderUsers(){
 
     const classLabel = id => {
       if(!id) return "";
-      const c = classes.find(x=>x.id===id||x.code===id||x.nom===id);
-      return c ? (c.nom||c.code||c.niveau||c.id) : String(id);
+      const c = classes.find(x =>
+        x.id===id || x.code===id || x.nom===id
+      );
+      return c ? (c.nom || c.code || c.niveau || c.id) : String(id);
     };
 
     const profileIds = u => {
       const email = String(u.email||"").toLowerCase().trim();
       const linked = [...etudiants,...eleves].filter(p =>
         (email && String(p.email||"").toLowerCase().trim()===email) ||
-        p.uid===u.id || p.userUid===u.id || p.userId===u.id
+        p.uid===u.id ||
+        p.userUid===u.id ||
+        p.userId===u.id
       );
       return [...new Set([u.id,...linked.map(p=>p.id)])];
     };
@@ -1822,20 +2320,25 @@ async function renderUsers(){
         affectations
           .filter(a=>ids.includes(a.professeurUid))
           .forEach(a=>{
-            const label=classLabel(a.classeId);
+            const label = classLabel(a.classeId);
             if(label) result.push(label);
           });
       }
 
       if(["eleve","etudiant"].includes(u.role)){
-        const linkedProfiles=[...etudiants,...eleves].filter(p=>ids.includes(p.id));
+        const linkedProfiles = [...etudiants,...eleves].filter(p =>
+          ids.includes(p.id)
+        );
 
         linkedProfiles.forEach(p=>{
           if(p.classeId) result.push(classLabel(p.classeId));
         });
 
         inscriptions
-          .filter(i=>ids.includes(i.eleveId)||ids.includes(i.etudiantId))
+          .filter(i=>
+            ids.includes(i.eleveId) ||
+            ids.includes(i.etudiantId)
+          )
           .forEach(i=>{
             if(i.classeId) result.push(classLabel(i.classeId));
           });
@@ -1866,13 +2369,15 @@ async function renderUsers(){
       <div class="card">
         <h3>Gestion des utilisateurs et des classes</h3>
         <p class="muted">
-          Consultez les professeurs, les élèves et les classes auxquelles ils sont affectés.
+          Consultez les professeurs, les élèves et les classes auxquelles
+          ils sont affectés.
         </p>
 
         <div class="form-grid">
           <div class="field">
             <label>Rechercher un utilisateur</label>
-            <input id="usersSearch" placeholder="Nom, e-mail, téléphone ou classe...">
+            <input id="usersSearch"
+              placeholder="Nom, e-mail, téléphone ou classe...">
           </div>
 
           <div class="field">
@@ -1902,61 +2407,74 @@ async function renderUsers(){
                 <th>Actions</th>
               </tr>
             </thead>
+
             <tbody id="usersTableBody">
               ${users.map(u=>{
-                const assigned=assignedClasses(u);
-                const classesText=assigned.length
+                const assigned = assignedClasses(u);
+                const classesText = assigned.length
                   ? assigned.join(", ")
                   : (u.classeId ? classLabel(u.classeId) : "Non affecté");
 
-                const searchText=[
+                const searchText = [
                   userName(u),u.email,u.telephone,
-                  roleLabel(u.role),classesText,u.niveau,u.specialite,
-                  statusLabel(u.status)
+                  roleLabel(u.role),classesText,
+                  u.niveau,u.specialite,statusLabel(u.status)
                 ].join(" ").toLowerCase();
 
                 return `
-                  <tr data-user-row="${esc(u.id)}"
-                      data-user-role="${esc(u.role||"")}"
-                      data-user-search="${esc(searchText)}">
+                  <tr
+                    data-user-row="${esc(u.id)}"
+                    data-user-role="${esc(u.role||"")}"
+                    data-user-search="${esc(searchText)}">
+
                     <td>${esc(userName(u))}</td>
                     <td>${esc(u.email||"—")}</td>
                     <td>${esc(u.telephone||"—")}</td>
                     <td>${esc(roleLabel(u.role))}</td>
                     <td>
-                      ${
-                        ["eleve","etudiant"].includes(u.role)
-                        ? `
-                          <select data-classe-eleve="${esc(u.id)}">
-                            <option value="">-- Chwazi klas --</option>
-                            ${classes.map(c=>`
-                              <option value="${esc(c.id)}"
-                                ${u.classeId===c.id?"selected":""}>
-                                ${esc(c.nom||c.code||c.niveau||c.id)}
-                              </option>
-                            `).join("")}
-                          </select>
-                        `
-                        : u.role==="professeur"
-                        ? `
-                          <span>${esc(classesText)}</span>
-                          <select data-classe-prof="${esc(u.id)}">
-                            <option value="">-- Chwazi klas --</option>
-                            ${classes.map(c=>`
-                              <option value="${esc(c.id)}">
-                                ${esc(c.nom||c.code||c.niveau||c.id)}
-                              </option>
-                            `).join("")}
-                          </select>
-                          <button class="btn" type="button"
-                            data-affecter-classe="${esc(u.id)}">
-                            Afekte klas
-                          </button>
-                        `
-                        : esc(classesText)
-                      }
-                    </td>
-                    <td>${esc(u.role==="professeur"?(u.specialite||"—"):(u.niveau||"—"))}</td>
+  ${
+    ["eleve","etudiant"].includes(u.role)
+      ? `
+        <select data-classe-eleve="${esc(u.id)}">
+          <option value="">-- Chwazi klas --</option>
+          ${classes.map(c => `
+            <option
+              value="${esc(c.id)}"
+              ${u.classeId===c.id ? "selected" : ""}
+            >
+              ${esc(c.nom || c.code || c.niveau || c.id)}
+            </option>
+          `).join("")}
+        </select>
+      `
+      : u.role==="professeur"
+        ? `
+          <span>${esc(classesText)}</span>
+          <select data-classe-prof="${esc(u.id)}">
+            <option value="">-- Chwazi klas --</option>
+            ${classes.map(c => `
+              <option value="${esc(c.id)}">
+                ${esc(c.nom || c.code || c.niveau || c.id)}
+              </option>
+            `).join("")}
+          </select>
+          <button
+            class="btn"
+            type="button"
+            data-affecter-classe="${esc(u.id)}"
+          >
+            Afekte klas
+          </button>
+        `
+        : esc(classesText)
+  }
+</td>
+                    <td>${esc(
+                      u.role==="professeur"
+                        ? (u.specialite||"—")
+                        : (u.niveau||"—")
+                    )}</td>
+
                     <td>
                       <select data-status="${esc(u.id)}">
                         <option value="attente" ${u.status==="attente"?"selected":""}>En attente</option>
@@ -1964,6 +2482,7 @@ async function renderUsers(){
                         <option value="refuse" ${u.status==="refuse"?"selected":""}>Refusé</option>
                       </select>
                     </td>
+
                     <td>
                       <div class="actions">
                         <select data-role="${esc(u.id)}">
@@ -1974,142 +2493,186 @@ async function renderUsers(){
                             ? '<option value="administrateur" selected>Administrateur</option>'
                             : ""}
                         </select>
-                        <button class="btn success" data-save-user="${esc(u.id)}">Enregistrer</button>
+
+                        <button class="btn success"
+                          data-save-user="${esc(u.id)}">
+                          Enregistrer
+                        </button>
+
                         ${u.id!==currentUser.uid
-                          ? `<button class="btn danger" data-del-user="${esc(u.id)}">Supprimer profil</button>`
+                          ? `<button class="btn danger"
+                              data-del-user="${esc(u.id)}">
+                              Supprimer profil
+                            </button>`
                           : ""}
                       </div>
                     </td>
                   </tr>
                 `;
-              }).join("") || '<tr><td colspan="8">Aucun utilisateur.</td></tr>'}
+              }).join("") ||
+              '<tr><td colspan="8">Aucun utilisateur.</td></tr>'}
             </tbody>
           </table>
         </div>
       </div>
     `;
 
-    const filterUsers=()=>{
-      const search=$("usersSearch").value.toLowerCase().trim();
-      const roleFilter=$("usersRoleFilter").value;
-      let visible=0;
+    const filterUsers = () => {
+      const search = $("usersSearch").value.toLowerCase().trim();
+      const roleFilter = $("usersRoleFilter").value;
+      let visible = 0;
 
       $("pageContent").querySelectorAll("[data-user-row]").forEach(row=>{
-        const role=row.dataset.userRole;
-        const txt=row.dataset.userSearch||"";
-        const matchesSearch=txt.includes(search);
-        const matchesRole=roleFilter==="tous" ||
-          role===roleFilter ||
-          (roleFilter==="eleves"&&["eleve","etudiant"].includes(role));
+        const role = row.dataset.userRole;
+        const text = row.dataset.userSearch || "";
 
-        const show=matchesSearch&&matchesRole;
-        row.style.display=show?"":"none";
-        if(show)visible++;
+        const matchesSearch = text.includes(search);
+        const matchesRole =
+          roleFilter==="tous" ||
+          role===roleFilter ||
+          (roleFilter==="eleves" &&
+            ["eleve","etudiant"].includes(role));
+
+        const show = matchesSearch && matchesRole;
+        row.style.display = show ? "" : "none";
+        if(show) visible++;
       });
 
-      $("usersCount").textContent=
-        visible+" utilisateur(s) affiché(s) sur "+users.length;
+      $("usersCount").textContent =
+        visible + " utilisateur(s) affiché(s) sur " + users.length;
     };
 
-    $("usersSearch").oninput=filterUsers;
-    $("usersRoleFilter").onchange=filterUsers;
+    $("usersSearch").oninput = filterUsers;
+    $("usersRoleFilter").onchange = filterUsers;
     filterUsers();
 
-    $("pageContent").querySelectorAll("[data-classe-eleve]").forEach(select=>{
-      select.onchange=async()=>{
-        const userId=select.dataset.classeEleve;
-        const classeId=select.value;
-        try{
-          await updateDoc(doc(db,"users",userId),{
-            classeId:classeId,
-            updatedAt:stamp()
-          });
-          toast("Klas elèv la mete ajou.");
-        }catch(e){
-          console.error(e);
-          toast(friendly(e),true);
-        }
-      };
-    });
+    $("pageContent")
+      .querySelectorAll("[data-classe-eleve]")
+      .forEach(select => {
+        select.onchange = async () => {
+          const userId = select.dataset.classeEleve;
+          const classeId = select.value;
 
-    $("pageContent").querySelectorAll("[data-affecter-classe]").forEach(button=>{
-      button.onclick=async()=>{
-        const professeurUid=button.dataset.affecterClasse;
-        const select=$("pageContent").querySelector(
-          `[data-classe-prof="${CSS.escape(professeurUid)}"]`
-        );
-        const classeId=select?select.value:"";
+          try {
+            if (!classeId) {
+              await updateDoc(doc(db, "users", userId), {
+                classeId: "",
+                updatedAt: stamp()
+              });
+            } else {
+              await updateDoc(doc(db, "users", userId), {
+                classeId: classeId,
+                updatedAt: stamp()
+              });
+            }
 
-        if(!classeId)return toast("Chwazi yon klas anvan.",true);
+            toast("Klas elèv la mete ajou.");
+          } catch (e) {
+            console.error(e);
+            toast(friendly(e), true);
+          }
+        };
+      });
 
-        try{
-          const q=query(
-            collection(db,"affectations"),
-            where("professeurUid","==",professeurUid),
-            where("classeId","==",classeId)
+    $("pageContent")
+      .querySelectorAll("[data-affecter-classe]")
+      .forEach(button => {
+        button.onclick = async () => {
+          const professeurUid = button.dataset.affecterClasse;
+
+          const select = $("pageContent").querySelector(
+            `[data-classe-prof="${CSS.escape(professeurUid)}"]`
           );
-          const deja=await getDocs(q);
 
-          if(!deja.empty)return toast("Pwofesè sa a deja afekte nan klas sa a.",true);
+          const classeId = select ? select.value : "";
 
-          await addDoc(collection(db,"affectations"),{
-            professeurUid,
-            classeId,
-            createdAt:stamp(),
-            updatedAt:stamp()
-          });
-
-          const professeur=users.find(u=>u.id===professeurUid);
-          if(professeur){
-            const anciennesClasses=Array.isArray(professeur.classIds)?professeur.classIds:[];
-            const nouvellesClasses=[...new Set([...anciennesClasses,classeId])];
-
-            await updateDoc(doc(db,"users",professeurUid),{
-              classIds:nouvellesClasses,
-              updatedAt:stamp()
-            });
+          if (!classeId) {
+            return toast("Chwazi yon klas anvan.", true);
           }
 
-          toast("Klas la afekte ak pwofesè a.");
-          await renderUsers();
-        }catch(e){
-          console.error(e);
-          toast(friendly(e),true);
+          try {
+            const q = query(
+              collection(db, "affectations"),
+              where("professeurUid", "==", professeurUid),
+              where("classeId", "==", classeId)
+            );
+
+            const deja = await getDocs(q);
+
+            if (!deja.empty) {
+              return toast("Pwofesè sa a deja afekte nan klas sa a.", true);
+            }
+
+            await addDoc(collection(db, "affectations"), {
+              professeurUid: professeurUid,
+              classeId: classeId,
+              createdAt: stamp(),
+              updatedAt: stamp()
+            });
+            const professeur = users.find(u => u.id === professeurUid);
+
+            if (professeur) {
+              const anciennesClasses = Array.isArray(professeur.classIds)
+                ? professeur.classIds
+                : [];
+
+              const nouvellesClasses = [
+                ...new Set([...anciennesClasses, classeId])
+              ];
+
+              await updateDoc(doc(db, "users", professeurUid), {
+                classIds: nouvellesClasses,
+                updatedAt: stamp()
+              });
+            }
+            toast("Klas la afekte ak pwofesè a.");
+            await renderUsers();
+          } catch (e) {
+            console.error(e);
+            toast(friendly(e), true);
+          }
+        };
+      });
+
+    $("pageContent").querySelectorAll("[data-save-user]")
+      .forEach(b=>b.onclick=async()=>{
+        const id = b.dataset.saveUser;
+        const role = $("pageContent")
+          .querySelector(`[data-role="${CSS.escape(id)}"]`).value;
+        const status = $("pageContent")
+          .querySelector(`[data-status="${CSS.escape(id)}"]`).value;
+
+        if(id===currentUser.uid &&
+          (role!=="administrateur" || status!=="accepted")){
+          return toast(
+            "Vous ne pouvez pas retirer votre propre accès ici.",true
+          );
         }
-      };
-    });
 
-    $("pageContent").querySelectorAll("[data-save-user]").forEach(b=>{
-      b.onclick=async()=>{
-        const id=b.dataset.saveUser;
-        const role=$("pageContent").querySelector(
-          `[data-role="${CSS.escape(id)}"]`
-        ).value;
-        const status=$("pageContent").querySelector(
-          `[data-status="${CSS.escape(id)}"]`
-        ).value;
-
-        if(id===currentUser.uid&&(role!=="administrateur"||status!=="accepted")){
-          return toast("Vous ne pouvez pas retirer votre propre accès ici.",true);
-        }
-
-        if(role==="administrateur"&&id!==currentUser.uid){
-          return toast("Le rôle administrateur ne peut pas être attribué depuis cette page.",true);
+        if(role==="administrateur" && id!==currentUser.uid){
+          return toast(
+            "Le rôle administrateur ne peut pas être attribué depuis cette page.",true
+          );
         }
 
         try{
-          await updateDoc(doc(db,"users",id),{role,status,updatedAt:stamp()});
+          await updateDoc(doc(db,"users",id),{
+            role,
+            status,
+            updatedAt:stamp()
+          });
           toast("Utilisateur mis à jour.");
           await renderUsers();
         }catch(e){
           toast(friendly(e),true);
         }
-      };
-    });
+      });
 
-    $("pageContent").querySelectorAll("[data-del-user]").forEach(b=>{
-      b.onclick=async()=>{
-        if(confirm("Supprimer le profil Firestore ? Le compte Auth ne sera pas supprimé.")){
+    $("pageContent").querySelectorAll("[data-del-user]")
+      .forEach(b=>b.onclick=async()=>{
+        if(confirm(
+          "Supprimer le profil Firestore ? Le compte Auth ne sera pas supprimé."
+        )){
           try{
             await deleteDoc(doc(db,"users",b.dataset.delUser));
             toast("Profil supprimé.");
@@ -2118,146 +2681,51 @@ async function renderUsers(){
             toast(friendly(e),true);
           }
         }
-      };
-    });
+      });
 
   }catch(e){
     console.error("Erreur Gestion des utilisateurs :",e);
     toast("Impossible de charger les utilisateurs et les affectations. Vérifiez les règles Firestore.",true);
   }
 }
-  async function renderBackup(){
-  if(!isAdmin())return;
 
-  $("pageContent").innerHTML=`
-    <div class="card">
-      <h3>Sauvegarde JSON</h3>
-      <p>Exporter les collections Firestore accessibles à votre compte.</p>
-      <button id="exportBtn" class="btn primary">Exporter les données</button>
-      <div class="notice">
-        Le fichier peut contenir des données personnelles. Conservez-le en sécurité.
-      </div>
-    </div>`;
-
-  $("exportBtn").onclick=async()=>{
-    const names=[
-      "users","etudiants","eleves","professeurs","departements","filieres",
-      "classes","matieres","cours","annees_academiques","affectations",
-      "inscriptions","devoirs","examens","tentatives_examens","notes_cours",
-      "remises","resultats","videos","documents","bulletins","statistiques",
-      "configuration"
-    ];
-
-    const backup={
-      application:"Centre de Formation Le Pédagogue",
-      projectId:firebaseConfig.projectId,
-      exportedAt:new Date().toISOString(),
-      collections:{}
-    };
-
-    try{
-      for(const name of names){
-        const s=await getDocs(collection(db,name));
-        backup.collections[name]=s.docs.map(d=>({id:d.id,...d.data()}));
-      }
-
-      const blob=new Blob([JSON.stringify(backup,null,2)],{
-        type:"application/json"
-      });
-      const url=URL.createObjectURL(blob);
-      const a=document.createElement("a");
-
-      a.href=url;
-      a.download="sauvegarde-le-pedagogue-"+
-        new Date().toISOString().slice(0,10)+".json";
-      a.click();
-
-      URL.revokeObjectURL(url);
-      toast("Export terminé.");
-    }catch(e){
-      toast(friendly(e),true);
-    }
-  };
+async function renderBackup(){
+if(!isAdmin())return;
+$("pageContent").innerHTML='<div class="card"><h3>Sauvegarde JSON</h3><p>Exporter les collections Firestore accessibles à votre compte.</p><button id="exportBtn" class="btn primary">Exporter les données</button><div class="notice">Le fichier peut contenir des données personnelles. Conservez-le en sécurité.</div></div>';
+$("exportBtn").onclick=async()=>{
+const names=["users","etudiants","eleves","professeurs","departements","filieres","classes","matieres","cours","annees_academiques","affectations","inscriptions","devoirs","examens","tentatives_examens","notes_cours","remises","resultats","videos","documents","bulletins","statistiques","configuration"],backup={application:"Centre de Formation Le Pédagogue",projectId:firebaseConfig.projectId,exportedAt:new Date().toISOString(),collections:{}};
+try{for(const name of names){const s=await getDocs(collection(db,name));backup.collections[name]=s.docs.map(d=>({id:d.id,...d.data()}))}
+const blob=new Blob([JSON.stringify(backup,null,2)],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="sauvegarde-le-pedagogue-"+new Date().toISOString().slice(0,10)+".json";a.click();URL.revokeObjectURL(url);toast("Export terminé.")}
+catch(e){toast(friendly(e),true)}
 }
-  /* Installation PWA — Android, Chrome et Samsung Internet */
+}
 
+/* Installation PWA — Android, Chrome et Samsung Internet */
 window.addEventListener("beforeinstallprompt",e=>{
-  e.preventDefault();
-  installPrompt=e;
-  $("installBtn").textContent="📲 Installer l'application";
-  $("installBtn").disabled=false;
+e.preventDefault();installPrompt=e;$("installBtn").textContent="📲 Installer l'application";$("installBtn").disabled=false;
 });
-
-window.addEventListener("appinstalled",()=>{
-  installPrompt=null;
-  $("installBtn").textContent="✓ Application installée";
-  toast("Application installée avec succès.");
-});
-
+window.addEventListener("appinstalled",()=>{installPrompt=null;$("installBtn").textContent="✓ Application installée";toast("Application installée avec succès.")});
 $("installBtn").addEventListener("click",async()=>{
-  const btn=$("installBtn");
-
-  const standalone=
-    window.matchMedia("(display-mode: standalone)").matches ||
-    window.navigator.standalone===true;
-
-  if(standalone){
-    toast("L'application est déjà installée.");
-    return;
-  }
-
-  if(installPrompt){
-    try{
-      const promptEvent=installPrompt;
-      await promptEvent.prompt();
-      const result=await promptEvent.userChoice;
-      installPrompt=null;
-
-      if(result?.outcome==="accepted"){
-        btn.textContent="✓ Installation lancée";
-      }else{
-        btn.textContent="📲 Installer l'application";
-      }
-    }catch(error){
-      console.error("Erreur installation :",error);
-      toast("Utilisez le menu ⋮ du navigateur pour installer l'application.",true);
-    }
-    return;
-  }
-
-  const ua=navigator.userAgent||"";
-
-  if(/iPhone|iPad|iPod/i.test(ua)){
-    alert("Pour installer l'application sur iPhone : ouvrez le site dans Safari, appuyez sur Partager, puis sur « Sur l'écran d'accueil ».");
-    return;
-  }
-
-  alert(
-    "Pour installer Centre de Formation Le Pédagogue :\n\n"+
-    "1. Ouvrez le site publié en HTTPS dans Chrome ou Samsung Internet.\n"+
-    "2. Appuyez sur le menu ⋮ du navigateur.\n"+
-    "3. Choisissez « Installer l'application » ou « Ajouter à l'écran d'accueil ».\n\n"+
-    "Si l'option n'apparaît pas, vérifiez que manifest.json, sw.js et les icônes PWA sont publiés à côté de index.html."
-  );
+const btn=$("installBtn");
+const standalone=window.matchMedia("(display-mode: standalone)").matches||window.navigator.standalone===true;
+if(standalone){toast("L'application est déjà installée.");return}
+if(installPrompt){
+try{const promptEvent=installPrompt;await promptEvent.prompt();const result=await promptEvent.userChoice;installPrompt=null;if(result?.outcome==="accepted")btn.textContent="✓ Installation lancée";else btn.textContent="📲 Installer l'application"}
+catch(error){console.error("Erreur installation :",error);toast("Utilisez le menu ⋮ du navigateur pour installer l'application.",true)}
+return;
+}
+const ua=navigator.userAgent||"";
+if(/iPhone|iPad|iPod/i.test(ua)){alert("Pour installer l'application sur iPhone : ouvrez le site dans Safari, appuyez sur Partager, puis sur « Sur l'écran d'accueil ».");return}
+alert("Pour installer Centre de Formation Le Pédagogue :\n\n1. Ouvrez le site publié en HTTPS dans Chrome ou Samsung Internet.\n2. Appuyez sur le menu ⋮ du navigateur.\n3. Choisissez « Installer l'application » ou « Ajouter à l'écran d'accueil ».\n\nSi l'option n'apparaît pas, vérifiez que manifest.json, sw.js et les icônes PWA sont publiés à côté de index.html.");
 });
 
 /* Enregistrement et vérification du Service Worker */
-
 if("serviceWorker" in navigator){
-  window.addEventListener("load",async()=>{
-    try{
-      const registration=await navigator.serviceWorker.register("./sw.js");
-      console.log("Service Worker enregistré.");
-
-      await registration.update().catch(
-        error=>console.warn("Mise à jour du Service Worker différée :",error)
-      );
-    }catch(error){
-      console.error("Erreur Service Worker :",error);
-    }
-  });
+window.addEventListener("load",async()=>{
+try{const registration=await navigator.serviceWorker.register("./sw.js");console.log("Service Worker enregistré.");await registration.update().catch(error=>console.warn("Mise à jour du Service Worker différée :",error))}
+catch(error){console.error("Erreur Service Worker :",error)}
+});
 }
-
 </script>
 </body>
 </html>
