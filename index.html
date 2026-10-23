@@ -134,7 +134,11 @@
 <main class="main">
 <div class="page-head"><h2 id="pageTitle">Accueil</h2><button id="refreshBtn" class="btn secondary">↻ Actualiser</button></div>
 <div id="pageContent"></div>
-<footer>Centre de Formation Le Pédagogue · Espace académique</footer>
+<footer>
+  <div style="margin-bottom:4px; font-weight:bold;">Kontakte administrasyon an</div>
+  <div style="margin-bottom:6px;">Imèl administratè: <a href="mailto:centredeformationlepedagogue@gmail.com" style="color:var(--b); text-decoration:underline;">centredeformationlepedagogue@gmail.com</a></div>
+  Centre de Formation Le Pédagogue · Espace académique
+</footer>
 </main>
 </div>
 </section>
@@ -171,7 +175,7 @@ function approved(){return!!currentProfile&&(isAdmin()||(currentProfile.status==
 function roleName(r){return({administrateur:"Administrateur",professeur:"Professeur",eleve:"Élève",etudiant:"Étudiant"})[r]||r||"Utilisateur"}
 function stopTimer(){if(timerInterval){clearInterval(timerInterval);timerInterval=null}}
 
-// Cache de noms d'utilisateurs pou ranplase UID yo nan entèfas la
+// Cache de noms d'utilisateurs pour remplacer les UID dans l'interface
 let cacheNomsUtilisateurs = {};
 async function chargerNomsUtilisateurs() {
   try {
@@ -406,7 +410,7 @@ const modules=[
   ["description","Description"],
   ["classeId","Classe"],
   ["dateDebut","Date et heure de début"],
-  ["dateLimite","Date limite"],
+  ["dateLimite","Date et heure de fin (limite)"],
   ["dureeMinutes","Durée autorisée (minutes)"]
 ]},
 {id:"examens",title:"Examens",collection:"examens",fields:[
@@ -432,7 +436,9 @@ const modules=[
   ["matiereId","Code matière"],
   ["note100","Note sur 100"],
   ["note20","Note sur 20"],
-  ["commentaire","Commentaire"]
+  ["commentaire","Commentaire"],
+  ["dateDebut","Date début visibilité"],
+  ["dateLimite","Date fin visibilité"]
 ]},
 {id:"videos",title:"Vidéos",collection:"videos",fields:[
   ["titre","Titre"],
@@ -441,17 +447,27 @@ const modules=[
   ["description","Description"]
 ]},
 {id:"documents",title:"Documents",collection:"documents",fields:[["titre","Titre"],["classeId","Classe"],["url","Lien du document"],["description","Description"]]},
+{id:"annonces",title:"Annonces",collection:"annonces",fields:[
+  ["titre","Titre de l'annonce"],
+  ["message","Message officiel"],
+  ["dateDebut","Date et heure de début"],
+  ["dateLimite","Date et heure de fin (validité)"],
+  ["cible","Destinataires (tous, professeurs, eleves)"]
+]},
 {id:"statistiques",title:"Statistiques",collection:"statistiques",fields:[["nom","Nom"],["description","Description"],["valeur","Valeur"]]},
 {id:"configuration",title:"Configuration",collection:"configuration",fields:[["nom","Nom"],["valeur","Valeur"],["description","Description"]]}
 ];
 const navItems=[
-["accueil","🏠 Accueil"],["etudiants","🎓 Étudiants"],["eleves","👨‍🎓 Élèves"],["professeurs","👨‍🏫 Professeurs"],["departements","🏢 Départements"],["filieres","📚 Filières"],["classes","🏫 Classes"],["affectations","🔗 Affectations"],["inscriptions","📋 Inscriptions"],["matieres","📖 Matières"],["cours","📝 Cours"],
+["accueil","🏠 Accueil"],
+["annonces","📢 Annonces"],
+["etudiants","🎓 Étudiants"],["eleves","👨‍🎓 Élèves"],["professeurs","👨‍🏫 Professeurs"],["departements","🏢 Départements"],["filieres","📚 Filières"],["classes","🏫 Classes"],["affectations","🔗 Affectations"],["inscriptions","📋 Inscriptions"],["matieres","📖 Matières"],["cours","📝 Cours"],
 ["horaire_cours","🗓️ Horaire des cours"],
 ["horaire_examens","📝 Horaire des examens"],
 ["annees","📅 Années académiques"],["devoirs","📑 Devoirs"],["examens","⏱️ Examens"],["notes_cours","📒 Notes de cours"],["remises","📥 Remises / Corrections"],["bulletin","🎓 Mon bulletin"],["resultats","📊 Résultats"],["videos","🎬 Vidéos"],["documents","📄 Documents"],["statistiques","📈 Statistiques"],["configuration","⚙️ Configuration"]
 ];
 const studentPages=[
   "accueil",
+  "annonces",
   "devoirs",
   "examens",
   "notes_cours",
@@ -466,6 +482,7 @@ const studentPages=[
 
 const teacherPages=[
   "accueil",
+  "annonces",
   "devoirs",
   "examens",
   "notes_cours",
@@ -518,7 +535,7 @@ toast("Accès non autorisé.",true);return;
 try{
 stopTimer();currentPage=page;await chargerNomsClasses();await chargerNomsUtilisateurs();buildNavigation();
 const mod=modules.find(m=>m.id===page);
-const titles={accueil:"Tableau de bord",examens:"Examens chronométrés",notes_cours:"Notes de cours",utilisateurs:"Gestion des utilisateurs",sauvegarde:"Sauvegarde",horaire_cours:"Horaire des cours",horaire_examens:"Horaire des examens",bulletin:"Mon bulletin"};
+const titles={accueil:"Tableau de bord",annonces:"Annonces officielles",examens:"Examens chronométrés",notes_cours:"Notes de cours",utilisateurs:"Gestion des utilisateurs",sauvegarde:"Sauvegarde",horaire_cours:"Horaire des cours",horaire_examens:"Horaire des examens",bulletin:"Mon bulletin"};
 $("pageTitle").textContent=titles[page]||mod?.title||page;
 $("pageContent").innerHTML='<div class="card">Chargement…</div>';
 if(page==="accueil")return await renderDashboard();
@@ -542,6 +559,35 @@ function dash(icon,title,desc,page){return`<div class="dash-card"><div style="fo
 async function renderDashboard(){
 const name=currentProfile?.nom||currentUser?.displayName||currentUser?.email||"Utilisateur";
 let html=`<div class="card welcome"><h3>Bienvenue, ${esc(name)} !</h3><p>Votre espace académique — ${esc(roleName(currentProfile.role))}</p></div>`;
+
+// Affichage des annonces actives sur le tableau de bord
+try {
+  const annSnap = await getDocs(collection(db, "annonces"));
+  const now = Date.now();
+  const activeAnnonces = annSnap.docs.map(d=>({id:d.id, ...d.data()})).filter(a=>{
+    const debut = a.dateDebut ? new Date(a.dateDebut).getTime() : 0;
+    const fin = a.dateLimite ? new Date(a.dateLimite).getTime() : Infinity;
+    const cible = (a.cible || "tous").toLowerCase();
+    const matchesCible = cible==="tous" || (isStudent() && cible.includes("eleve")) || (isProfessor() && cible.includes("prof"));
+    return now >= debut && now <= fin && matchesCible;
+  });
+
+  if(activeAnnonces.length > 0){
+    html+=`<div class="card" style="border:1px solid var(--b); background:#f0f6ff; margin-bottom:16px;">
+      <h3 style="color:var(--b)">📢 Annonces récentes</h3>
+      ${activeAnnonces.map(a=>`
+        <div style="background:white; padding:10px; border-radius:8px; margin-bottom:8px; border:1px solid var(--bd);">
+          <b>${esc(a.titre)}</b>
+          <p style="margin:4px 0 0 0; font-size:13px;">${esc(a.message)}</p>
+          <small class="muted">Publié le : ${esc(a.dateDebut||"—")}</small>
+        </div>
+      `).join("")}
+    </div>`;
+  }
+} catch(e) {
+  console.warn("Impossible de charger les annonces du tableau de bord", e);
+}
+
 if(isAdmin()){
 const names=["etudiants","eleves","professeurs","classes","matieres","devoirs","examens"],counts=await Promise.all(names.map(async n=>(await getDocs(collection(db,n))).size));
 const waiting=await getDocs(query(collection(db,"users"),where("status","==","attente")));
@@ -562,9 +608,10 @@ html+=`<div class="card" style="border:1px solid var(--bd);background:#f8fafc;ma
   </div>
 </div>`;
 
-html+='<div class="dashboard-grid">'+dash("👥","Utilisateurs","Approuver les comptes et attribuer les rôles.","utilisateurs")+dash("🎓","Bulletins","Gérer et publier les bulletins scolaires.","bulletin")+dash("🏫","Classes","Organiser les classes.","classes")+dash("🎓","Étudiants","Gérer les dossiers.","etudiants")+dash("👨‍🏫","Professeurs","Gérer les professeurs.","professeurs")+dash("⏱️","Examens","Créer des QCU et des questions ouvertes.","examens")+dash("📒","Notes de cours","Publier texte et photos.","notes_cours")+dash("📥","Corrections","Consulter les remises.","remises")+dash("💾","Sauvegarde","Exporter les données.","sauvegarde")+'</div>';
+html+='<div class="dashboard-grid">'+dash("👥","Utilisateurs","Approuver les comptes et attribuer les rôles.","utilisateurs")+dash("📢","Annonces","Diffuser des avis et informations officielles.","annonces")+dash("🎓","Bulletins","Gérer et publier les bulletins scolaires.","bulletin")+dash("🏫","Classes","Organiser les classes.","classes")+dash("🎓","Étudiants","Gérer les dossiers.","etudiants")+dash("👨‍🏫","Professeurs","Gérer les professeurs.","professeurs")+dash("⏱️","Examens","Créer des QCU et des questions ouvertes.","examens")+dash("📒","Notes de cours","Publier texte et photos.","notes_cours")+dash("📥","Corrections","Consulter les remises.","remises")+dash("💾","Sauvegarde","Exporter les données.","sauvegarde")+'</div>';
 }else if(currentProfile.role==="professeur"){
 html+='<div class="dashboard-grid">'
++dash("📢","Annonces","Consulter les annonces officielles.","annonces")
 +dash("📑","Devoirs","Créer et gérer les devoirs.","devoirs")
 +dash("⏱️","Examens","Créer des QCU et questions ouvertes.","examens")
 +dash("📒","Notes de cours","Publier les cours.","notes_cours")
@@ -574,6 +621,7 @@ html+='<div class="dashboard-grid">'
 +'</div>';
 }else{
 html+='<div class="dashboard-grid">'
++dash("📢","Annonces","Consulter les annonces.","annonces")
 +dash("📑","Mes devoirs","Consulter les devoirs.","devoirs")
 +dash("⏱️","Examens","Passer les examens.","examens")
 +dash("📒","Notes de cours","Lire et copier les cours.","notes_cours")
@@ -604,7 +652,7 @@ if($("toggleAppStatusBtn")){
 
 function canAddModule(id){
   const role = currentProfile?.role;
-
+  if(id==="annonces") return isAdmin();
   return isAdmin()
     || (
       ["devoirs","examens","notes_cours","videos","documents"].includes(id)
@@ -622,7 +670,7 @@ function canAddModule(id){
 
 function canEditModule(id){
   const role = currentProfile?.role;
-
+  if(id==="annonces") return isAdmin();
   return isAdmin()
     || (
       ["devoirs","examens","notes_cours","remises","videos","documents"].includes(id)
@@ -667,6 +715,20 @@ async function renderModule(m){
       )).docs.map(d=>({id:d.id,...d.data()}));
     }
 
+  }else if(m.id==="annonces"){
+    records = (await getDocs(collection(db,m.collection)))
+      .docs.map(d=>({id:d.id,...d.data()}));
+    const now = Date.now();
+    if(isStudent() || isProfessor()){
+      records = records.filter(a=>{
+        const debut = a.dateDebut ? new Date(a.dateDebut).getTime() : 0;
+        const fin = a.dateLimite ? new Date(a.dateLimite).getTime() : Infinity;
+        const cible = (a.cible || "tous").toLowerCase();
+        const matchesCible = cible==="tous" || (isStudent() && cible.includes("eleve")) || (isProfessor() && cible.includes("prof"));
+        return now >= debut && now <= fin && matchesCible;
+      });
+    }
+
   }else if(m.id==="remises"){
     let q;
 
@@ -698,6 +760,25 @@ async function renderModule(m){
 
     records = (await getDocs(q))
       .docs.map(d=>({id:d.id,...d.data()}));
+    
+    // Filtre de validité/visibilité des résultats pour les élèves
+    if(isStudent()){
+      const now = Date.now();
+      records = records.filter(res => {
+        const debut = res.dateDebut ? new Date(res.dateDebut).getTime() : 0;
+        const fin = res.dateLimite ? new Date(res.dateLimite).getTime() : Infinity;
+        return now >= debut && now <= fin;
+      });
+    }
+  }
+
+  // Filtrage des devoirs selon la date limite (si expirés, l'élève ne les voit plus dans la liste active, mais les données persistent)
+  if(isStudent() && m.id==="devoirs"){
+    const now = Date.now();
+    records = records.filter(d=>{
+      const fin = d.dateLimite ? new Date(d.dateLimite).getTime() : Infinity;
+      return now <= fin;
+    });
   }
 
   // Vérification de soumission unique pour les devoirs chez l'élève
@@ -887,6 +968,13 @@ async function ouvrirSoumissionDevoir(devoir){
     return;
   }
 
+  // Vérification de la date limite du devoir
+  if(devoir.dateLimite && Date.now() > new Date(devoir.dateLimite).getTime()){
+    toast("La date limite de ce devoir est dépassée. Soumission impossible.", true);
+    await openPage("devoirs");
+    return;
+  }
+
   // Vérification atomique préalable
   try {
     const existingSnap = await getDocs(query(collection(db,"remises"), where("devoirId","==",devoir.id), where("etudiantId","==",currentUser.uid)));
@@ -901,6 +989,8 @@ async function ouvrirSoumissionDevoir(devoir){
   const zone = $("recordFormArea");
   if(!zone) return;
 
+  const qs = parseQuestions(devoir);
+  const hasQuestions = qs.length > 0;
   let hasTimer = Number(devoir.dureeMinutes || 0) > 0;
   let durationMs = Number(devoir.dureeMinutes || 30) * 60000;
   let startTime = Date.now();
@@ -911,22 +1001,27 @@ async function ouvrirSoumissionDevoir(devoir){
       <h3>Résoudre le devoir : ${esc(titre)}</h3>
       ${hasTimer?`<div id="homeworkTimer" class="timer">⏱ Temps restant : --:--</div>`:""}
       <form id="soumissionDevoirForm">
-        <div class="field">
-          <label>Votre réponse *</label>
-          <textarea name="contenu" required
-            placeholder="Écrivez votre réponse ici..."></textarea>
+        ${hasQuestions ? qs.map((q,i)=>`
+          <div class="exam-question">
+            <h4>Question ${i+1} — ${Number(q.points)||1} point(s)</h4>
+            <p>${esc(q.question)}</p>
+            ${q.type==="qcm"?(q.options||[]).map(o=>`<label class="exam-option"><input type="radio" name="q${i}" value="${esc(o)}" required><span>${esc(o)}</span></label>`).join(""):`<textarea name="q${i}" placeholder="Votre réponse…" required></textarea>`}
+          </div>
+        `).join("") : `
+          <div class="field">
+            <label>Votre réponse *</label>
+            <textarea name="contenu" required placeholder="Écrivez votre réponse ici..."></textarea>
+          </div>
+        `}
+        <div class="field" style="margin-top:12px;">
+          <label>Lien du document / Justificatif (facultatif)</label>
+          <input name="lienDocument" type="url" placeholder="https://...">
         </div>
-        <div class="field">
-          <label>Lien du document (facultatif)</label>
-          <input name="lienDocument" type="url"
-            placeholder="https://...">
-        </div>
-        <div class="actions">
+        <div class="actions" style="margin-top:12px;">
           <button class="btn primary" type="submit" id="submitHomeworkBtn">
             Envoyer mon devoir
           </button>
-          <button class="btn secondary" id="annulerSoumission"
-            type="button">Annuler</button>
+          <button class="btn secondary" id="annulerSoumission" type="button">Annuler</button>
         </div>
       </form>
     </div>
@@ -959,16 +1054,36 @@ async function ouvrirSoumissionDevoir(devoir){
     if(isSubmitting) return;
 
     const form = e.currentTarget;
-    const contenu = String(
-      new FormData(form).get("contenu") || ""
-    ).trim();
-    const lienDocument = String(
-      new FormData(form).get("lienDocument") || ""
-    ).trim();
+    const fd = new FormData(form);
+    const lienDocument = String(fd.get("lienDocument") || "").trim();
 
-    if(!contenu){
-      toast("Écrivez votre réponse avant l'envoi.",true);
-      return;
+    let contenu = "";
+    let reponsesObj = {};
+    let scoreQCM = 0;
+    let maxQCM = 0;
+    let hasWritten = false;
+
+    if(hasQuestions){
+      qs.forEach((q,i)=>{
+        const v = String(fd.get("q"+i) || "").trim();
+        reponsesObj[i] = v;
+        if(q.type==="qcm"){
+          const pts = Number(q.points)||1;
+          maxQCM += pts;
+          if(v.toLowerCase() === String(q.correctAnswer||"").trim().toLowerCase()){
+            scoreQCM += pts;
+          }
+        }else if(q.type==="ecrit"){
+          hasWritten = true;
+        }
+      });
+      contenu = JSON.stringify(reponsesObj);
+    }else{
+      contenu = String(fd.get("contenu") || "").trim();
+      if(!contenu){
+        toast("Écrivez votre réponse avant l'envoi.",true);
+        return;
+      }
     }
 
     isSubmitting = true;
@@ -996,6 +1111,9 @@ async function ouvrirSoumissionDevoir(devoir){
         etudiantEmail: currentUser.email || "",
         classeId: classeId,
         contenu: contenu,
+        reponses: reponsesObj,
+        noteQCM: scoreQCM,
+        noteObtenue: scoreQCM,
         statut: "soumis",
         dateRemise: stamp(),
         createdAt: stamp(),
@@ -1031,7 +1149,7 @@ async function ouvrirSoumissionDevoir(devoir){
 
 async function recordForm(m,r){
 const area=$("recordFormArea");if(!area)return;
-const isExam=m.id==="examens";
+const isExam=m.id==="examens"||m.id==="devoirs";
   if(
   m.id === "remises" &&
   r &&
@@ -1067,7 +1185,7 @@ try {
 }
 
 area.innerHTML=`<div class="card"><h3>${r?"Modifier":"Ajouter"} — ${esc(m.title)}</h3><form id="dataForm"><div class="form-grid">${m.fields.filter(([k])=>!(isExam&&k===['questionsJSON'])).map(([k,l])=>{
-const value=r?.[k]??"",long=["description","contenu","commentaire"].includes(k),num=["note100","note20","dureeMinutes","noteMax"].includes(k),type=["dateLimite","dateDebut"].includes(k)?"datetime-local":num?"number":"text";
+const value=r?.[k]??"",long=["description","contenu","commentaire","message"].includes(k),num=["note100","note20","dureeMinutes","noteMax"].includes(k),type=["dateLimite","dateDebut"].includes(k)?"datetime-local":num?"number":"text";
 let formattedValue=value;if(type==="datetime-local"&&value)formattedValue=String(value).slice(0,16);
 
 if (k === "classeId") {
@@ -1078,31 +1196,35 @@ if (k === "matiereId") {
   return `<div class="field ${long?"full":""}"><label>${esc(l)}</label><select name="matiereId"><option value="">-- Chwazi matyè --</option>${matieresDisponibles.map(mat=>`<option value="${esc(mat.id)}" ${value===mat.id||value===mat.code?"selected":""}>${esc(mat.nom||mat.code||mat.id)}</option>`).join("")}</select></div>`;
 }
 
+if (k === "cible") {
+  return `<div class="field ${long?"full":""}"><label>${esc(l)}</label><select name="cible"><option value="tous" ${value==="tous"?"selected":""}>Tous les utilisateurs</option><option value="professeurs" ${value==="professeurs"?"selected":""}>Professeurs seulement</option><option value="eleves" ${value==="eleves"?"selected":""}>Élèves et étudiants seulement</option></select></div>`;
+}
+
 if (m.id==="remises" && k==="etudiantId" && isStudent()) {
   return `<input type="hidden" name="etudiantId" value="${esc(currentUser.uid)}">`;
 }
 
 return`<div class="field ${long?"full":""}"><label>${esc(l)}</label>${long?`<textarea name="${esc(k)}">${esc(value)}</textarea>`:`<input name="${esc(k)}" type="${type}" value="${esc(formattedValue)}" ${num?'min="0"':''} ${isExam&&k==="titre"?"required":""}>`}</div>`
-}).join("")}</div>${isExam?examBuilder(r):""}<div class="actions"><button class="btn primary" type="submit">Enregistrer</button><button class="btn secondary" id="cancelForm" type="button">Annuler</button></div></form></div>`;
+}).join("")}</div>${isExam?examBuilder():""}<div class="actions"><button class="btn primary" type="submit">Enregistrer</button><button class="btn secondary" id="cancelForm" type="button">Annuler</button></div></form></div>`;
 $("cancelForm").onclick=()=>area.innerHTML="";
 if(isExam)setupQuestionBuilder(parseQuestions(r||{}));
 $("dataForm").onsubmit=async e=>{
 e.preventDefault();const fd=new FormData(e.currentTarget),data={};
 for(const[k,v]of fd.entries())data[k]=String(v).trim();
-if(["devoirs","examens","remises","resultats","affectations","videos","documents"].includes(m.id)){
-if(currentProfile.role==="professeur"){data.professeurUid=currentUser.uid;data.professeurId=currentUser.uid}
+if(["devoirs","examens","remises","resultats","affectations","videos","documents","annonces"].includes(m.id)){
+if(currentProfile.role==="professeur" || isAdmin()){if(!data.professeurUid) {data.professeurUid=currentUser.uid;data.professeurId=currentUser.uid}}
 }
 if(m.id==="remises"&&!isAdmin()&&currentProfile.role!=="professeur"){
 data.etudiantId=currentUser.uid;data.classeId=currentProfile.classeId||data.classeId||"";data.statut="soumis";delete data.note100;delete data.commentaire;
 }
 if(isExam){
-let questions;
-try{questions=readBuilderQuestions()}catch(error){console.error("Erreur questions examen :",error);return toast(error?.message||"Vérifiez les questions de l'examen.",true)}
-if(!questions||!questions.length)return toast("Ajoutez au moins une question avant d'enregistrer l'examen.",true);
-if(!data.titre||!data.classeId)return toast("Le titre de l'examen et le code de classe sont obligatoires.",true);
+let questions=[];
+try{questions=readBuilderQuestions()}catch(error){console.error("Erreur questions :",error);return toast(error?.message||"Vérifiez les questions.",true)}
+data.questionsJSON=JSON.stringify(questions);
 const duration=Number(data.dureeMinutes||30);
-if(!Number.isFinite(duration)||duration<1)return toast("La durée doit être d'au moins une minute.",true);
-data.questionsJSON=JSON.stringify(questions);data.dureeMinutes=Math.floor(duration);data.noteMax=questions.reduce((s,q)=>s+Number(q.points||0),0);data.statut="publie";data.professeurUid=isAdmin()?(data.professeurUid||currentUser.uid):currentUser.uid;data.professeurId=isAdmin()?(data.professeurId||currentUser.uid):currentUser.uid;
+if(Number.isFinite(duration)&&duration>0)data.dureeMinutes=Math.floor(duration);
+if(questions.length>0){data.noteMax=questions.reduce((s,q)=>s+Number(q.points||0),0);}
+if(m.id==="examens")data.statut="publie";
 }
 try{data.updatedAt=stamp();if(r)await updateDoc(doc(db,m.collection,r.id),data);else{data.createdAt=stamp();await addDoc(collection(db,m.collection),data)}toast("Enregistrement effectué.");await openPage(m.id)}
 catch(err){console.error(err);toast(friendly(err),true)}
@@ -1110,7 +1232,7 @@ catch(err){console.error(err);toast(friendly(err),true)}
 }
 
 function examBuilder(){
-return`<div class="full"><div class="notice">Choisissez le type de chaque question : QCU (une seule bonne réponse) ou question ouverte (réponse écrite). Vous pouvez mélanger les deux types dans le même examen.</div><div class="field"><label>Type de la prochaine question</label><select id="newQuestionType"><option value="qcm">QCU — une seule bonne réponse</option><option value="ecrit">Question ouverte — réponse écrite</option></select></div><button class="btn secondary" id="addQuestion" type="button">＋ Ajouter une question</button><div id="questionBuilder"></div></div>`
+return`<div class="full"><div class="notice">Ajoutez des questions (QCU ou question ouverte) pour cet examen ou devoir.</div><div class="field"><label>Type de la prochaine question</label><select id="newQuestionType"><option value="qcm">QCU — une seule bonne réponse</option><option value="ecrit">Question ouverte — réponse écrite</option></select></div><button class="btn secondary" id="addQuestion" type="button">＋ Ajouter une question</button><div id="questionBuilder"></div></div>`
 }
 let builderQuestions=[];
 function setupQuestionBuilder(qs){
@@ -1143,7 +1265,7 @@ return result;
 }
 function parseQuestions(exam){
 try{const value=exam.questionsJSON;const q=Array.isArray(value)?value:JSON.parse(value||"[]");return Array.isArray(q)?q.filter(x=>x&&typeof x.question==="string"&&["qcm","ecrit"].includes(x.type)):[]}
-catch(e){console.warn("Questions d'examen invalides",e);return[]}
+catch(e){console.warn("Questions invalides",e);return[]}
 }
 function fmtTime(ms){const s=Math.max(0,Math.ceil(ms/1000));return`${String(Math.floor(s/60)).padStart(2,"0")}:${String(s%60).padStart(2,"0")}`}
 function available(e){const n=Date.now(),s=e.dateDebut?new Date(e.dateDebut).getTime():0,f=e.dateLimite?new Date(e.dateLimite).getTime():Infinity;return n>=s&&n<=f}
@@ -1153,9 +1275,14 @@ stopTimer();
 if(isAdmin()||isProfessor())return renderTeacherExams();
 const cl=currentProfile.classeId||(currentProfile.classIds||[])[0];
 if(!cl){$("pageContent").innerHTML='<div class="card"><h3>Examens</h3><div class="notice">Votre compte n’est pas encore associé à une classe. Contactez l’administrateur.</div></div>';return}
-const snap=await getDocs(query(collection(db,"examens"),where("classeId","==",cl))),exams=snap.docs.map(d=>({id:d.id,...d.data()}));
+const snap=await getDocs(query(collection(db,"examens"),where("classeId","==",cl)));
+const now = Date.now();
+const exams=snap.docs.map(d=>({id:d.id,...d.data()})).filter(e=>{
+  const fin = e.dateLimite ? new Date(e.dateLimite).getTime() : Infinity;
+  return now <= fin;
+});
 let attempts=[];try{attempts=(await getDocs(query(collection(db,"tentatives_examens"),where("etudiantId","==",currentUser.uid)))).docs.map(d=>({id:d.id,...d.data()}))}catch(e){console.warn(e)}
-$("pageContent").innerHTML=`<div class="card"><h3>Mes examens</h3><p class="muted">Le chronomètre commence lorsque vous démarrez l'examen.</p><div class="table-wrap"><table><thead><tr><th>Examen</th><th>Durée</th><th>Résultat</th><th>Action</th></tr></thead><tbody>${exams.map(e=>{const a=attempts.find(x=>x.examenId===e.id&&x.statut==="termine"),ongoing=attempts.find(x=>x.examenId===e.id&&x.statut==="en_cours");return`<tr><td><b>${esc(e.titre)}</b><div>${esc(e.description||"")}</div></td><td>${Number(e.dureeMinutes||30)} min</td><td>${a?`${Number(a.noteObtenue||0)} / ${Number(a.noteMax||e.noteMax||0)}`:ongoing?"En cours":"Non commencé"}</td><td>${a?"Terminé":available(e)?`<button class="btn primary" data-start="${esc(e.id)}">${ongoing?"Reprendre":"Commencer"}</button>`:"Hors période"}</td></tr>`}).join("")||'<tr><td colspan="4">Aucun examen pour votre classe.</td></tr>'}</tbody></table></div></div>`;
+$("pageContent").innerHTML=`<div class="card"><h3>Mes examens</h3><p class="muted">Le chronomètre commence lorsque vous démarrez l'examen.</p><div class="table-wrap"><table><thead><tr><th>Examen</th><th>Durée</th><th>Résultat</th><th>Action</th></tr></thead><tbody>${exams.map(e=>{const a=attempts.find(x=>x.examenId===e.id&&x.statut==="termine"),ongoing=attempts.find(x=>x.examenId===e.id&&x.statut==="en_cours");return`<tr><td><b>${esc(e.titre)}</b><div>${esc(e.description||"")}</div></td><td>${Number(e.dureeMinutes||30)} min</td><td>${a?`${Number(a.noteObtenue||0)} / ${Number(a.noteMax||e.noteMax||0)}`:ongoing?"En cours":"Non commencé"}</td><td>${a?"Termined":available(e)?`<button class="btn primary" data-start="${esc(e.id)}">${ongoing?"Reprendre":"Commencer"}</button>`:"Hors période"}</td></tr>`}).join("")||'<tr><td colspan="4">Aucun examen actif pour votre classe.</td></tr>'}</tbody></table></div></div>`;
 $("pageContent").querySelectorAll("[data-start]").forEach(b=>b.onclick=()=>startExam(exams.find(e=>e.id===b.dataset.start),attempts.find(a=>a.examenId===b.dataset.start&&a.statut==="en_cours")))
 }
 
@@ -1890,6 +2017,15 @@ function drawSchedulePage(page){
     records=records.filter(r=>allowed.has(r.classeId));
   }
 
+  // Application de la règle de validité / durée des horaires
+  const now = Date.now();
+  records = records.filter(r => {
+    if(!r.date) return true;
+    const finStr = r.dateLimite || r.date + "T23:59:59";
+    const fin = new Date(finStr).getTime();
+    return now <= (isNaN(fin) ? Infinity : fin);
+  });
+
   records.sort((a,b)=>
     String(a.date||"").localeCompare(String(b.date||""))||
     String(a.heureDebut||"").localeCompare(String(b.heureDebut||""))
@@ -1902,7 +2038,7 @@ function drawSchedulePage(page){
         <div>
           <h3>${isCourse?"🗓️":"📝"} ${esc(title)}</h3>
           <p class="muted">
-            ${records.length} horaire(s) disponible(s)
+            ${records.length} horaire(s) valide(s)
           </p>
         </div>
         ${canCreate?`
@@ -2148,6 +2284,12 @@ async function scheduleOpenForm(page,record){
           </div>
 
           <div class="field">
+            <label>Date et heure limite de validité (Fin)</label>
+            <input name="dateLimite" type="datetime-local"
+              value="${esc(record?.dateLimite?String(record.dateLimite).slice(0,16):"")}">
+          </div>
+
+          <div class="field">
             <label>Heure de début *</label>
             <input name="heureDebut" type="time"
               value="${esc(record?.heureDebut||"")}" required>
@@ -2159,7 +2301,7 @@ async function scheduleOpenForm(page,record){
               value="${esc(record?.heureFin||"")}" required>
           </div>
 
-          <div class="field">
+          <div class="field full">
             <label>Salle</label>
             <input name="salle" maxlength="80"
               value="${esc(record?.salle||"")}"
@@ -2189,6 +2331,7 @@ async function scheduleOpenForm(page,record){
     const classeId=String(fd.get("classeId")||"").trim();
     const matiereId=String(fd.get("matiereId")||"").trim();
     const date=String(fd.get("date")||"").trim();
+    const dateLimite=String(fd.get("dateLimite")||"").trim();
     const heureDebut=String(fd.get("heureDebut")||"").trim();
     const heureFin=String(fd.get("heureFin")||"").trim();
     const salle=String(fd.get("salle")||"").trim();
@@ -2217,6 +2360,7 @@ async function scheduleOpenForm(page,record){
       matiereId,
       professeurUid,
       date,
+      dateLimite,
       heureDebut,
       heureFin,
       salle,
@@ -2693,7 +2837,7 @@ async function renderBackup(){
 if(!isAdmin())return;
 $("pageContent").innerHTML='<div class="card"><h3>Sauvegarde JSON</h3><p>Exporter les collections Firestore accessibles à votre compte.</p><button id="exportBtn" class="btn primary">Exporter les données</button><div class="notice">Le fichier peut contenir des données personnelles. Conservez-le en sécurité.</div></div>';
 $("exportBtn").onclick=async()=>{
-const names=["users","etudiants","eleves","professeurs","departements","filieres","classes","matieres","cours","annees_academiques","affectations","inscriptions","devoirs","examens","tentatives_examens","notes_cours","remises","resultats","videos","documents","bulletins","statistiques","configuration"],backup={application:"Centre de Formation Le Pédagogue",projectId:firebaseConfig.projectId,exportedAt:new Date().toISOString(),collections:{}};
+const names=["users","etudiants","eleves","professeurs","departements","filieres","classes","matieres","cours","annees_academiques","affectations","inscriptions","devoirs","examens","tentatives_examens","notes_cours","remises","resultats","videos","documents","annonces","bulletins","statistiques","configuration"],backup={application:"Centre de Formation Le Pédagogue",projectId:firebaseConfig.projectId,exportedAt:new Date().toISOString(),collections:{}};
 try{for(const name of names){const s=await getDocs(collection(db,name));backup.collections[name]=s.docs.map(d=>({id:d.id,...d.data()}))}
 const blob=new Blob([JSON.stringify(backup,null,2)],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="sauvegarde-le-pedagogue-"+new Date().toISOString().slice(0,10)+".json";a.click();URL.revokeObjectURL(url);toast("Export terminé.")}
 catch(e){toast(friendly(e),true)}
