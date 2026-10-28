@@ -1391,7 +1391,7 @@ $("pageContent").querySelectorAll("tr[data-exam-row]").forEach(tr=>{
   tr.onclick = () => marquerItemConsulte("examens", tr.dataset.examRow);
 });
 
-$("pageContent").querySelectorAll("[data-start]").forEach(b=>b.onclick=()=>{
+$("pageContent").querySelectorAll("[data-start]").forEach(b=>b.onclick=async()=>{
   marquerItemConsulte("examens", b.dataset.start);
   startExam(exams.find(e=>e.id===b.dataset.start),attempts.find(a=>a.examenId===b.dataset.start&&a.statut==="en_cours"));
 });
