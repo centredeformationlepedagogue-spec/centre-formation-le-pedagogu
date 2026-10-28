@@ -360,21 +360,56 @@ catch(err){authMessage(friendly(err),"error")}
 /* Inscription avec informations supplémentaires */
 let registrationVisible=false;
 let registrationBusy=false;
-
 async function chargerClassesInscription(){
   const selectClasse = $("regClasse");
   if(!selectClasse) return;
+
+  selectClasse.innerHTML =
+    `<option value="">Chargement des classes...</option>`;
+
   try {
     const snap = await getDocs(collection(db, "classes"));
-    const classes = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    selectClasse.innerHTML = `<option value="">-- Chwazi yon klas --</option>` + classes.map(c => `
-      <option value="${esc(c.id)}">${esc(c.nom || c.code || c.niveau || c.id)}</option>
-    `).join("");
+
+    console.log("Projet Firebase :", fb.options.projectId);
+    console.log("Nombre de classes :", snap.size);
+    console.log("Classes reçues :", snap.docs.map(d => ({
+      id: d.id,
+      ...d.data()
+    })));
+
+    const classes = snap.docs.map(d => ({
+      id: d.id,
+      ...d.data()
+    }));
+
+    if(classes.length === 0){
+      selectClasse.innerHTML =
+        `<option value="">Aucune classe trouvée</option>`;
+      return;
+    }
+
+    selectClasse.innerHTML =
+      `<option value="">-- Choisissez une classe --</option>` +
+      classes.map(c => `
+        <option value="${esc(c.id)}">
+          ${esc(c.nom || c.code || c.niveau || c.id)}
+        </option>
+      `).join("");
+
   } catch(e) {
-    console.warn("Erreur chargement classes inscription", e);
-    selectClasse.innerHTML = `<option value="">Erreur de chargement des classes</option>`;
+    console.error("Erreur chargement classes inscription :", e);
+
+    selectClasse.innerHTML =
+      `<option value="">Impossible de charger les classes</option>`;
+
+    authMessage(
+      "Erreur de chargement des classes : " +
+      (e.code || e.message || "Erreur inconnue"),
+      "error"
+    );
   }
 }
+
 
 function updateRegistrationFields(){
 const role=$("regRole").value;
