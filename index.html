@@ -603,7 +603,10 @@ navItems.filter(([id])=>
     ? ["eleve","etudiant"].includes(currentProfile?.role)
     : isAdmin()||(currentProfile?.role==="professeur"?teacherPages:studentPages).includes(id)
 ).forEach(([id,label])=>{
-const count = unreadCounts[id] || 0;
+const count = (
+  isAdmin() &&
+  ["videos", "horaire_cours", "horaire_examens"].includes(id)
+) ? 0 : (unreadCounts[id] || 0);
 const b=document.createElement("button");
 b.className="nav-btn"+(id===currentPage?" active":"");
 b.innerHTML=`<span>${label}</span>${count>0?`<span class="nav-badge">${count}</span>`:''}`;
