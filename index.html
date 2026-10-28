@@ -15,11 +15,12 @@
 .btn{border:0;border-radius:8px;padding:10px 13px;font-weight:bold;display:inline-flex;align-items:center;justify-content:center;gap:5px}.primary{background:var(--b);color:#fff}.secondary{background:#e6edf9;color:var(--b)}.danger{background:#fde8e8;color:#a51d1d}.success{background:#dcfce7;color:#166534}.block{width:100%;margin-top:9px}.google{width:100%;background:#fff;border:1px solid #ddd;margin-top:10px}.google strong{font-size:19px;color:#4285f4}
 .message,.notice{padding:11px;border-radius:8px;margin:12px 0;background:#dbeafe;color:#1e40af;line-height:1.5}.message.error{background:#fee2e2;color:#991b1b}.message.success{background:#dcfce7;color:#166534}
 .topbar{background:white;border-bottom:1px solid var(--bd);padding:12px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;position:sticky;top:0;z-index:5}.brand{font-weight:bold;color:var(--b);display:flex;align-items:center;gap:10px}.brand img{width:38px;height:38px;object-fit:contain}.top-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.user-info{font-size:12px;color:var(--mut)}
-.layout{display:flex;min-height:calc(100vh - 65px)}.sidebar{width:245px;flex-shrink:0;background:#102f6c;color:white;padding:12px}.sidebar-title{font-size:12px;text-transform:uppercase;opacity:.75;padding:10px}.nav-btn{display:block;width:100%;text-align:left;border:0;border-radius:7px;background:transparent;color:white;padding:10px;margin:2px 0}.nav-btn:hover,.nav-btn.active{background:#ffffff25}
+.layout{display:flex;min-height:calc(100vh - 65px)}.sidebar{width:245px;flex-shrink:0;background:#102f6c;color:white;padding:12px}.sidebar-title{font-size:12px;text-transform:uppercase;opacity:.75;padding:10px}.nav-btn{display:flex;align-items:center;justify-content:space-between;width:100%;text-align:left;border:0;border-radius:7px;background:transparent;color:white;padding:10px;margin:2px 0}.nav-btn:hover,.nav-btn.active{background:#ffffff25}
+.nav-badge{background:#b42318;color:#fff;font-size:10px;padding:2px 6px;border-radius:10px;font-weight:bold}
 .main{flex:1;min-width:0;padding:22px}.page-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px}.page-head h2{margin:0;color:var(--b)}.card,.stat,.dash-card{background:white;border:1px solid var(--bd);border-radius:12px;padding:16px;margin-bottom:16px}.card h3,.dash-card h3{color:var(--b);margin-top:0}.stats-grid,.dashboard-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:18px}.stat small{color:var(--mut)}.stat strong{display:block;font-size:27px;color:var(--b);margin-top:8px}.dash-card{display:flex;flex-direction:column;gap:9px}.dash-card p{color:var(--mut);font-size:14px;line-height:1.5;flex:1}.table-wrap{overflow-x:auto}table{border-collapse:collapse;width:100%;background:white}th,td{border-bottom:1px solid var(--bd);padding:10px;text-align:left;font-size:13px;overflow-wrap:anywhere}th{background:#edf3fc;color:var(--b)}.actions{display:flex;gap:6px;flex-wrap:wrap}.actions .btn{font-size:12px;padding:7px 9px}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.full{grid-column:1/-1}.muted{color:var(--mut)}.welcome{background:linear-gradient(120deg,#0f3d91,#2766ba);color:white}.welcome h3{color:white}.welcome p{line-height:1.6}.badge{display:inline-block;padding:4px 8px;border-radius:20px;font-size:11px;background:#dcfce7;color:#166534}.wait{background:#fef3c7;color:#92400e}
 .exam-question,.course-note{padding:15px;border:1px solid var(--bd);border-radius:10px;margin:12px 0;background:#fff}.exam-question h4{color:var(--b);margin:0 0 10px}.exam-option{display:flex;align-items:center;gap:8px;padding:8px;background:#f8faff;margin:5px 0;border-radius:6px}.exam-option input{width:auto}.exam-option span{flex:1}.timer{font-size:26px;text-align:center;padding:13px;background:#edf3fc;border:2px solid var(--bd);border-radius:10px;position:sticky;top:70px;z-index:3}.timer.warning{background:#fee2e2;color:#991b1b}.course-text{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.7}.course-note img{max-width:100%;max-height:600px;display:block;margin:12px auto}#toast{position:fixed;bottom:18px;right:18px;background:#17243a;color:white;padding:13px 16px;border-radius:8px;z-index:99;max-width:90%}footer{text-align:center;padding:20px;color:var(--mut);font-size:12px}
 @media(max-width:800px){.layout{display:block}.sidebar{width:100%;display:flex;flex-wrap:wrap;gap:3px}.sidebar-title{width:100%}.nav-btn{width:auto;flex:1 1 130px;font-size:13px}.main{padding:12px}.form-grid{grid-template-columns:1fr}.full{grid-column:auto}.topbar{position:static}.timer{top:5px}}
-/* Gestion des utilisateurs : affichage compact */
+/* Gestion des utilisateurs : affichage compact harmonisé */
 #pageContent .table-wrap:has(th:nth-child(8)) {
   max-width: 100%;
   overflow-x: auto;
@@ -27,9 +28,9 @@
 }
 #pageContent .table-wrap:has(th:nth-child(8)) th,
 #pageContent .table-wrap:has(th:nth-child(8)) td {
-  padding: 5px 6px;
-  font-size: 11px;
-  line-height: 1.3;
+  padding: 8px 10px;
+  font-size: 12px;
+  line-height: 1.4;
   vertical-align: middle;
 }
 #pageContent .table-wrap:has(th:nth-child(8)) th {
@@ -39,13 +40,13 @@
   gap: 4px;
 }
 #pageContent .table-wrap:has(th:nth-child(8)) .actions .btn {
-  font-size: 10px;
-  padding: 5px 6px;
+  font-size: 11px;
+  padding: 6px 8px;
 }
 #pageContent .table-wrap:has(th:nth-child(8)) select {
   min-width: 95px;
-  padding: 5px;
-  font-size: 11px;
+  padding: 6px;
+  font-size: 12px;
 }
 </style>
 </head>
@@ -443,10 +444,19 @@ const modules=[
 {id:"videos",title:"Vidéos",collection:"videos",fields:[
   ["titre","Titre"],
   ["classeId","Classe"],
+  ["dateDebut","Date et heure de début"],
+  ["dateLimite","Date et heure de fin"],
   ["url","Lien vidéo"],
   ["description","Description"]
 ]},
-{id:"documents",title:"Documents",collection:"documents",fields:[["titre","Titre"],["classeId","Classe"],["url","Lien du document"],["description","Description"]]},
+{id:"documents",title:"Documents",collection:"documents",fields:[
+  ["titre","Titre"],
+  ["classeId","Classe"],
+  ["dateDebut","Date et heure de début"],
+  ["dateLimite","Date et heure de fin"],
+  ["url","Lien du document"],
+  ["description","Description"]
+]},
 {id:"annonces",title:"Annonces",collection:"annonces",fields:[
   ["titre","Titre de l'annonce"],
   ["message","Message officiel"],
@@ -513,6 +523,88 @@ function nomClasseLisible(id) {
   return cacheNomsClasses[id] || id;
 }
 
+// Système de badges de notification pour les nouveaux contenus non consultés
+let unreadCounts = {};
+async function calculerBadgesNotifications() {
+  if(!currentUser || !currentProfile) return;
+  const uid = currentUser.uid;
+  const role = currentProfile.role;
+  const classeId = currentProfile.classeId;
+  const now = Date.now();
+
+  unreadCounts = {};
+  const sectionsToCheck = ["annonces", "devoirs", "examens", "notes_cours", "remises", "resultats", "videos", "documents", "horaire_cours", "horaire_examens"];
+  
+  let viewedMap = {};
+  try {
+    const vSnap = await getDoc(doc(db, "users_views", uid));
+    if(vSnap.exists()) viewedMap = vSnap.data().viewed || {};
+  } catch(e) {}
+
+  for(let sec of sectionsToCheck){
+    let col = sec;
+    if(sec==="horaire_cours") col="horaires_cours";
+    if(sec==="horaire_examens") col="horaires_examens";
+
+    try {
+      const snap = await getDocs(collection(db, col));
+      const items = snap.docs.map(d=>({id:d.id, ...d.data()}));
+      
+      let count = 0;
+      items.forEach(item => {
+        // Filtrer selon la validité / expiration
+        if(item.dateLimite){
+          const fin = new Date(item.dateLimite).getTime();
+          if(now > (isNaN(fin)?Infinity:fin)) return;
+        }
+        if(item.dateDebut){
+          const debut = new Date(item.dateDebut).getTime();
+          if(now < (isNaN(debut)?0:debut)) return;
+        }
+        // Filtrer selon la classe si étudiant
+        if(isStudent() && item.classeId && classeId && item.classeId !== classeId){
+          return;
+        }
+
+        const viewedTime = viewedMap[`${sec}_${item.id}`] || 0;
+        const itemTime = item.createdAt?.toMillis ? item.createdAt.toMillis() : (item.updatedAt?.toMillis ? item.updatedAt.toMillis() : now);
+
+        if(itemTime > viewedTime){
+          count++;
+        }
+      });
+      if(count > 0){
+        unreadCounts[sec] = count;
+      }
+    } catch(e) {}
+  }
+  buildNavigation();
+}
+
+async function marquerSectionConsultee(sectionId) {
+  if(!currentUser) return;
+  const uid = currentUser.uid;
+  let col = sectionId;
+  if(sectionId==="horaire_cours") col="horaires_cours";
+  if(sectionId==="horaire_examens") col="horaires_examens";
+
+  try {
+    const snap = await getDocs(collection(db, col));
+    const now = Date.now();
+    const ref = doc(db, "users_views", uid);
+    const vSnap = await getDoc(ref);
+    let viewedMap = vSnap.exists() ? (vSnap.data().viewed || {}) : {};
+
+    snap.docs.forEach(d => {
+      viewedMap[`${sectionId}_${d.id}`] = now;
+    });
+
+    await setDoc(ref, { viewed: viewedMap, updatedAt: stamp() }, { merge: true });
+    unreadCounts[sectionId] = 0;
+    buildNavigation();
+  } catch(e) {}
+}
+
 function buildNavigation(){
 const n=$("navigation");n.innerHTML="";
 navItems.filter(([id])=>
@@ -520,10 +612,26 @@ navItems.filter(([id])=>
     ? ["eleve","etudiant"].includes(currentProfile?.role)
     : isAdmin()||(currentProfile?.role==="professeur"?teacherPages:studentPages).includes(id)
 ).forEach(([id,label])=>{
-const b=document.createElement("button");b.className="nav-btn"+(id===currentPage?" active":"");b.textContent=label;b.onclick=()=>openPage(id);n.appendChild(b)
+const count = unreadCounts[id] || 0;
+const b=document.createElement("button");
+b.className="nav-btn"+(id===currentPage?" active":"");
+b.innerHTML=`<span>${label}</span>${count>0?`<span class="nav-badge">${count}</span>`:''}`;
+b.onclick=async()=>{
+  await openPage(id);
+  await marquerSectionConsultee(id);
+};
+n.appendChild(b)
 });
 if(isAdmin())for(const [id,label] of [["utilisateurs","👥 Utilisateurs"],["sauvegarde","💾 Sauvegarde"]]){
-const b=document.createElement("button");b.className="nav-btn"+(id===currentPage?" active":"");b.textContent=label;b.onclick=()=>openPage(id);n.appendChild(b)
+const count = unreadCounts[id] || 0;
+const b=document.createElement("button");
+b.className="nav-btn"+(id===currentPage?" active":"");
+b.innerHTML=`<span>${label}</span>${count>0?`<span class="nav-badge">${count}</span>`:''}`;
+b.onclick=async()=>{
+  await openPage(id);
+  await marquerSectionConsultee(id);
+};
+n.appendChild(b)
 }
 }
 
@@ -647,6 +755,8 @@ if($("toggleAppStatusBtn")){
     }
   };
 }
+// Calculer les badges à l'affichage du dashboard
+calculerBadgesNotifications();
 }
 
 
@@ -772,14 +882,15 @@ async function renderModule(m){
     }
   }
 
-  // Filtrage des devoirs selon la date limite (si expirés, l'élève ne les voit plus dans la liste active, mais les données persistent)
-  if(isStudent() && m.id==="devoirs"){
-    const now = Date.now();
-    records = records.filter(d=>{
-      const fin = d.dateLimite ? new Date(d.dateLimite).getTime() : Infinity;
-      return now <= fin;
-    });
-  }
+  // Filtrage automatique des contenus expirés selon leur durée / date limite
+  const nowTime = Date.now();
+  records = records.filter(r => {
+    const finStr = r.dateLimite || r.fin || "";
+    if(!finStr) return true;
+    const fin = new Date(finStr).getTime();
+    if(isNaN(fin)) return true;
+    return nowTime <= fin;
+  });
 
   // Vérification de soumission unique pour les devoirs chez l'élève
   let studentRemises = [];
@@ -1365,7 +1476,7 @@ $("backExams").onclick=()=>openPage("examens")
 }catch(e){console.error(e);if($("submitExam"))$("submitExam").disabled=false;toast("La remise a échoué : "+friendly(e),true)}
 }
 
-/* Notes de cours : texte et photos multiples */
+/* Notes de cours : texte et photos multiples avec téléchargement */
 async function compressPhoto(file){
 if(!file||!file.type.startsWith("image/"))throw Error("Choisissez une image valide.");
 if(file.size>12*1024*1024)throw Error("Photo trop grande : choisissez une image de moins de 12 Mo.");
@@ -1386,9 +1497,14 @@ else{
 const cl=currentProfile.classeId||(currentProfile.classIds||[])[0];if(!cl){$("pageContent").innerHTML='<div class="card">Votre compte n’est pas encore associé à une classe. Contactez l’administrateur.</div>';return}
 notes=(await getDocs(query(collection(db,"notes_cours"),where("classeId","==",cl)))).docs.map(d=>({id:d.id,...d.data()}))
 }
-$("pageContent").innerHTML=`<div class="card"><div class="page-head"><div><h3>Notes de cours</h3><p class="muted">${teacher?"Publier du texte ou des photos de cours.":"Lire et copier les cours."}</p></div>${teacher?'<button id="newNote" class="btn primary">＋ Ajouter une note</button>':""}</div><div id="noteFormArea"></div>${notes.map(n=>{
+$("pageContent").innerHTML=`<div class="card"><div class="page-head"><div><h3>Notes de cours</h3><p class="muted">${teacher?"Publier du texte ou des photos de cours.":"Lire et copier les cours, ou télécharger les photos."}</p></div>${teacher?'<button id="newNote" class="btn primary">＋ Ajouter une note</button>':""}</div><div id="noteFormArea"></div>${notes.map(n=>{
 let photosArr = Array.isArray(n.photosData)?n.photosData:(n.photoData?[n.photoData]:[]);
-return `<article class="course-note"><h3>${esc(n.titre)}</h3><p class="muted">Classe : ${esc(nomClasseLisible(n.classeId))} · ${esc(n.matiereId||"")}</p><div class="course-text" id="noteText${esc(n.id)}">${esc(n.contenu||"")}</div>${photosArr.map(p=>`<img src="${p}" alt="Photo du cours">`).join("")}<div class="actions"><button class="btn secondary" data-copy-note="${esc(n.id)}">Copier le texte</button>${teacher&&(isAdmin()||n.professeurUid===currentUser.uid)?`<button class="btn secondary" data-edit-note="${esc(n.id)}">Modifier</button><button class="btn danger" data-del-note="${esc(n.id)}">Supprimer</button>`:""}</div></article>`;
+return `<article class="course-note"><h3>${esc(n.titre)}</h3><p class="muted">Classe : ${esc(nomClasseLisible(n.classeId))} · ${esc(n.matiereId||"")}</p><div class="course-text" id="noteText${esc(n.id)}">${esc(n.contenu||"")}</div>${photosArr.map((p,pIdx)=>`
+  <div style="margin:10px 0; text-align:center;">
+    <img src="${p}" alt="Photo du cours" style="max-width:100%;max-height:600px;display:block;margin:0 auto;border-radius:6px;">
+    <a href="${p}" download="cours-${esc(n.titre || 'note')}-${pIdx+1}.jpg" class="btn secondary" style="margin-top:8px;display:inline-flex;">📥 Télécharger cette photo</a>
+  </div>
+`).join("")}<div class="actions"><button class="btn secondary" data-copy-note="${esc(n.id)}">Copier le texte</button>${teacher&&(isAdmin()||n.professeurUid===currentUser.uid)?`<button class="btn secondary" data-edit-note="${esc(n.id)}">Modifier</button><button class="btn danger" data-del-note="${esc(n.id)}">Supprimer</button>`:""}</div></article>`;
 }).join("")||'<div class="notice">Aucune note de cours.</div>'}</div>`;
 if(teacher)$("newNote").onclick=()=>noteForm(null);
 $("pageContent").querySelectorAll("[data-copy-note]").forEach(b=>b.onclick=async()=>{const t=$("noteText"+b.dataset.copyNote)?.innerText||"";try{await navigator.clipboard.writeText(t);toast("Texte copié.")}catch{toast("Sélectionnez le texte puis choisissez Copier.",true)}});
@@ -1829,7 +1945,7 @@ async function openBulletinForm(b){
 }
 
 /* =====================================================
-   HORAIRES CFLP : COURS ET EXAMENS
+   HORAIRES CFLP : COURS ET EXAMENS (Harmonisés)
    ===================================================== */
 
 window.cflpScheduleState = window.cflpScheduleState || {};
@@ -2415,7 +2531,7 @@ async function scheduleDelete(page,id){
   }
 }
 
-/* Gestion des utilisateurs : professeurs, élèves et classes affectées */
+/* Gestion des utilisateurs : professeurs, élèves et classes affectées (Harmonisée) */
 async function renderUsers(){
   if(!isAdmin()) return;
 
@@ -2603,7 +2719,7 @@ async function renderUsers(){
             `).join("")}
           </select>
           <button
-            class="btn"
+            class="btn secondary"
             type="button"
             data-affecter-classe="${esc(u.id)}"
           >
