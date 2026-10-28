@@ -173,6 +173,7 @@ function isAdmin(){return!!currentUser&&((currentUser.email||"").toLowerCase()==
 function isProfessor(){return!!currentProfile&&(currentProfile.role==="professeur"&&currentProfile.status==="accepted")}
 function isStudent(){return ["eleve","etudiant"].includes(String(currentProfile?.role||"").toLowerCase())}
 function approved(){return!!currentProfile&&(isAdmin()||(currentProfile.status==="accepted"&&["professeur","eleve","etudiant"].includes(currentProfile.role)))}
+function roleName(r){return({administrateur:"Administrateur",professeur:"Professeur",eleve:"Élève",etudiant:"Étudiant"})[r]||r||"Utilisateur"}
 function stopTimer(){if(timerInterval){clearInterval(timerInterval);timerInterval=null}}
 
 // Cache de noms d'utilisateurs pour remplacer les UID dans l'interface
@@ -244,8 +245,9 @@ $("authScreen").classList.add("hidden");$("app").classList.remove("hidden");
 $("userInfo").textContent=`${currentProfile.nom||user.displayName||user.email} — ${roleName(currentProfile.role)}`;
 await chargerNomsClasses();
 await chargerNomsUtilisateurs();
+buildNavigation();
 await calculerBadgesNotifications();
-buildNavigation();await openPage("accueil");
+await openPage("accueil");
 }catch(e){console.error(e);await signOut(auth).catch(()=>{});currentUser=null;currentProfile=null;authMessage("Impossible de charger le profil : "+friendly(e),"error")}
 finally{loginLock=false}
 }
@@ -392,7 +394,7 @@ try{await sendPasswordResetEmail(auth,email);authMessage("Si le compte existe, u
 catch(e){authMessage(friendly(e),"error")}
 });
 $("logoutBtn").addEventListener("click",async()=>{if(confirm("Voulez-vous vous déconnecter ?")){stopTimer();await signOut(auth)}});
-$("refreshBtn").addEventListener("click",async()=>{await calculerBadgesNotifications();await openPage(currentPage)});
+$("refreshBtn").addEventListener("click",()=>openPage(currentPage));
 
 const modules=[
 {id:"etudiants",title:"Étudiants",collection:"etudiants",fields:[["nom","Nom"],["prenom","Prénom"],["email","E-mail"],["telephone","Téléphone"],["classeId","Classe"]]},
@@ -465,7 +467,7 @@ const modules=[
   ["cible","Destinataires (tous, professeurs, eleves)"]
 ]},
 {id:"statistiques",title:"Statistiques",collection:"statistiques",fields:[["nom","Nom"],["description","Description"],["valeur","Valeur"]]},
-{id:"configuration",title:"Configuration",collection:"configuration",fields:[["nom","Nom"],["valeur","Valèur"],["description","Description"]]}
+{id:"configuration",title:"Configuration",collection:"configuration",fields:[["nom","Nom"],["valeur","Valeur"],["description","Description"]]}
 ];
 const navItems=[
 ["accueil","🏠 Accueil"],
@@ -523,7 +525,7 @@ function nomClasseLisible(id) {
   return cacheNomsClasses[id] || id;
 }
 
-// Système de badges de notification pour les nouveaux contenus non consultés
+// Système de badges de notification pour les nouveaux contenus non consultés individuels
 let unreadCounts = {};
 async function calculerBadgesNotifications() {
   if(!currentUser || !currentProfile) return;
@@ -578,32 +580,24 @@ async function calculerBadgesNotifications() {
   buildNavigation();
 }
 
-async function marquerSectionConsultee(sectionId) {
-  if(!currentUser) return;
+async function marquerItemConsulte(sectionId, itemId) {
+  if(!currentUser || !itemId) return;
   const uid = currentUser.uid;
-  let col = sectionId;
-  if(sectionId==="horaire_cours") col="horaires_cours";
-  if(sectionId==="horaire_examens") col="horaires_examens";
-
   try {
-    const snap = await getDocs(collection(db, col));
-    const now = Date.now();
     const ref = doc(db, "users_views", uid);
     const vSnap = await getDoc(ref);
     let viewedMap = vSnap.exists() ? (vSnap.data().viewed || {}) : {};
-
-    snap.docs.forEach(d => {
-      viewedMap[`${sectionId}_${d.id}`] = now;
-    });
-
+    
+    viewedMap[`${sectionId}_${itemId}`] = Date.now();
     await setDoc(ref, { viewed: viewedMap, updatedAt: stamp() }, { merge: true });
-    unreadCounts[sectionId] = 0;
-    buildNavigation();
-  } catch(e) {}
+    await calculerBadgesNotifications();
+  } catch(e) {
+    console.warn("Erreur marquage item consulté", e);
+  }
 }
 
 function buildNavigation(){
-const n=$("navigation");if(!n)return;n.innerHTML="";
+const n=$("navigation");n.innerHTML="";
 navItems.filter(([id])=>
   id==="bulletin"
     ? ["eleve","etudiant"].includes(currentProfile?.role)
@@ -615,7 +609,6 @@ b.className="nav-btn"+(id===currentPage?" active":"");
 b.innerHTML=`<span>${label}</span>${count>0?`<span class="nav-badge">${count}</span>`:''}`;
 b.onclick=async()=>{
   await openPage(id);
-  await marquerSectionConsultee(id);
 };
 n.appendChild(b)
 });
@@ -626,7 +619,6 @@ b.className="nav-btn"+(id===currentPage?" active":"");
 b.innerHTML=`<span>${label}</span>${count>0?`<span class="nav-badge">${count}</span>`:''}`;
 b.onclick=async()=>{
   await openPage(id);
-  await marquerSectionConsultee(id);
 };
 n.appendChild(b)
 }
@@ -658,16 +650,14 @@ const content=$("pageContent");
 if(content)content.innerHTML='<div class="card"><b>Erreur de navigation :</b> '+esc(friendly(e))+'<p class="muted">Vérifiez la console JavaScript et les règles Firestore.</p></div>';
 }
 }
-window.goPage=async p=>{
-  await openPage(p);
-  await marquerSectionConsultee(p);
-};
+window.goPage=p=>openPage(p);
 
 function dash(icon,title,desc,page){return`<div class="dash-card"><div style="font-size:27px">${icon}</div><h3>${esc(title)}</h3><p>${esc(desc)}</p><button class="btn secondary" onclick="window.goPage('${page}')">Ouvrir →</button></div>`}
 async function renderDashboard(){
 const name=currentProfile?.nom||currentUser?.displayName||currentUser?.email||"Utilisateur";
 let html=`<div class="card welcome"><h3>Bienvenue, ${esc(name)} !</h3><p>Votre espace académique — ${esc(roleName(currentProfile.role))}</p></div>`;
 
+// Affichage des annonces actives sur le tableau de bord
 try {
   const annSnap = await getDocs(collection(db, "annonces"));
   const now = Date.now();
@@ -934,7 +924,7 @@ async function renderModule(m){
                   alreadySubmitted = studentRemises.some(sr => sr.devoirId === r.id);
                 }
                 return `
-                <tr>
+                <tr data-item-id="${esc(r.id)}" data-section-id="${esc(m.id)}">
                   <td>
                     ${
                       m.fields.map(([k,l])=>{
@@ -945,7 +935,7 @@ async function renderModule(m){
                         
                         return `<div><b>${esc(l)} :</b> ${
                           k==="url"
-                            ? `<a href="${esc(r[k])}" target="_blank" rel="noopener">Louvri lyen / Telechaje</a>`
+                            ? `<a href="${esc(r[k])}" target="_blank" rel="noopener" onclick="marquerItemConsulte('${esc(m.id)}','${esc(r.id)}')">Louvri lyen / Telechaje</a>`
                             : esc(val)
                         }</div>`;
                       }).join("") || esc(r.titre||r.id)
@@ -988,6 +978,13 @@ async function renderModule(m){
     </div>
   `;
 
+  // Marquer comme consulté dès qu'on clique/interagit avec un élément de la liste
+  $("pageContent").querySelectorAll("tr[data-item-id]").forEach(tr => {
+    tr.onclick = () => {
+      marquerItemConsulte(tr.dataset.sectionId, tr.dataset.itemId);
+    };
+  });
+
   if($("addRecord")){
     $("addRecord").onclick = ()=>{
       if(!canAdd){
@@ -1005,7 +1002,10 @@ async function renderModule(m){
         const devoir = records.find(
           r => r.id === b.dataset.submitHomework
         );
-        if(devoir) ouvrirSoumissionDevoir(devoir);
+        if(devoir) {
+          marquerItemConsulte("devoirs", devoir.id);
+          ouvrirSoumissionDevoir(devoir);
+        }
       };
     });
 
@@ -1385,8 +1385,16 @@ const exams=snap.docs.map(d=>({id:d.id,...d.data()})).filter(e=>{
   return now <= fin;
 });
 let attempts=[];try{attempts=(await getDocs(query(collection(db,"tentatives_examens"),where("etudiantId","==",currentUser.uid)))).docs.map(d=>({id:d.id,...d.data()}))}catch(e){console.warn(e)}
-$("pageContent").innerHTML=`<div class="card"><h3>Mes examens</h3><p class="muted">Le chronomètre commence lorsque vous démarrez l'examen.</p><div class="table-wrap"><table><thead><tr><th>Examen</th><th>Durée</th><th>Résultat</th><th>Action</th></tr></thead><tbody>${exams.map(e=>{const a=attempts.find(x=>x.examenId===e.id&&x.statut==="termine"),ongoing=attempts.find(x=>x.examenId===e.id&&x.statut==="en_cours");return`<tr><td><b>${esc(e.titre)}</b><div>${esc(e.description||"")}</div></td><td>${Number(e.dureeMinutes||30)} min</td><td>${a?`${Number(a.noteObtenue||0)} / ${Number(a.noteMax||e.noteMax||0)}`:ongoing?"En cours":"Non commencé"}</td><td>${a?"Termined":available(e)?`<button class="btn primary" data-start="${esc(e.id)}">${ongoing?"Reprendre":"Commencer"}</button>`:"Hors période"}</td></tr>`}).join("")||'<tr><td colspan="4">Aucun examen actif pour votre classe.</td></tr>'}</tbody></table></div></div>`;
-$("pageContent").querySelectorAll("[data-start]").forEach(b=>b.onclick=()=>startExam(exams.find(e=>e.id===b.dataset.start),attempts.find(a=>a.examenId===b.dataset.start&&a.statut==="en_cours")))
+$("pageContent").innerHTML=`<div class="card"><h3>Mes examens</h3><p class="muted">Le chronomètre commence lorsque vous démarrez l'examen.</p><div class="table-wrap"><table><thead><tr><th>Examen</th><th>Durée</th><th>Résultat</th><th>Action</th></tr></thead><tbody>${exams.map(e=>{const a=attempts.find(x=>x.examenId===e.id&&x.statut==="termine"),ongoing=attempts.find(x=>x.examenId===e.id&&x.statut==="en_cours");return`<tr data-exam-row="${esc(e.id)}"><td><b>${esc(e.titre)}</b><div>${esc(e.description||"")}</div></td><td>${Number(e.dureeMinutes||30)} min</td><td>${a?`${Number(a.noteObtenue||0)} / ${Number(a.noteMax||e.noteMax||0)}`:ongoing?"En cours":"Non commencé"}</td><td>${a?"Termined":available(e)?`<button class="btn primary" data-start="${esc(e.id)}">${ongoing?"Reprendre":"Commencer"}</button>`:"Hors période"}</td></tr>`}).join("")||'<tr><td colspan="4">Aucun examen actif pour votre classe.</td></tr>'}</tbody></table></div></div>`;
+
+$("pageContent").querySelectorAll("tr[data-exam-row]").forEach(tr=>{
+  tr.onclick = () => marquerItemConsulte("examens", tr.dataset.examRow);
+});
+
+$("pageContent").querySelectorAll("[data-start]").forEach(b=>b.onclick=()=>{
+  marquerItemConsulte("examens", b.dataset.start);
+  startExam(exams.find(e=>e.id===b.dataset.start),attempts.find(a=>a.examenId===b.dataset.start&&a.statut==="en_cours"));
+});
 }
 
 async function renderTeacherExams(){
@@ -1490,18 +1498,28 @@ notes=(await getDocs(query(collection(db,"notes_cours"),where("classeId","==",cl
 }
 $("pageContent").innerHTML=`<div class="card"><div class="page-head"><div><h3>Notes de cours</h3><p class="muted">${teacher?"Publier du texte ou des photos de cours.":"Lire et copier les cours, ou télécharger les photos."}</p></div>${teacher?'<button id="newNote" class="btn primary">＋ Ajouter une note</button>':""}</div><div id="noteFormArea"></div>${notes.map(n=>{
 let photosArr = Array.isArray(n.photosData)?n.photosData:(n.photoData?[n.photoData]:[]);
-return `<article class="course-note"><h3>${esc(n.titre)}</h3><p class="muted">Classe : ${esc(nomClasseLisible(n.classeId))} · ${esc(n.matiereId||"")}</p><div class="course-text" id="noteText${esc(n.id)}">${esc(n.contenu||"")}</div>${photosArr.map((p,pIdx)=>`
+return `<article class="course-note" data-note-id="${esc(n.id)}"><h3>${esc(n.titre)}</h3><p class="muted">Classe : ${esc(nomClasseLisible(n.classeId))} · ${esc(n.matiereId||"")}</p><div class="course-text" id="noteText${esc(n.id)}">${esc(n.contenu||"")}</div>${photosArr.map((p,pIdx)=>`
   <div style="margin:10px 0; text-align:center;">
-    <img src="${p}" alt="Photo du cours" style="max-width:100%;max-height:600px;display:block;margin:0 auto;border-radius:6px;">
-    <a href="${p}" download="cours-${esc(n.titre || 'note')}-${pIdx+1}.jpg" class="btn secondary" style="margin-top:8px;display:inline-flex;">📥 Télécharger cette photo</a>
+    <img src="${p}" alt="Photo du cours" style="max-width:100%;max-height:600px;display:block;margin:0 auto;border-radius:6px;" onclick="marquerItemConsulte('notes_cours','${esc(n.id)}')">
+    <a href="${p}" download="cours-${esc(n.titre || 'note')}-${pIdx+1}.jpg" class="btn secondary" style="margin-top:8px;display:inline-flex;" onclick="marquerItemConsulte('notes_cours','${esc(n.id)}')">📥 Télécharger cette photo</a>
   </div>
 `).join("")}<div class="actions"><button class="btn secondary" data-copy-note="${esc(n.id)}">Copier le texte</button>${teacher&&(isAdmin()||n.professeurUid===currentUser.uid)?`<button class="btn secondary" data-edit-note="${esc(n.id)}">Modifier</button><button class="btn danger" data-del-note="${esc(n.id)}">Supprimer</button>`:""}</div></article>`;
 }).join("")||'<div class="notice">Aucune note de cours.</div>'}</div>`;
+
+$("pageContent").querySelectorAll("article[data-note-id]").forEach(art => {
+  art.onclick = () => marquerItemConsulte("notes_cours", art.dataset.noteId);
+});
+
 if(teacher)$("newNote").onclick=()=>noteForm(null);
-$("pageContent").querySelectorAll("[data-copy-note]").forEach(b=>b.onclick=async()=>{const t=$("noteText"+b.dataset.copyNote)?.innerText||"";try{await navigator.clipboard.writeText(t);toast("Texte copié.")}catch{toast("Sélectionnez le texte puis choisissez Copier.",true)}});
+$("pageContent").querySelectorAll("[data-copy-note]").forEach(b=>b.onclick=async()=>{
+  marquerItemConsulte("notes_cours", b.dataset.copyNote);
+  const t=$("noteText"+b.dataset.copyNote)?.innerText||"";
+  try{await navigator.clipboard.writeText(t);toast("Texte copié.")}catch{toast("Sélectionnez le texte puis choisissez Copier.",true)}
+});
 $("pageContent").querySelectorAll("[data-edit-note]").forEach(b=>b.onclick=()=>noteForm(notes.find(n=>n.id===b.dataset.editNote)));
 $("pageContent").querySelectorAll("[data-del-note]").forEach(b=>b.onclick=async()=>{if(confirm("Supprimer cette note ?"))try{await deleteDoc(doc(db,"notes_cours",b.dataset.delNote));await renderNotesCours();toast("Note supprimée.")}catch(e){toast(friendly(e),true)}})
 }
+
 async function noteForm(n){
 const area=$("noteFormArea");
 
@@ -2195,7 +2213,7 @@ function drawSchedulePage(page){
           </thead>
           <tbody>
             ${records.map(r=>`
-              <tr>
+              <tr data-sched-id="${esc(r.id)}" data-sched-page="${esc(page)}">
                 <td>${esc(scheduleLabelDate(r.date))}</td>
                 <td>${scheduleTimeRange(r)}</td>
                 <td>
@@ -2258,7 +2276,7 @@ function drawSchedulePage(page){
         <div style="min-width:0;min-height:75px;padding:4px;border:1px solid var(--bd);border-radius:5px;background:white">
           <b>${day}</b>
           ${dayRecords.map(r=>`
-            <div style="margin-top:4px;padding:3px;background:#dbeafe;border-radius:4px;font-size:10px;overflow-wrap:anywhere">
+            <div style="margin-top:4px;padding:3px;background:#dbeafe;border-radius:4px;font-size:10px;overflow-wrap:anywhere" onclick="marquerItemConsulte('${esc(page)}','${esc(r.id)}')">
               <b>${esc(r.heureDebut||"")}</b>
               <div>${esc(r.titre||scheduleSubjectName(r.matiereId))}</div>
               <div>${esc(scheduleClassName(r.classeId))}</div>
@@ -2281,6 +2299,10 @@ function drawSchedulePage(page){
       drawSchedulePage(page);
     };
   }
+
+  $("pageContent").querySelectorAll("tr[data-sched-id]").forEach(tr => {
+    tr.onclick = () => marquerItemConsulte(tr.dataset.schedPage, tr.dataset.schedId);
+  });
 
   $("pageContent").querySelectorAll("[data-schedule-edit]").forEach(b=>{
     b.onclick=()=>{
