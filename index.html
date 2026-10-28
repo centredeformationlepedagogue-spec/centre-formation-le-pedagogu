@@ -173,7 +173,6 @@ function isAdmin(){return!!currentUser&&((currentUser.email||"").toLowerCase()==
 function isProfessor(){return!!currentProfile&&(currentProfile.role==="professeur"&&currentProfile.status==="accepted")}
 function isStudent(){return ["eleve","etudiant"].includes(String(currentProfile?.role||"").toLowerCase())}
 function approved(){return!!currentProfile&&(isAdmin()||(currentProfile.status==="accepted"&&["professeur","eleve","etudiant"].includes(currentProfile.role)))}
-function roleName(r){return({administrateur:"Administrateur",professeur:"Professeur",eleve:"Élève",etudiant:"Étudiant"})[r]||r||"Utilisateur"}
 function stopTimer(){if(timerInterval){clearInterval(timerInterval);timerInterval=null}}
 
 // Cache de noms d'utilisateurs pour remplacer les UID dans l'interface
@@ -245,6 +244,7 @@ $("authScreen").classList.add("hidden");$("app").classList.remove("hidden");
 $("userInfo").textContent=`${currentProfile.nom||user.displayName||user.email} — ${roleName(currentProfile.role)}`;
 await chargerNomsClasses();
 await chargerNomsUtilisateurs();
+await calculerBadgesNotifications();
 buildNavigation();await openPage("accueil");
 }catch(e){console.error(e);await signOut(auth).catch(()=>{});currentUser=null;currentProfile=null;authMessage("Impossible de charger le profil : "+friendly(e),"error")}
 finally{loginLock=false}
@@ -392,7 +392,7 @@ try{await sendPasswordResetEmail(auth,email);authMessage("Si le compte existe, u
 catch(e){authMessage(friendly(e),"error")}
 });
 $("logoutBtn").addEventListener("click",async()=>{if(confirm("Voulez-vous vous déconnecter ?")){stopTimer();await signOut(auth)}});
-$("refreshBtn").addEventListener("click",()=>openPage(currentPage));
+$("refreshBtn").addEventListener("click",async()=>{await calculerBadgesNotifications();await openPage(currentPage)});
 
 const modules=[
 {id:"etudiants",title:"Étudiants",collection:"etudiants",fields:[["nom","Nom"],["prenom","Prénom"],["email","E-mail"],["telephone","Téléphone"],["classeId","Classe"]]},
@@ -465,7 +465,7 @@ const modules=[
   ["cible","Destinataires (tous, professeurs, eleves)"]
 ]},
 {id:"statistiques",title:"Statistiques",collection:"statistiques",fields:[["nom","Nom"],["description","Description"],["valeur","Valeur"]]},
-{id:"configuration",title:"Configuration",collection:"configuration",fields:[["nom","Nom"],["valeur","Valeur"],["description","Description"]]}
+{id:"configuration",title:"Configuration",collection:"configuration",fields:[["nom","Nom"],["valeur","Valèur"],["description","Description"]]}
 ];
 const navItems=[
 ["accueil","🏠 Accueil"],
@@ -528,7 +528,6 @@ let unreadCounts = {};
 async function calculerBadgesNotifications() {
   if(!currentUser || !currentProfile) return;
   const uid = currentUser.uid;
-  const role = currentProfile.role;
   const classeId = currentProfile.classeId;
   const now = Date.now();
 
@@ -552,7 +551,6 @@ async function calculerBadgesNotifications() {
       
       let count = 0;
       items.forEach(item => {
-        // Filtrer selon la validité / expiration
         if(item.dateLimite){
           const fin = new Date(item.dateLimite).getTime();
           if(now > (isNaN(fin)?Infinity:fin)) return;
@@ -561,7 +559,6 @@ async function calculerBadgesNotifications() {
           const debut = new Date(item.dateDebut).getTime();
           if(now < (isNaN(debut)?0:debut)) return;
         }
-        // Filtrer selon la classe si étudiant
         if(isStudent() && item.classeId && classeId && item.classeId !== classeId){
           return;
         }
@@ -606,7 +603,7 @@ async function marquerSectionConsultee(sectionId) {
 }
 
 function buildNavigation(){
-const n=$("navigation");n.innerHTML="";
+const n=$("navigation");if(!n)return;n.innerHTML="";
 navItems.filter(([id])=>
   id==="bulletin"
     ? ["eleve","etudiant"].includes(currentProfile?.role)
@@ -661,14 +658,16 @@ const content=$("pageContent");
 if(content)content.innerHTML='<div class="card"><b>Erreur de navigation :</b> '+esc(friendly(e))+'<p class="muted">Vérifiez la console JavaScript et les règles Firestore.</p></div>';
 }
 }
-window.goPage=p=>openPage(p);
+window.goPage=async p=>{
+  await openPage(p);
+  await marquerSectionConsultee(p);
+};
 
 function dash(icon,title,desc,page){return`<div class="dash-card"><div style="font-size:27px">${icon}</div><h3>${esc(title)}</h3><p>${esc(desc)}</p><button class="btn secondary" onclick="window.goPage('${page}')">Ouvrir →</button></div>`}
 async function renderDashboard(){
 const name=currentProfile?.nom||currentUser?.displayName||currentUser?.email||"Utilisateur";
 let html=`<div class="card welcome"><h3>Bienvenue, ${esc(name)} !</h3><p>Votre espace académique — ${esc(roleName(currentProfile.role))}</p></div>`;
 
-// Affichage des annonces actives sur le tableau de bord
 try {
   const annSnap = await getDocs(collection(db, "annonces"));
   const now = Date.now();
@@ -755,7 +754,6 @@ if($("toggleAppStatusBtn")){
     }
   };
 }
-// Calculer les badges à l'affichage du dashboard
 calculerBadgesNotifications();
 }
 
@@ -871,7 +869,6 @@ async function renderModule(m){
     records = (await getDocs(q))
       .docs.map(d=>({id:d.id,...d.data()}));
     
-    // Filtre de validité/visibilité des résultats pour les élèves
     if(isStudent()){
       const now = Date.now();
       records = records.filter(res => {
@@ -882,7 +879,6 @@ async function renderModule(m){
     }
   }
 
-  // Filtrage automatique des contenus expirés selon leur durée / date limite
   const nowTime = Date.now();
   records = records.filter(r => {
     const finStr = r.dateLimite || r.fin || "";
@@ -892,7 +888,6 @@ async function renderModule(m){
     return nowTime <= fin;
   });
 
-  // Vérification de soumission unique pour les devoirs chez l'élève
   let studentRemises = [];
   if(isStudent() && m.id==="devoirs"){
     try {
@@ -1079,14 +1074,12 @@ async function ouvrirSoumissionDevoir(devoir){
     return;
   }
 
-  // Vérification de la date limite du devoir
   if(devoir.dateLimite && Date.now() > new Date(devoir.dateLimite).getTime()){
     toast("La date limite de ce devoir est dépassée. Soumission impossible.", true);
     await openPage("devoirs");
     return;
   }
 
-  // Vérification atomique préalable
   try {
     const existingSnap = await getDocs(query(collection(db,"remises"), where("devoirId","==",devoir.id), where("etudiantId","==",currentUser.uid)));
     if(!existingSnap.empty){
@@ -1206,7 +1199,6 @@ async function ouvrirSoumissionDevoir(devoir){
     if(homeworkTimerInterval) clearInterval(homeworkTimerInterval);
 
     try{
-      // Double vérification finale anti-doublon
       const checkSnap = await getDocs(query(collection(db,"remises"), where("devoirId","==",devoir.id), where("etudiantId","==",currentUser.uid)));
       if(!checkSnap.empty){
         toast("Vous avez déjà remis ce devoir.", true);
@@ -1476,7 +1468,6 @@ $("backExams").onclick=()=>openPage("examens")
 }catch(e){console.error(e);if($("submitExam"))$("submitExam").disabled=false;toast("La remise a échoué : "+friendly(e),true)}
 }
 
-/* Notes de cours : texte et photos multiples avec téléchargement */
 async function compressPhoto(file){
 if(!file||!file.type.startsWith("image/"))throw Error("Choisissez une image valide.");
 if(file.size>12*1024*1024)throw Error("Photo trop grande : choisissez une image de moins de 12 Mo.");
@@ -1673,7 +1664,6 @@ btn.disabled=false;
 };
 }
 
-/* BULLETIN SCOLAIRE — consultation, préparation et publication admin */
 async function renderBulletin(){
   const isAdm = isAdmin();
   const isProf = isProfessor();
@@ -1706,7 +1696,6 @@ async function renderBulletin(){
     return;
   }
 
-  // Espace Élève / Étudiant
   $("pageContent").innerHTML=`
     <div class="card">
       <h3>🎓 Mon bulletin scolaire</h3>
@@ -1944,10 +1933,6 @@ async function openBulletinForm(b){
   };
 }
 
-/* =====================================================
-   HORAIRES CFLP : COURS ET EXAMENS (Harmonisés)
-   ===================================================== */
-
 window.cflpScheduleState = window.cflpScheduleState || {};
 window.cflpScheduleCache = window.cflpScheduleCache || {};
 
@@ -2133,7 +2118,6 @@ function drawSchedulePage(page){
     records=records.filter(r=>allowed.has(r.classeId));
   }
 
-  // Application de la règle de validité / durée des horaires
   const now = Date.now();
   records = records.filter(r => {
     if(!r.date) return true;
@@ -2531,7 +2515,6 @@ async function scheduleDelete(page,id){
   }
 }
 
-/* Gestion des utilisateurs : professeurs, élèves et classes affectées (Harmonisée) */
 async function renderUsers(){
   if(!isAdmin()) return;
 
@@ -2960,7 +2943,6 @@ catch(e){toast(friendly(e),true)}
 }
 }
 
-/* Installation PWA — Android, Chrome et Samsung Internet */
 window.addEventListener("beforeinstallprompt",e=>{
 e.preventDefault();installPrompt=e;$("installBtn").textContent="📲 Installer l'application";$("installBtn").disabled=false;
 });
@@ -2979,7 +2961,6 @@ if(/iPhone|iPad|iPod/i.test(ua)){alert("Pour installer l'application sur iPhone 
 alert("Pour installer Centre de Formation Le Pédagogue :\n\n1. Ouvrez le site publié en HTTPS dans Chrome ou Samsung Internet.\n2. Appuyez sur le menu ⋮ du navigateur.\n3. Choisissez « Installer l'application » ou « Ajouter à l'écran d'accueil ».\n\nSi l'option n'apparaît pas, vérifiez que manifest.json, sw.js et les icônes PWA sont publiés à côté de index.html.");
 });
 
-/* Enregistrement et vérification du Service Worker */
 if("serviceWorker" in navigator){
 window.addEventListener("load",async()=>{
 try{const registration=await navigator.serviceWorker.register("./sw.js");console.log("Service Worker enregistré.");await registration.update().catch(error=>console.warn("Mise à jour du Service Worker différée :",error))}
