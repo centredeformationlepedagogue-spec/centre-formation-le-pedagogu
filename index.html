@@ -340,8 +340,6 @@ async function ensureProfile(user){
   const admin = email === ADMIN_EMAIL.toLowerCase();
 
   if (!snap.exists()) {
-    // Se administratè a sèlman ki ka jwenn
-    // yon pwofil otomatikman atravè Google.
     if (!admin) {
       throw new Error("CREATE_ACCOUNT_FIRST");
     }
@@ -361,7 +359,6 @@ async function ensureProfile(user){
 
   let p = snap.data();
 
-  // Kenbe konpòtman administratè a.
   if (admin && (p.role !== "administrateur" || p.status !== "accepted")) {
     await updateDoc(ref, {
       role: "administrateur",
@@ -462,13 +459,6 @@ async function chargerClassesInscription(){
 
   try {
     const snap = await getDocs(collection(db, "classes"));
-
-    console.log("Projet Firebase :", fb.options.projectId);
-    console.log("Nombre de classes :", snap.size);
-    console.log("Classes reçues :", snap.docs.map(d => ({
-      id: d.id,
-      ...d.data()
-    })));
 
     const classes = snap.docs.map(d => ({
       id: d.id,
