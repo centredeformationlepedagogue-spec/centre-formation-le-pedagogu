@@ -217,7 +217,7 @@
 </div>
 
 <button class="btn secondary block" id="registerBtn" type="button">Créer un compte</button>
-<button class="btn google" id="googleBtn" type="button"><strong>G</strong> Continuer avec Google</button>
+<button class="btn google hidden" id="googleBtn" type="button"><strong>G</strong> Continuer avec Google</button>
 <button class="btn secondary block" id="resetBtn" type="button">Mot de passe oublié ?</button>
 <p style="font-size:12px">Tout nouveau compte doit être accepté par l'administrateur.</p>
 </div>
@@ -515,11 +515,29 @@ registrationBusy=false;
 btn.disabled=false;
 }
 });
+$("loginEmail").addEventListener("input",()=>{
+  const email=$("loginEmail").value.trim().toLowerCase();
+  $("googleBtn").classList.toggle(
+    "hidden",
+    email !== ADMIN_EMAIL.toLowerCase()
+  );
+});
 
 $("googleBtn").addEventListener("click",async()=>{
-try{await signInWithPopup(auth,googleProvider)}
-catch(e){authMessage(friendly(e),"error")}
+  const email=$("loginEmail").value.trim().toLowerCase();
+
+  if(email !== ADMIN_EMAIL.toLowerCase()){
+    authMessage("La connexion Google est réservée à l'administrateur.","error");
+    return;
+  }
+
+  try{
+    await signInWithPopup(auth,googleProvider);
+  }catch(e){
+    authMessage(friendly(e),"error");
+  }
 });
+
 $("resetBtn").addEventListener("click",async()=>{
 const email=$("loginEmail").value.trim();
 if(!email)return authMessage("Saisissez votre adresse e-mail.","error");
