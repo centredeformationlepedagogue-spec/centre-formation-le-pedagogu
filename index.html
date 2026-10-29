@@ -1637,9 +1637,9 @@ async function showAttempts(exam){
 const area=$("examExtra");area.innerHTML='<div class="card">Chargement des tentatives…</div>';
 try{
 const snap=await getDocs(query(collection(db,"tentatives_examens"),where("examenId","==",exam.id))),rows=snap.docs.map(d=>({id:d.id,...d.data()}));
-area.innerHTML="<div class="card"><h3>Tentatives — ${esc(exam.titre)}</h3><div class="table-wrap"><table><thead><tr><th>Élève</th><th>Réponses remises</th><th>Note</th><th>Statut</th><th>Action</th></tr></thead><tbody>${rows.map(a=>"<tr><td>${esc(nomUtilisateurLisible(a.etudiantId)||a.etudiantEmail||a.etudiantId)}</td><td>${formatAnswersHtml(a.reponses)}</td><td>${Number(a.noteObtenue||0)} / ${Number(a.noteMax||exam.noteMax||0)}</td><td>${esc(a.statut||"—")}</td><td>${a.statut==="termine"&&a.correctionManuelle?"<button class="btn primary" data-grade="${esc(a.id)}">Corriger</button>":"—"}</td></tr>").join("")||'<tr><td colspan="5">Aucune tentative.</td></tr>'}</tbody></table></div><div id="gradeArea"></div></div>";
+area.innerHTML=`<div class="card"><h3>Tentatives — ${esc(exam.titre)}</h3><div class="table-wrap"><table><thead><tr><th>Élève</th><th>Réponses remises</th><th>Note</th><th>Statut</th><th>Action</th></tr></thead><tbody>${rows.map(a=>`<tr><td>${esc(nomUtilisateurLisible(a.etudiantId)||a.etudiantEmail||a.etudiantId)}</td><td>${formatAnswersHtml(a.reponses)}</td><td>${Number(a.noteObtenue||0)} / ${Number(a.noteMax||exam.noteMax||0)}</td><td>${esc(a.statut||"—")}</td><td>${a.statut==="termine"&&a.correctionManuelle?`<button class="btn primary" data-grade="${esc(a.id)}">Corriger</button>`:"—"}</td></tr>`).join("")||'<tr><td colspan="5">Aucune tentative.</td></tr>'}</tbody></table></div><div id="gradeArea"></div></div>`;
 area.querySelectorAll("[data-grade]").forEach(b=>b.onclick=()=>gradeAttempt(rows.find(a=>a.id===b.dataset.grade),exam))
-}catch(e){area.innerHTML="<div class="notice">${esc(friendly(e))}</div>"}
+}catch(e){area.innerHTML=`<div class="notice">${esc(friendly(e))}</div>`}
 }
 
 async function gradeAttempt(a,exam){
