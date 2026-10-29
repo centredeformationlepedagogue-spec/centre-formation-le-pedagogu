@@ -292,18 +292,51 @@ function nomUtilisateurLisible(uid) {
   if(!uid) return "Non défini";
   return cacheNomsUtilisateurs[uid] || uid;
 }
-
 async function ensureProfile(user){
-const ref=doc(db,"users",user.uid),snap=await getDoc(ref),email=(user.email||"").toLowerCase(),admin=email===ADMIN_EMAIL;
-if(!snap.exists()){
-const p={uid:user.uid,email:user.email||"",role:admin?"administrateur":"eleve",status:admin?"accepted":"attente",createdAt:stamp(),updatedAt:stamp()};
-await setDoc(ref,p);return p;
-}
-let p=snap.data();
-if(admin&&(p.role!=="administrateur"||p.status!=="accepted")){
-await updateDoc(ref,{role:"administrateur",status:"accepted",email:user.email||ADMIN_EMAIL,updatedAt:stamp()});p={...p,role:"administrateur",status:"accepted"}
-}
-return p;
+  const ref = doc(db, "users", user.uid);
+  const snap = await getDoc(ref);
+  const email = (user.email || "").toLowerCase();
+  const admin = email === ADMIN_EMAIL.toLowerCase();
+
+  if (!snap.exists()) {
+    // Se administratè a sèlman ki ka jwenn
+    // yon pwofil otomatikman atravè Google.
+    if (!admin) {
+      throw new Error("CREATE_ACCOUNT_FIRST");
+    }
+
+    const p = {
+      uid: user.uid,
+      email: user.email || "",
+      role: "administrateur",
+      status: "accepted",
+      createdAt: stamp(),
+      updatedAt: stamp()
+    };
+
+    await setDoc(ref, p);
+    return p;
+  }
+
+  let p = snap.data();
+
+  // Kenbe konpòtman administratè a.
+  if (admin && (p.role !== "administrateur" || p.status !== "accepted")) {
+    await updateDoc(ref, {
+      role: "administrateur",
+      status: "accepted",
+      email: user.email || ADMIN_EMAIL,
+      updatedAt: stamp()
+    });
+
+    p = {
+      ...p,
+      role: "administrateur",
+      status: "accepted"
+    };
+  }
+
+  return p;
 }
 
 async function checkAppOpenState(){
@@ -346,8 +379,27 @@ await chargerNomsUtilisateurs();
 buildNavigation();
 await calculerBadgesNotifications();
 await openPage("accueil");
-}catch(e){console.error(e);await signOut(auth).catch(()=>{});currentUser=null;currentProfile=null;authMessage("Impossible de charger le profil : "+friendly(e),"error")}
-finally{loginLock=false}
+}catch(e){
+console.error(e);
+await signOut(auth).catch(()=>{});
+currentUser=null;
+currentProfile=null;
+
+if(e?.message==="CREATE_ACCOUNT_FIRST"){
+authMessage(
+"Vous devez d’abord créer un compte dans l’application avant d’utiliser Google. Cliquez sur « Créer un compte », remplissez le formulaire, puis attendez l’approbation de l’administrateur.",
+"info"
+);
+}else{
+authMessage(
+"Impossible de charger le profil : "+friendly(e),
+"error"
+);
+}
+}
+finally{
+loginLock=false;
+}
 }
 onAuthStateChanged(auth,u=>{if(!u){stopTimer();currentUser=null;currentProfile=null;$("app").classList.add("hidden");$("authScreen").classList.remove("hidden")}else completeLogin(u)});
 
