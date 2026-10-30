@@ -264,59 +264,113 @@ const $=id=>document.getElementById(id),stamp=()=>serverTimestamp();
 let currentUser=null,currentProfile=null,currentPage="accueil",installPrompt=null,timerInterval=null,activeExam=null,activeAttempt=null,answerCache={},saveQueue=Promise.resolve();
 
 function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
-
-function formatAnswersHtml(value){
-if(value===null || value===undefined || value===""){
-return "Aucune réponse enregistrée.";
-}
-
-let data=value;
-
-if(typeof data==="string"){
-try{
-const parsed=JSON.parse(data);
-if(parsed && typeof parsed==="object"){
-data=parsed;
-}else{
-return '<div style="white-space:pre-wrap;line-height:1.8;">'+esc(data)+'</div>';
-}
-}catch(e){
-return '<div style="white-space:pre-wrap;line-height:1.8;">'+esc(data)+'</div>';
-}
-}
-
-if(Array.isArray(data)){
-if(data.length===0) return "Aucune réponse enregistrée.";
-
-return '<div style="line-height:1.8;">'
-  +data.map((v,i)=>'<div>'+(i+1)+'. '+esc(v)+'</div>').join("")
-  +'</div>';
-
-}
-
-if(typeof data==="object"){
-const keys=Object.keys(data);
-
-if(keys.length===0) return "Aucune réponse enregistrée.";
-
-keys.sort((a,b)=>{
-  const na=Number(a.replace(/^q/i,""));
-  const nb=Number(b.replace(/^q/i,""));
-
-  if(Number.isFinite(na)&&Number.isFinite(nb)){
-    return na-nb;
+function formatAnswersHtml(value, exam) {
+  if (value === null || value === undefined || value === "") {
+    return "Aucune réponse enregistrée.";
   }
 
-  return a.localeCompare(b);
-});
+  let data = value;
 
-return '<div style="line-height:1.8;">'
-  +keys.map((k,i)=>'<div>'+(i+1)+'. '+esc(data[k])+'</div>').join("")
-  +'</div>';
+  // Konvèti JSON an objè si sa nesesè.
+  if (typeof data === "string") {
+    try {
+      const parsed = JSON.parse(data);
 
-}
+      if (parsed && typeof parsed === "object") {
+        data = parsed;
+      } else {
+        return esc(data);
+      }
+    } catch (e) {
+      return esc(data).replace(/\n/g, "<br>");
+    }
+  }
 
-return '<div style="white-space:pre-wrap;line-height:1.8;">'+esc(data)+'</div>';
+  // Prepare kesyon egzamen an.
+  const questions = exam ? parseQuestions(exam) : [];
+
+  let entries = [];
+
+  if (Array.isArray(data)) {
+    entries = data.map((answer, index) => [String(index), answer]);
+  } else if (typeof data === "object" && data !== null) {
+    entries = Object.entries(data).sort((a, b) => {
+      const na = Number(a[0]);
+      const nb = Number(b[0]);
+
+      if (Number.isFinite(na) && Number.isFinite(nb)) {
+        return na - nb;
+      }
+
+      return a[0].localeCompare(b[0]);
+    });
+  } else {
+    return esc(data);
+  }
+
+  if (entries.length === 0) {
+    return "Aucune réponse enregistrée.";
+  }
+
+  return entries.map(([key, value], displayIndex) => {
+    const questionIndex = /^\d+$/.test(String(key))
+      ? Number(key)
+      : displayIndex;
+
+    const question = questions[questionIndex];
+
+    let answer = "";
+
+    if (value !== null && value !== undefined) {
+      if (typeof value === "object") {
+        answer = Array.isArray(value)
+          ? value.map(item => String(item ?? "")).join(", ")
+          : Object.values(value)
+              .map(item => String(item ?? ""))
+              .join(" ");
+      } else {
+        answer = String(value);
+      }
+    }
+
+    let label = `${questionIndex + 1}.`;
+
+    // Pou QCM, jwenn lèt chwa elèv la.
+    if (question?.type === "qcm") {
+      const options = Array.isArray(question.options)
+        ? question.options
+        : [];
+
+      // Si repons lan deja ekri tankou "B. Desalin".
+      const existingLetter = answer.match(/^([A-Z])\.\s*/i);
+
+      let optionIndex = -1;
+
+      if (existingLetter) {
+        optionIndex =
+          existingLetter[1].toUpperCase().charCodeAt(0) - 65;
+
+        // Retire lèt la nan repons lan pou evite repete l.
+        answer = answer.replace(/^[A-Z]\.\s*/i, "");
+      } else {
+        // Chèche tèks repons lan nan lis chwa QCM yo.
+        optionIndex = options.findIndex(option =>
+          String(option).trim().toLowerCase() ===
+          answer.trim().toLowerCase()
+        );
+      }
+
+      if (optionIndex >= 0 && optionIndex < 26) {
+        label += ` ${String.fromCharCode(65 + optionIndex)}.`;
+      }
+    }
+
+    return `
+      <div style="margin:6px 0; white-space:pre-wrap; overflow-wrap:anywhere;">
+        <strong>${esc(label)}</strong> ${esc(answer)}
+      </div>
+    `;
+  }).join("");
 }
 function toast(s,bad=false){const t=$("toast");t.textContent=s;t.classList.remove("hidden");t.style.background=bad?"#a51d1d":"#17243a";clearTimeout(t._timer);t._timer=setTimeout(()=>t.classList.add("hidden"),4500)}
 function authMessage(s,type="info"){$("authMessage").innerHTML=`<div class="message ${type==="error"?"error":type==="success"?"success":""}">${esc(s)}</div>`}
@@ -1650,7 +1704,7 @@ async function showAttempts(exam){
 const area=$("examExtra");area.innerHTML='<div class="card">Chargement des tentatives…</div>';
 try{
 const snap=await getDocs(query(collection(db,"tentatives_examens"),where("examenId","==",exam.id))),rows=snap.docs.map(d=>({id:d.id,...d.data()}));
-area.innerHTML=`<div class="card"><h3>Tentatives — ${esc(exam.titre)}</h3><div class="table-wrap"><table><thead><tr><th>Élève</th><th>Réponses remises</th><th>Note</th><th>Statut</th><th>Action</th></tr></thead><tbody>${rows.map(a=>`<tr><td>${esc(nomUtilisateurLisible(a.etudiantId)||a.etudiantEmail||a.etudiantId)}</td><td>${formatAnswersHtml(a.reponses)}</td><td>${Number(a.noteObtenue||0)} / ${Number(a.noteMax||exam.noteMax||0)}</td><td>${esc(a.statut||"—")}</td><td>${a.statut==="termine"&&a.correctionManuelle?`<button class="btn primary" data-grade="${esc(a.id)}">Corriger</button>`:"—"}</td></tr>`).join("")||'<tr><td colspan="5">Aucune tentative.</td></tr>'}</tbody></table></div><div id="gradeArea"></div></div>`;
+area.innerHTML=`<div class="card"><h3>Tentatives — ${esc(exam.titre)}</h3><div class="table-wrap"><table><thead><tr><th>Élève</th><th>Réponses remises</th><th>Note</th><th>Statut</th><th>Action</th></tr></thead><tbody>${rows.map(a=>`<tr><td>${esc(nomUtilisateurLisible(a.etudiantId)||a.etudiantEmail||a.etudiantId)}</td><td>${formatAnswersHtml(a.reponses, exam)}</td><td>${Number(a.noteObtenue||0)} / ${Number(a.noteMax||exam.noteMax||0)}</td><td>${esc(a.statut||"—")}</td><td>${a.statut==="termine"&&a.correctionManuelle?`<button class="btn primary" data-grade="${esc(a.id)}">Corriger</button>`:"—"}</td></tr>`).join("")||'<tr><td colspan="5">Aucune tentative.</td></tr>'}</tbody></table></div><div id="gradeArea"></div></div>`;
 area.querySelectorAll("[data-grade]").forEach(b=>b.onclick=()=>gradeAttempt(rows.find(a=>a.id===b.dataset.grade),exam))
 }catch(e){area.innerHTML=`<div class="notice">${esc(friendly(e))}</div>`}
 }
