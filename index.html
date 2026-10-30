@@ -1657,9 +1657,111 @@ area.querySelectorAll("[data-grade]").forEach(b=>b.onclick=()=>gradeAttempt(rows
 
 async function gradeAttempt(a,exam){
 const qs=parseQuestions(exam),answers=a.reponses||{},indices=qs.map((q,i)=>q.type==="ecrit"?i:-1).filter(i=>i>=0),area=$("gradeArea");
-area.innerHTML=`<h3>Correction des questions ouvertes</h3><form id="gradeForm">${indices.map(i=>`<div class="exam-question"><h4>${esc(qs[i].question)}</h4><p><b>Réponse :</b><br>${esc(answers[i]||"Aucune réponse")}</p><label>Note (maximum ${Number(qs[i].points)||1})</label><input type="number" name="g${i}" min="0" max="${Number(qs[i].points)||1}" step="0.5" value="${Number((a.notesEcrites||{})[i]||0)}" required></div>`).join("")}<div class="field"><label>Commentaire</label><textarea name="commentaire">${esc(a.commentaire||"")}</textarea></div><button class="btn primary">Enregistrer la correction</button></form>`;
-$("gradeForm").onsubmit=async e=>{e.preventDefault();const fd=new FormData(e.currentTarget),notes={};let score=0;for(const i of indices){const n=Number(fd.get("g"+i));if(n<0||n>Number(qs[i].points))return toast("Note supérieure au maximum.",true);notes[i]=n;score+=n}
-try{const noteQCM=Number(a.noteQCM||0),noteObtenue=noteQCM+score,max=qs.reduce((s,q)=>s+Number(q.points||1),0);await updateDoc(doc(db,"tentatives_examens",a.id),{notesEcrites:notes,noteEcrite:score,noteObtenue,noteMax:max,commentaire:String(fd.get("commentaire")||""),correctionManuelle:false,corrigePar:currentUser.uid,dateCorrection:stamp(),updatedAt:stamp()});toast("Correction enregistrée.");await showAttempts(exam)}catch(err){toast(friendly(err),true)}
+area.innerHTML=`
+
+<div class="card" style="border:1px solid #dbe5f1;border-radius:16px;padding:18px;background:#fff;box-shadow:0 8px 24px rgba(15,23,42,.06);">  <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+    <div style="width:46px;height:46px;display:flex;align-items:center;justify-content:center;border-radius:13px;background:#eaf2ff;font-size:23px;">📝</div>
+    <div>
+      <h3 style="margin:0 0 5px;">Correction des questions ouvertes</h3>
+      <p class="muted" style="margin:0;">Lisez chaque réponse et attribuez une note.</p>
+    </div>
+  </div>  <form id="gradeForm">${indices.map((i,index)=>`
+  <section class="exam-question" style="margin-bottom:18px;padding:16px;border:1px solid #dce5f0;border-radius:14px;background:#fbfdff;">
+
+    <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:14px;">
+      <span style="flex-shrink:0;width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:10px;background:#eaf2ff;color:#174ea6;font-weight:bold;">
+        ${index+1}
+      </span>
+
+      <div style="flex:1;min-width:0;">
+        <h4 style="margin:4px 0;line-height:1.6;">${esc(qs[i].question)}</h4>
+        <span class="muted" style="font-size:13px;">
+          Barème : ${Number(qs[i].points)||1} point(s)
+        </span>
+      </div>
+    </div>
+
+    <div style="font-size:12px;font-weight:bold;color:#475569;margin-bottom:8px;">
+      RÉPONSE DE L'ÉLÈVE
+    </div>
+
+    <div style="white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.9;padding:14px;background:#f1f6ff;border:1px solid #d7e5fb;border-left:4px solid #3974d6;border-radius:10px;color:#172b4d;">${formatAnswersHtml(answers[i]||"Aucune réponse")}</div>
+
+    <div class="field" style="margin-top:16px;">
+      <label for="grade-${i}" style="font-weight:bold;">
+        Note attribuée (maximum ${Number(qs[i].points)||1})
+      </label>
+
+      <input
+        id="grade-${i}"
+        type="number"
+        name="g${i}"
+        min="0"
+        max="${Number(qs[i].points)||1}"
+        step="0.5"
+        value="${Number((a.notesEcrites||{})[i]||0)}"
+        required
+        style="max-width:180px;"
+      >
+    </div>
+
+  </section>
+`).join("")}
+
+<div class="field" style="margin-top:20px;">
+  <label for="grade-commentaire" style="font-weight:bold;">
+    Commentaire du professeur
+  </label>
+
+  <textarea
+    id="grade-commentaire"
+    name="commentaire"
+    rows="4"
+    placeholder="Écrivez une remarque ou un conseil à l'élève..."
+  >${esc(a.commentaire||"")}</textarea>
+</div>
+
+<button class="btn primary" type="submit" style="width:100%;margin-top:10px;padding:13px;">
+  💾 Enregistrer la correction
+</button>
+
+  </form>
+</div>`;$("gradeForm").onsubmit=async e=>{
+e.preventDefault();
+const fd=new FormData(e.currentTarget),notes={};
+let score=0;
+
+for(const i of indices){
+const n=Number(fd.get("g"+i));
+if(n<0||n>Number(qs[i].points))
+return toast("Note supérieure au maximum.",true);
+notes[i]=n;
+score+=n;
+}
+
+try{
+const noteQCM=Number(a.noteQCM||0),
+noteObtenue=noteQCM+score,
+max=qs.reduce((s,q)=>s+Number(q.points||1),0);
+
+await updateDoc(doc(db,"tentatives_examens",a.id),{
+  notesEcrites:notes,
+  noteEcrite:score,
+  noteObtenue,
+  noteMax:max,
+  commentaire:String(fd.get("commentaire")||""),
+  correctionManuelle:false,
+  corrigePar:currentUser.uid,
+  dateCorrection:stamp(),
+  updatedAt:stamp()
+});
+
+toast("Correction enregistrée.");
+await showAttempts(exam);
+
+}catch(err){
+toast(friendly(err),true);
+}
 }
 }
 
