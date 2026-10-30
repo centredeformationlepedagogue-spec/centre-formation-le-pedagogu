@@ -107,7 +107,7 @@
   max-width: 190px;
   padding: 8px;
   font-size: 12px;
-  color: #24344d;
+  color: #24344d;b 
   background: #fff;
   border: 1px solid #ccd8e8;
   border-radius: 8px;
@@ -264,8 +264,9 @@ const $=id=>document.getElementById(id),stamp=()=>serverTimestamp();
 let currentUser=null,currentProfile=null,currentPage="accueil",installPrompt=null,timerInterval=null,activeExam=null,activeAttempt=null,answerCache={},saveQueue=Promise.resolve();
 
 function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+
 function formatAnswersHtml(value){
-if(value===null||value===undefined||value===""){
+if(value===null || value===undefined || value===""){
 return "Aucune réponse enregistrée.";
 }
 
@@ -274,36 +275,48 @@ let data=value;
 if(typeof data==="string"){
 try{
 const parsed=JSON.parse(data);
-if(parsed&&typeof parsed==="object"){
+if(parsed && typeof parsed==="object"){
 data=parsed;
 }else{
-return esc(data);
+return '<div style="white-space:pre-wrap;line-height:1.8;">'+esc(data)+'</div>';
 }
 }catch(e){
-return esc(data).replace(/\n/g,"<br>");
+return '<div style="white-space:pre-wrap;line-height:1.8;">'+esc(data)+'</div>';
 }
 }
 
 if(Array.isArray(data)){
-if(data.length===0)return "Aucune réponse enregistrée.";
-return "<ol>"+data.map(v=>"<li>"+esc(v)+"</li>").join("")+"</ol>";
+if(data.length===0) return "Aucune réponse enregistrée.";
+
+return '<div style="line-height:1.8;">'
+  +data.map((v,i)=>'<div>'+(i+1)+'. '+esc(v)+'</div>').join("")
+  +'</div>';
+
 }
 
 if(typeof data==="object"){
 const keys=Object.keys(data);
-if(keys.length===0)return "Aucune réponse enregistrée.";
+
+if(keys.length===0) return "Aucune réponse enregistrée.";
 
 keys.sort((a,b)=>{
-  const na=Number(a),nb=Number(b);
-  if(Number.isFinite(na)&&Number.isFinite(nb))return na-nb;
+  const na=Number(a.replace(/^q/i,""));
+  const nb=Number(b.replace(/^q/i,""));
+
+  if(Number.isFinite(na)&&Number.isFinite(nb)){
+    return na-nb;
+  }
+
   return a.localeCompare(b);
 });
 
-return "<ol>"+keys.map(k=>"<li>"+esc(data[k])+"</li>").join("")+"</ol>";
+return '<div style="line-height:1.8;">'
+  +keys.map((k,i)=>'<div>'+(i+1)+'. '+esc(data[k])+'</div>').join("")
+  +'</div>';
 
 }
 
-return esc(data);
+return '<div style="white-space:pre-wrap;line-height:1.8;">'+esc(data)+'</div>';
 }
 function toast(s,bad=false){const t=$("toast");t.textContent=s;t.classList.remove("hidden");t.style.background=bad?"#a51d1d":"#17243a";clearTimeout(t._timer);t._timer=setTimeout(()=>t.classList.add("hidden"),4500)}
 function authMessage(s,type="info"){$("authMessage").innerHTML=`<div class="message ${type==="error"?"error":type==="success"?"success":""}">${esc(s)}</div>`}
