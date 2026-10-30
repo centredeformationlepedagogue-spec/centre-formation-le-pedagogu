@@ -1581,7 +1581,28 @@ try {
 }
 
 area.innerHTML=`<div class="card"><h3>${r?"Modifier":"Ajouter"} — ${esc(m.title)}</h3><form id="dataForm"><div class="form-grid">${m.fields.filter(([k])=>!(isExam&&k===['questionsJSON'])).map(([k,l])=>{
-const value=r?.[k]??"",long=["description","contenu","commentaire","message"].includes(k),num=["note100","note20","dureeMinutes","noteMax"].includes(k),type=["dateLimite","dateDebut"].includes(k)?"datetime-local":num?"number":"text";
+let value = r?.[k] ?? "";
+
+if (m.id === "remises" && k === "contenu" && typeof value === "string") {
+  try {
+    const parsed = JSON.parse(value);
+
+    if (parsed && typeof parsed === "object") {
+      value = Object.entries(parsed)
+        .sort((a, b) => Number(a[0]) - Number(b[0]))
+        .map(([index, answer]) => `Question ${Number(index) + 1} : ${String(answer ?? "")}`)
+        .join("\n\n");
+    }
+  } catch (e) {
+    // Si se tèks nòmal, konsève li jan li ye a.
+  }
+}
+
+const long = ["description", "contenu", "commentaire", "message"].includes(k);
+const num = ["note100", "note20", "dureeMinutes", "noteMax"].includes(k);
+const type = ["dateLimite", "dateDebut"].includes(k)
+  ? "datetime-local"
+  : num ? "number" : "text";
 let formattedValue=value;if(type==="datetime-local"&&value)formattedValue=String(value).slice(0,16);
 
 if (k === "classeId") {
