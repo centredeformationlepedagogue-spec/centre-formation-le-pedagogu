@@ -1639,15 +1639,10 @@ async function showAttempts(exam){
 const area=$("examExtra");area.innerHTML='<div class="card">Chargement des tentatives…</div>';
 try{
 const snap=await getDocs(query(collection(db,"tentatives_examens"),where("examenId","==",exam.id))),rows=snap.docs.map(d=>({id:d.id,...d.data()}));
-${rows.map(a=>`<tr>
-<td>${esc(nomUtilisateurLisible(a.etudiantId)||a.etudiantEmail||a.etudiantId)}</td>
-<td style="min-width:250px;max-width:400px;white-space:normal;line-height:1.8;">
-${formatAnswersHtml(a.reponses)}
-</td>
-<td>${Number(a.noteObtenue||0)} / ${Number(a.noteMax||exam.noteMax||0)}</td>
-<td>${esc(a.statut||"—")}</td>
-<td>${a.statut==="termine"&&a.correctionManuelle?`<button class="btn primary" data-grade="${esc(a.id)}">Corriger</button>`:"—"}</td>
-</tr>`).join("")||'<tr><td colspan="5">Aucune tentative.</td></tr>'}
+area.innerHTML=`<div class="card"><h3>Tentatives pour : ${esc(exam.titre)}</h3><div id="gradeArea"></div><div class="table-wrap"><table><thead><tr><th>Élève</th><th>Réponses</th><th>Note</th><th>Statut</th><th>Action</th></tr></thead><tbody>${rows.map(a=>`<tr><td>${esc(nomUtilisateurLisible(a.etudiantId)||a.etudiantEmail||a.etudiantId)}</td><td style="min-width:250px;max-width:400px;white-space:normal;line-height:1.8;">${formatAnswersHtml(a.reponses)}</td><td>${Number(a.noteObtenue||0)} / ${Number(a.noteMax||exam.noteMax||0)}</td><td>${esc(a.statut||"—")}</td><td>${a.statut==="termine"&&a.correctionManuelle?`<button class="btn primary" data-grade="${esc(a.id)}">Corriger</button>`:"—"}</td></tr>`).join("")||'<tr><td colspan="5">Aucune tentative.</td></tr>'}</tbody></table></div></div>`;
+area.querySelectorAll("[data-grade]").forEach(b=>b.onclick=()=>gradeAttempt(rows.find(x=>x.id===b.dataset.grade),exam))
+}catch(e){area.innerHTML=`<div class="card"><div class="message error">${esc(friendly(e))}</div></div>`}
+}
 async function gradeAttempt(a,exam){
 const qs=parseQuestions(exam),answers=a.reponses||{},indices=qs.map((q,i)=>q.type==="ecrit"?i:-1).filter(i=>i>=0),area=$("gradeArea");
 area.innerHTML=`<h3>Correction des questions ouvertes</h3><form id="gradeForm">${indices.map(i=>`<div class="exam-question"><h4>${esc(qs[i].question)}</h4><p><b>Réponse :</b><br>${esc(answers[i]||"Aucune réponse")}</p><label>Note (maximum ${Number(qs[i].points)||1})</label><input type="number" name="g${i}" min="0" max="${Number(qs[i].points)||1}" step="0.5" value="${Number((a.notesEcrites||{})[i]||0)}" required></div>`).join("")}<div class="field"><label>Commentaire</label><textarea name="commentaire">${esc(a.commentaire||"")}</textarea></div><button class="btn primary">Enregistrer la correction</button></form>`;
