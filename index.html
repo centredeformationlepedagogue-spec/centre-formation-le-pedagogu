@@ -1905,114 +1905,325 @@ throw Error("Photo trop volumineuse après compression.")
 }
 
 async function renderNotesCours(){
-const teacher=isAdmin()||isProfessor();let notes=[];
-if(isAdmin())notes=(await getDocs(collection(db,"notes_cours"))).docs.map(d=>({id:d.id,...d.data()}));
-else if(teacher)notes=(await getDocs(query(collection(db,"notes_cours"),where("professeurUid","==",currentUser.uid)))).docs.map(d=>({id:d.id,...d.data()}));
-else{
-const cl=currentProfile.classeId||(currentProfile.classIds||[])[0];if(!cl){$("pageContent").innerHTML='<div class="card">Votre compte n’est pas encore associé à une classe. Contactez l’administrateur.</div>';return}
-notes=(await getDocs(query(collection(db,"notes_cours"),where("classeId","==",cl)))).docs.map(d=>({id:d.id,...d.data()}))
+const teacher=isAdmin()||isProfessor();
+let notes=[];
+
+if(isAdmin()) {
+  notes=(await getDocs(collection(db,"notes_cours"))).docs.map(d=>({id:d.id,...d.data()}));
 }
-$("pageContent").innerHTML=`<div class="card"><div class="page-head"><div><h3>Notes de cours</h3><p class="muted">${teacher?"Publier du texte ou des photos de cours.":"Lire et copier les cours, ou télécharger les photos."}</p></div>${teacher?'<button id="newNote" class="btn primary">＋ Ajouter une note</button>':""}</div><div id="noteFormArea"></div>${notes.map(n=>{
-let photosArr = Array.isArray(n.photosData)?n.photosData:(n.photoData?[n.photoData]:[]);
-return `<article class="course-note" data-note-id="${esc(n.id)}"><h3>${esc(n.titre)}</h3><p class="muted">Classe : ${esc(nomClasseLisible(n.classeId))} · ${esc(n.matiereId||"")}</p><div class="course-text" id="noteText${esc(n.id)}">${esc(n.contenu||"")}</div>${photosArr.map((p,pIdx)=>`
+else if(teacher) {
+  notes=(await getDocs(query(collection(db,"notes_cours"),where("professeurUid","==",currentUser.uid)))).docs.map(d=>({id:d.id,...d.data()}));
+}
+else {
+  const cl=currentProfile.classeId||(currentProfile.classIds||[])[0];
+
+  if(!cl) {
+    $("pageContent").innerHTML='<div class="card">Votre compte n’est pas encore associé à une classe. Contactez l’administrateur.</div>';
+    return;
+  }
+
+  notes=(await getDocs(query(collection(db,"notes_cours"),where("classeId","==",cl)))).docs.map(d=>({id:d.id,...d.data()}));
+}
+
+$("pageContent").innerHTML=`<div class="card">
+<div class="page-head">
+<div>
+<h3>Notes de cours</h3>
+<p class="muted">${teacher?"Publier du texte ou des photos de cours.":"Lire et copier les cours, ou télécharger les photos."}</p>
+</div>
+${teacher?'<button id="newNote" class="btn primary">＋ Ajouter une note</button>':""}
+</div>
+
+<div id="noteFormArea"></div>
+
+${notes.map(n=>{
+
+let photosArr = Array.isArray(n.photosData)
+  ? n.photosData
+  : (n.photoData ? [n.photoData] : []);
+
+let liensPhotos = Array.isArray(n.photosLiens)
+  ? n.photosLiens
+  : (n.photosLiens ? String(n.photosLiens).split(/\r?\n/) : []);
+
+return `<article class="course-note" data-note-id="${esc(n.id)}">
+
+<h3>${esc(n.titre)}</h3>
+
+<p class="muted">Classe : ${esc(nomClasseLisible(n.classeId))} · ${esc(n.matiereId||"")}</p>
+
+<div class="course-text" id="noteText${esc(n.id)}">${esc(n.contenu||"")}</div>
+
+${photosArr.map((p,pIdx)=>`
   <div style="margin:10px 0; text-align:center;">
     <img src="${p}" alt="Photo du cours" style="max-width:100%;max-height:600px;display:block;margin:0 auto;border-radius:6px;" onclick="marquerItemConsulte('notes_cours','${esc(n.id)}')">
+
     <a href="${p}" download="cours-${esc(n.titre || 'note')}-${pIdx+1}.jpg" class="btn secondary" style="margin-top:8px;display:inline-flex;" onclick="marquerItemConsulte('notes_cours','${esc(n.id)}')">📥 Télécharger cette photo</a>
   </div>
-`).join("")}<div class="actions"><button class="btn secondary" data-copy-note="${esc(n.id)}">Copier le texte</button>${teacher&&(isAdmin()||n.professeurUid===currentUser.uid)?`<button class="btn secondary" data-edit-note="${esc(n.id)}">Modifier</button><button class="btn danger" data-del-note="${esc(n.id)}">Supprimer</button>`:""}</div></article>`;
-}).join("")||'<div class="notice">Aucune note de cours.</div>'}</div>`;
+`).join("")}
+
+${liensPhotos.map((lien,idx)=>{
+  try {
+    const url = new URL(lien);
+
+    if (
+      url.protocol !== "https:" ||
+      !["drive.google.com","docs.google.com"].includes(url.hostname)
+    ) return "";
+
+    const match = url.pathname.match(/\/file\/d\/([^/]+)/);
+    const fileId = match ? match[1] : url.searchParams.get("id");
+
+    const downloadUrl = fileId
+      ? `https://drive.google.com/uc?export=download&id=${encodeURIComponent(fileId)}`
+      : lien;
+
+    return `
+      <div style="margin:12px 0;padding:12px;border:1px solid var(--bd);border-radius:8px;text-align:center;">
+        <p><strong>Photo de cours ${idx+1}</strong></p>
+
+        <div class="actions" style="justify-content:center;">
+          <a class="btn secondary"
+             href="${esc(lien)}"
+             target="_blank"
+             rel="noopener noreferrer"
+             onclick="marquerItemConsulte('notes_cours','${esc(n.id)}')">
+            🔍 Voir la photo
+          </a>
+
+          <a class="btn primary"
+             href="${esc(downloadUrl)}"
+             target="_blank"
+             rel="noopener noreferrer"
+             onclick="marquerItemConsulte('notes_cours','${esc(n.id)}')">
+            📥 Télécharger
+          </a>
+        </div>
+      </div>
+    `;
+  } catch(e) {
+    return "";
+  }
+}).join("")}
+
+<div class="actions">
+<button class="btn secondary" data-copy-note="${esc(n.id)}">Copier le texte</button>
+
+${teacher&&(isAdmin()||n.professeurUid===currentUser.uid)?`
+<button class="btn secondary" data-edit-note="${esc(n.id)}">Modifier</button>
+<button class="btn danger" data-del-note="${esc(n.id)}">Supprimer</button>
+`:""}
+
+</div>
+</article>`;
+
+}).join("")||'<div class="notice">Aucune note de cours.</div>'}
+
+</div>`;
 
 $("pageContent").querySelectorAll("article[data-note-id]").forEach(art => {
   art.onclick = () => marquerItemConsulte("notes_cours", art.dataset.noteId);
 });
 
-if(teacher)$("newNote").onclick=()=>noteForm(null);
+if(teacher) $("newNote").onclick=()=>noteForm(null);
+
 $("pageContent").querySelectorAll("[data-copy-note]").forEach(b=>b.onclick=async()=>{
   marquerItemConsulte("notes_cours", b.dataset.copyNote);
   const t=$("noteText"+b.dataset.copyNote)?.innerText||"";
-  try{await navigator.clipboard.writeText(t);toast("Texte copié.")}catch{toast("Sélectionnez le texte puis choisissez Copier.",true)}
+  try {
+    await navigator.clipboard.writeText(t);
+    toast("Texte copié.");
+  } catch {
+    toast("Sélectionnez le texte puis choisissez Copier.",true);
+  }
 });
-$("pageContent").querySelectorAll("[data-edit-note]").forEach(b=>b.onclick=()=>noteForm(notes.find(n=>n.id===b.dataset.editNote)));
-$("pageContent").querySelectorAll("[data-del-note]").forEach(b=>b.onclick=async()=>{if(confirm("Supprimer cette note ?"))try{await deleteDoc(doc(db,"notes_cours",b.dataset.delNote));await renderNotesCours();toast("Note supprimée.")}catch(e){toast(friendly(e),true)}})
+
+$("pageContent").querySelectorAll("[data-edit-note]").forEach(b=>
+  b.onclick=()=>noteForm(notes.find(n=>n.id===b.dataset.editNote))
+);
+
+$("pageContent").querySelectorAll("[data-del-note]").forEach(b=>
+  b.onclick=async()=>{
+    if(confirm("Supprimer cette note ?")) {
+      try {
+        await deleteDoc(doc(db,"notes_cours",b.dataset.delNote));
+        await renderNotesCours();
+        toast("Note supprimée.");
+      } catch(e) {
+        toast(friendly(e),true);
+      }
+    }
+  }
+);
 }
+
+
 
 async function noteForm(n){
 const area=$("noteFormArea");
 
 let classesDisponibles = [];
 let matieresDisponibles = [];
+
 try {
   const [clsSnap, matSnap] = await Promise.all([
     getDocs(collection(db, "classes")),
     getDocs(collection(db, "matieres"))
   ]);
+
   classesDisponibles = clsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
   matieresDisponibles = matSnap.docs.map(d => ({ id: d.id, ...d.data() }));
 
   if (!isAdmin() && currentProfile?.role === "professeur") {
-    const affSnap = await getDocs(query(collection(db, "affectations"), where("professeurUid", "==", currentUser.uid)));
+    const affSnap = await getDocs(
+      query(
+        collection(db, "affectations"),
+        where("professeurUid", "==", currentUser.uid)
+      )
+    );
+
     const classIds = affSnap.docs.map(d => d.data().classeId);
+
     if (classIds.length > 0) {
-      classesDisponibles = classesDisponibles.filter(c => classIds.includes(c.id) || classIds.includes(c.code));
+      classesDisponibles = classesDisponibles.filter(
+        c => classIds.includes(c.id) || classIds.includes(c.code)
+      );
     }
   }
 } catch(e) {
   console.warn("Erreur chargement données note cours", e);
 }
 
-let existingPhotos = Array.isArray(n?.photosData)?n.photosData:(n?.photoData?[n.photoData]:[]);
+let existingPhotos = Array.isArray(n?.photosData)
+  ? n.photosData
+  : (n?.photoData ? [n.photoData] : []);
 
-area.innerHTML=`<div class="card">
-<h3>${n?"Modifier":"Nouvelle"} note de cours</h3>
+let selectedPhotos = [...existingPhotos];
+
+let liensPhotos = Array.isArray(n?.photosLiens)
+  ? n.photosLiens
+  : (n?.photosLiens ? String(n.photosLiens).split(/\r?\n/) : []);
+
+area.innerHTML = `<div class="card">
+<h3>${n ? "Modifier" : "Nouvelle"} note de cours</h3>
+
 <form id="noteForm">
+
 <div class="field">
 <label>Titre *</label>
-<input name="titre" required value="${esc(n?.titre||"")}">
+<input name="titre" required value="${esc(n?.titre || "")}">
 </div>
 
 <div class="form-grid">
+
 <div class="field">
 <label>Classe *</label>
 <select name="classeId" required>
 <option value="">-- Chwazi klas --</option>
-${classesDisponibles.map(c=>`<option value="${esc(c.id)}" ${n?.classeId===c.id||n?.classeId===c.code?"selected":""}>${esc(c.nom||c.code||c.id)}</option>`)}
+${classesDisponibles.map(c => `<option value="${esc(c.id)}" ${n?.classeId === c.id || n?.classeId === c.code ? "selected" : ""}>${esc(c.nom || c.code || c.id)}</option>`).join("")}
 </select>
 </div>
+
 <div class="field">
 <label>Matière</label>
 <select name="matiereId">
 <option value="">-- Chwazi matyè --</option>
-${matieresDisponibles.map(mat=>`<option value="${esc(mat.id)}" ${n?.matiereId===mat.id||n?.matiereId===mat.code?"selected":""}>${esc(mat.nom||mat.code||mat.id)}</option>`)}
+${matieresDisponibles.map(mat => `<option value="${esc(mat.id)}" ${n?.matiereId === mat.id || n?.matiereId === mat.code ? "selected" : ""}>${esc(mat.nom || mat.code || mat.id)}</option>`).join("")}
 </select>
 </div>
+
 </div>
 
 <div class="field">
 <label>Texte du cours</label>
-<textarea name="contenu" maxlength="12000">${esc(n?.contenu||"")}</textarea>
+<textarea name="contenu" maxlength="12000">${esc(n?.contenu || "")}</textarea>
 </div>
 
 <div class="field">
-<label>Photos / Pages jointes multiples</label>
+<label>Liens des photos Google Drive</label>
+<textarea
+  id="photosLiens"
+  name="photosLiens"
+  rows="4"
+  placeholder="Collez les liens Google Drive ici, un lien par ligne..."
+>${esc(liensPhotos.join("\n"))}</textarea>
 
-<div class="actions">
-<button class="btn primary" id="choosePhotosBtn" type="button">🖼️ Sélectionner des photos (multiples)</button>
-</div>
-
-<input id="choosePhotosInput" type="file" accept="image/*" multiple hidden>
-
-<div id="photosPreview" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;">
-</div>
+<small>
+Collez un lien par ligne. Vérifiez que le partage Google Drive est réglé sur
+« Toute personne disposant du lien – Lecteur ».
+</small>
 </div>
 
 <div class="actions">
 <button class="btn primary" id="saveNote" type="submit">Enregistrer</button>
 <button class="btn secondary" id="cancelNote" type="button">Annuler</button>
 </div>
+
 </form>
 </div>`;
 
-let selectedPhotos=[...existingPhotos];
+$("cancelNote").onclick = () => area.innerHTML = "";
+
+$("noteForm").onsubmit = async e => {
+  e.preventDefault();
+
+  const btn = $("saveNote");
+  btn.disabled = true;
+
+  try {
+    const fd = new FormData(e.currentTarget);
+
+    const dateDebut = String(fd.get("dateDebut") || "").trim();
+    const dateLimite = String(fd.get("dateLimite") || "").trim();
+
+    const liensBruts = String(fd.get("photosLiens") || "").trim();
+
+    const photosLiens = liensBruts
+      ? liensBruts.split(/\r?\n/).map(lien => lien.trim()).filter(Boolean)
+      : [];
+
+    const data = {
+      titre: String(fd.get("titre") || "").trim(),
+      classeId: String(fd.get("classeId") || "").trim(),
+      matiereId: String(fd.get("matiereId") || "").trim(),
+      contenu: String(fd.get("contenu") || "").trim(),
+      dateDebut: dateDebut,
+      dateLimite: dateLimite,
+      photosData: selectedPhotos,
+      photosLiens: photosLiens,
+      professeurUid: currentUser.uid,
+      updatedAt: stamp()
+    };
+
+    if (!data.titre || !data.classeId) {
+      throw Error("Titre et classe obligatoires.");
+    }
+
+    if (
+      dateDebut &&
+      dateLimite &&
+      new Date(dateLimite).getTime() <= new Date(dateDebut).getTime()
+    ) {
+      throw Error("La date limite doit être postérieure à la date de début.");
+    }
+
+    if (n) {
+      await updateDoc(doc(db, "notes_cours", n.id), data);
+    } else {
+      data.createdAt = stamp();
+      await addDoc(collection(db, "notes_cours"), data);
+    }
+
+    toast("Note enregistrée.");
+    await renderNotesCours();
+
+  } catch (err) {
+    toast(friendly(err), true);
+  } finally {
+    btn.disabled = false;
+  }
+};
+}
 
 function renderPhotoPreviews(){
   const prev=$("photosPreview");
