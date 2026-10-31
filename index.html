@@ -1892,18 +1892,6 @@ $("backExams").onclick=()=>openPage("examens")
 }catch(e){console.error(e);if($("submitExam"))$("submitExam").disabled=false;toast("La remise a échoué : "+friendly(e),true)}
 }
 
-async function compressPhoto(file){
-if(!file||!file.type.startsWith("image/"))throw Error("Choisissez une image valide.");
-if(file.size>12*1024*1024)throw Error("Photo trop grande : choisissez une image de moins de 12 Mo.");
-const url=URL.createObjectURL(file);
-try{
-const img=new Image();await new Promise((res,rej)=>{img.onload=res;img.onerror=()=>rej(Error("Image illisible"));img.src=url});
-const scale=Math.min(1,1000/Math.max(img.width,img.height)),c=document.createElement("canvas");c.width=Math.max(1,Math.round(img.width*scale));c.height=Math.max(1,Math.round(img.height*scale));c.getContext("2d").drawImage(img,0,0,c.width,c.height);
-for(const q of [.7,.55,.4,.3]){const d=c.toDataURL("image/jpeg",q);if(d.length<300000)return d}
-throw Error("Photo trop volumineuse après compression.")
-}finally{URL.revokeObjectURL(url)}
-}
-
 async function renderNotesCours(){
 const teacher=isAdmin()||isProfessor();
 let notes=[];
@@ -2056,8 +2044,6 @@ $("pageContent").querySelectorAll("[data-del-note]").forEach(b=>
   }
 );
 }
-
-
 
 async function noteForm(n){
 const area=$("noteFormArea");
@@ -2222,90 +2208,6 @@ $("noteForm").onsubmit = async e => {
   } finally {
     btn.disabled = false;
   }
-};
-}
-
-function renderPhotoPreviews(){
-  const prev=$("photosPreview");
-  if(!prev)return;
-  if(selectedPhotos.length===0){
-    prev.innerHTML='<p class="muted">Aucune photo sélectionnée.</p>';
-    return;
-  }
-  prev.innerHTML=selectedPhotos.map((p,idx)=>`
-    <div style="position:relative;border:1px solid var(--bd);border-radius:6px;padding:4px;background:#fff">
-      <img src="${p}" style="width:90px;height:90px;object-fit:cover;display:block;border-radius:4px">
-      <button type="button" class="btn danger" style="position:absolute;top:2px;right:2px;padding:2px 6px;font-size:10px;" data-remove-img="${idx}">×</button>
-    </div>
-  `).join("");
-  prev.querySelectorAll("[data-remove-img]").forEach(b=>{
-    b.onclick=()=>{
-      const i=Number(b.dataset.removeImg);
-      selectedPhotos.splice(i,1);
-      renderPhotoPreviews();
-    };
-  });
-}
-renderPhotoPreviews();
-
-$("cancelNote").onclick=()=>area.innerHTML="";
-$("choosePhotosBtn").onclick=()=>$("choosePhotosInput").click();
-
-$("choosePhotosInput").onchange=async e=>{
-  const files=e.target.files;
-  if(!files||files.length===0)return;
-  toast("Compression des images en cours...");
-  for(let file of files){
-    try{
-      const compressed=await compressPhoto(file);
-      selectedPhotos.push(compressed);
-    }catch(err){
-      toast(err.message||"Erreur de lecture d'une image.",true);
-    }
-  }
-  e.target.value="";
-  renderPhotoPreviews();
-  toast("Images ajoutées avec succès.");
-};
-
-$("noteForm").onsubmit=async e=>{
-e.preventDefault();
-const btn=$("saveNote");
-btn.disabled=true;
-
-try{
-const fd=new FormData(e.currentTarget);
-const data={
-titre:String(fd.get("titre")||"").trim(),
-classeId:String(fd.get("classeId")||"").trim(),
-matiereId:String(fd.get("matiereId")||"").trim(),
-contenu:String(fd.get("contenu")||"").trim(),
-photosData:selectedPhotos,
-professeurUid:isAdmin()?(n?.professeurUid||currentUser.uid):currentUser.uid,
-updatedAt:stamp()
-};
-
-if(!data.titre||!data.classeId)
-throw Error("Le titre et la classe sont obligatoires.");
-
-if(!data.contenu&&selectedPhotos.length===0)
-throw Error("Ajoutez le texte ou au moins une photo.");
-
-if(n){
-await updateDoc(doc(db,"notes_cours",n.id),data);
-}else{
-data.createdAt=stamp();
-await addDoc(collection(db,"notes_cours"),data);
-}
-
-toast("Note enregistrée.");
-await renderNotesCours();
-
-}catch(err){
-toast(friendly(err),true);
-}finally{
-btn.disabled=false;
-}
 };
 }
 
